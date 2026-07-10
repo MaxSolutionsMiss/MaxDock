@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dock Appointment Scheduler – Max Solutions Mississauga V23</title>
+  <title>MaxDoc – Dock Appointment Scheduler</title>
   <style>
     :root{
       --bg1:#eef6fb;
@@ -266,15 +266,15 @@
     }
 
     .facilityBannerSmall{
-      min-width:min(336px,100%);
-      border-radius:18px;
-      padding:15px 22px;
-      font-size:clamp(17px,2.6vw,25px);
-      font-weight:700;
+      min-width:min(280px,88%);
+      border-radius:16px;
+      padding:10px 16px;
+      font-size:clamp(14px,2.2vw,19px);
+      font-weight:720;
       line-height:1.05;
-      letter-spacing:-.25px;
+      letter-spacing:-.15px;
       background:var(--facilityGradient);
-      box-shadow:0 12px 26px var(--facilityShadow);
+      box-shadow:0 10px 22px var(--facilityShadow);
       color:#fff;
       text-align:center;
       text-shadow:0 2px 8px rgba(0,0,0,.14);
@@ -444,6 +444,67 @@
     .Completed{background:#dcfce7;color:#166534}
     .Cancelled{background:#fee2e2;color:#991b1b}
 
+
+    .wizardSteps{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:8px;
+      margin:10px 0 18px;
+    }
+    .wizardStep{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#f8fafc;
+      color:#667085;
+      padding:9px 8px;
+      text-align:center;
+      font-size:11px;
+      font-weight:760;
+    }
+    .wizardStep.active{
+      background:linear-gradient(135deg,#e0f2fe,#ccfbf1);
+      color:#075985;
+      border-color:rgba(14,165,233,.35);
+      box-shadow:0 6px 16px rgba(15,39,66,.08);
+    }
+    .wizardPanel{display:none}
+    .wizardPanel.active{display:block}
+    .wizardActions{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+    .wizardActions .rightActions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-left:auto;
+    }
+    .reviewBox{
+      background:#f8fafc;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      line-height:1.6;
+      font-size:13px;
+    }
+    .reviewBox strong{color:#172033}
+    .stepIntro{
+      margin:0 0 14px;
+      color:#667085;
+      font-size:13px;
+      line-height:1.45;
+    }
+    @media(max-width:720px){
+      .wizardSteps{grid-template-columns:1fr 1fr}
+      .wizardStep{font-size:10px;padding:8px 6px}
+      .wizardActions,.wizardActions .rightActions{width:100%}
+      .wizardActions button{flex:1}
+    }
+
     .modalOverlay{
       position:fixed;
       inset:0;
@@ -525,18 +586,28 @@
     @media(max-width:720px){
       .appShell{padding:16px}
       .topbar{gap:10px}
-      .titleMain{font-size:24px}
+      .titleMain{font-size:22px;white-space:normal;line-height:1.12}
       .topLocationControl{padding:8px 10px}
       .topLocationLabel{font-size:12px}
       .topLocationSelect{font-size:12px}
       .mainPageBtn{height:40px;padding:0 12px;font-size:12px}
       .requestCard{padding:32px 22px}
       .heroButtonBase{min-width:100%;padding:24px 26px;font-size:clamp(24px,8vw,38px)}
-      .facilityBannerSmall{min-width:min(360px,100%);padding:15px 20px;font-size:clamp(17px,6vw,25px)}
+      .facilityBannerSmall{min-width:min(285px,92%);padding:10px 15px;font-size:clamp(14px,4.8vw,18px)}
       .row,.row3{grid-template-columns:1fr}
       .laneHeader.week,.laneRow.week{grid-template-columns:72px repeat(6,1fr)}
       .corner,.dayHead,.laneLabel{font-size:10px;padding:8px 5px}
       .appt{height:66px;padding:6px}
+    }
+
+
+    @media(max-width:520px){
+      .requestCard{width:100%;border-radius:28px}
+      .heroStack{gap:14px}
+      .facilityBannerSmall{max-width:92%;white-space:normal}
+      .requestMainBtn{line-height:1.08}
+      .modal{padding:18px;border-radius:22px}
+      .modalHeader h2{font-size:20px}
     }
 
     @media print{
@@ -553,7 +624,7 @@
       <div class="leftHeader">
         <div class="brandBlock" onclick="showRequester()" title="Go to requester page">
           <div class="logoMark">DS</div>
-          <h1 class="titleMain">Dock Appointment Scheduler</h1>
+          <h1 class="titleMain">MaxDoc – Dock Appointment Scheduler</h1>
         </div>
 
         <div class="topLocationControl">
@@ -753,118 +824,166 @@
         <button class="closeBtn" onclick="closeRequestModal()">×</button>
       </div>
 
-      <div class="split">
-        <div>
-          <div class="row">
-            <div>
-              <label>Requester Location</label>
-              <select id="reqLocation" onchange="autoFillContact(); updateLocationDetailVisibility(); recalcRequest()">
-                <option>Guelph</option>
-                <option>Pickering</option>
-                <option>Bristol</option>
-                <option>Vendor</option>
-                <option>Customer</option>
-                <option>Other Sister Plant</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div>
-              <label>Appointment Type</label>
-              <select id="reqType" onchange="recalcRequest()">
-                <option>Raw Material</option>
-                <option>Finished Goods</option>
-                <option>Sister Plant Transfer</option>
-                <option>Vendor Delivery</option>
-                <option>Customer Pickup</option>
-                <option>Return / Rework</option>
-                <option>Other</option>
-              </select>
-            </div>
+      <div class="wizardSteps">
+        <div class="wizardStep active" id="stepLabel1">1. Load Details</div>
+        <div class="wizardStep" id="stepLabel2">2. Available Time</div>
+        <div class="wizardStep" id="stepLabel3">3. Contact Info</div>
+        <div class="wizardStep" id="stepLabel4">4. Review & Book</div>
+      </div>
+
+      <div class="wizardPanel active" id="wizardStep1">
+        <p class="stepIntro">Tell us what is coming in or going out. Available times will update based on these load details.</p>
+
+        <div class="row">
+          <div>
+            <label>Direction</label>
+            <select id="reqDirection" onchange="recalcRequest()">
+              <option>Inbound</option>
+              <option>Outbound</option>
+            </select>
           </div>
-
-          <div id="locationDetailRow" class="hidden">
-            <label>Company / Location Name</label>
-            <input id="reqLocationDetail" placeholder="Enter customer, vendor, sister plant, or other location" oninput="recalcRequest()" />
+          <div>
+            <label>Requester Location</label>
+            <select id="reqLocation" onchange="autoFillContact(); updateLocationDetailVisibility(); recalcRequest()">
+              <option>Guelph</option>
+              <option>Pickering</option>
+              <option>Bristol</option>
+              <option>Vendor</option>
+              <option>Customer</option>
+              <option>Other Sister Plant</option>
+              <option>Other</option>
+            </select>
           </div>
-
-          <div class="row3">
-            <div>
-              <label>Direction</label>
-              <select id="reqDirection" onchange="recalcRequest()">
-                <option>Inbound</option>
-                <option>Outbound</option>
-              </select>
-            </div>
-            <div>
-              <label>Truck Type</label>
-              <select id="reqTruck" onchange="recalcRequest()">
-                <option>53 ft Trailer</option>
-                <option>48 ft Trailer</option>
-                <option>26 ft Straight Truck</option>
-                <option>Cube Van</option>
-                <option>Courier Van</option>
-              </select>
-            </div>
-            <div>
-              <label>Skids</label>
-              <input id="reqSkids" type="number" min="0" max="60" value="10" oninput="recalcRequest()" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Handling</label>
-              <select id="reqHandling" onchange="recalcRequest()">
-                <option>Standard</option>
-                <option>Mixed SKUs</option>
-                <option>Requires Counting</option>
-                <option>Paperwork / Samples</option>
-                <option>Special Handling</option>
-              </select>
-            </div>
-            <div>
-              <label>Requested Date</label>
-              <input id="reqDate" type="date" onchange="recalcRequest()" />
-            </div>
-          </div>
-
-          <div id="durationBox" class="hidden"></div>
-
-          <div class="row">
-            <div><label>Requester Name *</label><input id="reqName" /></div>
-            <div><label>Requester Email *</label><input id="reqEmail" type="email" /></div>
-          </div>
-
-          <div class="row">
-            <div><label>Carrier</label><input id="reqCarrier" placeholder="Carrier or TBD" /></div>
-            <div><label>PO / BOL / Job # *</label><input id="reqRef" placeholder="Required" /></div>
-          </div>
-
-          <label>Notes</label>
-          <textarea id="reqNotes" placeholder="Optional"></textarea>
-
-          <label style="display:flex;align-items:center;gap:8px;font-weight:720">
-            <input id="saveProfile" type="checkbox" style="width:auto" checked />
-            Save my requester profile on this device
-          </label>
-
-          <div id="requestSuccess" class="success"></div>
-          <div id="requestError" class="error"></div>
         </div>
 
-        <div>
-          <h3>Available Times</h3>
-          <p>Available times update automatically based on your load details. The dock door will be assigned by the site.</p>
-          <div class="slotDateNav">
-            <button class="secondary small" onclick="navRequestDate(-1)">‹ Previous Day</button>
-            <span id="requestDateLabel"></span>
-            <button class="secondary small" onclick="navRequestDate(1)">Next Day ›</button>
+        <div id="locationDetailRow" class="hidden">
+          <label>Company / Location Name</label>
+          <input id="reqLocationDetail" placeholder="Enter customer, vendor, sister plant, or other location" oninput="recalcRequest()" />
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Appointment Type</label>
+            <select id="reqType" onchange="recalcRequest()">
+              <option>Raw Material</option>
+              <option>Finished Goods</option>
+              <option>Sister Plant Transfer</option>
+              <option>Vendor Delivery</option>
+              <option>Customer Pickup</option>
+              <option>Return / Rework</option>
+              <option>Other</option>
+            </select>
           </div>
-          <div id="selectedSlot" class="summary hidden"></div>
-          <div id="slotList" class="slots"></div>
-          <h3>Next Available</h3>
-          <div id="nextAvailable" class="summary"></div>
-          <div class="actions">
+          <div>
+            <label>Truck Type</label>
+            <select id="reqTruck" onchange="recalcRequest()">
+              <option>53 ft Trailer</option>
+              <option>48 ft Trailer</option>
+              <option>26 ft Straight Truck</option>
+              <option>Cube Van</option>
+              <option>Courier Van</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Skids</label>
+            <input id="reqSkids" type="number" min="0" max="60" value="10" oninput="recalcRequest()" />
+          </div>
+          <div>
+            <label>Handling</label>
+            <select id="reqHandling" onchange="recalcRequest()">
+              <option>Standard</option>
+              <option>Mixed SKUs</option>
+              <option>Requires Counting</option>
+              <option>Paperwork / Samples</option>
+              <option>Special Handling</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Requested Date</label>
+            <input id="reqDate" type="date" onchange="recalcRequest()" />
+          </div>
+          <div></div>
+        </div>
+
+        <div id="durationBox" class="hidden"></div>
+
+        <div class="wizardActions">
+          <button class="secondary" onclick="closeRequestModal()">Cancel</button>
+          <div class="rightActions">
+            <button class="green" onclick="goRequestStep(2)">Next: Pick Time</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizardPanel" id="wizardStep2">
+        <h3>Available Times</h3>
+        <p class="stepIntro">Choose one available appointment time. The dock door will be assigned by the site.</p>
+
+        <div class="slotDateNav">
+          <button class="secondary small" onclick="navRequestDate(-1)">‹ Previous Day</button>
+          <span id="requestDateLabel"></span>
+          <button class="secondary small" onclick="navRequestDate(1)">Next Day ›</button>
+        </div>
+
+        <div id="selectedSlot" class="summary hidden"></div>
+        <div id="slotList" class="slots"></div>
+
+        <h3>Next Available</h3>
+        <div id="nextAvailable" class="summary"></div>
+
+        <div class="wizardActions">
+          <button class="secondary" onclick="goRequestStep(1)">Back</button>
+          <div class="rightActions">
+            <button class="green" onclick="goRequestStep(3)">Next: Contact Info</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizardPanel" id="wizardStep3">
+        <p class="stepIntro">Enter the contact and reference details so the site can prepare and confirm the appointment.</p>
+
+        <div class="row">
+          <div><label>Requester Name *</label><input id="reqName" /></div>
+          <div><label>Requester Email *</label><input id="reqEmail" type="email" /></div>
+        </div>
+
+        <div class="row">
+          <div><label>Carrier / Courier</label><input id="reqCarrier" placeholder="Carrier or TBD" /></div>
+          <div><label>PO / BOL / Job # *</label><input id="reqRef" placeholder="Required" /></div>
+        </div>
+
+        <label>Notes</label>
+        <textarea id="reqNotes" placeholder="Optional"></textarea>
+
+        <label style="display:flex;align-items:center;gap:8px;font-weight:720">
+          <input id="saveProfile" type="checkbox" style="width:auto" checked />
+          Save my requester profile on this device
+        </label>
+
+        <div id="requestSuccess" class="success"></div>
+        <div id="requestError" class="error"></div>
+
+        <div class="wizardActions">
+          <button class="secondary" onclick="goRequestStep(2)">Back</button>
+          <div class="rightActions">
+            <button class="green" onclick="goRequestStep(4)">Review</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizardPanel" id="wizardStep4">
+        <p class="stepIntro">Review the request, then book the appointment.</p>
+        <div id="requestReview" class="reviewBox"></div>
+
+        <div class="wizardActions">
+          <button class="secondary" onclick="goRequestStep(3)">Back</button>
+          <div class="rightActions">
             <button class="green" onclick="submitRequest()">Book Appointment</button>
             <button class="secondary" onclick="closeRequestModal()">Cancel</button>
           </div>
@@ -1357,6 +1476,66 @@
 
     function goToday(){$("scheduleDate").value=todayISO();renderAll()}
 
+
+    function validateLoadStep(){
+      if(!$("reqDate").value) throw new Error("Requested Date is required.");
+      if(Number($("reqSkids").value || 0) < 0) throw new Error("Skids cannot be negative.");
+      if($("locationDetailRow") && !$("locationDetailRow").classList.contains("hidden")){
+        const detail = $("reqLocationDetail").value.trim();
+        if(!detail) throw new Error("Company / Location Name is required.");
+      }
+    }
+
+    function goRequestStep(step){
+      try{
+        if(step >= 2) validateLoadStep();
+        if(step >= 3 && !selectedSlot) throw new Error("Please select an available time first.");
+        if(step >= 4){
+          required("reqName","Requester name");
+          required("reqEmail","Requester email");
+          required("reqRef","PO / BOL / Job #");
+          renderRequestReview();
+        }
+
+        [1,2,3,4].forEach(i=>{
+          $("wizardStep"+i).classList.toggle("active", i === step);
+          $("stepLabel"+i).classList.toggle("active", i === step);
+        });
+
+        $("requestError").style.display="none";
+      }catch(err){
+        $("requestError").style.display="block";
+        $("requestError").textContent=err.message;
+        goRequestStepSafe(3);
+      }
+    }
+
+    function goRequestStepSafe(step){
+      [1,2,3,4].forEach(i=>{
+        const panel=$("wizardStep"+i);
+        const label=$("stepLabel"+i);
+        if(panel) panel.classList.toggle("active", i === step);
+        if(label) label.classList.toggle("active", i === step);
+      });
+    }
+
+    function renderRequestReview(){
+      const slotText = selectedSlot ? `${selectedSlot.date} | ${displayTime(selectedSlot.start)}–${displayTime(selectedSlot.end)}` : "No time selected";
+      const loc = (()=>{try{return getRequesterLocationName()}catch{return $("reqLocation").value}})();
+      $("requestReview").innerHTML = `
+        <strong>Location:</strong> ${escapeHTML(config.siteName)}<br>
+        <strong>Requester:</strong> ${escapeHTML($("reqName").value)} | ${escapeHTML($("reqEmail").value)}<br>
+        <strong>Load:</strong> ${escapeHTML($("reqDirection").value)} | ${escapeHTML($("reqType").value)} | ${escapeHTML($("reqTruck").value)} | ${escapeHTML($("reqSkids").value)} skids<br>
+        <strong>From / For:</strong> ${escapeHTML(loc)}<br>
+        <strong>Handling:</strong> ${escapeHTML($("reqHandling").value)}<br>
+        <strong>Time:</strong> ${escapeHTML(slotText)}<br>
+        <strong>Carrier:</strong> ${escapeHTML($("reqCarrier").value || "TBD")}<br>
+        <strong>PO / BOL / Job #:</strong> ${escapeHTML($("reqRef").value)}<br>
+        <strong>Notes:</strong> ${escapeHTML($("reqNotes").value || "None")}
+      `;
+    }
+
+
     function openRequestModal(){
       $("requestModal").style.display="flex";
       $("reqDate").value=$("scheduleDate").value||todayISO();
@@ -1365,6 +1544,7 @@
       autoFillContact();
       updateLocationDetailVisibility();
       recalcRequest();
+      goRequestStepSafe(1);
     }
 
     function closeRequestModal(){
