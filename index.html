@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dock Appointment Scheduler – Max Solutions Mississauga V23</title>
+  <style>
+    :root{
+      --bg1:#eef6fb;
+      --bg2:#eef3f8;
+      --glow1:rgba(20,184,166,.22);
+      --glow2:rgba(37,99,235,.18);
+      --ink:#172033;
+      --muted:#667085;
+      --card:#ffffff;
+      --line:#d8dee9;
+      --navy:#0f2742;
+      --brand:#155e8f;
+      --cyan:#14b8a6;
+      --green:#16a34a;
+      --orange:#ea580c;
+      --red:#dc2626;
+      --purple:#7c3aed;
+      --shadow:0 20px 55px rgba(15,39,66,.16);
+      --facilityGradient:linear-gradient(135deg,#0f2742,#155e8f 55%,#0f766e);
+      --facilityShadow:rgba(21,94,143,.32);
+      --pillBg:linear-gradient(135deg,#e0f2fe,#ccfbf1);
+      --pillText:#075985;
+      --pillBorder:rgba(14,165,233,.35);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--ink);
+      font-family:Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, var(--glow1), transparent 28%),
+        radial-gradient(circle at 85% 0%, var(--glow2), transparent 26%),
+        linear-gradient(180deg,var(--bg1) 0%,#f7f9fc 48%,var(--bg2) 100%);
+    }
+
+    .appShell{max-width:1480px;margin:0 auto;padding:22px}
+
+    .topbar{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:18px;
+      align-items:center;
+      padding:12px 4px 18px;
+    }
+
+    .leftHeader{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      flex-wrap:wrap;
+      min-width:0;
+    }
+
+    .brandBlock{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      cursor:pointer;
+      min-width:0;
+    }
+
+    .logoMark{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--brand),var(--cyan));
+      box-shadow:0 10px 25px rgba(21,94,143,.28);
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-weight:760;
+      letter-spacing:.5px;
+      flex:0 0 auto;
+    }
+
+    .titleMain{
+      font-size:clamp(24px,2.4vw,36px);
+      font-weight:760;
+      letter-spacing:-.35px;
+      margin:0;
+      line-height:1.05;
+      white-space:nowrap;
+      color:var(--navy);
+    }
+
+    .topLocationControl{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 10px 8px 13px;
+      border-radius:18px;
+      background:#ffffff;
+      border:1px solid #d8dee9;
+      box-shadow:0 8px 18px rgba(15,39,66,.08);
+      backdrop-filter:none;
+    }
+
+    .topLocationLabel{
+      color:#111827;
+      font-size:13px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .topLocationSelect{
+      width:auto;
+      min-width:170px;
+      max-width:240px;
+      border:1px solid #d1d5db;
+      border-radius:13px;
+      padding:9px 36px 9px 12px;
+      color:#111827;
+      background:#ffffff;
+      font-size:13px;
+      font-weight:700;
+      outline:0;
+      cursor:pointer;
+    }
+
+    .gearWrap{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:10px}
+
+
+    .mainPageBtn{
+      height:42px;
+      padding:0 16px;
+      border-radius:15px;
+      background:#ffffff;
+      color:#111827;
+      border:1px solid #d8dee9;
+      box-shadow:0 10px 22px rgba(15,39,66,.08);
+      font-size:13px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .mainPageBtn:hover{
+      background:#f8fafc;
+      filter:none;
+    }
+
+    .gearBtn{
+      width:46px;
+      height:46px;
+      padding:0;
+      border-radius:16px;
+      background:rgba(255,255,255,.88);
+      color:var(--navy);
+      border:1px solid rgba(216,222,233,.95);
+      box-shadow:0 10px 22px rgba(15,39,66,.10);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+    }
+
+    .gearBtn svg{width:22px;height:22px;fill:currentColor}
+
+    .gearMenu{
+      position:absolute;
+      right:0;
+      top:54px;
+      z-index:50;
+      min-width:210px;
+      background:rgba(255,255,255,.96);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:8px;
+      box-shadow:0 18px 45px rgba(15,39,66,.18);
+      backdrop-filter:blur(12px);
+    }
+
+    .gearMenu button{
+      width:100%;
+      text-align:left;
+      background:transparent;
+      color:var(--ink);
+      box-shadow:none;
+      border-radius:12px;
+      padding:11px 12px;
+      font-weight:720;
+    }
+
+    .gearMenu button:hover{background:#f1f5f9;filter:none}
+
+    .hidden{display:none!important}
+
+    button{
+      border:0;
+      border-radius:999px;
+      padding:10px 15px;
+      background:var(--brand);
+      color:#fff;
+      font-weight:720;
+      cursor:pointer;
+      font-size:13px;
+      box-shadow:0 8px 18px rgba(21,94,143,.18);
+    }
+
+    button:hover{filter:brightness(1.04)}
+    button.secondary{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:0 6px 14px rgba(15,39,66,.06)}
+    button.green{background:var(--green)}
+    button.orange{background:var(--orange)}
+    button.red{background:var(--red)}
+    button.purple{background:var(--purple)}
+    button.small{padding:7px 10px;font-size:11px;margin:2px;box-shadow:none}
+
+    .requesterPage{
+      min-height:calc(100vh - 110px);
+      display:grid;
+      place-items:center;
+      padding:26px 0 56px;
+    }
+
+    .requestCard{
+      width:min(820px,94vw);
+      background:rgba(255,255,255,.88);
+      border:1px solid rgba(255,255,255,.92);
+      border-radius:36px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+      padding:46px 42px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .requestCard:before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(20,184,166,.16), transparent 34%),
+        radial-gradient(circle at 90% 90%, rgba(21,94,143,.14), transparent 38%);
+      pointer-events:none;
+    }
+
+    .requestInner{position:relative;z-index:1;text-align:center}
+
+    .heroStack{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+      width:100%;
+    }
+
+    .heroButtonBase{
+      min-width:min(560px,100%);
+      border-radius:26px;
+      padding:26px 34px;
+      font-size:clamp(28px,4.3vw,42px);
+      font-weight:780;
+      line-height:1.05;
+      letter-spacing:-.8px;
+      background:var(--facilityGradient);
+      box-shadow:0 20px 42px var(--facilityShadow);
+      color:#fff;
+      text-align:center;
+      text-shadow:0 3px 12px rgba(0,0,0,.14);
+      border:1px solid rgba(255,255,255,.34);
+    }
+
+    .facilityBannerSmall{
+      min-width:min(336px,100%);
+      border-radius:18px;
+      padding:15px 22px;
+      font-size:clamp(17px,2.6vw,25px);
+      font-weight:700;
+      line-height:1.05;
+      letter-spacing:-.25px;
+      background:var(--facilityGradient);
+      box-shadow:0 12px 26px var(--facilityShadow);
+      color:#fff;
+      text-align:center;
+      text-shadow:0 2px 8px rgba(0,0,0,.14);
+      border:1px solid rgba(255,255,255,.30);
+    }
+
+    .selectedFacilityBanner{
+      pointer-events:none;
+    }
+
+    .requestMainBtn{
+      cursor:pointer;
+      border-radius:26px;
+    }
+
+    .profileMini{display:none}
+
+    .panel{
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(216,222,233,.95);
+      border-radius:22px;
+      box-shadow:0 16px 42px rgba(15,39,66,.10);
+      padding:18px;
+      margin-top:16px;
+    }
+
+    .panelHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    h2{margin:0 0 4px;font-size:20px}
+    h3{margin:16px 0 8px;font-size:15px}
+    p{margin:0;color:var(--muted);line-height:1.45;font-size:13px}
+
+    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+    .stat{
+      background:linear-gradient(180deg,#fff,#f8fafc);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:15px;
+    }
+    .stat .num{display:block;font-size:26px;font-weight:800;margin-bottom:3px}
+    .stat .lbl{font-size:12px;color:var(--muted);font-weight:720}
+
+    label{display:block;margin:11px 0 6px;font-size:12px;font-weight:720;color:#344054}
+    input,select,textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 11px;
+      font-size:14px;
+      background:#fff;
+      color:var(--ink);
+    }
+    textarea{min-height:76px;resize:vertical}
+
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+    .summary{
+      background:#f8fafc;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      margin:12px 0;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:11px;
+      font-weight:720;
+      background:#eef2ff;
+      color:#1e3a8a;
+      margin:2px;
+    }
+    .pill.green{background:#dcfce7;color:#166534}
+    .pill.orange{background:#ffedd5;color:#9a3412}
+
+    .toolbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
+    .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+    .filters>div{min-width:145px}
+
+    .laneHeader,.laneRow{display:grid;gap:8px;margin-bottom:8px}
+    .laneHeader.week,.laneRow.week{grid-template-columns:86px repeat(6,1fr)}
+    .laneHeader.day,.laneRow.day{grid-template-columns:86px 1fr}
+    .laneHeader.month{grid-template-columns:repeat(7,1fr);gap:8px}
+
+    .corner,.dayHead,.laneLabel{
+      background:#eef2f7;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px;
+      text-align:center;
+      font-weight:760;
+      font-size:12px;
+    }
+    .dayHead span{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+    .laneLabel{background:#fff;display:flex;align-items:center;justify-content:center;min-height:96px}
+
+    .lane{
+      position:relative;
+      min-height:96px;
+      background:linear-gradient(to right, rgba(21,94,143,.07) 1px, transparent 1px),#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      background-size:calc(100% / 9.5) 100%;
+    }
+    .lane.big{min-height:140px}
+    .emptyText{position:absolute;inset:0;display:grid;place-items:center;color:#98a2b3;font-weight:720;font-size:12px;pointer-events:none}
+
+    .appt{
+      position:absolute;
+      top:12px;
+      height:70px;
+      border-radius:14px;
+      padding:7px 9px;
+      color:white;
+      font-size:11px;
+      overflow:hidden;
+      cursor:pointer;
+      box-shadow:0 8px 16px rgba(15,39,66,.18);
+      border:1px solid rgba(255,255,255,.23);
+      min-width:34px;
+    }
+    .appt strong{display:block;font-size:11px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+    .appt small{display:block;line-height:1.2;opacity:.95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .type-Raw-Material{background:linear-gradient(135deg,#047857,#10b981)}
+    .type-Finished-Goods{background:linear-gradient(135deg,#2563eb,#38bdf8)}
+    .type-Sister-Plant-Transfer{background:linear-gradient(135deg,#0f766e,#14b8a6)}
+    .type-Vendor-Delivery{background:linear-gradient(135deg,#475569,#94a3b8)}
+    .type-Customer-Pickup{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+    .type-Return-Rework{background:linear-gradient(135deg,#ea580c,#fb923c)}
+    .type-Other{background:linear-gradient(135deg,#155e8f,#06b6d4)}
+    .type-Blocked-Time{background:linear-gradient(135deg,#334155,#0f172a)}
+    .priorityOutline{outline:3px solid #f97316}
+    .criticalOutline{outline:3px solid #ef4444}
+
+    .timeScaleTop{display:grid;gap:8px;margin:8px 0 7px;font-size:10px;color:var(--muted);font-weight:720}
+    .scaleLabels{display:flex;justify-content:space-between;padding:0 4px}
+
+    .monthGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+    .monthCell{min-height:112px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:9px;overflow:hidden}
+    .monthCell.mutedMonth{opacity:.45}
+    .monthDate{font-size:12px;font-weight:760;margin-bottom:6px;color:#344054}
+    .monthEvent{border-radius:9px;padding:5px 6px;color:#fff;font-size:10px;font-weight:720;margin:4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{text-align:left;padding:9px 8px;border-bottom:1px solid #e5e7eb;vertical-align:top}
+    th{background:#f3f4f6;color:#475467;text-transform:uppercase;letter-spacing:.04em;font-size:10px}
+    tr:hover td{background:#f8fafc}
+
+    .statusBadge{display:inline-block;border-radius:999px;padding:3px 7px;font-size:11px;font-weight:720;white-space:nowrap}
+    .Scheduled{background:#e0f2fe;color:#075985}
+    .Completed{background:#dcfce7;color:#166534}
+    .Cancelled{background:#fee2e2;color:#991b1b}
+
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.68);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:999;
+    }
+    .modal{
+      width:min(1120px,96vw);
+      max-height:92vh;
+      overflow:auto;
+      background:#fff;
+      border-radius:28px;
+      padding:22px;
+      box-shadow:0 30px 95px rgba(0,0,0,.42);
+    }
+    .modalHeader{display:flex;justify-content:space-between;gap:14px;align-items:start;margin-bottom:12px}
+    .closeBtn{width:40px;height:40px;background:#e5e7eb;color:#111827;padding:0;box-shadow:none}
+    .split{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+    .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:9px;margin-top:10px}
+    .slot{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer}
+    .slot:hover{border-color:var(--brand);box-shadow:0 0 0 3px rgba(21,94,143,.12)}
+    .slot.selected{background:#ecfdf5;border-color:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.14)}
+    .slot strong{display:block;font-size:13px;margin-bottom:3px}
+    .slot small{display:block;color:var(--muted)}
+
+    .slotDateNav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:#f8fafc;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:8px;
+      margin:10px 0 8px;
+    }
+    .slotDateNav span{
+      font-size:12px;
+      font-weight:760;
+      color:#344054;
+      text-align:center;
+      flex:1;
+    }
+    .slot .openCount{
+      display:inline-flex;
+      margin-top:6px;
+      border-radius:999px;
+      padding:3px 8px;
+      background:#dcfce7;
+      color:#166534;
+      font-size:11px;
+      font-weight:760;
+    }
+    .slot .siteAssign{
+      display:block;
+      margin-top:4px;
+      color:#667085;
+      font-size:11px;
+    }
+
+    .success,.error{border-radius:14px;padding:12px;line-height:1.45;font-size:13px;margin:12px 0;display:none}
+    .success{background:#ecfdf5;border:1px solid #34d399;color:#064e3b}
+    .error{background:#fef2f2;border:1px solid #fca5a5;color:#7f1d1d}
+    .kbd{font-family:monospace;background:#f3f4f6;border:1px solid #d1d5db;border-bottom-width:2px;border-radius:6px;padding:2px 6px}
+
+    @media(max-width:1000px){
+      .topbar{grid-template-columns:1fr auto}
+      .leftHeader{align-items:flex-start}
+      .topLocationControl{width:100%;max-width:520px}
+      .topLocationSelect{min-width:0;flex:1}
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .split{grid-template-columns:1fr}
+    }
+
+    @media(max-width:720px){
+      .appShell{padding:16px}
+      .topbar{gap:10px}
+      .titleMain{font-size:24px}
+      .topLocationControl{padding:8px 10px}
+      .topLocationLabel{font-size:12px}
+      .topLocationSelect{font-size:12px}
+      .mainPageBtn{height:40px;padding:0 12px;font-size:12px}
+      .requestCard{padding:32px 22px}
+      .heroButtonBase{min-width:100%;padding:24px 26px;font-size:clamp(24px,8vw,38px)}
+      .facilityBannerSmall{min-width:min(360px,100%);padding:15px 20px;font-size:clamp(17px,6vw,25px)}
+      .row,.row3{grid-template-columns:1fr}
+      .laneHeader.week,.laneRow.week{grid-template-columns:72px repeat(6,1fr)}
+      .corner,.dayHead,.laneLabel{font-size:10px;padding:8px 5px}
+      .appt{height:66px;padding:6px}
+    }
+
+    @media print{
+      .topbar,.requesterPage,.toolbar,.gearWrap,.modalOverlay,.noPrint{display:none!important}
+      .appShell{max-width:none;padding:0}
+      .panel{box-shadow:none;border:0}
+      body{background:#fff}
+    }
+  </style>
+</head>
+<body>
+  <div class="appShell">
+    <div class="topbar">
+      <div class="leftHeader">
+        <div class="brandBlock" onclick="showRequester()" title="Go to requester page">
+          <div class="logoMark">DS</div>
+          <h1 class="titleMain">Dock Appointment Scheduler</h1>
+        </div>
+
+        <div class="topLocationControl">
+          <span class="topLocationLabel">Location:</span>
+          <select id="facilitySelector" class="topLocationSelect" onchange="changeActiveFacility(this.value)">
+            <option>Mississauga</option>
+            <option>Guelph</option>
+            <option>Pickering</option>
+            <option>Bristol</option>
+            <option>Owen Sound</option>
+            <option>Concord</option>
+            <option>Markham</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="gearWrap">
+        <button class="mainPageBtn" onclick="showRequester()" title="Back to main page">Main Page</button>
+        <button class="gearBtn" onclick="toggleGearMenu()" title="Menu" aria-label="Open admin menu">
+          <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+            <path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/>
+          </svg>
+        </button>
+        <div class="gearMenu hidden" id="gearMenu">
+          <button onclick="requireAdminAccess('dashboard'); closeGearMenu()">Admin Dashboard</button>
+          <button onclick="requireAdminAccess('settings'); closeGearMenu()">Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <section id="requesterPage" class="requesterPage">
+      <div class="requestCard">
+        <div class="requestInner">
+          <div class="heroStack">
+            <div class="facilityBannerSmall selectedFacilityBanner" id="selectedFacilityBanner">Max Solutions – Mississauga</div>
+            <button class="heroButtonBase requestMainBtn" onclick="openRequestModal()">Request Dock Appointment</button>
+          </div>
+          <div class="profileMini" id="profileMini"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="adminPage" class="hidden">
+      <div class="stats" id="stats"></div>
+
+      <section class="panel" id="schedulePanel">
+        <div class="panelHeader">
+          <div>
+            <h2>Coordinator Schedule</h2>
+            <p>Daily, weekly, or monthly view. Click an appointment block to move or update it.</p>
+          </div>
+        </div>
+
+        <div class="toolbar noPrint">
+          <div class="filters">
+            <div>
+              <label>View</label>
+              <select id="viewMode" onchange="renderAll()">
+                <option>Daily</option>
+                <option selected>Weekly</option>
+                <option>Monthly</option>
+              </select>
+            </div>
+            <div>
+              <label>Date</label>
+              <input id="scheduleDate" type="date" onchange="renderAll()" />
+            </div>
+            <div>
+              <label>Filter</label>
+              <select id="filter" onchange="renderAll()">
+                <option value="All">All appointments</option>
+                <option value="Priority">Priority / escalated</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="secondary" onclick="movePeriod(-1)">Previous</button>
+            <button class="secondary" onclick="goToday()">Today</button>
+            <button class="secondary" onclick="movePeriod(1)">Next</button>
+            <button class="secondary" onclick="window.print()">Print</button>
+            <button class="secondary" onclick="exportCSV()">Export CSV</button>
+          </div>
+        </div>
+
+        <div id="scheduleOutput"></div>
+      </section>
+
+      <section class="panel" id="adminControlPanel">
+        <div class="panelHeader">
+          <div>
+            <h2>Coordinator Controls</h2>
+            <p>Move appointments, prioritize, block dock time, or place a request received by phone/email.</p>
+          </div>
+          <div class="actions">
+            <button class="green" onclick="openRequestModal()">Place Dock Appointment</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="summary">
+            <h3>Block Dock Time</h3>
+            <div class="row">
+              <div><label>Date</label><input id="blockDate" type="date" /></div>
+              <div><label>Dock</label><select id="blockDock"></select></div>
+            </div>
+            <div class="row">
+              <div><label>Start</label><input id="blockStart" type="time" value="12:00" /></div>
+              <div><label>End</label><input id="blockEnd" type="time" value="12:30" /></div>
+            </div>
+            <label>Reason</label>
+            <input id="blockReason" placeholder="Lunch, maintenance, urgent load..." />
+            <div style="margin-top:12px"><button class="orange" onclick="blockTime()">Block Time</button></div>
+          </div>
+
+          <div class="summary">
+            <h3>Data Tools</h3>
+            <p>Standalone version uses browser storage. SharePoint/Power Pages version will use a shared database.</p>
+            <div class="actions" style="margin-top:12px">
+              <button class="secondary" onclick="backupJSON()">Backup JSON</button>
+              <button class="secondary" onclick="document.getElementById('restoreFile').click()">Restore JSON</button>
+              <input id="restoreFile" class="hidden" type="file" accept=".json" onchange="restoreJSON(event)" />
+              <button class="red" onclick="clearData()">Clear Data</button>
+            </div>
+          </div>
+        </div>
+
+        <h3>All Appointments</h3>
+        <div id="adminTable"></div>
+      </section>
+    </section>
+
+    <section id="settingsPage" class="hidden">
+      <section class="panel">
+        <div class="panelHeader">
+          <div>
+            <h2>Settings</h2>
+            <p>Rename docks and adjust timing rules.</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <h3>Dock Names</h3>
+            <div id="dockNameInputs"></div>
+            <div class="actions" style="margin-top:10px">
+              <button class="secondary" onclick="addDock()">Add Dock</button>
+              <button class="secondary" onclick="removeDock()">Remove Last Dock</button>
+            </div>
+          </div>
+
+          <div>
+            <h3>Timing Rules</h3>
+            <div class="row">
+              <div><label>Open Time</label><input id="ruleOpen" type="time" /></div>
+              <div><label>Close Time</label><input id="ruleClose" type="time" /></div>
+            </div>
+            <div class="row">
+              <div><label>Slot Increment (min)</label><input id="ruleInterval" type="number" min="5" max="60" /></div>
+              <div><label>Buffer After Live Appointment (min)</label><input id="ruleBuffer" type="number" min="0" max="60" /></div>
+            </div>
+            <div class="row">
+              <div><label>Base Time (min)</label><input id="ruleBase" type="number" min="0" max="60" /></div>
+              <div><label>Minutes Per Skid</label><input id="rulePerSkid" type="number" min="0" max="10" step="0.5" /></div>
+            </div>
+            <div class="row">
+              <div><label>Full Truck Minimum (min)</label><input id="ruleFullMin" type="number" min="15" max="180" /></div>
+              <div><label>Priority Minimum (min)</label><input id="rulePriorityMin" type="number" min="15" max="180" /></div>
+            </div>
+            <div class="row">
+              <div><label>53 ft Trailer Setup</label><input id="truck53" type="number" /></div>
+              <div><label>48 ft Trailer Setup</label><input id="truck48" type="number" /></div>
+            </div>
+            <div class="row">
+              <div><label>26 ft Truck Setup</label><input id="truck26" type="number" /></div>
+              <div><label>Courier / Cube Van Setup</label><input id="truckCourier" type="number" /></div>
+            </div>
+
+            <div class="summary" id="formulaBox"></div>
+
+            <div class="actions">
+              <button class="green" onclick="saveSettings()">Save Settings</button>
+              <button class="secondary" onclick="resetSettings()">Reset Defaults</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <div class="modalOverlay" id="requestModal">
+    <div class="modal">
+      <div class="modalHeader">
+        <div>
+          <h2>Request Dock Appointment</h2>
+          <p id="modalFacilityLine">Max Solutions – Mississauga</p>
+        </div>
+        <button class="closeBtn" onclick="closeRequestModal()">×</button>
+      </div>
+
+      <div class="split">
+        <div>
+          <div class="row">
+            <div>
+              <label>Requester Location</label>
+              <select id="reqLocation" onchange="autoFillContact(); updateLocationDetailVisibility(); recalcRequest()">
+                <option>Guelph</option>
+                <option>Pickering</option>
+                <option>Bristol</option>
+                <option>Vendor</option>
+                <option>Customer</option>
+                <option>Other Sister Plant</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label>Appointment Type</label>
+              <select id="reqType" onchange="recalcRequest()">
+                <option>Raw Material</option>
+                <option>Finished Goods</option>
+                <option>Sister Plant Transfer</option>
+                <option>Vendor Delivery</option>
+                <option>Customer Pickup</option>
+                <option>Return / Rework</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="locationDetailRow" class="hidden">
+            <label>Company / Location Name</label>
+            <input id="reqLocationDetail" placeholder="Enter customer, vendor, sister plant, or other location" oninput="recalcRequest()" />
+          </div>
+
+          <div class="row3">
+            <div>
+              <label>Direction</label>
+              <select id="reqDirection" onchange="recalcRequest()">
+                <option>Inbound</option>
+                <option>Outbound</option>
+              </select>
+            </div>
+            <div>
+              <label>Truck Type</label>
+              <select id="reqTruck" onchange="recalcRequest()">
+                <option>53 ft Trailer</option>
+                <option>48 ft Trailer</option>
+                <option>26 ft Straight Truck</option>
+                <option>Cube Van</option>
+                <option>Courier Van</option>
+              </select>
+            </div>
+            <div>
+              <label>Skids</label>
+              <input id="reqSkids" type="number" min="0" max="60" value="10" oninput="recalcRequest()" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Handling</label>
+              <select id="reqHandling" onchange="recalcRequest()">
+                <option>Standard</option>
+                <option>Mixed SKUs</option>
+                <option>Requires Counting</option>
+                <option>Paperwork / Samples</option>
+                <option>Special Handling</option>
+              </select>
+            </div>
+            <div>
+              <label>Requested Date</label>
+              <input id="reqDate" type="date" onchange="recalcRequest()" />
+            </div>
+          </div>
+
+          <div id="durationBox" class="hidden"></div>
+
+          <div class="row">
+            <div><label>Requester Name *</label><input id="reqName" /></div>
+            <div><label>Requester Email *</label><input id="reqEmail" type="email" /></div>
+          </div>
+
+          <div class="row">
+            <div><label>Carrier</label><input id="reqCarrier" placeholder="Carrier or TBD" /></div>
+            <div><label>PO / BOL / Job # *</label><input id="reqRef" placeholder="Required" /></div>
+          </div>
+
+          <label>Notes</label>
+          <textarea id="reqNotes" placeholder="Optional"></textarea>
+
+          <label style="display:flex;align-items:center;gap:8px;font-weight:720">
+            <input id="saveProfile" type="checkbox" style="width:auto" checked />
+            Save my requester profile on this device
+          </label>
+
+          <div id="requestSuccess" class="success"></div>
+          <div id="requestError" class="error"></div>
+        </div>
+
+        <div>
+          <h3>Available Times</h3>
+          <p>Available times update automatically based on your load details. The dock door will be assigned by the site.</p>
+          <div class="slotDateNav">
+            <button class="secondary small" onclick="navRequestDate(-1)">‹ Previous Day</button>
+            <span id="requestDateLabel"></span>
+            <button class="secondary small" onclick="navRequestDate(1)">Next Day ›</button>
+          </div>
+          <div id="selectedSlot" class="summary hidden"></div>
+          <div id="slotList" class="slots"></div>
+          <h3>Next Available</h3>
+          <div id="nextAvailable" class="summary"></div>
+          <div class="actions">
+            <button class="green" onclick="submitRequest()">Book Appointment</button>
+            <button class="secondary" onclick="closeRequestModal()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modalOverlay" id="editModal">
+    <div class="modal">
+      <div class="modalHeader">
+        <div>
+          <h2>Coordinator Edit</h2>
+          <p>Move the appointment, change dock, status, priority, or reason.</p>
+        </div>
+        <button class="closeBtn" onclick="closeEditModal()">×</button>
+      </div>
+
+      <input id="editId" type="hidden" />
+      <div id="editSummary" class="summary"></div>
+
+      <div class="row3">
+        <div><label>Date</label><input id="editDate" type="date" /></div>
+        <div><label>Start Time</label><input id="editStart" type="time" /></div>
+        <div><label>Dock</label><select id="editDock"></select></div>
+      </div>
+
+      <div class="row3">
+        <div>
+          <label>Status</label>
+          <select id="editStatus">
+            <option>Scheduled</option>
+            <option>Completed</option>
+            <option>Cancelled</option>
+          </select>
+        </div>
+        <div>
+          <label>Priority</label>
+          <select id="editPriority">
+            <option>Normal</option>
+            <option>Priority</option>
+            <option>Critical</option>
+            <option>Raw Material Priority</option>
+            <option>Customer Escalation</option>
+          </select>
+        </div>
+        <div><label>Change Reason</label><input id="editReason" placeholder="Reason for change" /></div>
+      </div>
+
+      <div id="editSuccess" class="success"></div>
+      <div id="editError" class="error"></div>
+
+      <div class="actions" style="margin-top:14px">
+        <button class="green" onclick="saveEdit()">Save Change</button>
+        <button class="secondary" onclick="closeEditModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_PIN = "2468";
+
+    const facilityThemes = {
+      "Max Solutions – Mississauga": {
+        gradient:"linear-gradient(135deg,#0f2742,#155e8f 55%,#0f766e)", shadow:"rgba(21,94,143,.32)",
+        glow1:"rgba(20,184,166,.22)", glow2:"rgba(37,99,235,.18)", bg1:"#eef6fb", bg2:"#eef3f8",
+        pillBg:"linear-gradient(135deg,#e0f2fe,#ccfbf1)", pillText:"#075985", pillBorder:"rgba(14,165,233,.35)"
+      },
+      "Max Solutions – Guelph": {
+        gradient:"linear-gradient(135deg,#064e3b,#15803d 55%,#84cc16)", shadow:"rgba(21,128,61,.30)",
+        glow1:"rgba(34,197,94,.22)", glow2:"rgba(132,204,22,.17)", bg1:"#effdf4", bg2:"#f0fdf4",
+        pillBg:"linear-gradient(135deg,#dcfce7,#ecfccb)", pillText:"#166534", pillBorder:"rgba(34,197,94,.36)"
+      },
+      "Max Solutions – Pickering": {
+        gradient:"linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4)", shadow:"rgba(79,70,229,.30)",
+        glow1:"rgba(99,102,241,.22)", glow2:"rgba(6,182,212,.18)", bg1:"#eef2ff", bg2:"#ecfeff",
+        pillBg:"linear-gradient(135deg,#e0e7ff,#cffafe)", pillText:"#3730a3", pillBorder:"rgba(99,102,241,.34)"
+      },
+      "Max Solutions – Bristol": {
+        gradient:"linear-gradient(135deg,#7c2d12,#ea580c 55%,#f59e0b)", shadow:"rgba(234,88,12,.28)",
+        glow1:"rgba(249,115,22,.22)", glow2:"rgba(245,158,11,.18)", bg1:"#fff7ed", bg2:"#fffbeb",
+        pillBg:"linear-gradient(135deg,#ffedd5,#fef3c7)", pillText:"#9a3412", pillBorder:"rgba(249,115,22,.34)"
+      },
+      "Max Solutions – Owen Sound": {
+        gradient:"linear-gradient(135deg,#164e63,#0891b2 55%,#67e8f9)", shadow:"rgba(8,145,178,.30)",
+        glow1:"rgba(6,182,212,.22)", glow2:"rgba(103,232,249,.18)", bg1:"#ecfeff", bg2:"#f0fdfa",
+        pillBg:"linear-gradient(135deg,#cffafe,#ccfbf1)", pillText:"#155e75", pillBorder:"rgba(6,182,212,.34)"
+      },
+      "Max Solutions – Concord": {
+        gradient:"linear-gradient(135deg,#581c87,#9333ea 55%,#ec4899)", shadow:"rgba(147,51,234,.28)",
+        glow1:"rgba(168,85,247,.22)", glow2:"rgba(236,72,153,.16)", bg1:"#faf5ff", bg2:"#fdf2f8",
+        pillBg:"linear-gradient(135deg,#f3e8ff,#fce7f3)", pillText:"#6b21a8", pillBorder:"rgba(168,85,247,.34)"
+      },
+      "Max Solutions – Markham": {
+        gradient:"linear-gradient(135deg,#7f1d1d,#dc2626 55%,#f97316)", shadow:"rgba(220,38,38,.28)",
+        glow1:"rgba(239,68,68,.20)", glow2:"rgba(249,115,22,.18)", bg1:"#fef2f2", bg2:"#fff7ed",
+        pillBg:"linear-gradient(135deg,#fee2e2,#ffedd5)", pillText:"#991b1b", pillBorder:"rgba(239,68,68,.32)"
+      }
+    };
+
+    const defaultConfig = {
+      siteName:"Max Solutions – Mississauga",
+      docks:["Dock 1","Dock 2"],
+      open:"07:00",
+      close:"16:30",
+      interval:15,
+      buffer:10,
+      base:10,
+      perSkid:2,
+      fullTruckMin:75,
+      priorityMin:75,
+      lunchStart:"12:00",
+      lunchEnd:"12:30",
+      truckSetup:{"53 ft Trailer":20,"48 ft Trailer":18,"26 ft Straight Truck":12,"Cube Van":8,"Courier Van":5},
+      typeAdj:{"Raw Material":15,"Finished Goods":0,"Sister Plant Transfer":0,"Vendor Delivery":5,"Customer Pickup":5,"Return / Rework":15,"Other":0},
+      handlingAdj:{"Standard":0,"Mixed SKUs":10,"Requires Counting":10,"Paperwork / Samples":10,"Special Handling":15}
+    };
+
+    const contacts = {
+      "Guelph":{name:"Guelph Shipping Supervisor",email:"guelph.shipping@company.com"},
+      "Pickering":{name:"Pickering Shipping Supervisor",email:"pickering.shipping@company.com"},
+      "Bristol":{name:"Bristol Shipping Supervisor",email:"bristol.shipping@company.com"},
+      "Vendor":{name:"",email:""},
+      "Customer":{name:"",email:""},
+      "Other Sister Plant":{name:"",email:""},
+      "Other":{name:"",email:""}
+    };
+
+    let config = loadConfig();
+    let appointments = loadAppointments();
+    let selectedSlot = null;
+    let adminUnlocked = false;
+
+    function $(id){return document.getElementById(id)}
+
+    function loadConfig(){
+      try{
+        const stored=JSON.parse(localStorage.getItem("dockConfigV18")||"{}");
+        return {...structuredClone(defaultConfig),...stored,docks:Array.isArray(stored.docks)&&stored.docks.length?stored.docks:[...defaultConfig.docks],truckSetup:{...defaultConfig.truckSetup,...(stored.truckSetup||{})}};
+      }catch{return structuredClone(defaultConfig)}
+    }
+
+    function loadAppointments(){
+      try{return JSON.parse(localStorage.getItem("dockAppointmentsV18")||"[]")}
+      catch{return []}
+    }
+
+    function saveConfig(){localStorage.setItem("dockConfigV18",JSON.stringify(config))}
+    function saveAppointments(){localStorage.setItem("dockAppointmentsV18",JSON.stringify(appointments))}
+
+    function todayISO(){
+      const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+      return d.toISOString().slice(0,10);
+    }
+
+    function timeToMin(t){const [h,m]=String(t).split(":").map(Number);return h*60+m}
+    function minToTime(n){const h=Math.floor(n/60),m=n%60;return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")}
+    function addMinutes(t,mins){return minToTime(timeToMin(t)+Number(mins))}
+    function displayTime(t){
+      const [h,m]=t.split(":").map(Number); const ap=h>=12?"PM":"AM"; const hh=((h+11)%12)+1;
+      return `${hh}:${String(m).padStart(2,"0")} ${ap}`;
+    }
+    function escapeHTML(v){return String(v??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[s]))}
+    function uuid(){return crypto.randomUUID?crypto.randomUUID():"id-"+Date.now()+"-"+Math.random().toString(16).slice(2)}
+    function overlap(aS,aE,bS,bE){return timeToMin(aS)<timeToMin(bE)&&timeToMin(aE)>timeToMin(bS)}
+    function roundUp(n){return Math.ceil(n/Number(config.interval))*Number(config.interval)}
+    function isSunday(dateISO){return new Date(dateISO+"T00:00:00").getDay()===0}
+
+    function applyTheme(){
+      const theme=facilityThemes[config.siteName]||facilityThemes["Max Solutions – Mississauga"];
+      const root=document.documentElement;
+      root.style.setProperty("--facilityGradient",theme.gradient);
+      root.style.setProperty("--facilityShadow",theme.shadow);
+      root.style.setProperty("--glow1",theme.glow1);
+      root.style.setProperty("--glow2",theme.glow2);
+      root.style.setProperty("--bg1",theme.bg1);
+      root.style.setProperty("--bg2",theme.bg2);
+      root.style.setProperty("--pillBg",theme.pillBg);
+      root.style.setProperty("--pillText",theme.pillText);
+      root.style.setProperty("--pillBorder",theme.pillBorder);
+    }
+
+    function applyBranding(){
+      applyTheme();
+      document.title=`Dock Appointment Scheduler – ${config.siteName}`;
+      $("facilitySelector").value = facilityShortName(config.siteName);
+      $("selectedFacilityBanner").textContent = config.siteName;
+      $("modalFacilityLine").textContent = config.siteName;
+      renderDockSelects();
+    }
+
+    function facilityDisplayName(value){
+      if(!value) return "Max Solutions – Mississauga";
+      return value.startsWith("Max Solutions") ? value : `Max Solutions – ${value}`;
+    }
+
+    function facilityShortName(fullName){
+      return String(fullName || "Max Solutions – Mississauga").replace("Max Solutions – ", "");
+    }
+
+    function changeActiveFacility(value){
+      config.siteName = facilityDisplayName(value);
+      saveConfig();
+      applyBranding();
+      renderAll();
+    }
+
+    function toggleGearMenu(){$("gearMenu").classList.toggle("hidden")}
+    function closeGearMenu(){$("gearMenu").classList.add("hidden")}
+    document.addEventListener("click", e => {
+      const wrap=document.querySelector(".gearWrap");
+      if(wrap && !wrap.contains(e.target)) closeGearMenu();
+    });
+
+    function requireAdminAccess(target){
+      // Testing/build version: admin PIN temporarily removed.
+      adminUnlocked = true;
+      if(target==="dashboard") showAdminDashboard();
+      if(target==="settings") showSettings();
+    }
+
+    function renderDockSelects(){
+      const opts=config.docks.map(d=>`<option>${escapeHTML(d)}</option>`).join("");
+      ["blockDock","editDock"].forEach(id=>{if($(id)) $(id).innerHTML=opts});
+      const filter=$("filter");
+      if(filter){
+        const current=filter.value;
+        filter.innerHTML=`<option value="All">All appointments</option><option value="Priority">Priority / escalated</option>` + config.docks.map(d=>`<option value="${escapeHTML(d)}">${escapeHTML(d)} only</option>`).join("");
+        filter.value=Array.from(filter.options).some(o=>o.value===current)?current:"All";
+      }
+    }
+
+    function showRequester(){
+      $("requesterPage").classList.remove("hidden");
+      $("adminPage").classList.add("hidden");
+      $("settingsPage").classList.add("hidden");
+    }
+
+    function showAdminDashboard(){
+      $("requesterPage").classList.add("hidden");
+      $("adminPage").classList.remove("hidden");
+      $("settingsPage").classList.add("hidden");
+      renderAll();
+    }
+
+    function showSettings(){
+      $("requesterPage").classList.add("hidden");
+      $("adminPage").classList.add("hidden");
+      $("settingsPage").classList.remove("hidden");
+      loadSettingsUI();
+    }
+
+    function calcDuration(type,truck,skids,handling){
+      const skidCount=Number(skids||0);
+      let work=Number(config.base)+(skidCount*Number(config.perSkid))+Number(config.truckSetup[truck]||0)+Number(config.typeAdj[type]||0)+Number(config.handlingAdj[handling]||0);
+      if(truck==="53 ft Trailer"||skidCount>=21) work=Math.max(work,Number(config.fullTruckMin));
+      if(type==="Raw Material") work=Math.max(work,Number(config.priorityMin));
+      const buffer=(truck==="Courier Van"||skidCount===0)?0:Number(config.buffer);
+      const total=roundUp(work+buffer);
+      return {work:roundUp(work),buffer,total,explanation:`${config.base} base + ${skidCount} skids × ${config.perSkid} + ${config.truckSetup[truck]||0} truck setup + ${config.typeAdj[type]||0} type + ${config.handlingAdj[handling]||0} handling + ${buffer} buffer`};
+    }
+
+    function currentRequestDuration(){
+      return calcDuration($("reqType").value,$("reqTruck").value,$("reqSkids").value,$("reqHandling").value);
+    }
+
+    function slotAvailable(date,dock,start,duration,ignoreId=null){
+      const end=addMinutes(start,duration);
+      if(timeToMin(start)<timeToMin(config.open)) return false;
+      if(timeToMin(end)>timeToMin(config.close)) return false;
+      if(overlap(start,end,config.lunchStart,config.lunchEnd)) return false;
+      return !appointments.some(a=>a.id!==ignoreId&&a.date===date&&a.dock===dock&&a.status!=="Cancelled"&&overlap(start,end,a.start,a.end));
+    }
+
+    function findSlots(date,duration,count=18){
+      const out=[]; if(!date||isSunday(date)) return out;
+      for(let m=timeToMin(config.open);m<=timeToMin(config.close)-duration;m+=Number(config.interval)){
+        const start=minToTime(m);
+        for(const dock of config.docks){
+          if(slotAvailable(date,dock,start,duration)){
+            out.push({date,dock,start,end:addMinutes(start,duration)});
+            if(out.length>=count) return out;
+          }
+        }
+      }
+      return out;
+    }
+
+    function openDocksAt(date,start,duration,ignoreId=null){
+      if(!date||isSunday(date)) return [];
+      return config.docks.filter(dock => slotAvailable(date,dock,start,duration,ignoreId));
+    }
+
+    function findTimeSlots(date,duration,count=18){
+      const out=[]; if(!date||isSunday(date)) return out;
+      for(let m=timeToMin(config.open);m<=timeToMin(config.close)-duration;m+=Number(config.interval)){
+        const start=minToTime(m);
+        const freeDocks=openDocksAt(date,start,duration);
+        if(freeDocks.length){
+          out.push({date,start,end:addMinutes(start,duration),openCount:freeDocks.length,dock:freeDocks[0]});
+          if(out.length>=count) return out;
+        }
+      }
+      return out;
+    }
+
+    function assignDockForSlot(slot,duration){
+      if(!slot) return null;
+      const freeDocks=openDocksAt(slot.date,slot.start,duration);
+      return freeDocks.length ? freeDocks[0] : null;
+    }
+
+    function makeRequestRef(){
+      return "REQ-" + Math.floor(1000 + Math.random()*9000);
+    }
+
+    function getRequesterLocationName(){
+      const base=$("reqLocation").value;
+      const detailEl=$("reqLocationDetail");
+      const detail=detailEl ? detailEl.value.trim() : "";
+      const needsDetail=!["Guelph","Pickering","Bristol"].includes(base);
+      if(needsDetail && !detail) throw new Error("Company / Location Name is required.");
+      return detail ? `${base} – ${detail}` : base;
+    }
+
+    function updateLocationDetailVisibility(){
+      const row=$("locationDetailRow");
+      if(!row) return;
+      const needsDetail=!["Guelph","Pickering","Bristol"].includes($("reqLocation").value);
+      row.classList.toggle("hidden", !needsDetail);
+      if(!needsDetail && $("reqLocationDetail")) $("reqLocationDetail").value="";
+    }
+
+    function navRequestDate(days){
+      const current=$("reqDate").value || todayISO();
+      const d=new Date(current+"T00:00:00");
+      d.setDate(d.getDate()+days);
+      $("reqDate").value=d.toISOString().slice(0,10);
+      recalcRequest();
+    }
+
+    function getRequestDateLabel(dateISO){
+      if(!dateISO) return "Choose a date";
+      return new Date(dateISO+"T00:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
+    }
+
+    function getMonday(dateISO){
+      const d=new Date((dateISO||todayISO())+"T00:00:00");
+      const day=d.getDay(); const offset=day===0?-6:1-day;
+      d.setDate(d.getDate()+offset); return d;
+    }
+
+    function weekDates(dateISO){
+      const mon=getMonday(dateISO); const arr=[];
+      for(let i=0;i<6;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);arr.push(d.toISOString().slice(0,10))}
+      return arr;
+    }
+
+    function monthDates(dateISO){
+      const base=new Date((dateISO||todayISO())+"T00:00:00");
+      const first=new Date(base.getFullYear(),base.getMonth(),1);
+      const start=new Date(first);
+      const day=start.getDay();
+      start.setDate(start.getDate()-(day===0?6:day-1));
+      const arr=[];
+      for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);arr.push(d.toISOString().slice(0,10))}
+      return arr;
+    }
+
+    function dayName(dateISO){return new Date(dateISO+"T00:00:00").toLocaleDateString(undefined,{weekday:"short"})}
+    function fullDay(dateISO){return new Date(dateISO+"T00:00:00").toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"})}
+    function monthDay(dateISO){return new Date(dateISO+"T00:00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"})}
+    function monthName(dateISO){return new Date(dateISO+"T00:00:00").toLocaleDateString(undefined,{month:"long",year:"numeric"})}
+
+    function typeClass(a){return "type-"+String(a.type||"Other").replaceAll(" / ","-").replaceAll(" ","-").replaceAll("/","-")}
+    function outlineClass(a){return a.priority==="Critical"?"criticalOutline":(a.priority&&a.priority!=="Normal"?"priorityOutline":"")}
+
+    function filtered(list){
+      const f=$("filter").value;
+      if(f==="All") return list;
+      if(f==="Priority") return list.filter(a=>a.priority&&a.priority!=="Normal");
+      if(config.docks.includes(f)) return list.filter(a=>a.dock===f);
+      return list;
+    }
+
+    function renderStats(){
+      const today=todayISO();
+      const dates=weekDates(today);
+      const todayCount=appointments.filter(a=>a.date===today&&a.status!=="Cancelled").length;
+      const weekCount=appointments.filter(a=>dates.includes(a.date)&&a.status!=="Cancelled").length;
+      const completed=appointments.filter(a=>a.status==="Completed"&&a.date===today).length;
+      const priority=appointments.filter(a=>a.priority&&a.priority!=="Normal"&&a.status!=="Cancelled").length;
+      const openToday=findSlots(today,45,1).length?"Yes":"No";
+      $("stats").innerHTML=`
+        <div class="stat"><span class="num">${todayCount}</span><span class="lbl">Today</span></div>
+        <div class="stat"><span class="num">${weekCount}</span><span class="lbl">This Week</span></div>
+        <div class="stat"><span class="num">${completed}</span><span class="lbl">Completed Today</span></div>
+        <div class="stat"><span class="num">${priority}</span><span class="lbl">Priority</span></div>
+        <div class="stat"><span class="num">${openToday}</span><span class="lbl">Open Slot Today</span></div>`;
+    }
+
+    function renderSchedule(){
+      const mode=$("viewMode").value;
+      if(mode==="Daily") renderDaily();
+      if(mode==="Weekly") renderWeekly();
+      if(mode==="Monthly") renderMonthly();
+    }
+
+    function renderDaily(){
+      const date=$("scheduleDate").value||todayISO();
+      const daySpan=timeToMin(config.close)-timeToMin(config.open);
+      const header=`<div class="laneHeader day"><div class="corner">${displayTime(config.open)}–${displayTime(config.close)}</div><div class="dayHead">${fullDay(date)}<span>Daily view</span></div></div>`;
+      const rows=config.docks.map(dock=>`<div class="laneRow day"><div class="laneLabel">${escapeHTML(dock)}</div>${renderLane(date,dock,daySpan,true)}</div>`).join("");
+      const scale=`<div class="timeScaleTop" style="grid-template-columns:86px 1fr"><div></div><div class="scaleLabels"><span>${displayTime(config.open)}</span><span>12 PM</span><span>${displayTime(config.close)}</span></div></div>`;
+      $("scheduleOutput").innerHTML=header+rows+scale;
+    }
+
+    function renderWeekly(){
+      const dates=weekDates($("scheduleDate").value||todayISO());
+      const daySpan=timeToMin(config.close)-timeToMin(config.open);
+      const header=`<div class="laneHeader week"><div class="corner">${displayTime(config.open)}<br>to<br>${displayTime(config.close)}</div>${dates.map(d=>`<div class="dayHead">${dayName(d)}<span>${monthDay(d)}</span></div>`).join("")}</div>`;
+      const rows=config.docks.map(dock=>`<div class="laneRow week"><div class="laneLabel">${escapeHTML(dock)}</div>${dates.map(date=>renderLane(date,dock,daySpan,false)).join("")}</div>`).join("");
+      const scale=`<div class="timeScaleTop" style="grid-template-columns:86px repeat(6,1fr)"><div></div>${dates.map(()=>`<div class="scaleLabels"><span>${displayTime(config.open)}</span><span>12 PM</span><span>${displayTime(config.close)}</span></div>`).join("")}</div>`;
+      $("scheduleOutput").innerHTML=header+rows+scale;
+    }
+
+    function renderLane(date,dock,daySpan,big){
+      let list=appointments.filter(a=>a.date===date&&a.dock===dock&&a.status!=="Cancelled");
+      list=filtered(list).sort((a,b)=>a.start.localeCompare(b.start));
+      if(!list.length) return `<div class="lane ${big?'big':''}"><div class="emptyText">Available</div></div>`;
+      return `<div class="lane ${big?'big':''}">${list.map(a=>{
+        const left=((timeToMin(a.start)-timeToMin(config.open))/daySpan)*100;
+        const width=((timeToMin(a.end)-timeToMin(a.start))/daySpan)*100;
+        return `<div class="appt ${typeClass(a)} ${outlineClass(a)}" style="left:${left}%;width:max(${width}%,36px)" onclick="openEditModal('${a.id}')" title="${escapeHTML(a.location)} | ${displayTime(a.start)}-${displayTime(a.end)}">
+          <strong>${displayTime(a.start)} ${escapeHTML(a.location)}</strong>
+          <small>${escapeHTML(a.type)}</small>
+          <small>${escapeHTML(a.skids)} skids | ${escapeHTML(a.status)}</small>
+        </div>`;
+      }).join("")}</div>`;
+    }
+
+    function renderMonthly(){
+      const date=$("scheduleDate").value||todayISO();
+      const dates=monthDates(date);
+      const baseMonth=new Date(date+"T00:00:00").getMonth();
+      const dow=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+      const header=`<div class="panelHeader"><div><h2>${monthName(date)}</h2><p>Monthly overview.</p></div></div><div class="laneHeader month">${dow.map(d=>`<div class="dayHead">${d}</div>`).join("")}</div>`;
+      const cells=dates.map(d=>{
+        const thisMonth=new Date(d+"T00:00:00").getMonth()===baseMonth;
+        const list=appointments.filter(a=>a.date===d&&a.status!=="Cancelled").sort((a,b)=>a.start.localeCompare(b.start));
+        return `<div class="monthCell ${thisMonth?'':'mutedMonth'}"><div class="monthDate">${monthDay(d)}</div>${list.slice(0,4).map(a=>`<div class="monthEvent ${typeClass(a)}" onclick="openEditModal('${a.id}')">${displayTime(a.start)} ${escapeHTML(a.dock)} ${escapeHTML(a.location)}</div>`).join("")}${list.length>4?`<div class="pill">+${list.length-4} more</div>`:""}</div>`;
+      }).join("");
+      $("scheduleOutput").innerHTML=header+`<div class="monthGrid">${cells}</div>`;
+    }
+
+    function renderAdminTable(){
+      if(!appointments.length){$("adminTable").innerHTML="<p>No appointments yet.</p>";return}
+      const rows=[...appointments].sort((a,b)=>`${a.date} ${a.start}`.localeCompare(`${b.date} ${b.start}`));
+      $("adminTable").innerHTML=`<table><thead><tr><th>Date/Time</th><th>Dock</th><th>Status</th><th>Priority</th><th>Location</th><th>Type</th><th>Load</th><th>Reference</th><th>Action</th></tr></thead><tbody>
+        ${rows.map(a=>`<tr>
+          <td>${escapeHTML(a.date)}<br>${displayTime(a.start)}–${displayTime(a.end)}</td>
+          <td>${escapeHTML(a.dock)}</td>
+          <td><span class="statusBadge ${a.status}">${escapeHTML(a.status)}</span></td>
+          <td>${escapeHTML(a.priority)}</td>
+          <td>${escapeHTML(a.location)}</td>
+          <td>${escapeHTML(a.type)}</td>
+          <td>${escapeHTML(a.truck)}<br>${escapeHTML(a.skids)} skids</td>
+          <td>${a.bookingRef?`<span class="kbd">${escapeHTML(a.bookingRef)}</span><br>`:""}${escapeHTML(a.reference)}</td>
+          <td><button class="small secondary" onclick="openEditModal('${a.id}')">Move/Edit</button><button class="small secondary" onclick="quickStatus('${a.id}','Completed')">Complete</button></td>
+        </tr>`).join("")}
+      </tbody></table>`;
+    }
+
+    function renderAll(){
+      applyBranding();
+      renderStats();
+      renderSchedule();
+      renderAdminTable();
+    }
+
+    function movePeriod(dir){
+      const mode=$("viewMode").value;
+      const d=new Date(($("scheduleDate").value||todayISO())+"T00:00:00");
+      if(mode==="Daily") d.setDate(d.getDate()+dir);
+      if(mode==="Weekly") d.setDate(d.getDate()+dir*7);
+      if(mode==="Monthly") d.setMonth(d.getMonth()+dir);
+      $("scheduleDate").value=d.toISOString().slice(0,10);
+      renderAll();
+    }
+
+    function goToday(){$("scheduleDate").value=todayISO();renderAll()}
+
+    function openRequestModal(){
+      $("requestModal").style.display="flex";
+      $("reqDate").value=$("scheduleDate").value||todayISO();
+      selectedSlot=null;
+      loadProfileIntoRequest();
+      autoFillContact();
+      updateLocationDetailVisibility();
+      recalcRequest();
+    }
+
+    function closeRequestModal(){
+      $("requestModal").style.display="none";
+      $("requestSuccess").style.display="none";
+      $("requestError").style.display="none";
+    }
+
+    function loadProfileIntoRequest(){
+      try{
+        const p=JSON.parse(localStorage.getItem("dockRequesterProfileV18")||"{}");
+        if(p.location) $("reqLocation").value=p.location;
+        if(p.name) $("reqName").value=p.name;
+        if(p.email) $("reqEmail").value=p.email;
+        if(p.carrier) $("reqCarrier").value=p.carrier;
+        if(p.locationDetail && $("reqLocationDetail")) $("reqLocationDetail").value=p.locationDetail;
+      }catch{}
+    }
+
+    function autoFillContact(){
+      const c=contacts[$("reqLocation").value]||{name:"",email:""};
+      const knownNames=Object.values(contacts).map(x=>x.name).filter(Boolean);
+      const knownEmails=Object.values(contacts).map(x=>x.email).filter(Boolean);
+      if(!$("reqName").value||knownNames.includes($("reqName").value)) $("reqName").value=c.name;
+      if(!$("reqEmail").value||knownEmails.includes($("reqEmail").value)) $("reqEmail").value=c.email;
+    }
+
+    function recalcRequest(){
+      selectedSlot=null;
+      $("selectedSlot").classList.add("hidden");
+      const box = $("durationBox");
+      if(box) box.innerHTML = "";
+      renderSlots();
+    }
+
+    function renderSlots(){
+      const date=$("reqDate").value;
+      const duration=currentRequestDuration().total;
+      if($("requestDateLabel")) $("requestDateLabel").textContent=getRequestDateLabel(date);
+      const slots=findTimeSlots(date,duration,16);
+      if(!date){
+        $("slotList").innerHTML="<p>Choose a date to see times.</p>";
+        $("nextAvailable").innerHTML="";
+        return;
+      }
+      if(slots.length){
+        $("slotList").innerHTML=slots.map((s,i)=>`<div class="slot" id="slot${i}" onclick='selectSlot(${JSON.stringify(s)},${i})'>
+          <strong>${displayTime(s.start)}–${displayTime(s.end)}</strong>
+          <small>${escapeHTML(s.date)}</small>
+          <span class="openCount">${s.openCount} dock${s.openCount>1?"s":""} open</span>
+          <span class="siteAssign">Dock assigned by site</span>
+        </div>`).join("");
+        $("nextAvailable").innerHTML=`<span class="pill green">This date has availability</span>`;
+      }else{
+        $("slotList").innerHTML="<p>No open slot on this date for the required duration.</p>";
+        const next=[]; let d=new Date((date||todayISO())+"T00:00:00");
+        for(let i=0;i<21&&next.length<5;i++){
+          if(i>0)d.setDate(d.getDate()+1);
+          const iso=d.toISOString().slice(0,10);
+          const s=findTimeSlots(iso,duration,3);
+          if(s.length) next.push({date:iso,slots:s});
+        }
+        $("nextAvailable").innerHTML=next.length?next.map(n=>`<div style="margin-bottom:8px"><strong>${escapeHTML(n.date)}</strong><br>${n.slots.map(s=>`<span class="pill">${displayTime(s.start)} · ${s.openCount} open</span>`).join(" ")}</div>`).join(""):"No availability found in the next 3 weeks.";
+      }
+    }
+
+    function selectSlot(s,idx){
+      selectedSlot=s;
+      document.querySelectorAll("#slotList .slot").forEach(x=>x.classList.remove("selected"));
+      const el=$("slot"+idx); if(el) el.classList.add("selected");
+      $("selectedSlot").classList.remove("hidden");
+      $("selectedSlot").innerHTML=`<strong>Selected:</strong> ${escapeHTML(s.date)} | ${displayTime(s.start)}–${displayTime(s.end)}<br><span class="pill green">${s.openCount} dock${s.openCount>1?"s":""} open</span> <span class="pill">Dock assigned by site</span>`;
+    }
+
+    function required(id,label){const v=$(id).value.trim();if(!v)throw new Error(label+" is required.");return v}
+
+    function submitRequest(){
+      $("requestSuccess").style.display="none";$("requestError").style.display="none";
+      try{
+        if(!selectedSlot) throw new Error("Select an available time first.");
+        const d=currentRequestDuration();
+        const assignedDock=assignDockForSlot(selectedSlot,d.total);
+        if(!assignedDock) throw new Error("That slot is no longer available. Please pick another time.");
+        const type=$("reqType").value;
+        const bookingRef=makeRequestRef();
+        const appt={
+          id:uuid(),created:new Date().toISOString(),bookingRef,date:selectedSlot.date,start:selectedSlot.start,end:addMinutes(selectedSlot.start,d.total),dock:assignedDock,
+          status:"Scheduled",priority:type==="Raw Material"?"Raw Material Priority":"Normal",location:getRequesterLocationName(),type,direction:$("reqDirection").value,
+          truck:$("reqTruck").value,skids:Number($("reqSkids").value||0),handling:$("reqHandling").value,duration:d.total,
+          requester:required("reqName","Requester name"),email:required("reqEmail","Requester email"),carrier:$("reqCarrier").value.trim()||"TBD",
+          reference:required("reqRef","PO / BOL / Job #"),notes:$("reqNotes").value.trim(),changeReason:""
+        };
+        appointments.push(appt); saveAppointments();
+        if($("saveProfile").checked){
+          localStorage.setItem("dockRequesterProfileV18",JSON.stringify({
+            location:$("reqLocation").value,
+            locationDetail:$("reqLocationDetail") ? $("reqLocationDetail").value.trim() : "",
+            name:appt.requester,
+            email:appt.email,
+            carrier:appt.carrier
+          }));
+        }
+        $("scheduleDate").value=appt.date;
+        renderAll(); renderSlots();
+        $("requestSuccess").style.display="block";
+        $("requestSuccess").innerHTML=`<strong>Appointment scheduled.</strong><br>Reference: <span class="kbd">${bookingRef}</span><br>${escapeHTML(appt.date)} | ${displayTime(appt.start)}–${displayTime(appt.end)}<br><span class="pill">Dock assigned by site</span>`;
+      }catch(err){
+        $("requestError").style.display="block"; $("requestError").textContent=err.message;
+      }
+    }
+
+    function openEditModal(id){
+      // Testing/build version: admin PIN temporarily removed.
+      adminUnlocked = true;
+      const a=appointments.find(x=>x.id===id); if(!a)return;
+      $("editId").value=id; $("editDate").value=a.date; $("editStart").value=a.start; $("editDock").value=a.dock;
+      $("editStatus").value=a.status; $("editPriority").value=a.priority; $("editReason").value="";
+      $("editSuccess").style.display="none"; $("editError").style.display="none";
+      $("editSummary").innerHTML=`<strong>${escapeHTML(a.location)} | ${escapeHTML(a.type)}</strong><br>${escapeHTML(a.truck)} | ${escapeHTML(a.skids)} skids | Required: ${a.duration} min<br>Contact: ${escapeHTML(a.requester)} | ${escapeHTML(a.email)}<br>Reference: ${escapeHTML(a.reference)}`;
+      $("editModal").style.display="flex";
+    }
+
+    function closeEditModal(){$("editModal").style.display="none"}
+
+    function saveEdit(){
+      $("editSuccess").style.display="none";$("editError").style.display="none";
+      try{
+        const id=$("editId").value; const a=appointments.find(x=>x.id===id); if(!a)throw new Error("Appointment not found.");
+        const newDate=$("editDate").value, newStart=$("editStart").value, newDock=$("editDock").value;
+        if(!slotAvailable(newDate,newDock,newStart,a.duration,id)) throw new Error("That move conflicts with another block or appointment.");
+        const old=`${a.date} ${a.start}-${a.end} ${a.dock}`;
+        a.date=newDate; a.start=newStart; a.end=addMinutes(newStart,a.duration); a.dock=newDock;
+        a.status=$("editStatus").value; a.priority=$("editPriority").value; a.changeReason=$("editReason").value.trim()||"Coordinator update";
+        saveAppointments(); $("scheduleDate").value=a.date; renderAll();
+        const subject=encodeURIComponent(`Dock Appointment Updated - ${a.date}`);
+        const body=encodeURIComponent(`Hello,\n\nYour dock appointment has been updated.\n\nBooking Ref: ${a.bookingRef||""}\nReference: ${a.reference}\nOld: ${old}\nNew: ${a.date} ${a.start}-${a.end} ${a.dock}\nStatus: ${a.status}\nPriority: ${a.priority}\nReason: ${a.changeReason}\n\nThank you.`);
+        $("editSuccess").style.display="block";
+        $("editSuccess").innerHTML=`<strong>Saved.</strong><br><a href="mailto:${encodeURIComponent(a.email)}?subject=${subject}&body=${body}">Send update email</a>`;
+      }catch(err){$("editError").style.display="block";$("editError").textContent=err.message}
+    }
+
+    function quickStatus(id,status){
+      const a=appointments.find(x=>x.id===id); if(!a)return;
+      a.status=status; a.changeReason=`Status changed to ${status}`; saveAppointments(); renderAll();
+    }
+
+    function blockTime(){
+      const date=$("blockDate").value,dock=$("blockDock").value,start=$("blockStart").value,end=$("blockEnd").value,reason=$("blockReason").value.trim()||"Blocked time";
+      if(!date||!start||!end||timeToMin(end)<=timeToMin(start)){alert("Enter valid block details.");return}
+      const duration=timeToMin(end)-timeToMin(start);
+      if(!slotAvailable(date,dock,start,duration)&&!confirm("This overlaps another appointment. Add anyway?"))return;
+      appointments.push({id:uuid(),created:new Date().toISOString(),date,start,end,dock,status:"Scheduled",priority:"Priority",location:"Coordinator Block",type:"Blocked Time",direction:"Blocked",truck:"",skids:0,handling:"",duration,requester:"Coordinator",email:"",carrier:"",reference:"BLOCKED",notes:reason,changeReason:reason});
+      saveAppointments(); renderAll(); alert("Dock time blocked.");
+    }
+
+    function loadSettingsUI(){
+      renderDockNameInputs();
+      $("ruleOpen").value=config.open; $("ruleClose").value=config.close; $("ruleInterval").value=config.interval; $("ruleBuffer").value=config.buffer;
+      $("ruleBase").value=config.base; $("rulePerSkid").value=config.perSkid; $("ruleFullMin").value=config.fullTruckMin; $("rulePriorityMin").value=config.priorityMin;
+      $("truck53").value=config.truckSetup["53 ft Trailer"]; $("truck48").value=config.truckSetup["48 ft Trailer"]; $("truck26").value=config.truckSetup["26 ft Straight Truck"]; $("truckCourier").value=config.truckSetup["Courier Van"];
+      $("formulaBox").innerHTML=`<strong>Duration formula:</strong><br>Base time + skids × minutes per skid + truck setup/back-in + appointment adjustment + handling adjustment + buffer.<br><br><strong>Current:</strong> ${config.base} min base, ${config.perSkid} min/skid, ${config.buffer} min buffer, ${config.truckSetup["53 ft Trailer"]} min for 53 ft truck setup/back-in.`;
+    }
+
+    function renderDockNameInputs(){
+      $("dockNameInputs").innerHTML=config.docks.map((d,i)=>`<label>Dock ${i+1} Name</label><input class="dockNameInput" value="${escapeHTML(d)}" />`).join("");
+    }
+
+    function addDock(){config.docks.push(`Dock ${config.docks.length+1}`);renderDockNameInputs()}
+    function removeDock(){if(config.docks.length<=1){alert("At least one dock is required.");return}config.docks.pop();renderDockNameInputs()}
+
+    function saveSettings(){
+      const names=[...document.querySelectorAll(".dockNameInput")].map(x=>x.value.trim()).filter(Boolean);
+      config.docks=names.length?names:["Dock 1","Dock 2"];
+      config.open=$("ruleOpen").value; config.close=$("ruleClose").value; config.interval=Number($("ruleInterval").value); config.buffer=Number($("ruleBuffer").value);
+      config.base=Number($("ruleBase").value); config.perSkid=Number($("rulePerSkid").value); config.fullTruckMin=Number($("ruleFullMin").value); config.priorityMin=Number($("rulePriorityMin").value);
+      config.truckSetup["53 ft Trailer"]=Number($("truck53").value); config.truckSetup["48 ft Trailer"]=Number($("truck48").value); config.truckSetup["26 ft Straight Truck"]=Number($("truck26").value);
+      config.truckSetup["Cube Van"]=Number($("truckCourier").value); config.truckSetup["Courier Van"]=Number($("truckCourier").value);
+      saveConfig(); applyBranding(); loadSettingsUI(); renderAll(); alert("Settings saved.");
+    }
+
+    function resetSettings(){
+      if(!confirm("Reset settings to defaults?"))return;
+      const currentSite=config.siteName;
+      config=structuredClone(defaultConfig);
+      config.siteName=currentSite;
+      saveConfig();
+      applyBranding();
+      loadSettingsUI();
+      renderAll();
+    }
+
+    function exportCSV(){
+      const headers=["Date","Start","End","Dock","Status","Priority","Location","Type","Direction","Truck","Skids","Handling","Duration","Requester","Email","Carrier","Reference","Notes","ChangeReason"];
+      const rows=appointments.map(a=>[a.date,a.start,a.end,a.dock,a.status,a.priority,a.location,a.type,a.direction,a.truck,a.skids,a.handling,a.duration,a.requester,a.email,a.carrier,a.reference,a.notes,a.changeReason]);
+      const csv=[headers,...rows].map(row=>row.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+      download(csv,`dock-appointments-${todayISO()}.csv`,"text/csv");
+    }
+
+    function backupJSON(){download(JSON.stringify({config,appointments},null,2),`dock-scheduler-backup-${todayISO()}.json`,"application/json")}
+
+    function restoreJSON(e){
+      const f=e.target.files[0]; if(!f)return;
+      const reader=new FileReader();
+      reader.onload=ev=>{
+        try{
+          const data=JSON.parse(ev.target.result);
+          if(data.config) config={...structuredClone(defaultConfig),...data.config,truckSetup:{...defaultConfig.truckSetup,...(data.config.truckSetup||{})}};
+          if(Array.isArray(data.appointments)) appointments=data.appointments;
+          saveConfig(); saveAppointments(); applyBranding(); loadSettingsUI(); renderAll(); alert("Restored.");
+        }catch(err){alert("Could not restore: "+err.message)}
+      };
+      reader.readAsText(f); e.target.value="";
+    }
+
+    function clearData(){
+      if(!confirm("Clear all local appointment data?"))return;
+      appointments=[];
+      saveAppointments();
+      renderAll();
+    }
+
+    function download(content,filename,mime){
+      const blob=new Blob([content],{type:mime});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;
+      a.download=filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function init(){
+      if(config.siteName==="Mississauga"||config.siteName==="Max Mississauga") config.siteName="Max Solutions – Mississauga";
+      if(config.siteName && !config.siteName.startsWith("Max Solutions")) config.siteName = `Max Solutions – ${config.siteName}`;
+      $("scheduleDate").value=todayISO();
+      $("blockDate").value=todayISO();
+      $("reqDate").value=todayISO();
+      applyBranding();
+      loadSettingsUI();
+      renderAll();
+      showRequester();
+    }
+
+    init();
+  </script>
+</body>
+</html>
