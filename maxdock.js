@@ -304,22 +304,30 @@ function renderSchedule(items){
 
   const finalLeft=trackWidth;
   let lastVisibleLabel=-Infinity;
-  const minimumLabelGap=78;
-  const finalLabelClearance=112;
+  const minimumLabelGap=82;
+  const finalLabelWidth=74;
+  const finalLabelPadding=12;
+  const finalLabelClearance=finalLabelWidth+finalLabelPadding+18;
 
   $("timeRuler").innerHTML=ticks.map((t,index)=>{
-    const left=Math.max(0,Math.min(trackWidth,(t-open)*pxPerMinute));
+    const rawLeft=Math.max(0,Math.min(trackWidth,(t-open)*pxPerMinute));
     const isLast=index===ticks.length-1;
     let showLabel=true;
 
     if(!isLast){
-      if(left-lastVisibleLabel<minimumLabelGap)showLabel=false;
-      if(finalLeft-left<finalLabelClearance)showLabel=false;
+      if(rawLeft-lastVisibleLabel<minimumLabelGap)showLabel=false;
+      if(finalLeft-rawLeft<finalLabelClearance)showLabel=false;
     }
 
-    if(showLabel&&!isLast)lastVisibleLabel=left;
+    if(showLabel&&!isLast)lastVisibleLabel=rawLeft;
 
-    return `<div class="timeRulerTick ${isLast?"last":""} ${showLabel?"":"noLabel"}" style="left:${left}px">
+    if(isLast){
+      return `<div class="timeRulerTick finalTimeLabel" style="left:${Math.max(0,trackWidth-finalLabelWidth)}px;width:${finalLabelWidth}px">
+        <span>${displayTime(hhmm(t))}</span>
+      </div>`;
+    }
+
+    return `<div class="timeRulerTick ${showLabel?"":"noLabel"}" style="left:${rawLeft}px">
       ${showLabel?`<span>${displayTime(hhmm(t))}</span>`:""}
     </div>`;
   }).join("");

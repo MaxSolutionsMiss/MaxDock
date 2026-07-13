@@ -1022,6 +1022,31 @@ textarea{min-height:92px;resize:vertical}
   }
 }
 
+
+/* v39 — dedicated final time label box */
+.timeRulerTick.finalTimeLabel{
+  position:absolute;
+  top:0;
+  bottom:0;
+  border-left:1px solid rgba(255,255,255,.24);
+  border-right:0;
+}
+.timeRulerTick.finalTimeLabel span{
+  position:absolute;
+  top:15px;
+  left:0;
+  right:6px;
+  width:auto;
+  text-align:right;
+  white-space:nowrap;
+  font-size:14px;
+  font-weight:950;
+  line-height:1;
+}
+.timeRulerTick.noLabel{
+  border-left:1px solid rgba(255,255,255,.24);
+}
+
 @media print{
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}
