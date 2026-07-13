@@ -1224,6 +1224,33 @@ textarea{min-height:92px;resize:vertical}
   .metrics{grid-template-columns:1fr}
 }
 
+
+/* v45 — clean custom-range modal */
+.rangeMetric{
+  justify-content:center;
+}
+.rangeCalendarBtn{
+  width:100%;
+  min-height:31px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#f8fafc;
+  color:var(--theme-1);
+  font-size:11px;
+  font-weight:900;
+  cursor:pointer;
+}
+.rangeCalendarBtn:hover{
+  background:var(--theme-soft);
+  border-color:var(--theme-2);
+}
+.rangeSummary{
+  display:none !important;
+}
+.customRangeModalCard{
+  width:min(590px,100%);
+}
+
 @media print{
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}

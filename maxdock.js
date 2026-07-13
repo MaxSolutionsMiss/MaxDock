@@ -295,25 +295,62 @@ function filteredRangeAppointments(){
   return items;
 }
 function setDashboardRange(mode){
+  if(mode==="Custom"){
+    openCustomRangeModal();
+    return;
+  }
+
   dashboardRangeMode=mode;
   localStorage.setItem(LS_DASHBOARD_RANGE,mode);
-  toggleCustomRangeFields();
   renderDashboard();
 }
-function updateCustomDashboardRange(){
-  dashboardCustomStart=$("customRangeStart")?.value||todayISO();
-  dashboardCustomEnd=$("customRangeEnd")?.value||dashboardCustomStart;
-  localStorage.setItem(LS_CUSTOM_RANGE_START,dashboardCustomStart);
-  localStorage.setItem(LS_CUSTOM_RANGE_END,dashboardCustomEnd);
-  renderDashboard();
-}
-function toggleCustomRangeFields(){
-  const show=dashboardRangeMode==="Custom";
-  $("customRangeStartField")?.classList.toggle("hidden",!show);
-  $("customRangeEndField")?.classList.toggle("hidden",!show);
+function openCustomRangeModal(){
+  if(!$("customRangeModal"))return;
 
-  if($("customRangeStart"))$("customRangeStart").value=dashboardCustomStart;
-  if($("customRangeEnd"))$("customRangeEnd").value=dashboardCustomEnd;
+  $("customRangeStart").value=dashboardCustomStart||todayISO();
+  $("customRangeEnd").value=dashboardCustomEnd||dashboardCustomStart||todayISO();
+  $("customRangeError").style.display="none";
+  $("customRangeError").textContent="";
+  $("customRangeModal").classList.add("show");
+
+  setTimeout(()=>{
+    if(typeof $("customRangeStart").showPicker==="function"){
+      try{$("customRangeStart").showPicker()}catch{}
+    }
+  },80);
+}
+function closeCustomRangeModal(){
+  $("customRangeModal")?.classList.remove("show");
+  renderDashboard();
+}
+function applyCustomDashboardRange(){
+  const error=$("customRangeError");
+  error.style.display="none";
+  error.textContent="";
+
+  try{
+    let start=$("customRangeStart").value;
+    let end=$("customRangeEnd").value;
+
+    if(!start)throw new Error("Please select a start date.");
+    if(!end)throw new Error("Please select an end date.");
+
+    if(start>end)[start,end]=[end,start];
+
+    dashboardCustomStart=start;
+    dashboardCustomEnd=end;
+    dashboardRangeMode="Custom";
+
+    localStorage.setItem(LS_CUSTOM_RANGE_START,start);
+    localStorage.setItem(LS_CUSTOM_RANGE_END,end);
+    localStorage.setItem(LS_DASHBOARD_RANGE,"Custom");
+
+    $("customRangeModal").classList.remove("show");
+    renderDashboard();
+  }catch(err){
+    error.textContent=err.message;
+    error.style.display="block";
+  }
 }
 function estimateOpenSlotsForRange(start,end){
   return datesInRange(start,end).reduce((total,date)=>total+estimateOpenSlots(date),0);
@@ -360,10 +397,12 @@ function renderDashboard(){
     <select id="dashboardRange" onchange="setDashboardRange(this.value)">
       ${["Daily","Weekly","Monthly","Yearly","Custom"].map(mode=>`<option ${dashboardRangeMode===mode?"selected":""}>${mode}</option>`).join("")}
     </select>
-    <div class="rangeSummary">${esc(dashboardRangeLabel(range))}</div>
+    ${dashboardRangeMode==="Custom"
+      ?`<button class="rangeCalendarBtn" onclick="openCustomRangeModal()" title="Choose custom dates">📅 Choose Dates</button>`
+      :""
+    }
   </div>`;
 
-  toggleCustomRangeFields();
 
   const dateObj=new Date(date+"T00:00:00");
   if($("scheduleDateTitle")){
@@ -704,9 +743,6 @@ document.addEventListener("DOMContentLoaded",()=>{
   if(PAGE==="dashboard"){
     window.scrollTo(0,0);
     $("adminDate").value=todayISO();
-    $("customRangeStart").value=dashboardCustomStart;
-    $("customRangeEnd").value=dashboardCustomEnd;
-    toggleCustomRangeFields();
     renderDashboard();
   }
 
