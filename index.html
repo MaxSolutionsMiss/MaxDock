@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>MaxDock</title>
-<meta name="maxdock-page" content="requester-v29">
+<meta name="maxdock-page" content="requester-v30">
 <style>
 :root{
   --navy:#061a2d;
@@ -694,13 +694,13 @@ textarea{min-height:92px;resize:vertical}
       </div>
 
       <div class="headerActions">
-        <button class="ghostBtn" onclick="window.location.href='index.html'">Main Page</button>
+        <button class="ghostBtn" onclick="window.location.assign('./index.html')">Main Page</button>
         <button class="iconBtn" onclick="toggleMenu()" title="Menu">
           <svg viewBox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>
         </button>
         <div class="menu" id="gearMenu">
-          <button onclick="goToAdmin()">Admin Dashboard</button>
-          <button onclick="goToAdminSettings()">Settings</button>
+          <button onclick="window.location.assign('./admin.html')">Admin Dashboard</button>
+          <button onclick="window.location.assign('./settings.html')">Settings</button>
         </div>
       </div>
     </div>
@@ -824,9 +824,9 @@ textarea{min-height:92px;resize:vertical}
 <script>
 const $=id=>document.getElementById(id);
 const todayISO=()=>new Date().toISOString().slice(0,10);
-const LS_APPTS="maxdock_v29_appointments";
-const LS_SETTINGS="maxdock_v29_settings";
-const LS_LOCATION="maxdock_v29_location";
+const LS_APPTS="maxdock_v30_appointments";
+const LS_SETTINGS="maxdock_v30_settings";
+const LS_LOCATION="maxdock_v30_location";
 let selectedSlot=null;
 let lastBooked=null;
 let currentLocation=localStorage.getItem(LS_LOCATION)||"Mississauga";
