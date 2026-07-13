@@ -1160,6 +1160,26 @@ textarea{min-height:92px;resize:vertical}
   right:10px;
 }
 
+
+/* v43 — clickable logo and centered time-slot titles */
+.logoLink{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  text-decoration:none;
+  border-radius:17px;
+}
+.logoLink:focus-visible{
+  outline:3px solid rgba(14,165,233,.34);
+  outline-offset:3px;
+}
+.timeRulerTick .centeredTimeLabel{
+  transform:translateX(-50%);
+  text-align:center;
+  white-space:nowrap;
+}
+
 @media print{
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}

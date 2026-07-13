@@ -313,23 +313,26 @@ function renderSchedule(items){
   const regularTicks=ticks.slice(0,-1);
   const finalTick=ticks[ticks.length-1];
 
-  const regularTickHTML=regularTicks.map(t=>{
+  const regularTickHTML=regularTicks.map((t,index)=>{
     const rawLeft=Math.max(0,Math.min(trackWidth,(t-open)*pxPerMinute));
+    const nextTime=index<regularTicks.length-1 ? regularTicks[index+1] : finalTick;
+    const nextLeft=Math.max(rawLeft,Math.min(trackWidth,(nextTime-open)*pxPerMinute));
+    const segmentWidth=Math.max(1,nextLeft-rawLeft);
+    const labelCenter=rawLeft+(segmentWidth/2);
     let showLabel=true;
 
-    if(rawLeft-lastVisibleLabel<minimumLabelGap)showLabel=false;
+    if(labelCenter-lastVisibleLabel<minimumLabelGap)showLabel=false;
 
-    const distanceToEnd=finalLeft-rawLeft;
+    const distanceToEnd=finalLeft-labelCenter;
     const labelHalfWidth=36;
 
-    // In hourly and 2-hour views, hide the last regular label earlier
-    // so the final closing-time label has clean breathing room.
+    // Preserve clean space for the closing-time label.
     if(distanceToEnd<Math.max(finalLabelClearance+labelHalfWidth, scaleAwareClearance))showLabel=false;
 
-    if(showLabel)lastVisibleLabel=rawLeft;
+    if(showLabel)lastVisibleLabel=labelCenter;
 
     return `<div class="timeRulerTick ${showLabel?"":"noLabel"}" style="left:${rawLeft}px">
-      ${showLabel?`<span>${displayTime(hhmm(t))}</span>`:""}
+      ${showLabel?`<span class="centeredTimeLabel" style="left:${segmentWidth/2}px">${displayTime(hhmm(t))}</span>`:""}
     </div>`;
   }).join("");
 
