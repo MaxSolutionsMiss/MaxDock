@@ -350,7 +350,7 @@ function renderAppointmentTable(){
       <td><b>${esc(a.ref)}</b></td><td>${esc(a.date)}</td><td>${displayTime(a.start)}–${displayTime(a.end)}</td>
       <td>${esc(a.dock)}</td><td>${esc(a.company)}</td><td>${esc(a.type)}</td>
       <td>${esc(a.truck||"")} / ${esc(a.skids||0)}</td><td>${statusBadge(a.status)}</td>
-      <td><button class="tiny" onclick="updateStatus('${a.id}','Completed')">Complete</button> <button class="tiny" onclick="updateStatus('${a.id}','Cancelled')">Cancel</button></td>
+      <td><button class="tiny" onclick="updateStatus('${a.id}','Completed')">Complete</button> <button class="tiny" onclick="updateStatus('${a.id}','Cancelled')">Cancel</button> <button class="tiny deleteBtn" onclick="deleteAppointment('${a.id}')">Delete</button></td>
     </tr>`).join("");
   $("apptTable").innerHTML=rows||`<tr><td colspan="9">No appointments yet.</td></tr>`;
 }
@@ -368,6 +368,18 @@ function estimateOpenSlots(date){
 function updateStatus(id,status){
   const items=getAppointments();const i=items.findIndex(a=>a.id===id);
   if(i>=0){items[i].status=status;saveAppointments(items);renderDashboard()}
+}
+
+function deleteAppointment(id){
+  const items=getAppointments();
+  const appt=items.find(a=>a.id===id);
+  if(!appt)return;
+  const label=appt.ref&&appt.ref!=="BLOCK"
+    ?`${appt.ref} — ${appt.company}`
+    :(appt.company||"appointment");
+  if(!confirm(`Delete ${label}? This cannot be undone.`))return;
+  saveAppointments(items.filter(a=>a.id!==id));
+  renderDashboard();
 }
 function blockDock(){
   const dock=prompt(`Dock name (${settings.docks.join(", ")}):`,settings.docks[0]||"Dock 1");
