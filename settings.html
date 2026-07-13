@@ -3,8 +3,11 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>MaxDock – Settings</title>
-<meta name="maxdock-page" content="settings-v30">
+<meta name="maxdock-page" content="settings-v31">
 <style>
 :root{
   --navy:#061a2d;
@@ -694,13 +697,13 @@ textarea{min-height:92px;resize:vertical}
       </div>
 
       <div class="headerActions">
-        <button class="ghostBtn" onclick="window.location.assign('./index.html')">Main Page</button>
+        <button class="ghostBtn" onclick="window.location.assign('./index.html?v=31')">Main Page</button>
         <button class="iconBtn" onclick="toggleMenu()" title="Menu">
           <svg viewBox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>
         </button>
         <div class="menu" id="gearMenu">
-          <button onclick="window.location.assign('./admin.html')">Admin Dashboard</button>
-          <button onclick="window.location.assign('./settings.html')">Settings</button>
+          <button onclick="window.location.assign('./dashboard.html?v=31')">Admin Dashboard</button>
+          <button onclick="window.location.assign('./settings.html?v=31')">Settings</button>
         </div>
       </div>
     </div>
@@ -759,9 +762,9 @@ textarea{min-height:92px;resize:vertical}
 <script>
 const $=id=>document.getElementById(id);
 const todayISO=()=>new Date().toISOString().slice(0,10);
-const LS_APPTS="maxdock_v30_appointments";
-const LS_SETTINGS="maxdock_v30_settings";
-const LS_LOCATION="maxdock_v30_location";
+const LS_APPTS="maxdock_v31_appointments";
+const LS_SETTINGS="maxdock_v31_settings";
+const LS_LOCATION="maxdock_v31_location";
 let selectedSlot=null;
 let lastBooked=null;
 let currentLocation=localStorage.getItem(LS_LOCATION)||"Mississauga";
@@ -836,7 +839,7 @@ document.addEventListener("click",e=>{if(!e.target.closest(".headerActions")) $(
 function showScreen(name){
   const target=$(name+"Screen");
   if(!target){
-    if(name==="home") window.location.assign("./index.html");
+    if(name==="home") window.location.assign("./index.html?v=31");
     return;
   }
   if($("gearMenu")) $("gearMenu").classList.remove("show");
