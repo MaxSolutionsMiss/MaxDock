@@ -803,6 +803,164 @@ textarea{min-height:92px;resize:vertical}
   }
 }
 
+
+/* v37 — single-line schedule controls and dashboard modals */
+.schedulePanelHeader{
+  display:block;
+  margin-bottom:8px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scrollbar-width:thin;
+}
+.scheduleCompactBar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:max-content;
+  white-space:nowrap;
+  padding:1px 2px 5px;
+}
+.scheduleTitleBlock{
+  display:flex;
+  align-items:center;
+  min-height:42px;
+  margin-right:5px;
+}
+.scheduleTitleBlock h3{
+  margin:0;
+  font-size:26px;
+  line-height:1;
+  letter-spacing:-.45px;
+}
+.scheduleNavCenter{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  width:auto;
+  flex-wrap:nowrap;
+}
+.scheduleNavCenter .navArrow{
+  width:38px;
+  height:38px;
+  padding:0;
+  font-size:22px;
+}
+.scheduleNavCenter .todayBtn{
+  min-width:76px;
+  height:38px;
+  padding:0 12px;
+}
+.scheduleDateTitle{
+  min-height:38px;
+  height:38px;
+  padding:0 12px;
+  font-size:12px;
+  white-space:nowrap;
+}
+.compactScale{
+  min-height:38px;
+  padding:3px 5px 3px 8px;
+  gap:5px;
+  border-radius:12px;
+  flex:0 0 auto;
+}
+.compactScale label{
+  font-size:8px;
+  letter-spacing:.05em;
+}
+.compactScale select{
+  min-width:96px;
+  max-width:104px;
+  height:30px;
+  padding:4px 24px 4px 7px;
+  border-radius:8px;
+  font-size:11px;
+}
+.compactLegend{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  flex-wrap:nowrap;
+  margin-left:2px;
+}
+.compactLegend .legendItem{
+  min-height:24px;
+  padding:4px 7px;
+  font-size:9px;
+  gap:4px;
+}
+.compactLegend .legendDot{
+  width:7px;
+  height:7px;
+}
+.timeRulerTick span{
+  top:15px;
+  font-size:14px;
+  line-height:1;
+}
+.timeRulerTick.last{
+  left:auto !important;
+  right:0;
+  border-left:0;
+  border-right:1px solid rgba(255,255,255,.24);
+}
+.timeRulerTick.last span{
+  left:auto;
+  right:8px;
+  transform:none;
+}
+.blockModal{
+  width:min(720px,100%);
+}
+.blockDockHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.checkLine{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-size:12px;
+  font-weight:850;
+}
+.checkLine input{
+  width:auto;
+}
+.blockDockOptions{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:9px;
+  margin-top:9px;
+}
+.blockDockOption{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  padding:9px 11px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#f8fafc;
+  font-size:13px;
+  font-weight:850;
+  color:#0f172a;
+}
+.blockDockOption input{
+  width:auto;
+}
+@media(max-width:620px){
+  .scheduleCompactBar{
+    padding-bottom:7px;
+  }
+  .scheduleTitleBlock h3{
+    font-size:24px;
+  }
+}
+
 @media print{
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}

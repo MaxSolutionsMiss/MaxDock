@@ -82,7 +82,7 @@ function statusBadge(s){return `<span class="status ${s==="Completed"?"completed
 function openRequest(){
   if(!$("requestModal"))return;
   $("requestModal").classList.add("show");
-  $("reqDate").value=todayISO();
+  $("reqDate").value=$("adminDate")?.value||todayISO();
   selectedSlot=null;
   $("selectedTimeDisplay").value="";
   $("confirmBox").style.display="none";
@@ -194,7 +194,7 @@ function submitBooking(){
       status:"Scheduled",created:new Date().toISOString()
     };
     items.push(appt);saveAppointments(items);lastBooked=appt;
-    $("confirmBox").style.display="block";$("bookedRef").textContent=ref;
+    $("confirmBox").style.display="block";$("bookedRef").textContent=ref;if(PAGE==="dashboard")renderDashboard();
   }catch(err){showError(5,err.message)}
 }
 function confirmationText(){
@@ -297,11 +297,25 @@ function renderSchedule(items){
   }
   if(ticks[ticks.length-1]!==close)ticks.push(close);
 
+  const finalLeft=trackWidth;
+  let lastVisibleLabel=-Infinity;
+  const minimumLabelGap=78;
+  const finalLabelClearance=112;
+
   $("timeRuler").innerHTML=ticks.map((t,index)=>{
     const left=Math.max(0,Math.min(trackWidth,(t-open)*pxPerMinute));
     const isLast=index===ticks.length-1;
-    return `<div class="timeRulerTick ${isLast?"last":""}" style="left:${left}px">
-      <span>${displayTime(hhmm(t))}</span>
+    let showLabel=true;
+
+    if(!isLast){
+      if(left-lastVisibleLabel<minimumLabelGap)showLabel=false;
+      if(finalLeft-left<finalLabelClearance)showLabel=false;
+    }
+
+    if(showLabel&&!isLast)lastVisibleLabel=left;
+
+    return `<div class="timeRulerTick ${isLast?"last":""} ${showLabel?"":"noLabel"}" style="left:${left}px">
+      ${showLabel?`<span>${displayTime(hhmm(t))}</span>`:""}
     </div>`;
   }).join("");
 
@@ -381,20 +395,114 @@ function deleteAppointment(id){
   saveAppointments(items.filter(a=>a.id!==id));
   renderDashboard();
 }
-function blockDock(){
-  const dock=prompt(`Dock name (${settings.docks.join(", ")}):`,settings.docks[0]||"Dock 1");
-  if(!dock||!settings.docks.includes(dock))return alert("Please enter a valid dock name.");
-  const date=$("adminDate").value||todayISO();
-  const start=prompt("Block start time (24-hour HH:MM):","12:00");
-  const end=prompt("Block end time (24-hour HH:MM):","12:30");
-  if(!start||!end||minutes(end)<=minutes(start))return alert("Invalid block time.");
-  const items=getAppointments();
-  items.push({
-    id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),ref:"BLOCK",location:currentLocation,
-    date,start,end,dock,direction:"Inbound",company:"Blocked Time",type:"Dock Block",
-    truck:"N/A",skids:0,handling:"N/A",priority:false,status:"Scheduled",job:"",created:new Date().toISOString()
-  });
-  saveAppointments(items);renderDashboard();
+function openBlockModal(){
+  if(!$("blockTimeModal"))return;
+
+  $("blockDate").value=$("adminDate")?.value||todayISO();
+  $("blockStart").value="12:00";
+  $("blockDuration").value="60";
+  $("blockReason").value="Maintenance";
+  $("blockNotes").value="";
+  $("blockAllDocks").checked=false;
+  $("blockError").style.display="none";
+  $("blockError").textContent="";
+
+  $("blockDockOptions").innerHTML=settings.docks.map((dock,index)=>`
+    <label class="blockDockOption">
+      <input class="blockDockCheck" type="checkbox" value="${esc(dock)}" ${index===0?"checked":""} onchange="syncAllDockCheckbox()">
+      <span>${esc(dock)}</span>
+    </label>
+  `).join("");
+
+  $("blockTimeModal").classList.add("show");
+}
+function closeBlockModal(){
+  $("blockTimeModal")?.classList.remove("show");
+}
+function toggleAllBlockDocks(checked){
+  document.querySelectorAll(".blockDockCheck").forEach(box=>box.checked=checked);
+}
+function syncAllDockCheckbox(){
+  const boxes=[...document.querySelectorAll(".blockDockCheck")];
+  $("blockAllDocks").checked=boxes.length>0&&boxes.every(box=>box.checked);
+}
+function submitBlockTime(){
+  const error=$("blockError");
+  error.style.display="none";
+  error.textContent="";
+
+  try{
+    const date=$("blockDate").value;
+    const start=$("blockStart").value;
+    const duration=Number($("blockDuration").value||0);
+    const reason=$("blockReason").value;
+    const notes=$("blockNotes").value.trim();
+    const docks=[...document.querySelectorAll(".blockDockCheck:checked")].map(box=>box.value);
+
+    if(!date)throw new Error("Please select a block date.");
+    if(!start)throw new Error("Please select a start time.");
+    if(!docks.length)throw new Error("Select at least one dock.");
+    if(!duration)throw new Error("Please select a duration.");
+
+    const startMinutes=minutes(start);
+    const endMinutes=startMinutes+duration;
+    const openMinutes=minutes(settings.open);
+    const closeMinutes=minutes(settings.close);
+
+    if(startMinutes<openMinutes||endMinutes>closeMinutes){
+      throw new Error(`Block time must be within operating hours (${displayTime(settings.open)}–${displayTime(settings.close)}).`);
+    }
+
+    const existing=getAppointments().filter(a=>
+      a.location===currentLocation&&
+      a.date===date&&
+      a.status!=="Cancelled"&&
+      docks.includes(a.dock)&&
+      overlaps(startMinutes,endMinutes,minutes(a.start),minutes(a.end))
+    );
+
+    if(existing.length){
+      const conflictDocks=[...new Set(existing.map(a=>a.dock))].join(", ");
+      throw new Error(`The selected time conflicts with an existing appointment on: ${conflictDocks}.`);
+    }
+
+    const items=getAppointments();
+    const end=hhmm(endMinutes);
+
+    docks.forEach((dock,index)=>{
+      items.push({
+        id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+index),
+        ref:`BLOCK-${String(Math.floor(1000+Math.random()*9000))}`,
+        location:currentLocation,
+        date,
+        start,
+        end,
+        dock,
+        direction:"Inbound",
+        company:`Blocked: ${reason}`,
+        type:"Dock Block",
+        truck:"N/A",
+        skids:0,
+        handling:reason,
+        priority:false,
+        status:"Scheduled",
+        job:"",
+        name:"",
+        email:"",
+        carrier:"",
+        notes,
+        created:new Date().toISOString()
+      });
+    });
+
+    saveAppointments(items);
+    closeBlockModal();
+    $("adminDate").value=date;
+    renderDashboard();
+  }catch(err){
+    error.textContent=err.message;
+    error.style.display="block";
+  }
 }
 function exportCSV(){
   const date=$("adminDate").value||todayISO();
@@ -434,16 +542,24 @@ function resetSettings(){
 
 /* Init */
 document.addEventListener("DOMContentLoaded",()=>{
-  migrateOldData();settings=loadSettings();applyTheme(currentLocation);
-  if(PAGE==="requester"){
-    $("reqDate").value=todayISO();toggleCompany();renderSlots();
-    const params=new URLSearchParams(location.search);
-    if(params.get("open")==="request")setTimeout(openRequest,0);
-  }
+  migrateOldData();
+  settings=loadSettings();
+  applyTheme(currentLocation);
+
   if(PAGE==="dashboard"){
     window.scrollTo(0,0);
     $("adminDate").value=todayISO();
     renderDashboard();
   }
+
+  if($("requestModal")){
+    $("reqDate").value=$("adminDate")?.value||todayISO();
+    toggleCompany();
+    renderSlots();
+
+    const params=new URLSearchParams(location.search);
+    if(params.get("open")==="request")setTimeout(openRequest,0);
+  }
+
   if(PAGE==="settings")renderSettings();
 });

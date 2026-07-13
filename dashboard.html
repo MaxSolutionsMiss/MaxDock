@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=36">
+<link rel="stylesheet" href="./maxdock.css?v=37">
 <title>MaxDock – Admin Dashboard</title>
 </head>
 <body data-page="dashboard">
@@ -28,12 +28,12 @@
       </div>
     </div>
     <div class="headerActions">
-      <a class="ghostBtn" href="./index.html?v=36">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=37">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./dashboard.html?v=36">Admin Dashboard</a>
-          <a href="./settings.html?v=36">Settings</a>
+          <a href="./dashboard.html?v=37">Admin Dashboard</a>
+          <a href="./settings.html?v=37">Settings</a>
         </nav>
       </details>
     </div>
@@ -46,8 +46,8 @@
       <p>Daily dock schedule, availability, and appointment control.</p>
     </div>
     <div class="dashboardActions">
-      <a class="primaryBtn" style="text-decoration:none" href="./index.html?open=request&v=35">Place Appointment</a>
-      <button class="secondaryBtn" onclick="blockDock()">Block Time</button>
+      <button class="primaryBtn" onclick="openRequest()">Place Appointment</button>
+      <button class="secondaryBtn" onclick="openBlockModal()">Block Time</button>
       <button class="secondaryBtn" onclick="exportCSV()">Export CSV</button>
       <button class="secondaryBtn" onclick="window.print()">Print</button>
     </div>
@@ -73,7 +73,7 @@
 
   <section class="panel">
     <div class="schedulePanelHeader">
-      <div class="scheduleTopRow">
+      <div class="scheduleCompactBar">
         <div class="scheduleTitleBlock">
           <h3>Dock Schedule</h3>
         </div>
@@ -85,20 +85,16 @@
           <div class="scheduleDateTitle" id="scheduleDateTitle"></div>
         </div>
 
-        <div class="scheduleScaleWrap">
-          <div class="scaleControl compactScale">
-            <label for="scheduleScale">Timeline</label>
-            <select id="scheduleScale" onchange="renderDashboard()">
-              <option value="30">30-minute</option>
-              <option value="60" selected>Hourly</option>
-              <option value="120">2-hour</option>
-            </select>
-          </div>
+        <div class="scaleControl compactScale">
+          <label for="scheduleScale">Timeline</label>
+          <select id="scheduleScale" onchange="renderDashboard()">
+            <option value="30">30-minute</option>
+            <option value="60" selected>Hourly</option>
+            <option value="120">2-hour</option>
+          </select>
         </div>
-      </div>
 
-      <div class="scheduleLegendRow">
-        <div class="legend">
+        <div class="legend compactLegend">
           <span class="legendItem"><i class="legendDot open"></i>Open</span>
           <span class="legendItem"><i class="legendDot inbound"></i>Inbound</span>
           <span class="legendItem"><i class="legendDot outbound"></i>Outbound</span>
@@ -129,5 +125,171 @@
     </div>
   </section>
 </main>
-<script src="./maxdock.js?v=36"></script>
+<div class="modalOverlay" id="requestModal">
+  <div class="modal">
+    <div class="modalHead">
+      <div><h2>Request Appointment</h2><p id="modalFacility">Max Solutions – Mississauga</p></div>
+      <button class="closeBtn" onclick="closeRequest()">×</button>
+    </div>
+    <div class="modalBody">
+      <div class="steps">
+        <div class="stepPill active" id="pill1"><span class="stepNum">1</span><span>Load Type</span></div>
+        <div class="stepPill" id="pill2"><span class="stepNum">2</span><span>Truck &amp; Skids</span></div>
+        <div class="stepPill" id="pill3"><span class="stepNum">3</span><span>Date &amp; Time</span></div>
+        <div class="stepPill" id="pill4"><span class="stepNum">4</span><span>Contact</span></div>
+        <div class="stepPill" id="pill5"><span class="stepNum">5</span><span>Review</span></div>
+      </div>
+
+      <section class="stepPanel active" id="step1">
+        <h3 class="stepTitle">What type of appointment is this?</h3>
+        <p class="stepIntro">Start with the basic load information.</p>
+        <div class="formGrid">
+          <div class="field"><label>Direction</label><select id="reqDirection"><option>Inbound</option><option>Outbound</option></select></div>
+          <div class="field"><label>Requester Type / Location</label><select id="reqRequesterType" onchange="toggleCompany()"><option>Guelph</option><option>Pickering</option><option>Bristol</option><option>Vendor</option><option>Customer</option><option>Other Sister Plant</option><option>Other</option></select></div>
+          <div class="field full hidden" id="companyWrap"><label>Company / Location Name *</label><input id="reqCompany"></div>
+          <div class="field"><label>Appointment Type</label><select id="reqType"><option>Raw Material</option><option>Finished Goods</option><option>Sister Plant Transfer</option><option>Vendor Delivery</option><option>Customer Pickup</option><option>Return / Rework</option><option>Other</option></select></div>
+          <div class="field"><label>Priority</label><select id="reqPriority"><option>No</option><option>Yes</option></select></div>
+        </div>
+        <div class="error" id="err1"></div>
+        <div class="wizardNav"><button class="secondaryBtn" onclick="closeRequest()">Cancel</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(2)">Next</button></div></div>
+      </section>
+
+      <section class="stepPanel" id="step2">
+        <h3 class="stepTitle">Truck and handling details</h3>
+        <p class="stepIntro">These details calculate the appointment length in the background.</p>
+        <div class="formGrid">
+          <div class="field"><label>Truck Type</label><select id="reqTruck" onchange="renderSlots()"><option>53 ft Trailer</option><option>48 ft Trailer</option><option>26 ft Straight Truck</option><option>Cube Van</option><option>Courier Van</option></select></div>
+          <div class="field"><label>Skids</label><input id="reqSkids" type="number" min="0" value="10" oninput="renderSlots()"></div>
+          <div class="field full"><label>Handling</label><select id="reqHandling" onchange="renderSlots()"><option>Standard</option><option>Mixed SKUs</option><option>Requires Counting</option><option>Paperwork / Samples</option><option>Special Handling</option></select></div>
+        </div>
+        <div class="notice" style="margin-top:14px">Requesters see available times only. The dock is assigned by the site.</div>
+        <div class="error" id="err2"></div>
+        <div class="wizardNav"><button class="secondaryBtn" onclick="showStep(1)">Back</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(3)">Next</button></div></div>
+      </section>
+
+      <section class="stepPanel" id="step3">
+        <h3 class="stepTitle">Pick an available time</h3>
+        <p class="stepIntro">Choose an available appointment time.</p>
+        <div class="slotTools">
+          <button class="secondaryBtn" onclick="moveRequestDate(-1)">‹ Previous Day</button>
+          <strong id="slotDateLabel"></strong>
+          <button class="secondaryBtn" onclick="moveRequestDate(1)">Next Day ›</button>
+        </div>
+        <div class="formGrid" style="margin-bottom:12px">
+          <div class="field"><label>Requested Date</label><input id="reqDate" type="date" onchange="renderSlots()"></div>
+          <div class="field"><label>Selected Time</label><input id="selectedTimeDisplay" disabled placeholder="Select a time below"></div>
+        </div>
+        <div class="slots" id="slotList"></div>
+        <div class="error" id="err3"></div>
+        <div class="wizardNav"><button class="secondaryBtn" onclick="showStep(2)">Back</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(4)">Next</button></div></div>
+      </section>
+
+      <section class="stepPanel" id="step4">
+        <h3 class="stepTitle">Contact and reference</h3>
+        <p class="stepIntro">Provide the contact and shipment reference information.</p>
+        <div class="formGrid">
+          <div class="field"><label>Requester Name *</label><input id="reqName"></div>
+          <div class="field"><label>Requester Email *</label><input id="reqEmail" type="email"></div>
+          <div class="field"><label>Carrier / Courier</label><input id="reqCarrier"></div>
+          <div class="field"><label>PO / BOL / Job # *</label><input id="reqRef"></div>
+          <div class="field full"><label>Notes</label><textarea id="reqNotes"></textarea></div>
+        </div>
+        <div class="error" id="err4"></div>
+        <div class="wizardNav"><button class="secondaryBtn" onclick="showStep(3)">Back</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(5)">Review</button></div></div>
+      </section>
+
+      <section class="stepPanel" id="step5">
+        <div id="reviewContent"></div>
+        <div class="confirmBox" id="confirmBox">
+          <div class="big">✓</div><h3>Appointment Booked</h3>
+          <p>This prototype saved the appointment in this browser.</p>
+          <div class="refBox" id="bookedRef"></div>
+          <p style="font-size:12px;color:#64748b">Automatic email will be connected during the shared-database phase.</p>
+          <div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">
+            <button class="secondaryBtn" onclick="copyConfirmation()">Copy Confirmation</button>
+            <button class="secondaryBtn" onclick="openEmailDraft()">Open Email Draft</button>
+          </div>
+        </div>
+        <div class="error" id="err5"></div>
+        <div class="wizardNav"><button class="secondaryBtn" onclick="showStep(4)">Back</button><div class="rightNav"><button class="greenBtn" onclick="submitBooking()">Book Appointment</button><button class="secondaryBtn" onclick="closeRequest()">Close</button></div></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+
+<div class="modalOverlay" id="blockTimeModal">
+  <div class="modal blockModal">
+    <div class="modalHead">
+      <div>
+        <h2>Block Dock Time</h2>
+        <p>Temporarily close one or more docks for maintenance, repairs, meetings, or events.</p>
+      </div>
+      <button class="closeBtn" onclick="closeBlockModal()">×</button>
+    </div>
+
+    <div class="modalBody">
+      <div class="formGrid">
+        <div class="field">
+          <label>Block Date</label>
+          <input id="blockDate" type="date">
+        </div>
+
+        <div class="field">
+          <label>Start Time</label>
+          <input id="blockStart" type="time">
+        </div>
+
+        <div class="field">
+          <label>Duration</label>
+          <select id="blockDuration">
+            <option value="30">30 minutes</option>
+            <option value="60" selected>1 hour</option>
+            <option value="90">1 hour 30 minutes</option>
+            <option value="120">2 hours</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Reason</label>
+          <select id="blockReason">
+            <option>Maintenance</option>
+            <option>Dock Door Repair</option>
+            <option>Meeting / Break</option>
+            <option>Event / BBQ</option>
+            <option>Safety Inspection</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <div class="blockDockHeader">
+            <label>Docks to Block *</label>
+            <label class="checkLine">
+              <input id="blockAllDocks" type="checkbox" onchange="toggleAllBlockDocks(this.checked)">
+              Select all docks
+            </label>
+          </div>
+          <div class="blockDockOptions" id="blockDockOptions"></div>
+        </div>
+
+        <div class="field full">
+          <label>Notes</label>
+          <textarea id="blockNotes" placeholder="Optional details"></textarea>
+        </div>
+      </div>
+
+      <div class="error" id="blockError"></div>
+
+      <div class="wizardNav">
+        <button class="secondaryBtn" onclick="closeBlockModal()">Cancel</button>
+        <div class="rightNav">
+          <button class="primaryBtn" onclick="submitBlockTime()">Confirm Block</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./maxdock.js?v=37"></script>
 </body></html>
