@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>MaxDock</title>
-<meta name="maxdock-page" content="requester-v31">
+<meta name="maxdock-page" content="requester-v32">
 <style>
 :root{
   --navy:#061a2d;
@@ -666,6 +666,44 @@ textarea{min-height:92px;resize:vertical}
   border-bottom-color:rgba(216,222,233,.58) !important;
 }
 
+
+/* Reliable native gear dropdown */
+.menuDetails{
+  position:relative;
+}
+.menuDetails summary{
+  list-style:none;
+}
+.menuDetails summary::-webkit-details-marker{
+  display:none;
+}
+.menuDetails .menu{
+  display:none;
+  top:58px;
+}
+.menuDetails[open] .menu{
+  display:block;
+}
+.menuDetails .menu a{
+  display:block;
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  color:#111827;
+  text-align:left;
+  text-decoration:none;
+  font-weight:850;
+}
+.menuDetails .menu a:hover{
+  background:#f1f5f9;
+}
+.headerLink{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+}
+
 </style>
 </head>
 
@@ -697,14 +735,14 @@ textarea{min-height:92px;resize:vertical}
       </div>
 
       <div class="headerActions">
-        <button class="ghostBtn" onclick="window.location.assign('./index.html?v=31')">Main Page</button>
-        <button class="iconBtn" onclick="toggleMenu()" title="Menu">
-          <svg viewBox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>
-        </button>
-        <div class="menu" id="gearMenu">
-          <button onclick="window.location.assign('./dashboard.html?v=31')">Admin Dashboard</button>
-          <button onclick="window.location.assign('./settings.html?v=31')">Settings</button>
-        </div>
+        <a class="ghostBtn headerLink" href="./index.html?v=32">Main Page</a>
+        <details class="menuDetails">
+          <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
+          <nav class="menu" aria-label="MaxDock menu">
+            <a href="./dashboard.html?v=32">Admin Dashboard</a>
+            <a href="./settings.html?v=32">Settings</a>
+          </nav>
+        </details>
       </div>
     </div>
   </header>
@@ -827,9 +865,9 @@ textarea{min-height:92px;resize:vertical}
 <script>
 const $=id=>document.getElementById(id);
 const todayISO=()=>new Date().toISOString().slice(0,10);
-const LS_APPTS="maxdock_v31_appointments";
-const LS_SETTINGS="maxdock_v31_settings";
-const LS_LOCATION="maxdock_v31_location";
+const LS_APPTS="maxdock_v32_appointments";
+const LS_SETTINGS="maxdock_v32_settings";
+const LS_LOCATION="maxdock_v32_location";
 let selectedSlot=null;
 let lastBooked=null;
 let currentLocation=localStorage.getItem(LS_LOCATION)||"Mississauga";
@@ -901,10 +939,10 @@ function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&l
 
 
 function goToAdmin(){
-  window.location.assign("./dashboard.html?v=31");
+  window.location.assign("./dashboard.html?v=32");
 }
 function goToAdminSettings(){
-  window.location.assign("./dashboard.html?v=31#settings");
+  window.location.assign("./dashboard.html?v=32#settings");
 }
 
 function toggleMenu(){$("gearMenu").classList.toggle("show")}
@@ -912,7 +950,7 @@ document.addEventListener("click",e=>{if(!e.target.closest(".headerActions")) $(
 function showScreen(name){
   const target=$(name+"Screen");
   if(!target){
-    if(name==="home") window.location.assign("./index.html?v=31");
+    if(name==="home") window.location.assign("./index.html?v=32");
     return;
   }
   if($("gearMenu")) $("gearMenu").classList.remove("show");
@@ -1193,6 +1231,15 @@ function clearAll(){if(confirm("Clear all local prototype data?")){localStorage.
   if($("metrics")) renderAdmin();
   if($("slotList")) recalc();
   if(location.hash==="#settings" && $("settingsScreen")) showScreen("settings");
+
+  const params=new URLSearchParams(window.location.search);
+  if(params.get("open")==="request"){
+    setTimeout(function(){
+      openRequest();
+      const clean=window.location.pathname+"?v=32";
+      window.history.replaceState({},document.title,clean);
+    },0);
+  }
 })();
 </script>
 </body>
