@@ -4,6 +4,9 @@ const PAGE=document.body.dataset.page||"requester";
 const LS_APPTS="maxdock_appointments";
 const LS_SETTINGS="maxdock_settings";
 const LS_LOCATION="maxdock_location";
+const LS_DASHBOARD_RANGE="maxdock_dashboard_range";
+const LS_CUSTOM_RANGE_START="maxdock_custom_range_start";
+const LS_CUSTOM_RANGE_END="maxdock_custom_range_end";
 const todayISO=()=>new Date().toISOString().slice(0,10);
 
 const locationThemes={
@@ -28,6 +31,9 @@ let currentLocation=localStorage.getItem(LS_LOCATION)||"Mississauga";
 let settings=loadSettings();
 let selectedSlot=null;
 let lastBooked=null;
+let dashboardRangeMode=localStorage.getItem(LS_DASHBOARD_RANGE)||"Daily";
+let dashboardCustomStart=localStorage.getItem(LS_CUSTOM_RANGE_START)||todayISO();
+let dashboardCustomEnd=localStorage.getItem(LS_CUSTOM_RANGE_END)||todayISO();
 
 function migrateOldData(){
   if(!localStorage.getItem(LS_APPTS)){
@@ -220,6 +226,99 @@ function openEmailDraft(){
 }
 
 /* Dashboard */
+
+function isoDateLocal(date){
+  const year=date.getFullYear();
+  const month=String(date.getMonth()+1).padStart(2,"0");
+  const day=String(date.getDate()).padStart(2,"0");
+  return `${year}-${month}-${day}`;
+}
+function dashboardDateRange(){
+  const anchor=$("adminDate")?.value||todayISO();
+  const d=new Date(anchor+"T00:00:00");
+  let start=anchor;
+  let end=anchor;
+
+  if(dashboardRangeMode==="Weekly"){
+    const mondayOffset=(d.getDay()+6)%7;
+    const startDate=new Date(d);
+    startDate.setDate(d.getDate()-mondayOffset);
+    const endDate=new Date(startDate);
+    endDate.setDate(startDate.getDate()+6);
+    start=isoDateLocal(startDate);
+    end=isoDateLocal(endDate);
+  }else if(dashboardRangeMode==="Monthly"){
+    start=isoDateLocal(new Date(d.getFullYear(),d.getMonth(),1));
+    end=isoDateLocal(new Date(d.getFullYear(),d.getMonth()+1,0));
+  }else if(dashboardRangeMode==="Yearly"){
+    start=`${d.getFullYear()}-01-01`;
+    end=`${d.getFullYear()}-12-31`;
+  }else if(dashboardRangeMode==="Custom"){
+    start=dashboardCustomStart||anchor;
+    end=dashboardCustomEnd||anchor;
+    if(start>end)[start,end]=[end,start];
+  }
+
+  return {start,end,mode:dashboardRangeMode};
+}
+function dashboardRangeLabel(range=dashboardDateRange()){
+  const startDate=new Date(range.start+"T00:00:00");
+  const endDate=new Date(range.end+"T00:00:00");
+  const shortDate=date=>date.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+
+  if(range.mode==="Daily")return shortDate(startDate);
+  if(range.mode==="Monthly")return startDate.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+  if(range.mode==="Yearly")return String(startDate.getFullYear());
+  return `${shortDate(startDate)} – ${shortDate(endDate)}`;
+}
+function datesInRange(start,end){
+  const dates=[];
+  const cursor=new Date(start+"T00:00:00");
+  const last=new Date(end+"T00:00:00");
+
+  while(cursor<=last&&dates.length<3700){
+    dates.push(isoDateLocal(cursor));
+    cursor.setDate(cursor.getDate()+1);
+  }
+  return dates;
+}
+function filteredRangeAppointments(){
+  const range=dashboardDateRange();
+  const status=$("adminStatus")?.value||"All";
+  let items=getAppointments().filter(a=>
+    a.location===currentLocation&&
+    a.date>=range.start&&
+    a.date<=range.end
+  );
+
+  if(status!=="All")items=items.filter(a=>a.status===status);
+  return items;
+}
+function setDashboardRange(mode){
+  dashboardRangeMode=mode;
+  localStorage.setItem(LS_DASHBOARD_RANGE,mode);
+  toggleCustomRangeFields();
+  renderDashboard();
+}
+function updateCustomDashboardRange(){
+  dashboardCustomStart=$("customRangeStart")?.value||todayISO();
+  dashboardCustomEnd=$("customRangeEnd")?.value||dashboardCustomStart;
+  localStorage.setItem(LS_CUSTOM_RANGE_START,dashboardCustomStart);
+  localStorage.setItem(LS_CUSTOM_RANGE_END,dashboardCustomEnd);
+  renderDashboard();
+}
+function toggleCustomRangeFields(){
+  const show=dashboardRangeMode==="Custom";
+  $("customRangeStartField")?.classList.toggle("hidden",!show);
+  $("customRangeEndField")?.classList.toggle("hidden",!show);
+
+  if($("customRangeStart"))$("customRangeStart").value=dashboardCustomStart;
+  if($("customRangeEnd"))$("customRangeEnd").value=dashboardCustomEnd;
+}
+function estimateOpenSlotsForRange(start,end){
+  return datesInRange(start,end).reduce((total,date)=>total+estimateOpenSlots(date),0);
+}
+
 function filteredDayAppointments(){
   const date=$("adminDate")?.value||todayISO();
   const status=$("adminStatus")?.value||"All";
@@ -229,29 +328,42 @@ function filteredDayAppointments(){
 }
 function renderDashboard(){
   if(!$("timelineBody"))return;
-  const date=$("adminDate").value||todayISO();$("adminDate").value=date;
-  const items=filteredDayAppointments();
-  const allDay=getAppointments().filter(a=>a.date===date&&a.location===currentLocation);
-  const activeDay=allDay.filter(a=>a.status!=="Cancelled");
-  const completed=allDay.filter(a=>a.status==="Completed").length;
-  const scheduled=allDay.filter(a=>a.status==="Scheduled").length;
-  const priority=activeDay.filter(a=>a.priority).length;
-  const inboundSkids=activeDay
+
+  const date=$("adminDate").value||todayISO();
+  $("adminDate").value=date;
+
+  const scheduleItems=filteredDayAppointments();
+  const range=dashboardDateRange();
+  const rangeItems=filteredRangeAppointments();
+  const activeRange=rangeItems.filter(a=>a.status!=="Cancelled");
+  const completed=rangeItems.filter(a=>a.status==="Completed").length;
+  const scheduled=rangeItems.filter(a=>a.status==="Scheduled").length;
+  const priority=activeRange.filter(a=>a.priority).length;
+  const inboundSkids=activeRange
     .filter(a=>a.direction==="Inbound"&&a.type!=="Dock Block")
     .reduce((sum,a)=>sum+Number(a.skids||0),0);
-  const outboundSkids=activeDay
+  const outboundSkids=activeRange
     .filter(a=>a.direction==="Outbound"&&a.type!=="Dock Block")
     .reduce((sum,a)=>sum+Number(a.skids||0),0);
 
   $("metrics").innerHTML=[
-    ["Today",allDay.length],
+    ["Appointments",rangeItems.length],
     ["Scheduled",scheduled],
     ["Completed",completed],
     ["Priority",priority],
-    ["Open Slots",estimateOpenSlots(date)],
+    ["Open Slots",estimateOpenSlotsForRange(range.start,range.end)],
     ["Inbound Skids",inboundSkids],
     ["Outbound Skids",outboundSkids]
-  ].map(([k,v])=>`<div class="metric"><small>${k}</small><strong>${v}</strong></div>`).join("");
+  ].map(([k,v])=>`<div class="metric"><small>${k}</small><strong>${v}</strong></div>`).join("")+
+  `<div class="metric rangeMetric">
+    <small>Date Range</small>
+    <select id="dashboardRange" onchange="setDashboardRange(this.value)">
+      ${["Daily","Weekly","Monthly","Yearly","Custom"].map(mode=>`<option ${dashboardRangeMode===mode?"selected":""}>${mode}</option>`).join("")}
+    </select>
+    <div class="rangeSummary">${esc(dashboardRangeLabel(range))}</div>
+  </div>`;
+
+  toggleCustomRangeFields();
 
   const dateObj=new Date(date+"T00:00:00");
   if($("scheduleDateTitle")){
@@ -260,7 +372,11 @@ function renderDashboard(){
     });
   }
 
-  renderSchedule(items);
+  if($("appointmentListTitle")){
+    $("appointmentListTitle").textContent=`Appointment List — ${dashboardRangeLabel(range)}`;
+  }
+
+  renderSchedule(scheduleItems);
   renderAppointmentTable();
 }
 function changeDashboardDate(delta){
@@ -381,7 +497,8 @@ function renderSchedule(items){
 }
 function renderAppointmentTable(){
   if(!$("apptTable"))return;
-  const rows=getAppointments().filter(a=>a.location===currentLocation)
+
+  const rows=filteredRangeAppointments()
     .sort((a,b)=>(b.date+b.start).localeCompare(a.date+a.start))
     .map(a=>`<tr>
       <td><b>${esc(a.ref)}</b></td><td>${esc(a.date)}</td><td>${displayTime(a.start)}–${displayTime(a.end)}</td>
@@ -389,7 +506,8 @@ function renderAppointmentTable(){
       <td>${esc(a.truck||"")} / ${esc(a.skids||0)}</td><td>${statusBadge(a.status)}</td>
       <td><button class="tiny" onclick="updateStatus('${a.id}','Completed')">Complete</button> <button class="tiny" onclick="updateStatus('${a.id}','Cancelled')">Cancel</button> <button class="tiny deleteBtn" onclick="deleteAppointment('${a.id}')">Delete</button></td>
     </tr>`).join("");
-  $("apptTable").innerHTML=rows||`<tr><td colspan="9">No appointments yet.</td></tr>`;
+
+  $("apptTable").innerHTML=rows||`<tr><td colspan="9">No appointments in the selected date range.</td></tr>`;
 }
 function estimateOpenSlots(date){
   const open=minutes(settings.open),close=minutes(settings.close);
@@ -528,16 +646,22 @@ function submitBlockTime(){
   }
 }
 function exportCSV(){
-  const date=$("adminDate").value||todayISO();
-  const rows=filteredDayAppointments();
+  const range=dashboardDateRange();
+  const rows=filteredRangeAppointments();
   const headers=["Booking Reference","Location","Date","Start","End","Dock","Company / Location","Direction","Appointment Type","Truck Type","Skids","Handling","Status","Priority","PO / BOL / Job #","Requester Name","Requester Email","Carrier","Notes"];
   const csv=[headers,...rows.map(a=>[
     a.ref,a.location,a.date,a.start,a.end,a.dock,a.company,a.direction,a.type,a.truck,a.skids,a.handling,a.status,a.priority?"Yes":"No",a.job,a.name,a.email,a.carrier,a.notes
   ])].map(row=>row.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+
   const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
-  const url=URL.createObjectURL(blob);const link=document.createElement("a");
-  link.href=url;link.download=`MaxDock_${currentLocation.replace(/\s+/g,"_")}_${date}.csv`;
-  document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");
+  link.href=url;
+  link.download=`MaxDock_${currentLocation.replace(/\s+/g,"_")}_${range.start}_to_${range.end}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 /* Settings */
@@ -580,6 +704,9 @@ document.addEventListener("DOMContentLoaded",()=>{
   if(PAGE==="dashboard"){
     window.scrollTo(0,0);
     $("adminDate").value=todayISO();
+    $("customRangeStart").value=dashboardCustomStart;
+    $("customRangeEnd").value=dashboardCustomEnd;
+    toggleCustomRangeFields();
     renderDashboard();
   }
 
