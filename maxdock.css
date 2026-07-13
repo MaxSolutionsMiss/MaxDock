@@ -1095,6 +1095,61 @@ textarea{min-height:92px;resize:vertical}
 }
 .timeRulerTick.noLabel span{display:none}
 
+
+/* v41 — simplified MaxDock header branding */
+.brand{
+  align-items:center;
+}
+.appTitle{
+  line-height:1;
+}
+.logo{
+  width:48px;
+  height:48px;
+}
+.logoMark{
+  width:80%;
+  height:80%;
+}
+.brandWordmarkWrap,
+.brandWordmark{
+  display:none !important;
+}
+
+
+/* v41 — clean continuous time ruler */
+.timeRuler{
+  overflow:hidden;
+}
+.timeRulerEndLabel{
+  position:absolute;
+  top:0;
+  right:0;
+  bottom:0;
+  width:76px;
+  pointer-events:none;
+  background:transparent;
+  border:0;
+}
+.timeRulerEndLabel span{
+  position:absolute;
+  top:15px;
+  right:8px;
+  left:auto;
+  color:#fff;
+  white-space:nowrap;
+  font-size:14px;
+  font-weight:950;
+  line-height:1;
+  text-align:right;
+}
+.timeRulerTick.finalTimeLabel{
+  display:none !important;
+}
+.timeRulerTick.noLabel span{
+  display:none;
+}
+
 @media print{
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}
