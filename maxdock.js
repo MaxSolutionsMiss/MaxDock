@@ -307,6 +307,7 @@ function renderSchedule(items){
   const minimumLabelGap=80;
   const endLabelWidth=72;
   const endLabelGap=12;
+  const scaleAwareClearance = scale===120 ? 180 : (scale===60 ? 150 : 120);
   const finalLabelClearance=endLabelWidth+endLabelGap;
 
   const regularTicks=ticks.slice(0,-1);
@@ -320,7 +321,10 @@ function renderSchedule(items){
 
     const distanceToEnd=finalLeft-rawLeft;
     const labelHalfWidth=36;
-    if(distanceToEnd<finalLabelClearance+labelHalfWidth)showLabel=false;
+
+    // In hourly and 2-hour views, hide the last regular label earlier
+    // so the final closing-time label has clean breathing room.
+    if(distanceToEnd<Math.max(finalLabelClearance+labelHalfWidth, scaleAwareClearance))showLabel=false;
 
     if(showLabel)lastVisibleLabel=rawLeft;
 

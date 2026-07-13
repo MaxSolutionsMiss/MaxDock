@@ -1150,6 +1150,16 @@ textarea{min-height:92px;resize:vertical}
   display:none;
 }
 
+
+/* v42 — scale-aware end label cleanup */
+.timeRulerEndLabel{
+  width:72px;
+  background:transparent;
+}
+.timeRulerEndLabel span{
+  right:10px;
+}
+
 @media print{
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}
