@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>MaxDock</title>
+<meta name="maxdock-page" content="requester-v29">
 <style>
 :root{
   --navy:#061a2d;
@@ -641,6 +642,27 @@ textarea{min-height:92px;resize:vertical}
   .app{background:white}
   .lane{break-inside:avoid}
 }
+
+/* Fixed MaxDock header branding — does not change by location */
+.logo{
+  background:linear-gradient(135deg,#0f2742,#155e8f 56%,#0f766e) !important;
+  color:#ffffff !important;
+  box-shadow:0 12px 26px rgba(21,94,143,.28) !important;
+}
+.appTitle{
+  color:#061a2d !important;
+}
+.appSub{
+  color:#526070 !important;
+}
+.iconBtn{
+  color:#0f2742 !important;
+}
+.topbar{
+  background:rgba(247,250,252,.72) !important;
+  border-bottom-color:rgba(216,222,233,.58) !important;
+}
+
 </style>
 </head>
 
@@ -677,8 +699,8 @@ textarea{min-height:92px;resize:vertical}
           <svg viewBox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>
         </button>
         <div class="menu" id="gearMenu">
-          <button onclick="window.location.href='admin.html'">Admin Dashboard</button>
-          <button onclick="window.location.href='admin.html#settings'">Settings</button>
+          <button onclick="goToAdmin()">Admin Dashboard</button>
+          <button onclick="goToAdminSettings()">Settings</button>
         </div>
       </div>
     </div>
@@ -693,90 +715,6 @@ textarea{min-height:92px;resize:vertical}
       </div>
     </section>
   </main>
-
-  <section class="screen adminWrap" id="adminScreen">
-    <div class="pageHead">
-      <div>
-        <h2>Admin Dashboard</h2>
-        <p>Daily dock schedule, appointment control, and quick operational visibility.</p>
-      </div>
-      <div class="toolbar">
-        <input type="date" id="adminDate" onchange="renderAdmin()" />
-        <select id="adminStatus" onchange="renderAdmin()">
-          <option value="All">All Statuses</option>
-          <option>Scheduled</option>
-          <option>Completed</option>
-          <option>Cancelled</option>
-        </select>
-        <button class="primaryBtn" onclick="openRequest()">Place Appointment</button>
-        <button class="secondaryBtn" onclick="blockDock()">Block Time</button>
-        <button class="secondaryBtn" onclick="window.print()">Print</button>
-      </div>
-    </div>
-
-    <div class="metrics" id="metrics"></div>
-    <div class="board" id="dockBoard"></div>
-
-    <div class="panel">
-      <h3>Appointment List</h3>
-      <div class="tableScroll">
-        <table>
-          <thead>
-            <tr><th>Ref</th><th>Date</th><th>Time</th><th>Dock</th><th>Company</th><th>Type</th><th>Truck / Skids</th><th>Status</th><th>Action</th></tr>
-          </thead>
-          <tbody id="apptTable"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <section class="screen adminWrap" id="settingsScreen">
-    <div class="pageHead">
-      <div>
-        <h2>Settings</h2>
-        <p>Adjust dock names, operating hours, and timing assumptions for this prototype.</p>
-      </div>
-      <div class="toolbar">
-        <button class="greenBtn" onclick="saveSettings()">Save Settings</button>
-        <button class="secondaryBtn" onclick="resetSettings()">Reset Defaults</button>
-      </div>
-    </div>
-
-    <div class="settingsGrid">
-      <div class="settingsGroup">
-        <h3>Operating Hours</h3>
-        <div class="formGrid">
-          <div class="field"><label>Open Time</label><input type="time" id="setOpen"></div>
-          <div class="field"><label>Close Time</label><input type="time" id="setClose"></div>
-          <div class="field"><label>Slot Increment</label><select id="setInterval"><option>15</option><option>30</option></select></div>
-          <div class="field"><label>Buffer Minutes</label><input type="number" id="setBuffer"></div>
-        </div>
-      </div>
-
-      <div class="settingsGroup">
-        <h3>Dock Doors</h3>
-        <div class="docksList" id="docksList"></div>
-        <button class="secondaryBtn" style="margin-top:10px" onclick="addDock()">Add Dock</button>
-      </div>
-
-      <div class="settingsGroup">
-        <h3>Timing Rules</h3>
-        <div class="formGrid">
-          <div class="field"><label>Base Minutes</label><input type="number" id="setBase"></div>
-          <div class="field"><label>Minutes per Skid</label><input type="number" id="setPerSkid"></div>
-          <div class="field"><label>Full Truck Minimum</label><input type="number" id="setFullTruck"></div>
-          <div class="field"><label>Priority Minimum</label><input type="number" id="setPriorityMin"></div>
-        </div>
-      </div>
-
-      <div class="settingsGroup">
-        <h3>Prototype Note</h3>
-        <div class="notice">
-          This version is a static prototype. It saves appointments in this browser only. For production, the next step is connecting the same flow to a shared backend such as Dataverse, SharePoint Lists, Azure SQL, or another database.
-        </div>
-      </div>
-    </div>
-  </section>
 </div>
 
 <!-- Request Wizard Modal -->
@@ -886,9 +824,9 @@ textarea{min-height:92px;resize:vertical}
 <script>
 const $=id=>document.getElementById(id);
 const todayISO=()=>new Date().toISOString().slice(0,10);
-const LS_APPTS="maxdock_v28_appointments";
-const LS_SETTINGS="maxdock_v28_settings";
-const LS_LOCATION="maxdock_v28_location";
+const LS_APPTS="maxdock_v29_appointments";
+const LS_SETTINGS="maxdock_v29_settings";
+const LS_LOCATION="maxdock_v29_location";
 let selectedSlot=null;
 let lastBooked=null;
 let currentLocation=localStorage.getItem(LS_LOCATION)||"Mississauga";
@@ -958,14 +896,27 @@ function time(m){let h=Math.floor(m/60),mm=m%60;return String(h).padStart(2,"0")
 function display(t){let [h,m]=t.split(":").map(Number);let am=h<12?"AM":"PM";let hh=h%12||12;return `${hh}:${String(m).padStart(2,"0")} ${am}`}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
+
+function goToAdmin(){
+  window.location.assign("./admin.html");
+}
+function goToAdminSettings(){
+  window.location.assign("./admin.html#settings");
+}
+
 function toggleMenu(){$("gearMenu").classList.toggle("show")}
 document.addEventListener("click",e=>{if(!e.target.closest(".headerActions")) $("gearMenu").classList.remove("show")})
 function showScreen(name){
-  $("gearMenu").classList.remove("show");
+  const target=$(name+"Screen");
+  if(!target){
+    if(name==="home") window.location.assign("./index.html");
+    return;
+  }
+  if($("gearMenu")) $("gearMenu").classList.remove("show");
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  $(name+"Screen").classList.add("active");
-  if(name==="admin") renderAdmin();
-  if(name==="settings") renderSettings();
+  target.classList.add("active");
+  if(name==="admin" && $("metrics")) renderAdmin();
+  if(name==="settings" && $("docksList")) renderSettings();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function changeLocation(v){
@@ -1112,6 +1063,14 @@ function submitBooking(){
   }catch(err){error(5,err.message)}
 }
 
+
+.heroHint{
+  margin:0;
+  color:#64748b;
+  font-size:13px;
+  font-weight:750;
+  line-height:1.4;
+}
 
 
 function confirmationText(){

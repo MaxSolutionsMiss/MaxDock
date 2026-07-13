@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>MaxDock – Admin Dashboard</title>
+<meta name="maxdock-page" content="admin-v29">
 <style>
 :root{
   --navy:#061a2d;
@@ -641,6 +642,27 @@ textarea{min-height:92px;resize:vertical}
   .app{background:white}
   .lane{break-inside:avoid}
 }
+
+/* Fixed MaxDock header branding — does not change by location */
+.logo{
+  background:linear-gradient(135deg,#0f2742,#155e8f 56%,#0f766e) !important;
+  color:#ffffff !important;
+  box-shadow:0 12px 26px rgba(21,94,143,.28) !important;
+}
+.appTitle{
+  color:#061a2d !important;
+}
+.appSub{
+  color:#526070 !important;
+}
+.iconBtn{
+  color:#0f2742 !important;
+}
+.topbar{
+  background:rgba(247,250,252,.72) !important;
+  border-bottom-color:rgba(216,222,233,.58) !important;
+}
+
 </style>
 </head>
 
@@ -672,7 +694,7 @@ textarea{min-height:92px;resize:vertical}
       </div>
 
       <div class="headerActions">
-        <button class="ghostBtn" onclick="window.location.href='index.html'">Main Page</button>
+        <button class="ghostBtn" onclick="window.location.assign('./index.html')">Main Page</button>
         <button class="iconBtn" onclick="toggleMenu()" title="Menu">
           <svg viewBox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>
         </button>
@@ -685,17 +707,6 @@ textarea{min-height:92px;resize:vertical}
       </div>
     </div>
   </header>
-
-  <main class="screen homeScreen" id="homeScreen">
-    <section class="heroCard">
-      <div class="heroInner">
-        <div class="facilityBadge"><span class="dot"></span><span id="facilityName">Max Solutions – Mississauga</span></div>
-        <button class="requestMega" onclick="openRequest()">Request Appointment</button>
-        <p class="heroHint">Choose an available time in a few quick steps.</p>
-      </div>
-    </section>
-  </main>
-
   <section class="screen adminWrap active" id="adminScreen">
     <div class="pageHead">
       <div>
@@ -888,9 +899,9 @@ textarea{min-height:92px;resize:vertical}
 <script>
 const $=id=>document.getElementById(id);
 const todayISO=()=>new Date().toISOString().slice(0,10);
-const LS_APPTS="maxdock_v28_appointments";
-const LS_SETTINGS="maxdock_v28_settings";
-const LS_LOCATION="maxdock_v28_location";
+const LS_APPTS="maxdock_v29_appointments";
+const LS_SETTINGS="maxdock_v29_settings";
+const LS_LOCATION="maxdock_v29_location";
 let selectedSlot=null;
 let lastBooked=null;
 let currentLocation=localStorage.getItem(LS_LOCATION)||"Mississauga";
@@ -963,11 +974,16 @@ function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&l
 function toggleMenu(){$("gearMenu").classList.toggle("show")}
 document.addEventListener("click",e=>{if(!e.target.closest(".headerActions")) $("gearMenu").classList.remove("show")})
 function showScreen(name){
-  $("gearMenu").classList.remove("show");
+  const target=$(name+"Screen");
+  if(!target){
+    if(name==="home") window.location.assign("./index.html");
+    return;
+  }
+  if($("gearMenu")) $("gearMenu").classList.remove("show");
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  $(name+"Screen").classList.add("active");
-  if(name==="admin") renderAdmin();
-  if(name==="settings") renderSettings();
+  target.classList.add("active");
+  if(name==="admin" && $("metrics")) renderAdmin();
+  if(name==="settings" && $("docksList")) renderSettings();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function changeLocation(v){
@@ -1115,6 +1131,14 @@ function submitBooking(){
 }
 
 
+.heroHint{
+  margin:0;
+  color:#64748b;
+  font-size:13px;
+  font-weight:750;
+  line-height:1.4;
+}
+
 
 function confirmationText(){
   if(!lastBooked) return "No booking has been completed yet.";
@@ -1232,7 +1256,11 @@ function clearAll(){if(confirm("Clear all local prototype data?")){localStorage.
   if($("docksList")) renderSettings();
   if($("metrics")) renderAdmin();
   if($("slotList")) recalc();
-  if(location.hash==="#settings" && $("settingsScreen")) showScreen("settings");
+  if(location.hash==="#settings" && $("settingsScreen")){
+    showScreen("settings");
+  }else if($("adminScreen")){
+    showScreen("admin");
+  }
 })();
 </script>
 </body>
