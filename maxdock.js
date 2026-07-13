@@ -441,7 +441,9 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(params.get("open")==="request")setTimeout(openRequest,0);
   }
   if(PAGE==="dashboard"){
-    $("adminDate").value=todayISO();renderDashboard();
+    window.scrollTo(0,0);
+    $("adminDate").value=todayISO();
+    renderDashboard();
   }
   if(PAGE==="settings")renderSettings();
 });

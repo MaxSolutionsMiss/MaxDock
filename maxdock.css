@@ -657,6 +657,152 @@ textarea{min-height:92px;resize:vertical}
   }
 }
 
+
+/* v36 — aligned and compact Dock Schedule header */
+.schedulePanelHeader{
+  display:block;
+  margin-bottom:10px;
+}
+.scheduleTopRow{
+  display:grid;
+  grid-template-columns:minmax(150px,1fr) auto minmax(150px,1fr);
+  align-items:center;
+  gap:14px;
+}
+.scheduleTitleBlock{
+  display:flex;
+  align-items:center;
+  min-height:44px;
+}
+.scheduleTitleBlock h3{
+  font-size:20px;
+  line-height:1;
+}
+.scheduleNavCenter{
+  display:grid;
+  grid-template-columns:44px 88px 44px minmax(188px,auto);
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:nowrap;
+}
+.scheduleNavCenter .navArrow{
+  width:44px;
+  height:44px;
+  padding:0;
+}
+.scheduleNavCenter .todayBtn{
+  min-width:88px;
+  height:44px;
+  padding:0 14px;
+}
+.scheduleDateTitle{
+  min-height:44px;
+  height:44px;
+  padding:0 16px;
+  font-size:14px;
+  white-space:nowrap;
+}
+.scheduleScaleWrap{
+  justify-self:end;
+}
+.compactScale{
+  min-height:40px;
+  padding:4px 6px 4px 9px;
+  gap:6px;
+  border-radius:13px;
+}
+.compactScale label{
+  font-size:9px;
+  letter-spacing:.06em;
+}
+.compactScale select{
+  min-width:108px;
+  max-width:118px;
+  height:32px;
+  padding:5px 28px 5px 8px;
+  border-radius:9px;
+  font-size:12px;
+}
+.scheduleLegendRow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:34px;
+  margin-top:7px;
+}
+.scheduleLegendRow .legend{
+  justify-content:center;
+  gap:7px;
+}
+.scheduleLegendRow .legendItem{
+  min-height:27px;
+  padding:5px 9px;
+}
+.timeRulerTick span{
+  top:15px;
+  font-size:14px;
+  line-height:1;
+}
+.timeRulerTick.last{
+  left:auto !important;
+  right:0;
+  border-left:0;
+  border-right:1px solid rgba(255,255,255,.24);
+}
+.timeRulerTick.last span{
+  left:auto;
+  right:8px;
+  transform:none;
+}
+.dockLaneLabel strong{
+  font-size:18px;
+  line-height:1.1;
+}
+.dockLaneLabel small{
+  font-size:11px;
+}
+.timelineCorner{
+  font-size:14px;
+}
+@media(max-width:1050px){
+  .scheduleTopRow{
+    grid-template-columns:1fr;
+  }
+  .scheduleTitleBlock,
+  .scheduleScaleWrap{
+    justify-self:center;
+  }
+  .scheduleNavCenter{
+    justify-self:center;
+  }
+}
+@media(max-width:620px){
+  .scheduleTopRow{
+    gap:9px;
+  }
+  .scheduleNavCenter{
+    width:100%;
+    grid-template-columns:42px minmax(76px,1fr) 42px;
+  }
+  .scheduleNavCenter .scheduleDateTitle{
+    grid-column:1/-1;
+    width:100%;
+    justify-content:center;
+  }
+  .scheduleScaleWrap{
+    width:100%;
+  }
+  .compactScale{
+    width:100%;
+    justify-content:space-between;
+  }
+  .compactScale select{
+    max-width:none;
+    flex:1;
+  }
+}
+
 @media print{
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}

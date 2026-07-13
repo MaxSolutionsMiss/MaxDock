@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=35">
+<link rel="stylesheet" href="./maxdock.css?v=36">
 <title>MaxDock – Admin Dashboard</title>
 </head>
 <body data-page="dashboard">
@@ -28,12 +28,12 @@
       </div>
     </div>
     <div class="headerActions">
-      <a class="ghostBtn" href="./index.html?v=35">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=36">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./dashboard.html?v=35">Admin Dashboard</a>
-          <a href="./settings.html?v=35">Settings</a>
+          <a href="./dashboard.html?v=36">Admin Dashboard</a>
+          <a href="./settings.html?v=36">Settings</a>
         </nav>
       </details>
     </div>
@@ -73,34 +73,37 @@
 
   <section class="panel">
     <div class="schedulePanelHeader">
-      <div class="scheduleTitleBlock">
-        <h3>Dock Schedule</h3>
-      </div>
+      <div class="scheduleTopRow">
+        <div class="scheduleTitleBlock">
+          <h3>Dock Schedule</h3>
+        </div>
 
-      <div class="scheduleNavCenter">
-        <button class="secondaryBtn navArrow" onclick="changeDashboardDate(-1)" title="Previous day">‹</button>
-        <button class="secondaryBtn todayBtn" onclick="goDashboardToday()">Today</button>
-        <button class="secondaryBtn navArrow" onclick="changeDashboardDate(1)" title="Next day">›</button>
-        <div class="scheduleDateTitle" id="scheduleDateTitle"></div>
-      </div>
+        <div class="scheduleNavCenter">
+          <button class="secondaryBtn navArrow" onclick="changeDashboardDate(-1)" title="Previous day">‹</button>
+          <button class="secondaryBtn todayBtn" onclick="goDashboardToday()">Today</button>
+          <button class="secondaryBtn navArrow" onclick="changeDashboardDate(1)" title="Next day">›</button>
+          <div class="scheduleDateTitle" id="scheduleDateTitle"></div>
+        </div>
 
-      <div class="scheduleRightTools">
-        <div class="scheduleTools">
-          <div class="scaleControl">
+        <div class="scheduleScaleWrap">
+          <div class="scaleControl compactScale">
             <label for="scheduleScale">Timeline</label>
             <select id="scheduleScale" onchange="renderDashboard()">
-              <option value="30">30-minute detail</option>
+              <option value="30">30-minute</option>
               <option value="60" selected>Hourly</option>
-              <option value="120">2-hour overview</option>
+              <option value="120">2-hour</option>
             </select>
           </div>
-          <div class="legend">
-            <span class="legendItem"><i class="legendDot open"></i>Open</span>
-            <span class="legendItem"><i class="legendDot inbound"></i>Inbound</span>
-            <span class="legendItem"><i class="legendDot outbound"></i>Outbound</span>
-            <span class="legendItem"><i class="legendDot blocked"></i>Blocked</span>
-            <span class="legendItem"><i class="legendDot completed"></i>Completed</span>
-          </div>
+        </div>
+      </div>
+
+      <div class="scheduleLegendRow">
+        <div class="legend">
+          <span class="legendItem"><i class="legendDot open"></i>Open</span>
+          <span class="legendItem"><i class="legendDot inbound"></i>Inbound</span>
+          <span class="legendItem"><i class="legendDot outbound"></i>Outbound</span>
+          <span class="legendItem"><i class="legendDot blocked"></i>Blocked</span>
+          <span class="legendItem"><i class="legendDot completed"></i>Completed</span>
         </div>
       </div>
     </div>
@@ -126,5 +129,5 @@
     </div>
   </section>
 </main>
-<script src="./maxdock.js?v=35"></script>
+<script src="./maxdock.js?v=36"></script>
 </body></html>
