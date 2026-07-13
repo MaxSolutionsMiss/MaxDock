@@ -961,6 +961,67 @@ textarea{min-height:92px;resize:vertical}
   }
 }
 
+
+/* v38 — responsive timeline width and final cosmetic alignment */
+.scheduleCompactBar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  min-width:max-content;
+}
+.scheduleTitleBlock{
+  flex:0 0 auto;
+}
+.scheduleNavCenter{
+  flex:0 0 auto;
+}
+.scheduleDateTitle{
+  min-height:40px;
+  height:40px;
+  padding:0 15px;
+  font-size:15px;
+  font-weight:950;
+  letter-spacing:-.1px;
+}
+.compactLegend{
+  flex:1 1 auto;
+  justify-content:center;
+  min-width:max-content;
+}
+.compactScale{
+  flex:0 0 auto;
+  margin-left:auto;
+}
+.timelineScroll{
+  width:100%;
+}
+.timelineShell{
+  min-width:100%;
+}
+.timeRuler,
+.dockTrack{
+  transition:width .16s ease;
+}
+@media(max-width:1180px){
+  .scheduleCompactBar{
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding-bottom:6px;
+  }
+  .compactLegend{
+    flex:0 0 auto;
+  }
+}
+@media(max-width:720px){
+  .scheduleDateTitle{
+    font-size:14px;
+  }
+  .compactScale{
+    margin-left:8px;
+  }
+}
+
 @media print{
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}

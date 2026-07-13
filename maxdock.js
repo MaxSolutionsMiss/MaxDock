@@ -279,14 +279,19 @@ function renderSchedule(items){
   const close=minutes(settings.close);
   const scale=Number($("scheduleScale")?.value||60);
 
-  const pxPerMinute={
+  const basePxPerMinute={
     30:3.0,
     60:1.65,
     120:0.9
   }[scale]||1.65;
 
   const duration=Math.max(1,close-open);
-  const trackWidth=Math.max(540,Math.round(duration*pxPerMinute));
+  const labelWidth=150;
+  const scrollWidth=$("timelineShell")?.parentElement?.clientWidth||0;
+  const availableTrackWidth=Math.max(540,scrollWidth-labelWidth-2);
+  const preferredTrackWidth=Math.max(540,Math.round(duration*basePxPerMinute));
+  const trackWidth=Math.max(availableTrackWidth,preferredTrackWidth);
+  const pxPerMinute=trackWidth/duration;
 
   $("timelineShell").style.width=`${150+trackWidth}px`;
   $("timeRuler").style.width=`${trackWidth}px`;
@@ -541,6 +546,14 @@ function resetSettings(){
 }
 
 /* Init */
+
+let scheduleResizeTimer=null;
+window.addEventListener("resize",()=>{
+  if(PAGE!=="dashboard"||!$("timelineBody"))return;
+  clearTimeout(scheduleResizeTimer);
+  scheduleResizeTimer=setTimeout(()=>renderDashboard(),120);
+});
+
 document.addEventListener("DOMContentLoaded",()=>{
   migrateOldData();
   settings=loadSettings();
