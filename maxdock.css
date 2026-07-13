@@ -177,7 +177,7 @@ button{cursor:pointer}
   height:42px;border:1px solid var(--line);border-radius:14px;
   background:white;padding:0 12px;font-weight:750;color:#111827;
 }
-.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.metrics{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px;margin-bottom:16px}
 .metric{
   background:rgba(255,255,255,.88);border:1px solid rgba(216,222,233,.92);
   border-radius:22px;padding:16px;box-shadow:0 12px 26px rgba(6,26,45,.07);
@@ -207,49 +207,205 @@ button{cursor:pointer}
 .legendDot.blocked{background:#64748b}
 .legendDot.completed{background:#86efac}
 
-/* Calendar / Teams-style dock schedule */
-.scheduleScroll{
-  overflow:auto;border:1px solid var(--line);border-radius:20px;background:white;
+/* Horizontal dock swimlane schedule */
+.scheduleTools{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
 }
-.scheduleHeader{
-  display:grid;position:sticky;top:0;z-index:8;
+.dayNav{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.dayNav .navArrow{
+  width:42px;
+  height:42px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  font-size:22px;
+  line-height:1;
+}
+.scaleControl{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 8px 6px 11px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:#fff;
+}
+.scaleControl label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:#64748b;
+}
+.scaleControl select{
+  width:auto;
+  min-width:128px;
+  padding:8px 34px 8px 10px;
+  border-radius:11px;
+}
+.scheduleDateTitle{
+  display:inline-flex;
+  align-items:center;
+  min-height:42px;
+  padding:0 14px;
+  border-radius:14px;
+  background:linear-gradient(135deg,var(--theme-soft),#fff);
+  border:1px solid var(--line);
+  color:var(--theme-1);
+  font-size:13px;
+  font-weight:900;
+}
+.timelineScroll{
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:#fff;
+}
+.timelineShell{
+  position:relative;
+  min-width:100%;
+}
+.timelineHeader{
+  display:grid;
+  grid-template-columns:150px auto;
+  position:sticky;
+  top:0;
+  z-index:18;
+  min-height:54px;
+}
+.timelineCorner{
+  position:sticky;
+  left:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  padding:0 14px;
+  background:var(--theme-1);
+  color:#fff;
+  border-right:1px solid rgba(255,255,255,.18);
+  font-size:12px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.timeRuler{
+  position:relative;
+  min-height:54px;
   background:linear-gradient(135deg,var(--theme-1),var(--theme-2));
-  color:white;min-width:max-content;
+  color:#fff;
+  overflow:hidden;
 }
-.scheduleHeaderCell{
-  padding:13px 12px;border-right:1px solid rgba(255,255,255,.18);
-  font-weight:900;text-align:center;min-width:220px;
+.timeRulerTick{
+  position:absolute;
+  top:0;
+  bottom:0;
+  border-left:1px solid rgba(255,255,255,.24);
 }
-.scheduleHeaderCell.time{min-width:82px;position:sticky;left:0;z-index:9;background:var(--theme-1)}
-.scheduleGrid{
-  display:grid;position:relative;min-width:max-content;background:#fff;
+.timeRulerTick span{
+  position:absolute;
+  top:17px;
+  left:8px;
+  white-space:nowrap;
+  font-size:11px;
+  font-weight:900;
 }
-.timeCell{
-  min-width:82px;padding:3px 8px;border-right:1px solid var(--line);
-  border-bottom:1px solid #eef2f7;background:#f8fafc;color:#64748b;
-  font-size:11px;font-weight:800;position:sticky;left:0;z-index:4;
+.timeRulerTick.last span{
+  left:auto;
+  right:8px;
 }
-.dockCell{
-  min-width:220px;border-right:1px solid #e8edf3;border-bottom:1px solid #eef2f7;
-  background:#f4fff8;position:relative;
+.timelineBody{
+  position:relative;
 }
-.dockCell.major{border-bottom-color:#d6dee8}
-.dockCell:hover{background:#ecfdf5}
+.timelineLane{
+  display:grid;
+  grid-template-columns:150px auto;
+  min-height:88px;
+  border-top:1px solid #e7edf3;
+}
+.timelineLane:first-child{
+  border-top:0;
+}
+.dockLaneLabel{
+  position:sticky;
+  left:0;
+  z-index:12;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:4px;
+  padding:12px 14px;
+  background:linear-gradient(180deg,#f8fafc,#eef4f8);
+  border-right:1px solid var(--line);
+}
+.dockLaneLabel strong{
+  color:var(--theme-1);
+  font-size:14px;
+}
+.dockLaneLabel small{
+  color:#64748b;
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+.dockTrack{
+  position:relative;
+  min-height:88px;
+  background-color:#f5fff9;
+  background-image:
+    linear-gradient(to right,rgba(148,163,184,.24) 1px,transparent 1px);
+  background-repeat:repeat;
+}
+.dockTrack:hover{
+  background-color:#ecfdf5;
+}
 .scheduleEvent{
-  margin:2px 5px;border-radius:12px;padding:7px 9px;z-index:5;
-  box-shadow:0 8px 18px rgba(6,26,45,.13);overflow:hidden;
-  color:white;border:1px solid rgba(255,255,255,.34);
-  align-self:stretch;min-width:0;
+  position:absolute;
+  top:12px;
+  height:64px;
+  min-width:48px;
+  border-radius:14px;
+  padding:8px 10px;
+  z-index:6;
+  box-shadow:0 8px 18px rgba(6,26,45,.15);
+  overflow:hidden;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.34);
 }
 .scheduleEvent.inbound{background:linear-gradient(135deg,#0369a1,#0ea5e9)}
 .scheduleEvent.outbound{background:linear-gradient(135deg,#0f766e,#14b8a6)}
 .scheduleEvent.blocked{background:linear-gradient(135deg,#475569,#64748b)}
-.scheduleEvent.completed{background:linear-gradient(135deg,#15803d,#22c55e);opacity:.76}
+.scheduleEvent.completed{background:linear-gradient(135deg,#15803d,#22c55e);opacity:.78}
 .scheduleEvent.cancelled{background:linear-gradient(135deg,#9f1239,#ef4444);opacity:.58}
-.scheduleEvent.priority{box-shadow:0 0 0 3px rgba(249,115,22,.32),0 8px 18px rgba(6,26,45,.13)}
-.eventTime{font-size:11px;font-weight:950;white-space:nowrap}
-.eventCompany{font-size:12px;font-weight:900;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.eventMeta{font-size:10px;opacity:.92;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scheduleEvent.priority{box-shadow:0 0 0 3px rgba(249,115,22,.34),0 8px 18px rgba(6,26,45,.15)}
+.eventTime{
+  font-size:11px;
+  font-weight:950;
+  white-space:nowrap;
+}
+.eventCompany{
+  font-size:12px;
+  font-weight:900;
+  margin-top:3px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.eventMeta{
+  font-size:10px;
+  opacity:.92;
+  margin-top:2px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
 
 /* Table */
 .tableScroll{overflow:auto}
@@ -355,7 +511,7 @@ textarea{min-height:92px;resize:vertical}
 @media(max-width:960px){
   .topbarInner{grid-template-columns:1fr}
   .headerActions{justify-content:flex-start}
-  .metrics{grid-template-columns:repeat(2,1fr)}
+  .metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
   .formGrid,.reviewRows,.settingsGrid{grid-template-columns:1fr}
   .steps{display:flex;overflow-x:auto;padding-bottom:8px}
   .stepPill{flex:0 0 150px}
@@ -371,9 +527,23 @@ textarea{min-height:92px;resize:vertical}
   .modalHead{padding:16px}.modalBody{padding:14px 16px 22px}
   .steps{gap:9px}.stepPill{flex-basis:148px;min-height:78px;font-size:14px}
   .wizardNav,.rightNav{width:100%}.wizardNav button,.rightNav button{flex:1}
-  .metrics{grid-template-columns:1fr}.pageWrap{padding:20px 14px 50px}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.pageWrap{padding:20px 14px 50px}
   .toolbar{width:100%}.toolbar input,.toolbar select,.toolbar a,.toolbar button{width:100%}
 }
+
+@media(max-width:720px){
+  .scheduleTools{align-items:stretch}
+  .dayNav{width:100%}
+  .dayNav .secondaryBtn:not(.navArrow){flex:1}
+  .scaleControl{width:100%;justify-content:space-between}
+  .timelineHeader,.timelineLane{grid-template-columns:118px auto}
+  .timelineCorner,.dockLaneLabel{min-width:118px}
+  .dockLaneLabel{padding:10px}
+}
+@media(max-width:420px){
+  .metrics{grid-template-columns:1fr}
+}
+
 @media print{
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}

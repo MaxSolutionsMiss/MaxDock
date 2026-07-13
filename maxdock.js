@@ -228,54 +228,119 @@ function filteredDayAppointments(){
   return items;
 }
 function renderDashboard(){
-  if(!$("scheduleGrid"))return;
+  if(!$("timelineBody"))return;
   const date=$("adminDate").value||todayISO();$("adminDate").value=date;
   const items=filteredDayAppointments();
   const allDay=getAppointments().filter(a=>a.date===date&&a.location===currentLocation);
+  const activeDay=allDay.filter(a=>a.status!=="Cancelled");
   const completed=allDay.filter(a=>a.status==="Completed").length;
   const scheduled=allDay.filter(a=>a.status==="Scheduled").length;
-  const priority=allDay.filter(a=>a.priority&&a.status!=="Cancelled").length;
-  $("metrics").innerHTML=[
-    ["Today",allDay.length],["Scheduled",scheduled],["Completed",completed],["Priority",priority],["Open Slots",estimateOpenSlots(date)]
-  ].map(([k,v])=>`<div class="metric"><small>${k}</small><strong>${v}</strong></div>`).join("");
-  renderSchedule(items);
-  renderAppointmentTable();
-}
-function renderSchedule(items){
-  const open=minutes(settings.open),close=minutes(settings.close),interval=settings.interval;
-  const slotCount=Math.ceil((close-open)/interval);
-  const cols=`82px repeat(${settings.docks.length},220px)`;
-  $("scheduleHeader").style.gridTemplateColumns=cols;
-  $("scheduleHeader").innerHTML=`<div class="scheduleHeaderCell time">Time</div>`+
-    settings.docks.map(d=>`<div class="scheduleHeaderCell">${esc(d)}</div>`).join("");
-  $("scheduleGrid").style.gridTemplateColumns=cols;
-  $("scheduleGrid").style.gridTemplateRows=`repeat(${slotCount},var(--slot-h))`;
+  const priority=activeDay.filter(a=>a.priority).length;
+  const inboundSkids=activeDay
+    .filter(a=>a.direction==="Inbound"&&a.type!=="Dock Block")
+    .reduce((sum,a)=>sum+Number(a.skids||0),0);
+  const outboundSkids=activeDay
+    .filter(a=>a.direction==="Outbound"&&a.type!=="Dock Block")
+    .reduce((sum,a)=>sum+Number(a.skids||0),0);
 
-  let html="";
-  for(let r=0;r<slotCount;r++){
-    const tm=open+r*interval;
-    const label=(tm-open)%(30)===0?displayTime(hhmm(tm)):"";
-    html+=`<div class="timeCell" style="grid-column:1;grid-row:${r+1}">${label}</div>`;
-    settings.docks.forEach((dock,di)=>{
-      html+=`<div class="dockCell ${r%2===1?"major":""}" style="grid-column:${di+2};grid-row:${r+1}" title="${esc(dock)} • ${displayTime(hhmm(tm))} open"></div>`;
+  $("metrics").innerHTML=[
+    ["Today",allDay.length],
+    ["Scheduled",scheduled],
+    ["Completed",completed],
+    ["Priority",priority],
+    ["Open Slots",estimateOpenSlots(date)],
+    ["Inbound Skids",inboundSkids],
+    ["Outbound Skids",outboundSkids]
+  ].map(([k,v])=>`<div class="metric"><small>${k}</small><strong>${v}</strong></div>`).join("");
+
+  const dateObj=new Date(date+"T00:00:00");
+  if($("scheduleDateTitle")){
+    $("scheduleDateTitle").textContent=dateObj.toLocaleDateString(undefined,{
+      weekday:"long",month:"long",day:"numeric",year:"numeric"
     });
   }
 
-  items.forEach(a=>{
-    const dockIndex=settings.docks.indexOf(a.dock);
-    if(dockIndex<0)return;
-    const start=Math.max(open,minutes(a.start)),end=Math.min(close,minutes(a.end));
-    if(end<=open||start>=close)return;
-    const rowStart=Math.floor((start-open)/interval)+1;
-    const rowEnd=Math.max(rowStart+1,Math.ceil((end-open)/interval)+1);
-    const cls=a.type==="Dock Block"?"blocked":a.status==="Completed"?"completed":a.status==="Cancelled"?"cancelled":a.direction==="Outbound"?"outbound":"inbound";
-    html+=`<div class="scheduleEvent ${cls} ${a.priority?"priority":""}" style="grid-column:${dockIndex+2};grid-row:${rowStart}/${rowEnd}" title="${esc(a.company)}">
-      <div class="eventTime">${displayTime(a.start)}–${displayTime(a.end)}</div>
-      <div class="eventCompany">${esc(a.company)}</div>
-      <div class="eventMeta">${esc(a.type)} • ${esc(a.truck||"")} ${a.skids?`• ${esc(a.skids)} skids`:""}</div>
+  renderSchedule(items);
+  renderAppointmentTable();
+}
+function changeDashboardDate(delta){
+  const input=$("adminDate");
+  const d=new Date((input.value||todayISO())+"T00:00:00");
+  d.setDate(d.getDate()+delta);
+  input.value=d.toISOString().slice(0,10);
+  renderDashboard();
+}
+function goDashboardToday(){
+  $("adminDate").value=todayISO();
+  renderDashboard();
+}
+function renderSchedule(items){
+  const open=minutes(settings.open);
+  const close=minutes(settings.close);
+  const scale=Number($("scheduleScale")?.value||60);
+
+  const pxPerMinute={
+    30:3.0,
+    60:1.65,
+    120:0.9
+  }[scale]||1.65;
+
+  const duration=Math.max(1,close-open);
+  const trackWidth=Math.max(540,Math.round(duration*pxPerMinute));
+
+  $("timelineShell").style.width=`${150+trackWidth}px`;
+  $("timeRuler").style.width=`${trackWidth}px`;
+
+  const ticks=[];
+  for(let t=open;t<=close;t+=scale){
+    ticks.push(t);
+  }
+  if(ticks[ticks.length-1]!==close)ticks.push(close);
+
+  $("timeRuler").innerHTML=ticks.map((t,index)=>{
+    const left=Math.max(0,Math.min(trackWidth,(t-open)*pxPerMinute));
+    const isLast=index===ticks.length-1;
+    return `<div class="timeRulerTick ${isLast?"last":""}" style="left:${left}px">
+      <span>${displayTime(hhmm(t))}</span>
     </div>`;
-  });
-  $("scheduleGrid").innerHTML=html;
+  }).join("");
+
+  $("timelineBody").innerHTML=settings.docks.map(dock=>{
+    const dockItems=items
+      .filter(a=>a.dock===dock)
+      .sort((a,b)=>a.start.localeCompare(b.start));
+
+    const events=dockItems.map(a=>{
+      const start=Math.max(open,minutes(a.start));
+      const end=Math.min(close,minutes(a.end));
+      if(end<=open||start>=close)return"";
+
+      const left=Math.max(0,(start-open)*pxPerMinute);
+      const width=Math.max(48,(end-start)*pxPerMinute);
+      const cls=a.type==="Dock Block"?"blocked":
+        a.status==="Completed"?"completed":
+        a.status==="Cancelled"?"cancelled":
+        a.direction==="Outbound"?"outbound":"inbound";
+
+      return `<div class="scheduleEvent ${cls} ${a.priority?"priority":""}"
+        style="left:${left}px;width:${width}px"
+        title="${esc(a.company)} • ${displayTime(a.start)}–${displayTime(a.end)}">
+        <div class="eventTime">${displayTime(a.start)}–${displayTime(a.end)}</div>
+        <div class="eventCompany">${esc(a.company)}</div>
+        <div class="eventMeta">${esc(a.type)} • ${esc(a.truck||"")} ${a.skids?`• ${esc(a.skids)} skids`:""}</div>
+      </div>`;
+    }).join("");
+
+    return `<div class="timelineLane">
+      <div class="dockLaneLabel">
+        <strong>${esc(dock)}</strong>
+        <small>${dockItems.length} appointment${dockItems.length===1?"":"s"}</small>
+      </div>
+      <div class="dockTrack" style="width:${trackWidth}px;background-size:${scale*pxPerMinute}px 100%">
+        ${events}
+      </div>
+    </div>`;
+  }).join("");
 }
 function renderAppointmentTable(){
   if(!$("apptTable"))return;
