@@ -304,10 +304,9 @@ function renderSchedule(items){
 
   const finalLeft=trackWidth;
   let lastVisibleLabel=-Infinity;
-  const minimumLabelGap=82;
-  const finalLabelWidth=74;
-  const finalLabelPadding=12;
-  const finalLabelClearance=finalLabelWidth+finalLabelPadding+18;
+  const minimumLabelGap=80;
+  const finalLabelWidth=76;
+  const finalLabelClearance=scale>=60?148:112;
 
   $("timeRuler").innerHTML=ticks.map((t,index)=>{
     const rawLeft=Math.max(0,Math.min(trackWidth,(t-open)*pxPerMinute));

@@ -1047,6 +1047,54 @@ textarea{min-height:92px;resize:vertical}
   border-left:1px solid rgba(255,255,255,.24);
 }
 
+
+/* v40 — Max Solutions branding and final time label cleanup */
+.logo{
+  background:linear-gradient(135deg,#0b88dc 10%,#10a4ea 42%,#3ecb42 100%);
+  box-shadow:0 12px 26px rgba(16,132,202,.28);
+  overflow:hidden;
+}
+.logoMark{
+  width:82%;
+  height:82%;
+  object-fit:contain;
+  display:block;
+}
+.brandWordmarkWrap{
+  margin:4px 0 0;
+  line-height:0;
+}
+.brandWordmark{
+  display:block;
+  width:170px;
+  max-width:42vw;
+  height:auto;
+}
+@media(max-width:700px){
+  .brandWordmark{width:140px;max-width:50vw}
+}
+/* Stronger dedicated end label */
+.timeRulerTick.finalTimeLabel{
+  position:absolute;
+  top:0;
+  bottom:0;
+  border-left:1px solid rgba(255,255,255,.28);
+  border-right:0;
+  background:linear-gradient(135deg,#12365d,#1f6292);
+}
+.timeRulerTick.finalTimeLabel span{
+  position:absolute;
+  top:15px;
+  right:8px;
+  left:auto;
+  white-space:nowrap;
+  font-size:14px;
+  font-weight:950;
+  line-height:1;
+  text-align:right;
+}
+.timeRulerTick.noLabel span{display:none}
+
 @media print{
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}
