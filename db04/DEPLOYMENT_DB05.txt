@@ -1,0 +1,16 @@
+MaxDock v46-DB05 deployment order
+
+1. Run MaxDock_DB_v05_User_Administration.sql in the Supabase SQL Editor.
+2. Add this allowed Auth redirect URL:
+   https://maxsolutionsmiss.github.io/MaxDock/db04/set-password.html
+3. Deploy MaxDock_DB_v05_Edge_Function_maxdock-invite-user.ts as the Supabase
+   Edge Function named maxdock-invite-user.
+4. Upload every file from MaxDock-v46-DB05-package to the existing GitHub
+   MaxDock/db04 folder, replacing files with the same names.
+5. Open the live site, sign in as a System Admin, and open Admin from the menu.
+
+Security
+- The browser uses only the public Supabase publishable key.
+- The service-role key is supplied to the Edge Function by Supabase automatically.
+- Never paste a secret/service-role key into maxdock-config.js or GitHub.
+- Public sign-up should remain disabled.

@@ -26,3 +26,51 @@
 .liveError{display:block;margin:0;grid-column:1/-1}
 .slot{font-family:inherit;text-align:left}
 @media(max-width:760px){.loginCard{padding:28px 22px}.headerActions{flex-wrap:wrap}.accountControl{order:3;width:100%;justify-content:space-between}}
+
+/* DB-v05 user administration */
+.menu a[aria-current="page"]{background:#eef6ff;color:var(--fixed-blue)}
+.modalOpen{overflow:hidden}
+.adminPage{max-width:1320px}
+.adminSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:2px}
+.adminSummaryCard{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 19px;border:1px solid rgba(216,222,233,.92);border-radius:20px;background:rgba(255,255,255,.9);box-shadow:0 10px 24px rgba(6,26,45,.06)}
+.adminSummaryCard span{color:#64748b;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.07em}
+.adminSummaryCard strong{color:var(--fixed-navy);font-size:28px;letter-spacing:-1px}
+.adminUsersPanel{padding:18px}
+.adminUsersPanel .panelHeader{align-items:flex-end}
+.panelIntro{margin:5px 0 0;color:#64748b;font-size:13px;line-height:1.45}
+.adminSearch{display:grid;gap:5px;min-width:min(290px,100%)}
+.adminSearch input{padding:10px 12px}
+.adminUsersTable{min-width:1040px}
+.adminUserIdentity{display:grid;gap:4px}
+.adminUserIdentity strong{color:#0f172a;font-size:13px}
+.adminUserIdentity span{color:#64748b;font-size:12px}
+.adminRole{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:10px;font-weight:950;white-space:nowrap}
+.adminRole.role-system_admin{background:#ede9fe;color:#6d28d9}
+.adminRole.role-site_admin{background:#dbeafe;color:#1d4ed8}
+.adminRole.role-shipping_manager{background:#ccfbf1;color:#0f766e}
+.adminRole.role-coordinator{background:#f1f5f9;color:#475569}
+.adminLocationTags{display:flex;gap:5px;flex-wrap:wrap;max-width:340px}
+.adminLocationTag,.adminAllLocations{display:inline-flex;padding:5px 7px;border-radius:9px;background:#f1f5f9;color:#475569;font-size:10px;font-weight:850;white-space:nowrap}
+.adminAllLocations{background:#ecfdf5;color:#047857}
+.adminUserStatus{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:900;white-space:nowrap}
+.adminUserStatus i{width:8px;height:8px;border-radius:99px;background:#94a3b8}
+.adminUserStatus.active{color:#166534}.adminUserStatus.active i{background:#22c55e}
+.adminUserStatus.inactive{color:#991b1b}.adminUserStatus.inactive i{background:#ef4444}
+.adminUserModal{width:min(760px,100%)}
+.adminActiveField{justify-content:flex-end}
+.adminToggle{display:flex;align-items:center;gap:9px;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#f8fafc}
+.adminToggle input{width:18px;height:18px;padding:0}
+.adminLocationsField{margin:0;padding:0;border:0}
+.adminLocationsField legend{margin-bottom:7px;color:#334155;font-size:12px;font-weight:950}
+.adminLocationsField small{display:block;margin-top:7px;color:#64748b;font-size:11px;line-height:1.4}
+.adminLocationOptions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.adminLocationOption{display:flex;align-items:center;gap:8px;min-height:42px;padding:9px 11px;border:1px solid var(--line);border-radius:13px;background:#f8fafc;color:#0f172a}
+.adminLocationOption input{width:17px;height:17px;padding:0}
+.systemAdminLocations .adminLocationOptions{opacity:.5}
+.adminSelfNotice{margin-top:14px}
+@media(max-width:760px){
+  .adminSummary{grid-template-columns:1fr}
+  .adminUsersPanel .panelHeader,.adminSearch{width:100%}
+  .adminLocationOptions{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){.adminLocationOptions{grid-template-columns:1fr}}

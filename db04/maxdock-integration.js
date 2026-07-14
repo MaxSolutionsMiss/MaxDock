@@ -5,11 +5,15 @@
   let dockDraft=[];
   let slotRequestId=0;
   const originalOpenRequest=openRequest;
+  const originalFilteredDayAppointments=filteredDayAppointments;
 
   migrateOldData=function(){};
   loadSettings=function(){return {...defaultSettings,...(db.getSettings()||{})}};
   getAppointments=function(){return db.getAppointments()};
   saveAppointments=function(){throw new Error("MaxDock appointments are saved through the database service.")};
+  filteredDayAppointments=function(){
+    return originalFilteredDayAppointments().filter(appointment=>appointment.status!=="Cancelled");
+  };
 
   function syncDatabaseState(){
     currentLocation=db.getCurrentLocation()?.name||currentLocation;
@@ -291,6 +295,7 @@
     if(!db.hasPermission("appointment.create"))document.querySelectorAll('[onclick="openRequest()"]').forEach(element=>element.hidden=true);
     if(!db.hasPermission("block.manage"))document.querySelectorAll('[onclick="openBlockModal()"]').forEach(element=>element.hidden=true);
     if(!db.hasPermission("reports.view"))document.querySelectorAll('[onclick="exportCSV()"]').forEach(element=>element.hidden=true);
+    if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"]').forEach(element=>element.hidden=true);
     const canManageSettings=db.hasPermission("settings.manage")&&db.hasPermission("dock.manage");
     if(!canManageSettings){
       document.querySelectorAll('[onclick="saveSettings()"],[onclick="resetSettings()"],[onclick="addDock()"],.dockItem .dangerBtn').forEach(element=>element.hidden=true);
