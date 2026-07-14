@@ -1,0 +1,341 @@
+(function(){
+  "use strict";
+
+  const config=window.MAXDOCK_CONFIG;
+  if(!config?.supabaseUrl||!config?.supabasePublishableKey){
+    throw new Error("MaxDock database configuration is missing.");
+  }
+  if(!window.supabase?.createClient){
+    throw new Error("The Supabase browser client did not load.");
+  }
+
+  const client=window.supabase.createClient(
+    config.supabaseUrl,
+    config.supabasePublishableKey,
+    {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+  );
+
+  const state={
+    session:null,
+    profile:null,
+    permissions:new Set(),
+    locations:[],
+    currentLocation:null,
+    locationData:null,
+    appointments:[]
+  };
+
+  function message(error,fallback){
+    return error?.message||fallback||"An unexpected MaxDock database error occurred.";
+  }
+  function normalize(value){return String(value||"").trim().toLowerCase()}
+  function titleCase(value){
+    return String(value||"").replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
+  }
+  function mapBy(items,key="code"){
+    return new Map((items||[]).map(item=>[item[key],item]));
+  }
+  function mapNameToCode(masterItems){
+    return new Map((masterItems||[]).map(item=>[normalize(item.name),item.code]));
+  }
+  function localDateTime(value,timeZone){
+    const parts=new Intl.DateTimeFormat("en-CA",{
+      timeZone,year:"numeric",month:"2-digit",day:"2-digit",
+      hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+    }).formatToParts(new Date(value));
+    const part=type=>parts.find(x=>x.type===type)?.value||"";
+    return {date:`${part("year")}-${part("month")}-${part("day")}`,time:`${part("hour")}:${part("minute")}`};
+  }
+  function requireValue(value,label){
+    if(value===null||value===undefined||value==="")throw new Error(`${label} is required.`);
+    return value;
+  }
+  function throwIf(error,context){if(error)throw new Error(`${context}: ${message(error)}`)}
+
+  async function getSession(){
+    const {data,error}=await client.auth.getSession();
+    throwIf(error,"Unable to read the login session");
+    state.session=data.session||null;
+    return state.session;
+  }
+  async function requireAuth(){
+    const session=await getSession();
+    if(!session){
+      const target=encodeURIComponent(location.pathname.split("/").pop()+location.search);
+      location.replace(`./login.html?return=${target}`);
+      return false;
+    }
+    return true;
+  }
+  async function signIn(identifier,password){
+    const email=String(identifier||"").trim().toLowerCase();
+    if(!email.includes("@"))throw new Error("Use your account email for this initial database test.");
+    const {data,error}=await client.auth.signInWithPassword({email,password});
+    throwIf(error,"Sign-in failed");
+    state.session=data.session;
+    return data;
+  }
+  async function signOut(){
+    await client.auth.signOut();
+    state.session=null;state.profile=null;state.permissions.clear();state.locations=[];
+    location.replace("./login.html");
+  }
+
+  async function loadContext(){
+    if(!state.session)await getSession();
+    const user=state.session?.user;
+    if(!user)throw new Error("No signed-in MaxDock user was found.");
+
+    const profileResult=await client.from("profiles")
+      .select("id,username,full_name,contact_email,role_code,is_active,must_change_password")
+      .eq("id",user.id).single();
+    throwIf(profileResult.error,"Unable to load the MaxDock user profile");
+    if(!profileResult.data?.is_active)throw new Error("This MaxDock account is inactive.");
+    state.profile=profileResult.data;
+
+    const [permissionResult,locationResult]=await Promise.all([
+      client.from("role_permissions").select("permission_code").eq("role_code",state.profile.role_code),
+      client.from("locations").select("id,code,name,timezone,is_active").eq("is_active",true).order("name")
+    ]);
+    throwIf(permissionResult.error,"Unable to load role permissions");
+    throwIf(locationResult.error,"Unable to load permitted locations");
+    state.permissions=new Set((permissionResult.data||[]).map(x=>x.permission_code));
+    state.locations=locationResult.data||[];
+    if(!state.locations.length)throw new Error("This user has no permitted MaxDock locations.");
+    return state;
+  }
+
+  function selectLocation(preferredName){
+    const preferred=state.locations.find(x=>normalize(x.name)===normalize(preferredName));
+    state.currentLocation=preferred||state.locations[0]||null;
+    return state.currentLocation;
+  }
+
+  async function fetchAppointments(){
+    if(!state.currentLocation)return [];
+    const result=await client.from("appointments").select("*")
+      .eq("location_id",state.currentLocation.id).order("start_at",{ascending:true});
+    throwIf(result.error,"Unable to load appointments");
+    state.appointments=(result.data||[]).map(mapAppointment);
+    return state.appointments;
+  }
+
+  function mapAppointment(row){
+    const data=state.locationData||{};
+    const start=localDateTime(row.start_at,state.currentLocation.timezone);
+    const end=localDateTime(row.end_at,state.currentLocation.timezone);
+    const dock=data.dockById?.get(row.dock_id);
+    const requesterLocation=state.locations.find(x=>x.id===row.requester_location_id);
+    const isBlock=row.entry_kind==="block";
+    return {
+      id:row.id,
+      ref:row.booking_reference,
+      location:state.currentLocation.name,
+      date:start.date,
+      start:start.time,
+      end:end.time,
+      dock:dock?.name||"Unassigned",
+      dockId:row.dock_id,
+      direction:titleCase(row.direction||"Inbound"),
+      company:isBlock?`Blocked: ${row.block_reason}`:(row.company_name||requesterLocation?.name||row.requester_type||"TBD"),
+      type:isBlock?"Dock Block":(data.appointmentTypeByCode?.get(row.appointment_type_code)?.name||row.appointment_type_code||""),
+      truck:isBlock?"N/A":(data.truckTypeByCode?.get(row.truck_type_code)?.name||row.truck_type_code||""),
+      skids:Number(row.skid_count||0),
+      handling:isBlock?(row.block_reason||""):(data.handlingTypeByCode?.get(row.handling_type_code)?.name||row.handling_type_code||""),
+      priority:Boolean(row.is_priority),
+      name:row.requester_name||"",
+      email:row.requester_email||"",
+      carrier:row.carrier_name||"",
+      job:row.external_reference||"",
+      notes:row.notes||"",
+      status:titleCase(row.status),
+      created:row.created_at,
+      raw:row
+    };
+  }
+
+  async function loadLocation(locationName){
+    const selected=selectLocation(locationName);
+    if(!selected)throw new Error("No permitted location was selected.");
+
+    const [settingsResult,hoursResult,docksResult,localTypesResult,localTrucksResult,localHandlingResult,typesResult,trucksResult,handlingResult]=await Promise.all([
+      client.from("location_settings").select("*").eq("location_id",selected.id).single(),
+      client.from("location_operating_hours").select("*").eq("location_id",selected.id).order("day_of_week"),
+      client.from("docks").select("*").eq("location_id",selected.id).eq("is_active",true).order("sort_order"),
+      client.from("location_appointment_types").select("*").eq("location_id",selected.id).eq("is_active",true),
+      client.from("location_truck_types").select("*").eq("location_id",selected.id).eq("is_active",true),
+      client.from("location_handling_types").select("*").eq("location_id",selected.id).eq("is_active",true),
+      client.from("appointment_types").select("*").eq("is_active",true).order("sort_order"),
+      client.from("truck_types").select("*").eq("is_active",true).order("sort_order"),
+      client.from("handling_types").select("*").eq("is_active",true).order("sort_order")
+    ]);
+    [settingsResult,hoursResult,docksResult,localTypesResult,localTrucksResult,localHandlingResult,typesResult,trucksResult,handlingResult]
+      .forEach((result,index)=>throwIf(result.error,["settings","operating hours","docks","location appointment types","location truck types","location handling types","appointment types","truck types","handling types"][index]));
+
+    const masterTypes=typesResult.data||[],masterTrucks=trucksResult.data||[],masterHandling=handlingResult.data||[];
+    const appointmentTypeByCode=mapBy(masterTypes),truckTypeByCode=mapBy(masterTrucks),handlingTypeByCode=mapBy(masterHandling);
+    const dockRows=docksResult.data||[];
+    const openDay=(hoursResult.data||[]).find(x=>x.is_open&&x.open_time&&x.close_time);
+    const s=settingsResult.data;
+
+    const legacySettings={
+      open:(openDay?.open_time||"07:00").slice(0,5),
+      close:(openDay?.close_time||"16:30").slice(0,5),
+      interval:Number(s.slot_interval_minutes),
+      buffer:Number(s.buffer_minutes),
+      base:Number(s.base_minutes),
+      perSkid:Number(s.minutes_per_skid),
+      fullTruck:Number(s.full_truck_minimum_minutes),
+      priorityMin:Number(s.priority_minimum_minutes),
+      docks:dockRows.map(x=>x.name),
+      truckSetup:{},typeAdj:{},handlingAdj:{}
+    };
+    (localTrucksResult.data||[]).forEach(x=>{
+      const master=truckTypeByCode.get(x.truck_type_code);if(master)legacySettings.truckSetup[master.name]=Number(x.setup_minutes);
+    });
+    (localTypesResult.data||[]).forEach(x=>{
+      const master=appointmentTypeByCode.get(x.appointment_type_code);if(master)legacySettings.typeAdj[master.name]=Number(x.adjustment_minutes);
+    });
+    (localHandlingResult.data||[]).forEach(x=>{
+      const master=handlingTypeByCode.get(x.handling_type_code);if(master)legacySettings.handlingAdj[master.name]=Number(x.adjustment_minutes);
+    });
+
+    state.locationData={
+      settingsRow:s,operatingHours:hoursResult.data||[],dockRows,dockById:mapBy(dockRows,"id"),
+      appointmentTypeByCode,truckTypeByCode,handlingTypeByCode,
+      appointmentNameToCode:mapNameToCode(masterTypes),truckNameToCode:mapNameToCode(masterTrucks),handlingNameToCode:mapNameToCode(masterHandling),
+      legacySettings
+    };
+    await fetchAppointments();
+    return state.locationData;
+  }
+
+  function codeFor(map,name,label){
+    const code=map?.get(normalize(name));
+    return requireValue(code,label);
+  }
+  async function availableSlots(input){
+    const data=state.locationData;
+    const result=await client.rpc("list_available_appointment_slots",{
+      p_location_id:state.currentLocation.id,
+      p_date:input.date,
+      p_appointment_type_code:codeFor(data.appointmentNameToCode,input.type,"Appointment type"),
+      p_truck_type_code:codeFor(data.truckNameToCode,input.truck,"Truck type"),
+      p_skid_count:Number(input.skids||0),
+      p_handling_type_code:codeFor(data.handlingNameToCode,input.handling,"Handling type"),
+      p_is_priority:Boolean(input.priority)
+    });
+    throwIf(result.error,"Unable to calculate available times");
+    return (result.data||[]).map(row=>{
+      const start=localDateTime(row.slot_start,state.currentLocation.timezone);
+      const end=localDateTime(row.slot_end,state.currentLocation.timezone);
+      return {date:start.date,start:start.time,end:end.time,startAt:row.slot_start,endAt:row.slot_end,open:Number(row.available_docks)};
+    });
+  }
+  async function bookAppointment(input){
+    const data=state.locationData;
+    const requesterLocation=state.locations.find(x=>normalize(x.name)===normalize(input.requesterType));
+    const result=await client.rpc("book_appointment",{
+      p_location_id:state.currentLocation.id,
+      p_date:input.date,
+      p_start_time:input.start,
+      p_direction:normalize(input.direction),
+      p_requester_type:input.requesterType,
+      p_appointment_type_code:codeFor(data.appointmentNameToCode,input.type,"Appointment type"),
+      p_truck_type_code:codeFor(data.truckNameToCode,input.truck,"Truck type"),
+      p_skid_count:Number(input.skids||0),
+      p_handling_type_code:codeFor(data.handlingNameToCode,input.handling,"Handling type"),
+      p_is_priority:Boolean(input.priority),
+      p_requester_name:input.name,
+      p_requester_email:input.email,
+      p_external_reference:input.reference,
+      p_company_name:input.company||null,
+      p_requester_location_id:requesterLocation?.id||null,
+      p_carrier_name:input.carrier||null,
+      p_notes:input.notes||null
+    });
+    throwIf(result.error,"Unable to book the appointment");
+    await fetchAppointments();
+    return result.data;
+  }
+  async function blockDockTime(input){
+    const byName=new Map((state.locationData?.dockRows||[]).map(d=>[normalize(d.name),d.id]));
+    const dockIds=input.docks.map(name=>byName.get(normalize(name))).filter(Boolean);
+    if(dockIds.length!==input.docks.length)throw new Error("One or more selected docks could not be found.");
+    const result=await client.rpc("block_dock_time",{
+      p_location_id:state.currentLocation.id,p_date:input.date,p_start_time:input.start,
+      p_duration_minutes:Number(input.duration),p_dock_ids:dockIds,p_reason:input.reason,p_notes:input.notes||null
+    });
+    throwIf(result.error,"Unable to block dock time");
+    await fetchAppointments();
+    return result.data;
+  }
+  async function changeStatus(id,status,reason){
+    const result=await client.rpc("change_appointment_status",{
+      p_appointment_id:id,p_new_status:normalize(status).replace(/\s+/g,"_"),p_reason:reason||null
+    });
+    throwIf(result.error,"Unable to update appointment status");
+    await fetchAppointments();
+    return result.data;
+  }
+
+  async function saveLocationSettings(input,dockInputs){
+    const locationId=state.currentLocation.id;
+    const settingsUpdate=await client.from("location_settings").update({
+      slot_interval_minutes:Number(input.interval),buffer_minutes:Number(input.buffer),base_minutes:Number(input.base),
+      minutes_per_skid:Number(input.perSkid),full_truck_minimum_minutes:Number(input.fullTruck),
+      priority_minimum_minutes:Number(input.priorityMin)
+    }).eq("location_id",locationId);
+    throwIf(settingsUpdate.error,"Unable to save location settings");
+
+    const hoursUpdate=await client.from("location_operating_hours").update({
+      open_time:input.open,
+      close_time:input.close
+    }).eq("location_id",locationId).eq("is_open",true);
+    throwIf(hoursUpdate.error,"Unable to save operating hours");
+
+    const current=state.locationData.dockRows;
+    const retained=new Set(dockInputs.filter(x=>x.id).map(x=>x.id));
+    for(let i=0;i<dockInputs.length;i++){
+      const dock=dockInputs[i],payload={name:dock.name,sort_order:i+1,is_active:true};
+      const result=dock.id
+        ?await client.from("docks").update(payload).eq("id",dock.id).eq("location_id",locationId)
+        :await client.from("docks").insert({...payload,location_id:locationId});
+      throwIf(result.error,"Unable to save dock doors");
+    }
+    for(const dock of current.filter(x=>!retained.has(x.id))){
+      const result=await client.from("docks").update({is_active:false}).eq("id",dock.id).eq("location_id",locationId);
+      throwIf(result.error,"Unable to deactivate a removed dock");
+    }
+    await loadLocation(state.currentLocation.name);
+  }
+
+  function populateLocationSelect(select){
+    if(!select)return;
+    select.innerHTML=state.locations.map(l=>`<option>${String(l.name).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</option>`).join("");
+    select.value=state.currentLocation?.name||state.locations[0]?.name||"";
+  }
+  function addAccountControls(){
+    const actions=document.querySelector(".headerActions");
+    if(!actions||document.getElementById("maxdockAccount"))return;
+    const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
+    const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
+    const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
+    wrap.append(label,button);actions.prepend(wrap);
+    if(!hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(a=>a.hidden=true);
+  }
+  function hasPermission(code){return state.permissions.has(code)}
+
+  client.auth.onAuthStateChange((event)=>{
+    if(event==="SIGNED_OUT"&&!location.pathname.endsWith("login.html"))location.replace("./login.html");
+  });
+
+  window.MaxDockDB={
+    client,state,getSession,requireAuth,signIn,signOut,loadContext,selectLocation,loadLocation,
+    fetchAppointments,availableSlots,bookAppointment,blockDockTime,changeStatus,saveLocationSettings,
+    populateLocationSelect,addAccountControls,hasPermission,
+    getProfile:()=>state.profile,getLocations:()=>state.locations,getCurrentLocation:()=>state.currentLocation,
+    getSettings:()=>state.locationData?.legacySettings||null,getAppointments:()=>state.appointments,
+    getDockRows:()=>state.locationData?.dockRows||[]
+  };
+})();
