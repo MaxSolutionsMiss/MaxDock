@@ -23,8 +23,12 @@
 
     try{
       const session=await window.MaxDockDB.getSession();
-      if(!session?.user)throw new Error("This invitation link is invalid or has expired. Ask your MaxDock administrator for a new invitation.");
-      intro.textContent=`Complete the account setup for ${session.user.email}.`;
+      if(!session?.user)throw new Error("This setup session is invalid or has expired. Ask your MaxDock administrator for a new setup link, or sign in again with your temporary password.");
+      const profileResult=await window.MaxDockDB.client.from("profiles").select("username,full_name").eq("id",session.user.id).maybeSingle();
+      const profile=profileResult.data;
+      intro.textContent=profile
+        ? `Choose a private password for ${profile.full_name||profile.username} (${profile.username}).`
+        : "Choose a private password to complete your MaxDock account setup.";
       form.hidden=false;
     }catch(err){
       showError(err.message);

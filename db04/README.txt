@@ -1,4 +1,4 @@
-MaxDock v46-DB05 — Supabase User Administration Build
+MaxDock v46-DB06 — Account Access and Demo Polish Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -12,15 +12,15 @@ Database prerequisites
 4. MaxDock_DB_v04_Booking_Functions.sql
 5. MaxDock_DB_v05_User_Administration.sql
 
-Secure invitation prerequisite
+Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
 - Add the deployed set-password.html URL to the Supabase Auth redirect allow list.
 - The service-role key stays inside Supabase and is never included in these browser files.
 
 Deployment
-- Upload every file in this folder to the existing GitHub Pages db04 folder.
+- Upload every file in this folder to the repository root and the existing GitHub Pages db04 folder.
 - Open login.html, or open index.html and MaxDock will redirect to login.
-- Sign in with the email and password of the Supabase Auth user.
+- Sign in with the MaxDock username or the Supabase Auth email.
 - Public sign-up must remain disabled in Supabase Authentication settings.
 
 Integrated database operations
@@ -33,9 +33,14 @@ Integrated database operations
 - Location timing, operating-hour, and dock settings
 - Cancelled appointments remain in the appointment list but are removed from the visual dock schedule
 - System Admin user list with role, active status, and permitted-location management
-- Secure user invitations by email through the maxdock-invite-user Edge Function
+- Secure, time-limited invitation links that can be copied or placed in an Outlook draft
+- Temporary-password accounts that do not require an email invitation
+- Forced private password change after a temporary user's first sign-in
+- Username or email sign-in through Supabase Auth
+- Compact page headings and a balanced header with the location selector beside the account controls
 
 Notes
-- Internal users sign in with their email address.
+- Passwords remain in Supabase Auth and are never stored in MaxDock tables.
+- Temporary credentials and invitation links must be shared privately.
 - Permanent appointment deletion is intentionally omitted to preserve audit history.
 - The original MaxDock v46 visual interface is retained; maxdock-integration.js replaces its browser-storage data path at runtime.

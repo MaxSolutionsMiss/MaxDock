@@ -1,0 +1,28 @@
+MaxDock v46-DB06 deployment order
+
+Prerequisite
+- MaxDock DB-v01 through DB-v05 are already installed.
+- This release does not require another SQL script.
+
+1. In Supabase Edge Functions, open maxdock-invite-user and replace index.ts
+   with MaxDock_DB_v06_Edge_Function_maxdock-invite-user.ts.
+2. Deploy the updated Edge Function. Keep "Verify JWT with legacy secret" OFF.
+3. Confirm this Auth redirect URL is still allowed:
+   https://maxsolutionsmiss.github.io/MaxDock/db04/set-password.html
+4. Upload every file from MaxDock-v46-DB06-package to BOTH locations in the
+   GitHub MaxDock repository, replacing files with the same names:
+   - repository root
+   - db04 folder
+5. Open the live db04 site with the DB06 cache marker, sign in as a System
+   Admin, and test both Add User methods:
+   - Invitation link: copy the link or open the Outlook draft.
+   - Temporary password: sign in using the username and temporary password,
+     then confirm that MaxDock requires a private password change.
+
+Security
+- The browser uses only the public Supabase publishable key.
+- The service-role key is supplied to the Edge Function by Supabase.
+- Never paste a secret/service-role key into maxdock-config.js or GitHub.
+- Public sign-up should remain disabled.
+- Invitation links and temporary passwords grant account access. Share them
+  privately and only with the intended user.
