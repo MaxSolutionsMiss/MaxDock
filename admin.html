@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=46-db05">
-<link rel="stylesheet" href="./maxdock-db04.css?v=46-db05">
+<link rel="stylesheet" href="./maxdock.css?v=46-db06">
+<link rel="stylesheet" href="./maxdock-db04.css?v=46-db06">
 <title>MaxDock – Admin</title>
 </head>
 <body data-page="admin">
@@ -14,18 +14,18 @@
   <div class="topbarInner">
     <div class="brandRow">
       <div class="brand">
-        <a class="logoLink" href="./index.html?v=46-db05" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+        <a class="logoLink" href="./index.html?v=46-db06" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
         <div><h1 class="appTitle">MaxDock</h1></div>
       </div>
     </div>
     <div class="headerActions">
-      <a class="ghostBtn" href="./index.html?v=46-db05">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=46-db06">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./dashboard.html?v=46-db05">Dashboard</a>
-          <a href="./settings.html?v=46-db05">Settings</a>
-          <a href="./admin.html?v=46-db05" aria-current="page">Admin</a>
+          <a href="./dashboard.html?v=46-db06">Dashboard</a>
+          <a href="./settings.html?v=46-db06">Settings</a>
+          <a href="./admin.html?v=46-db06" aria-current="page">Admin</a>
         </nav>
       </details>
     </div>
@@ -36,7 +36,7 @@
   <div class="pageHead">
     <div>
       <h2>Admin</h2>
-      <p>Invite users and manage their role, status, and location access.</p>
+      <p>Create users and manage their privilege level, status, and location access.</p>
     </div>
     <button class="primaryBtn" id="addUserButton" type="button">Add User</button>
   </div>
@@ -49,8 +49,8 @@
 
   <section class="panel adminUsersPanel">
     <div class="panelHeader">
-      <div><h3>MaxDock Users</h3><p class="panelIntro">Passwords are never displayed or shared. New users receive a secure email invitation.</p></div>
-      <label class="adminSearch"><span>Search users</span><input id="userSearch" type="search" placeholder="Name or email"></label>
+      <div><h3>MaxDock Users</h3><p class="panelIntro">Create an invitation link or issue temporary sign-in credentials. Passwords remain protected by Supabase Auth.</p></div>
+      <label class="adminSearch"><span>Search users</span><input id="userSearch" type="search" placeholder="Name, username, or email"></label>
     </div>
     <div class="tableScroll">
       <table class="adminUsersTable">
@@ -64,13 +64,22 @@
 <div class="modalOverlay" id="userModal" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
   <div class="modal adminUserModal">
     <div class="modalHead">
-      <div><h2 id="userModalTitle">Add User</h2><p id="userModalIntro">Send a secure MaxDock invitation by email.</p></div>
+      <div><h2 id="userModalTitle">Add User</h2><p id="userModalIntro">Choose how this person will receive access.</p></div>
       <button class="closeBtn" id="closeUserModal" type="button" aria-label="Close">×</button>
     </div>
     <form class="modalBody" id="userForm">
       <div class="formGrid">
         <div class="field"><label for="userFullName">Full name *</label><input id="userFullName" autocomplete="name" required></div>
-        <div class="field"><label for="userEmail">Email address *</label><input id="userEmail" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="userUsername">Username *</label><input id="userUsername" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="janae.jones" required><small>3–50 letters, numbers, dots, dashes, or underscores.</small></div>
+        <fieldset class="field full adminDeliveryField" id="userDeliveryField">
+          <legend>Account setup method *</legend>
+          <div class="adminDeliveryOptions">
+            <label class="adminDeliveryOption"><input type="radio" name="deliveryMethod" value="invite_link" checked><span><strong>Invitation link</strong><small>Create a secure link and open an Outlook draft for you to send.</small></span></label>
+            <label class="adminDeliveryOption"><input type="radio" name="deliveryMethod" value="temporary_password"><span><strong>Temporary password</strong><small>Share the username and password yourself; no email invitation is sent.</small></span></label>
+          </div>
+        </fieldset>
+        <div class="field" id="userEmailField"><label for="userEmail">Email address <span id="userEmailRequired">*</span></label><input id="userEmail" type="email" autocomplete="email"><small id="userEmailHelp">The secure invitation link will be addressed to this person.</small></div>
+        <div class="field" id="userPasswordField" hidden><label for="userTemporaryPassword">Temporary password *</label><div class="adminPasswordInput"><input id="userTemporaryPassword" type="text" autocomplete="off" minlength="10"><button class="tiny" id="generatePasswordButton" type="button">Generate</button></div><small>The user must replace this after the first sign-in.</small></div>
         <div class="field"><label for="userRole">Privilege level *</label><select id="userRole" required></select></div>
         <div class="field adminActiveField"><label>Account status</label><label class="adminToggle"><input id="userActive" type="checkbox" checked><span>Active user</span></label></div>
         <fieldset class="field full adminLocationsField" id="userLocationsField">
@@ -83,15 +92,33 @@
       <div class="error" id="userError" role="alert"></div>
       <div class="wizardNav">
         <button class="secondaryBtn" id="cancelUserButton" type="button">Cancel</button>
-        <div class="rightNav"><button class="primaryBtn" id="saveUserButton" type="submit">Send Invitation</button></div>
+        <div class="rightNav"><button class="primaryBtn" id="saveUserButton" type="submit">Create Invitation Link</button></div>
       </div>
     </form>
   </div>
 </div>
 
-<script src="./supabase-2.110.3.js?v=46-db05"></script>
-<script src="./maxdock-config.js?v=46-db05"></script>
-<script src="./maxdock-db.js?v=46-db05"></script>
-<script src="./maxdock-admin.js?v=46-db05"></script>
+<div class="modalOverlay" id="accessModal" role="dialog" aria-modal="true" aria-labelledby="accessModalTitle">
+  <div class="modal adminAccessModal">
+    <div class="modalHead">
+      <div><h2 id="accessModalTitle">User access ready</h2><p id="accessModalIntro">Share these details only with the intended user.</p></div>
+      <button class="closeBtn" id="closeAccessModal" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="modalBody">
+      <div class="notice adminSecureNotice">This information grants access to MaxDock. Send it privately and do not post it in a shared channel.</div>
+      <div class="adminAccessDetails" id="accessDetails"></div>
+      <div class="error" id="accessError" role="alert"></div>
+      <div class="wizardNav">
+        <button class="secondaryBtn" id="openOutlookButton" type="button">Open Outlook Draft</button>
+        <div class="rightNav"><button class="secondaryBtn" id="copyAccessButton" type="button">Copy Details</button><button class="primaryBtn" id="doneAccessButton" type="button">Done</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./supabase-2.110.3.js?v=46-db06"></script>
+<script src="./maxdock-config.js?v=46-db06"></script>
+<script src="./maxdock-db.js?v=46-db06"></script>
+<script src="./maxdock-admin.js?v=46-db06"></script>
 </body>
 </html>

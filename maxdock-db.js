@@ -68,12 +68,38 @@
     return true;
   }
   async function signIn(identifier,password){
-    const email=String(identifier||"").trim().toLowerCase();
-    if(!email.includes("@"))throw new Error("Use your account email for this initial database test.");
-    const {data,error}=await client.auth.signInWithPassword({email,password});
-    throwIf(error,"Sign-in failed");
-    state.session=data.session;
-    return data;
+    const login=String(identifier||"").trim().toLowerCase();
+    if(!login)throw new Error("Enter your username or email address.");
+    if(login.includes("@")){
+      const {data,error}=await client.auth.signInWithPassword({email:login,password});
+      throwIf(error,"Sign-in failed");
+      state.session=data.session;
+      return data;
+    }
+
+    const result=await client.functions.invoke("maxdock-invite-user",{
+      body:{action:"username_login",username:login,password}
+    });
+    if(result.error){
+      let detail="Sign-in failed. Check your username and password.";
+      try{
+        if(result.error.context instanceof Response){
+          const payload=await result.error.context.clone().json();
+          detail=payload?.error||detail;
+        }
+      }catch(_ignored){}
+      throw new Error(detail);
+    }
+    if(!result.data?.accessToken||!result.data?.refreshToken){
+      throw new Error(result.data?.error||"Sign-in failed. Check your username and password.");
+    }
+    const sessionResult=await client.auth.setSession({
+      access_token:result.data.accessToken,
+      refresh_token:result.data.refreshToken
+    });
+    throwIf(sessionResult.error,"Sign-in failed");
+    state.session=sessionResult.data.session;
+    return sessionResult.data;
   }
   async function signOut(){
     await client.auth.signOut();
@@ -92,6 +118,10 @@
     throwIf(profileResult.error,"Unable to load the MaxDock user profile");
     if(!profileResult.data?.is_active)throw new Error("This MaxDock account is inactive.");
     state.profile=profileResult.data;
+    if(state.profile.must_change_password&&!location.pathname.endsWith("set-password.html")){
+      location.replace("./set-password.html?first=1");
+      await new Promise(()=>{});
+    }
 
     const [permissionResult,locationResult]=await Promise.all([
       client.from("role_permissions").select("permission_code").eq("role_code",state.profile.role_code),

@@ -27,14 +27,33 @@
 .slot{font-family:inherit;text-align:left}
 @media(max-width:760px){.loginCard{padding:28px 22px}.headerActions{flex-wrap:wrap}.accountControl{order:3;width:100%;justify-content:space-between}}
 
-/* DB-v05 user administration */
+/* DB-v06 demo polish: compact headings and balanced header controls */
+.pageHead h2{font-size:clamp(24px,2.25vw,34px);letter-spacing:-.7px;line-height:1.08}
+.pageHead p{font-size:13px;line-height:1.45}
+.headerActions{flex-wrap:wrap}
+.headerActions .accountControl,.headerActions .locationPill,.headerActions .ghostBtn,.headerActions .iconBtn{min-height:46px;border-radius:16px;box-shadow:0 8px 18px rgba(6,26,45,.065)}
+.headerActions .locationPill{gap:8px;padding:5px 6px 5px 12px}
+.headerActions .locationPill label{font-size:11px;color:#526070;text-transform:uppercase;letter-spacing:.05em}
+.headerActions .locationPill select{min-width:150px;height:34px;padding-top:0;padding-bottom:0;border-radius:11px}
+.headerActions .accountControl{padding-top:5px;padding-bottom:5px}
+.headerActions .ghostBtn{height:46px}
+@media(max-width:1120px){.topbarInner{align-items:start}.headerActions{max-width:760px}}
+@media(max-width:760px){
+  .headerActions .locationPill{order:1;flex:1 1 250px}
+  .headerActions .locationPill select{flex:1;min-width:0}
+  .headerActions .ghostBtn{order:2;flex:0 1 auto}
+  .headerActions .menuDetails{order:2}
+  .headerActions .accountControl{order:3}
+}
+
+/* DB-v06 account administration */
 .menu a[aria-current="page"]{background:#eef6ff;color:var(--fixed-blue)}
 .modalOpen{overflow:hidden}
 .adminPage{max-width:1320px}
 .adminSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:2px}
 .adminSummaryCard{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 19px;border:1px solid rgba(216,222,233,.92);border-radius:20px;background:rgba(255,255,255,.9);box-shadow:0 10px 24px rgba(6,26,45,.06)}
 .adminSummaryCard span{color:#64748b;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.07em}
-.adminSummaryCard strong{color:var(--fixed-navy);font-size:28px;letter-spacing:-1px}
+.adminSummaryCard strong{color:var(--fixed-navy);font-size:24px;letter-spacing:-.7px}
 .adminUsersPanel{padding:18px}
 .adminUsersPanel .panelHeader{align-items:flex-end}
 .panelIntro{margin:5px 0 0;color:#64748b;font-size:13px;line-height:1.45}
@@ -56,6 +75,9 @@
 .adminUserStatus i{width:8px;height:8px;border-radius:99px;background:#94a3b8}
 .adminUserStatus.active{color:#166534}.adminUserStatus.active i{background:#22c55e}
 .adminUserStatus.inactive{color:#991b1b}.adminUserStatus.inactive i{background:#ef4444}
+.adminStatusStack{display:grid;gap:7px;justify-items:start}
+.adminPendingBadge{display:inline-flex;padding:5px 7px;border-radius:8px;background:#fff7ed;color:#9a3412;font-size:9px;font-weight:900;white-space:nowrap}
+.adminRowActions{display:flex;align-items:center;gap:6px;white-space:nowrap}
 .adminUserModal{width:min(760px,100%)}
 .adminActiveField{justify-content:flex-end}
 .adminToggle{display:flex;align-items:center;gap:9px;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#f8fafc}
@@ -68,9 +90,29 @@
 .adminLocationOption input{width:17px;height:17px;padding:0}
 .systemAdminLocations .adminLocationOptions{opacity:.5}
 .adminSelfNotice{margin-top:14px}
+.adminDeliveryField{margin:0;padding:0;border:0}
+.adminDeliveryField legend{margin-bottom:7px;color:#334155;font-size:12px;font-weight:950}
+.adminDeliveryOptions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.adminDeliveryOption{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--line);border-radius:15px;background:#f8fafc;cursor:pointer}
+.adminDeliveryOption:has(input:checked){border-color:#67b8d6;background:#effaff;box-shadow:0 0 0 2px rgba(14,165,183,.08)}
+.adminDeliveryOption input{width:17px;height:17px;margin-top:2px;padding:0;flex:0 0 auto}
+.adminDeliveryOption span{display:grid;gap:3px}
+.adminDeliveryOption strong{color:#0f172a;font-size:12px}
+.adminDeliveryOption small{color:#64748b;font-size:10px;line-height:1.4}
+.adminPasswordInput{display:flex;gap:7px;align-items:stretch}
+.adminPasswordInput input{min-width:0;flex:1;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.adminPasswordInput .tiny{flex:0 0 auto}
+.adminAccessModal{width:min(680px,100%)}
+.adminSecureNotice{margin-bottom:16px}
+.adminAccessDetails{display:grid;gap:7px}
+.adminAccessDetails label{margin-top:7px;color:#526070;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.adminAccessValue{padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:#f8fafc;color:#0f172a;font:800 13px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-word}
+.adminAccessValue.sensitive{border-color:#fed7aa;background:#fff7ed;color:#9a3412}
+.adminAccessValue.link{max-height:125px;overflow:auto;font-size:11px}
 @media(max-width:760px){
   .adminSummary{grid-template-columns:1fr}
   .adminUsersPanel .panelHeader,.adminSearch{width:100%}
   .adminLocationOptions{grid-template-columns:1fr 1fr}
+  .adminDeliveryOptions{grid-template-columns:1fr}
 }
 @media(max-width:480px){.adminLocationOptions{grid-template-columns:1fr}}
