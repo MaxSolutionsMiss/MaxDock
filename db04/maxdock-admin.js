@@ -149,7 +149,7 @@
     $("saveUserButton").textContent=editing?"Save Changes":"Create Invitation Link";
     $("userFullName").value=user?.full_name||"";
     $("userUsername").value=user?.username||"";
-    $("userUsername").disabled=editing;
+    $("userUsername").disabled=false;
     $("userEmail").value=isSyntheticEmail(user?.email)?"":user?.email||"";
     $("userEmail").disabled=editing;
     $("userDeliveryField").hidden=editing;
@@ -161,6 +161,7 @@
     $("userRole").disabled=isSelf;
     $("userActive").disabled=isSelf;
     $("selfNotice").hidden=!isSelf;
+    $("deleteUserButton").hidden=!editing||isSelf;
     renderLocationOptions(user?.location_ids||[]);
     updateLocationMode();
     if(!editing)updateDeliveryMode();
@@ -179,6 +180,7 @@
     $("userEmail").disabled=false;
     $("userRole").disabled=false;
     $("userActive").disabled=false;
+    $("deleteUserButton").hidden=true;
     $("userDeliveryField").hidden=false;
     $("userEmailField").hidden=false;
     setFormError();
@@ -283,6 +285,31 @@
     }catch(error){showFatalError(error)}finally{setLoading(false)}
   }
 
+  async function deleteCurrentUser(){
+    const user=state.editingUser;
+    if(!user||user.user_id===state.currentUserId)return;
+    const label=user.full_name||user.username;
+    if(!confirm(`Delete ${label} from MaxDock? Their login and access will be removed. Existing appointment history will be preserved.`))return;
+    const confirmation=prompt(`Type the username ${user.username} to confirm deletion:`);
+    if(confirmation===null)return;
+    if(confirmation.trim().toLowerCase()!==String(user.username).toLowerCase()){
+      return setFormError("The username did not match. The user was not deleted.");
+    }
+
+    const button=$("deleteUserButton");
+    button.disabled=true;button.textContent="Deleting…";setFormError();
+    try{
+      await invokeAccountService({action:"delete_user",userId:user.user_id});
+      closeUserModal();
+      setLoading(true,"Refreshing users…");
+      await loadUsers();
+    }catch(error){
+      setFormError(error?.message||"The user could not be deleted.");
+    }finally{
+      setLoading(false);button.disabled=false;button.textContent="Delete User";
+    }
+  }
+
   async function saveUser(event){
     event.preventDefault();
     setFormError();
@@ -298,7 +325,7 @@
     const deliveryMethod=selectedDeliveryMethod();
     const temporaryPassword=$("userTemporaryPassword").value;
     if(!fullName)return setFormError("Full name is required.");
-    if(!editing&&!/^[A-Za-z0-9._-]{3,50}$/.test(username))return setFormError("Use a username with 3–50 letters, numbers, dots, dashes, or underscores.");
+    if(!/^[A-Za-z0-9._-]{3,50}$/.test(username))return setFormError("Use a username with 3–50 letters, numbers, dots, dashes, or underscores.");
     if(!editing&&deliveryMethod==="invite_link"&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setFormError("Enter a valid email address for the invitation link.");
     if(!editing&&deliveryMethod==="temporary_password"&&email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setFormError("Enter a valid contact email or leave it blank.");
     if(!editing&&deliveryMethod==="temporary_password"&&temporaryPassword.length<10)return setFormError("The temporary password must contain at least 10 characters.");
@@ -308,6 +335,9 @@
     button.textContent=editing?"Saving…":"Creating…";
     try{
       if(editing){
+        if(username.toLowerCase()!==String(editingUser.username||"").toLowerCase()){
+          await invokeAccountService({action:"update_username",userId:editingUser.user_id,username});
+        }
         const result=await db.client.rpc("admin_update_user",{
           p_user_id:editingUser.user_id,p_full_name:fullName,p_role_code:roleCode,
           p_is_active:isActive,p_location_ids:roleCode==="system_admin"?[]:locationIds
@@ -355,6 +385,7 @@
     $("addUserButton").addEventListener("click",()=>openUserModal());
     $("closeUserModal").addEventListener("click",closeUserModal);
     $("cancelUserButton").addEventListener("click",closeUserModal);
+    $("deleteUserButton").addEventListener("click",deleteCurrentUser);
     $("userRole").addEventListener("change",updateLocationMode);
     $("userSearch").addEventListener("input",renderUsers);
     $("userForm").addEventListener("submit",saveUser);

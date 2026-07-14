@@ -1,0 +1,25 @@
+MaxDock v46-DB07 deployment order
+
+Prerequisite
+- MaxDock DB-v01 through DB-v05 are already installed.
+- This release does not require another SQL script.
+
+1. In Supabase Edge Functions, open maxdock-invite-user and replace index.ts
+   with MaxDock_DB_v07_Edge_Function_maxdock-invite-user.ts.
+2. Deploy the updated Edge Function. Keep "Verify JWT with legacy secret" OFF.
+3. Upload every file from MaxDock-v46-DB07-package to BOTH locations in the
+   GitHub MaxDock repository, replacing files with the same names:
+   - repository root
+   - db04 folder
+4. Open the live db04 Admin page with the DB07 cache marker.
+5. Edit a non-current user and verify that a System Admin can:
+   - change the username;
+   - change full name, role, active status, and locations;
+   - delete the user after entering the username confirmation.
+
+Safety
+- A System Admin cannot delete their own account.
+- A System Admin cannot deactivate or remove their own System Admin role.
+- Deleting a user removes the login and location access.
+- Existing appointments and audit history are preserved.
+- The browser contains only the public Supabase publishable key.

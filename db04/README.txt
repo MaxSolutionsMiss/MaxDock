@@ -1,4 +1,4 @@
-MaxDock v46-DB06 — Account Access and Demo Polish Build
+MaxDock v46-DB07 — Full User Administration Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -37,10 +37,12 @@ Integrated database operations
 - Temporary-password accounts that do not require an email invitation
 - Forced private password change after a temporary user's first sign-in
 - Username or email sign-in through Supabase Auth
+- System Admin username editing and protected account deletion
 - Compact page headings and a balanced header with the location selector beside the account controls
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.
 - Temporary credentials and invitation links must be shared privately.
+- Deleting a user removes the login while preserving appointment and audit history.
 - Permanent appointment deletion is intentionally omitted to preserve audit history.
 - The original MaxDock v46 visual interface is retained; maxdock-integration.js replaces its browser-storage data path at runtime.
