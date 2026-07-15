@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<link rel="stylesheet" href="./maxdock.css?v=46-db11">
+<link rel="stylesheet" href="./maxdock-db04.css?v=46-db11">
+<title>MaxDock – My Appointments</title>
+</head>
+<body data-page="myappointments">
+<header class="topbar">
+  <div class="topbarInner">
+    <div class="brandRow"><div class="brand">
+      <a class="logoLink" href="./index.html?v=46-db11" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+      <div><h1 class="appTitle">MaxDock</h1></div>
+    </div></div>
+    <div class="headerActions">
+      <a class="ghostBtn" href="./index.html?v=46-db11">Main Page</a>
+      <details class="menuDetails">
+        <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
+        <nav class="menu">
+          <a href="./my-appointments.html?v=46-db11" aria-current="page">My Appointments</a>
+          <a href="./dashboard.html?v=46-db11">Dashboard</a>
+          <a href="./reports.html?v=46-db11">Reports</a>
+          <a href="./settings.html?v=46-db11">Settings</a>
+          <a href="./admin.html?v=46-db11">Admin</a>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+
+<main class="screen pageWrap">
+  <div class="pageHead">
+    <div><h2>My Appointments</h2><p>Your MaxDock bookings across all permitted locations.</p></div>
+    <a class="primaryBtn" href="./index.html?v=46-db11">Book Appointment</a>
+  </div>
+
+  <div class="metrics" id="myAppointmentMetrics"></div>
+
+  <section class="panel notificationPanel">
+    <div class="panelHeader"><div><h3>Notifications</h3><small id="notificationSummary">Loading notifications…</small></div><button class="secondaryBtn" id="markNotificationsRead" type="button">Mark All Read</button></div>
+    <div class="notificationList" id="notificationList"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panelHeader myAppointmentToolbar">
+      <h3>Bookings</h3>
+      <div class="filterField compactFilter"><label for="myAppointmentFilter">Show</label><select id="myAppointmentFilter"><option value="upcoming">Upcoming</option><option value="all">All</option><option value="past">Past</option><option value="cancelled">Cancelled</option></select></div>
+    </div>
+    <div class="tableScroll">
+      <table>
+        <thead><tr><th>Reference</th><th>Location</th><th>Date &amp; Time</th><th>Load</th><th>Vehicle</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="myAppointmentsTable"><tr><td colspan="7">Loading appointments…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+  <div class="error" id="myAppointmentsError" role="alert"></div>
+</main>
+
+<script src="./supabase-2.110.3.js?v=46-db11"></script>
+<script src="./maxdock-config.js?v=46-db11"></script>
+<script src="./maxdock-db.js?v=46-db11"></script>
+<script src="./maxdock-my-appointments.js?v=46-db11"></script>
+</body>
+</html>

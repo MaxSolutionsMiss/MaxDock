@@ -137,3 +137,35 @@
 .bookingLocationField label{color:var(--fixed-navy);font-size:13px}
 .bookingLocationField select{background:#fff;border-color:#7dd3fc}
 .bookingLocationField small{color:#526070;font-size:11px;line-height:1.4}
+
+/* DB11 operational features */
+.dockCompatibilityCard{display:grid;gap:10px;padding:13px;border:1px solid var(--line);border-radius:16px;background:#f8fafc}
+.dockCompatibilityCard+.dockCompatibilityCard{margin-top:10px}
+.dockCompatibilityHeading{color:#475569;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.06em}
+.dockCompatibilityOptions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.dockCompatibilityOptions label{display:flex;align-items:center;gap:8px;padding:8px 9px;border:1px solid #dbe4ee;border-radius:11px;background:#fff;color:#334155;font-size:11px;font-weight:800}
+.dockCompatibilityOptions input{width:16px;height:16px;padding:0;flex:0 0 auto}
+.notificationPanel{margin-bottom:18px}
+.notificationList{display:grid;gap:8px}
+.notificationItem{display:flex;justify-content:space-between;gap:16px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.notificationItem.unread{border-color:#67b8d6;background:#effaff;box-shadow:inset 4px 0 0 #0ea5b7}
+.notificationItem strong{display:block;color:#0f172a;font-size:12px}
+.notificationItem p{margin:4px 0 0;color:#526070;font-size:11px;line-height:1.45}
+.notificationItem time{color:#64748b;font-size:9px;font-weight:800;white-space:nowrap}
+.emptyState{padding:20px;color:#64748b;text-align:center;font-size:12px}
+.myAppointmentToolbar{align-items:end}
+.compactFilter{min-width:150px}
+.cancelAction{color:#b91c1c;border-color:#fecaca;background:#fff7f7}
+.reportFilters{align-items:end;margin-bottom:18px}
+.reportMetrics{margin-bottom:18px}
+.reportGrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.reportBars{display:grid;gap:12px}
+.reportBar{display:grid;gap:6px}
+.reportBarLabel{display:flex;justify-content:space-between;gap:12px;color:#334155;font-size:11px;font-weight:850}
+.reportBarTrack{height:9px;border-radius:99px;background:#e2e8f0;overflow:hidden}
+.reportBarTrack i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#0ea5b7,#2563eb)}
+@media(max-width:760px){
+  .dockCompatibilityOptions,.reportGrid{grid-template-columns:1fr}
+  .notificationItem{display:grid}.notificationItem time{white-space:normal}
+  .myAppointmentToolbar{align-items:stretch}.compactFilter{width:100%}
+}

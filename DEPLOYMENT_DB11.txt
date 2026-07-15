@@ -1,0 +1,25 @@
+MaxDock v46-DB11 deployment order
+
+Prerequisite
+- MaxDock DB-v01 through DB-v08 are already installed.
+- The existing maxdock-invite-user Edge Function remains active; DB11 does not replace it.
+
+1. Run MaxDock_DB_v09_Operational_Features.sql in Supabase.
+2. Confirm all six verification values are true.
+3. Upload every file from MaxDock-v46-DB11-package to BOTH locations in the
+   GitHub MaxDock repository, replacing files with the same names:
+   - repository root
+   - db04 folder
+4. Sign in as a Customer and confirm My Appointments shows only that account's bookings.
+5. Book an appointment and confirm an in-app notification appears.
+6. Sign in as a System Admin or Site Admin, open Settings, and configure the
+   accepted vehicle types for each dock.
+7. Confirm available slot counts and dock assignment use compatible docks only.
+8. Open Reports as an administrator, shipping manager, or coordinator and verify
+   that the page only shows permitted-location data.
+
+Notification behavior
+- In-app notifications are active after DB-v09 is installed.
+- Email addresses and delivery state are stored in an email-ready record.
+- Automatic email delivery requires a separate production email provider and is
+  intentionally reported as not configured until that provider is connected.

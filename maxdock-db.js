@@ -202,6 +202,15 @@
     [settingsResult,hoursResult,docksResult,localTypesResult,localTrucksResult,localHandlingResult,typesResult,trucksResult,handlingResult]
       .forEach((result,index)=>throwIf(result.error,["settings","operating hours","docks","location appointment types","location truck types","location handling types","appointment types","truck types","handling types"][index]));
 
+    let dockTruckRows=[];
+    if(hasPermission("settings.view")){
+      const compatibilityResult=await client.from("dock_truck_types")
+        .select("dock_id,location_id,truck_type_code")
+        .eq("location_id",selected.id);
+      throwIf(compatibilityResult.error,"Unable to load dock compatibility");
+      dockTruckRows=compatibilityResult.data||[];
+    }
+
     const masterTypes=typesResult.data||[],masterTrucks=trucksResult.data||[],masterHandling=handlingResult.data||[];
     const appointmentTypeByCode=mapBy(masterTypes),truckTypeByCode=mapBy(masterTrucks),handlingTypeByCode=mapBy(masterHandling);
     const dockRows=docksResult.data||[];
@@ -239,6 +248,11 @@
 
     state.locationData={
       settingsRow:s,operatingHours:hoursResult.data||[],dockRows,dockById:mapBy(dockRows,"id"),
+      dockTruckRows,
+      dockTruckCodesByDock:dockTruckRows.reduce((map,row)=>{
+        if(!map.has(row.dock_id))map.set(row.dock_id,new Set());
+        map.get(row.dock_id).add(row.truck_type_code);return map;
+      },new Map()),
       appointmentTypeByCode,truckTypeByCode,handlingTypeByCode,
       appointmentTypes,truckTypes,handlingTypes,
       appointmentNameToCode:mapNameToCode(masterTypes),truckNameToCode:mapNameToCode(masterTrucks),handlingNameToCode:mapNameToCode(masterHandling),
@@ -358,16 +372,34 @@
 
     const current=state.locationData.dockRows;
     const retained=new Set(dockInputs.filter(x=>x.id).map(x=>x.id));
+    const savedDocks=[];
     for(let i=0;i<dockInputs.length;i++){
       const dock=dockInputs[i],payload={name:dock.name,sort_order:i+1,is_active:true};
       const result=dock.id
-        ?await client.from("docks").update(payload).eq("id",dock.id).eq("location_id",locationId)
-        :await client.from("docks").insert({...payload,location_id:locationId});
+        ?await client.from("docks").update(payload).eq("id",dock.id).eq("location_id",locationId).select("*").single()
+        :await client.from("docks").insert({...payload,location_id:locationId}).select("*").single();
       throwIf(result.error,"Unable to save dock doors");
+      savedDocks.push({...result.data,truckTypeCodes:[...new Set(dock.truckTypeCodes||[])]});
     }
     for(const dock of current.filter(x=>!retained.has(x.id))){
       const result=await client.from("docks").update({is_active:false}).eq("id",dock.id).eq("location_id",locationId);
       throwIf(result.error,"Unable to deactivate a removed dock");
+    }
+
+    const existingRows=state.locationData.dockTruckRows||[];
+    for(const dock of savedDocks){
+      const existing=new Set(existingRows.filter(row=>row.dock_id===dock.id).map(row=>row.truck_type_code));
+      const desired=new Set(dock.truckTypeCodes);
+      const removed=[...existing].filter(code=>!desired.has(code));
+      const added=[...desired].filter(code=>!existing.has(code));
+      if(removed.length){
+        const result=await client.from("dock_truck_types").delete().eq("dock_id",dock.id).in("truck_type_code",removed);
+        throwIf(result.error,`Unable to remove vehicle compatibility from ${dock.name}`);
+      }
+      if(added.length){
+        const result=await client.from("dock_truck_types").insert(added.map(code=>({dock_id:dock.id,location_id:locationId,truck_type_code:code,created_by:state.profile.id})));
+        throwIf(result.error,`Unable to add vehicle compatibility to ${dock.name}`);
+      }
     }
     await loadLocation(state.currentLocation.name);
   }
@@ -398,9 +430,10 @@
     populateLocationSelect,addAccountControls,hasPermission,
     getProfile:()=>state.profile,getLocations:()=>state.locations,getCurrentLocation:()=>state.currentLocation,
     getSettings:()=>state.locationData?.legacySettings||null,getAppointments:()=>state.appointments,
+    getLocationData:()=>state.locationData||null,
     getDockRows:()=>state.locationData?.dockRows||[],
-    getAppointmentEditOptions:()=>({
-      docks:state.locationData?.dockRows||[],
+    getAppointmentEditOptions:(truckTypeCode)=>({
+      docks:(state.locationData?.dockRows||[]).filter(dock=>!truckTypeCode||state.locationData?.dockTruckCodesByDock?.get(dock.id)?.has(truckTypeCode)),
       appointmentTypes:state.locationData?.appointmentTypes||[],
       truckTypes:state.locationData?.truckTypes||[],
       handlingTypes:state.locationData?.handlingTypes||[]

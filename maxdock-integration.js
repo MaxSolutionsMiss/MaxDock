@@ -25,7 +25,13 @@
   function syncDatabaseState(){
     currentLocation=db.getCurrentLocation()?.name||currentLocation;
     settings={...defaultSettings,...(db.getSettings()||{})};
-    dockDraft=db.getDockRows().map(dock=>({id:dock.id,name:dock.name}));
+    const locationData=db.getLocationData();
+    const allTruckCodes=(locationData?.truckTypes||[]).map(truck=>truck.code);
+    dockDraft=db.getDockRows().map(dock=>({
+      id:dock.id,
+      name:dock.name,
+      truckTypeCodes:[...(locationData?.dockTruckCodesByDock?.get(dock.id)||new Set(allTruckCodes))]
+    }));
   }
 
   function setAppLoading(active,message="Loading MaxDock…"){
@@ -230,9 +236,9 @@
     $("editApptDate").min=todayISO();
     $("editApptDate").value=appointment.date;
     $("editApptStart").value=appointment.start;
-    fillEditSelect("editApptDock",options.docks,raw.dock_id);
     fillEditSelect("editApptType",options.appointmentTypes,raw.appointment_type_code);
     fillEditSelect("editApptTruck",options.truckTypes,raw.truck_type_code);
+    fillEditSelect("editApptDock",db.getAppointmentEditOptions(raw.truck_type_code).docks,raw.dock_id);
     fillEditSelect("editApptHandling",options.handlingTypes,raw.handling_type_code);
     $("editApptDirection").value=raw.direction||String(appointment.direction||"Inbound").toLowerCase();
     $("editApptSkids").value=String(raw.skid_count??appointment.skids??0);
@@ -248,6 +254,12 @@
     $("editAppointmentModal").classList.add("show");
     document.body.classList.add("modalOpen");
     setTimeout(()=>$("editApptDate").focus(),0);
+  };
+
+  window.syncEditDockCompatibility=function(){
+    const truckCode=$("editApptTruck")?.value;
+    const currentDock=$("editApptDock")?.value;
+    fillEditSelect("editApptDock",db.getAppointmentEditOptions(truckCode).docks,currentDock);
   };
 
   window.closeAppointmentEditor=function(){
@@ -346,17 +358,26 @@
     $("setOpen").value=settings.open;$("setClose").value=settings.close;$("setInterval").value=String(settings.interval);
     $("setBuffer").value=settings.buffer;$("setBase").value=settings.base;$("setPerSkid").value=settings.perSkid;
     $("setFullTruck").value=settings.fullTruck;$("setPriorityMin").value=settings.priorityMin;
-    $("docksList").innerHTML=dockDraft.map((dock,index)=>`<div class="dockItem"><input class="dockNameInput" data-dock-id="${esc(dock.id||"")}" value="${esc(dock.name)}"><button class="dangerBtn" onclick="removeDock(${index})">Remove</button></div>`).join("");
+    const truckTypes=db.getLocationData()?.truckTypes||[];
+    $("docksList").innerHTML=dockDraft.map((dock,index)=>`<div class="dockCompatibilityCard">
+      <div class="dockItem"><input class="dockNameInput" data-dock-index="${index}" data-dock-id="${esc(dock.id||"")}" value="${esc(dock.name)}"><button class="dangerBtn" onclick="removeDock(${index})">Remove</button></div>
+      <div class="dockCompatibilityHeading">Vehicle types accepted at this dock</div>
+      <div class="dockCompatibilityOptions">${truckTypes.map(truck=>`<label><input class="dockTruckCheck" type="checkbox" data-dock-index="${index}" value="${esc(truck.code)}" ${(dock.truckTypeCodes||[]).includes(truck.code)?"checked":""}><span>${esc(truck.name)}</span></label>`).join("")}</div>
+    </div>`).join("");
   };
 
   function captureDockDraft(){
     const inputs=[...document.querySelectorAll(".dockNameInput")];
-    if(inputs.length)dockDraft=inputs.map(input=>({id:input.dataset.dockId||null,name:input.value.trim()}));
+    if(inputs.length)dockDraft=inputs.map((input,index)=>({
+      id:input.dataset.dockId||null,
+      name:input.value.trim(),
+      truckTypeCodes:[...document.querySelectorAll(`.dockTruckCheck[data-dock-index="${index}"]:checked`)].map(check=>check.value)
+    }));
   }
 
   addDock=function(){
     captureDockDraft();
-    dockDraft.push({id:null,name:`Dock ${dockDraft.length+1}`});
+    dockDraft.push({id:null,name:`Dock ${dockDraft.length+1}`,truckTypeCodes:(db.getLocationData()?.truckTypes||[]).map(truck=>truck.code)});
     renderSettings();
   };
 
@@ -371,7 +392,7 @@
     try{
       if(!db.hasPermission("settings.manage")||!db.hasPermission("dock.manage"))throw new Error("Only a MaxDock system administrator can change these settings and dock doors.");
       captureDockDraft();
-      const docks=dockDraft.map(dock=>({...dock,name:dock.name.trim()})).filter(dock=>dock.name);
+      const docks=dockDraft.map(dock=>({...dock,name:dock.name.trim(),truckTypeCodes:[...new Set(dock.truckTypeCodes||[])]})).filter(dock=>dock.name);
       if(!docks.length)throw new Error("At least one active dock is required.");
       if(new Set(docks.map(dock=>dock.name.toLowerCase())).size!==docks.length)throw new Error("Dock names must be unique.");
       settings.open=$("setOpen").value||defaultSettings.open;settings.close=$("setClose").value||defaultSettings.close;
@@ -395,8 +416,9 @@
   resetSettings=function(){
     if(!confirm("Load the MaxDock default timing and dock names into this form? Nothing is saved until you select Save Settings."))return;
     const existing=db.getDockRows();
+    const allTruckCodes=(db.getLocationData()?.truckTypes||[]).map(truck=>truck.code);
     settings=JSON.parse(JSON.stringify(defaultSettings));
-    dockDraft=defaultSettings.docks.map((name,index)=>({id:existing[index]?.id||null,name}));
+    dockDraft=defaultSettings.docks.map((name,index)=>({id:existing[index]?.id||null,name,truckTypeCodes:allTruckCodes.slice()}));
     renderSettings();
   };
 
@@ -406,19 +428,21 @@
     const canSelectHeaderLocation=["system_admin","site_admin"].includes(roleCode);
     document.querySelectorAll(".locationPill").forEach(element=>element.hidden=!canSelectHeaderLocation);
     document.querySelectorAll(".headerActions > .ghostBtn").forEach(element=>element.hidden=isCustomer);
-    document.querySelectorAll(".headerActions .menuDetails").forEach(element=>element.hidden=isCustomer);
     if($("facilityBadge"))$("facilityBadge").hidden=isCustomer;
     const heroHint=document.querySelector(".heroHint");
     if(heroHint&&isCustomer)heroHint.textContent="Choose a Max Solutions location and an available appointment time.";
     if(!db.hasPermission("appointment.create"))document.querySelectorAll('[onclick="openRequest()"]').forEach(element=>element.hidden=true);
     if(!db.hasPermission("block.manage"))document.querySelectorAll('[onclick="openBlockModal()"]').forEach(element=>element.hidden=true);
     if(!db.hasPermission("reports.view"))document.querySelectorAll('[onclick="exportCSV()"]').forEach(element=>element.hidden=true);
+    if(!db.hasPermission("appointment.view"))document.querySelectorAll('a[href*="dashboard.html"]').forEach(element=>element.hidden=true);
+    if(!db.hasPermission("reports.view"))document.querySelectorAll('a[href*="reports.html"]').forEach(element=>element.hidden=true);
+    if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(element=>element.hidden=true);
     if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"]').forEach(element=>element.hidden=true);
     if($("scheduleEditHint"))$("scheduleEditHint").hidden=!canEditAppointments();
     const canManageSettings=db.hasPermission("settings.manage")&&db.hasPermission("dock.manage");
     if(!canManageSettings){
       document.querySelectorAll('[onclick="saveSettings()"],[onclick="resetSettings()"],[onclick="addDock()"],.dockItem .dangerBtn').forEach(element=>element.hidden=true);
-      document.querySelectorAll('#setOpen,#setClose,#setInterval,#setBuffer,#setBase,#setPerSkid,#setFullTruck,#setPriorityMin,.dockNameInput').forEach(element=>element.disabled=true);
+      document.querySelectorAll('#setOpen,#setClose,#setInterval,#setBuffer,#setBase,#setPerSkid,#setFullTruck,#setPriorityMin,.dockNameInput,.dockTruckCheck').forEach(element=>element.disabled=true);
     }
   }
 
@@ -427,7 +451,7 @@
     if(!await db.requireAuth())return;
     await db.loadContext();
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db10");
+      location.replace("./index.html?v=46-db11");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
