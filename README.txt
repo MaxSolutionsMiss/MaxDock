@@ -1,4 +1,4 @@
-MaxDock v46-DB14 — Visual Hierarchy and Live Schedule Build
+MaxDock v46-DB15 — Refined Booking and Action Layout Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -78,6 +78,10 @@ Integrated database operations
 - Full-screen TV schedule with automatic appointment refresh every three seconds
 - Customer Main Page contains only the booking workflow; the redundant queue shortcut is removed
 - Compact page headings and a balanced header with the location selector beside the account controls
+- Request Appointment uses the same calm system typeface as the authenticated pages with a lighter, more readable weight
+- Dashboard primary actions use an aligned three-column layout on wider screens
+- Export and Print controls use equal dimensions and a consistent aligned utility group across Dashboard, Operations Queue, and Reports
+- Operational Reports now includes a matching Print control
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.

@@ -1,0 +1,20 @@
+MaxDock v46-DB15 deployment notes
+
+Database
+- No new migration is required.
+- No Edge Function update is required.
+
+Landing page
+- Request Appointment retains its large, noticeable treatment.
+- Its typeface now matches the authenticated MaxDock pages.
+- Its weight and shadow are calmer for easier reading.
+
+Action alignment
+- Today’s queue, Place appointment, and Block time form one aligned primary-action row on wider screens.
+- Export CSV and Print form a smaller equal-size row aligned beneath the primary actions.
+- Operations Queue and Reports use the same equal-size Export CSV and Print group.
+- On phones, action controls use balanced full-width columns and remain easy to tap.
+
+Deployment
+- Upload the updated root files and matching db04 folder files.
+- Hard-refresh the browser after GitHub Pages finishes publishing.

@@ -343,3 +343,56 @@ body.tvScheduleMode .screen{z-index:1000}
   .queueFacts{grid-template-columns:1fr}.queueCardFooter{display:grid}.queueStatusAction{width:100%}
 }
 @media print{.tvModeButton,.tvScheduleBar{display:none!important}}
+
+/* DB15 landing typography and aligned document actions */
+.requestMega{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:clamp(27px,5.1vw,45px);
+  font-weight:600;
+  letter-spacing:-.8px;
+  line-height:1.08;
+  text-shadow:0 2px 12px rgba(0,0,0,.13)
+}
+.heroHint{font-weight:450}
+.pageUtilityActions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(96px,1fr));
+  width:min(100%,216px);
+  gap:8px
+}
+.pageUtilityActions .utilityBtn{width:100%;min-width:0}
+.dashboardActions{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(112px,1fr));
+  width:min(100%,468px);
+  gap:8px
+}
+.dashboardPrimaryActions{display:contents}
+.dashboardActions .dashboardActionPrimary{
+  width:100%;
+  min-height:44px;
+  padding:10px 12px;
+  font-weight:580
+}
+.dashboardUtilityActions{
+  grid-column:2/4;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(112px,1fr));
+  width:100%;
+  gap:8px
+}
+.dashboardUtilityActions .utilityBtn{width:100%;min-height:36px}
+
+@media(max-width:760px){
+  .dashboardActions{grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .dashboardPrimaryActions{display:contents}
+  .dashboardPrimaryActions .blockActionBtn{grid-column:1/-1}
+  .dashboardUtilityActions{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .dashboardUtilityActions>*{width:100%!important}
+  .pageUtilityActions{width:100%;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:420px){
+  .dashboardActions{grid-template-columns:1fr}
+  .dashboardPrimaryActions .blockActionBtn{grid-column:auto}
+  .dashboardUtilityActions{grid-column:1;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
