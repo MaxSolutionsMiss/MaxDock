@@ -2,7 +2,7 @@
   "use strict";
   const db=window.MaxDockDB;
   const $=id=>document.getElementById(id);
-  const state={rows:[],blocks:[]};
+  const state={rows:[],pendingRows:[],completedRows:[],blocks:[],busyId:null};
 
   function esc(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]))}
   function today(offset=0){const date=new Date();date.setDate(date.getDate()+offset);return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
@@ -16,12 +16,17 @@
 
   function queueRows(){
     const date=$("queueDate").value;
-    state.rows=db.getAppointments().filter(item=>item.date===date&&item.type!=="Dock Block"&&activeStatus(item)).sort((a,b)=>a.start.localeCompare(b.start));
+    const appointments=db.getAppointments().filter(item=>item.date===date&&item.type!=="Dock Block"&&(activeStatus(item)||item.status==="Completed")).sort((a,b)=>a.start.localeCompare(b.start));
+    state.pendingRows=appointments.filter(activeStatus);
+    state.completedRows=appointments.filter(item=>item.status==="Completed");
+    const view=$("queueStatus").value;
+    state.rows=view==="completed"?state.completedRows:view==="all"?appointments:state.pendingRows;
     state.blocks=db.getAppointments().filter(item=>item.date===date&&item.type==="Dock Block"&&item.status!=="Cancelled").sort((a,b)=>a.start.localeCompare(b.start));
     return state.rows;
   }
 
   function urgency(item){
+    if(item.status==="Completed")return "completed";
     if($("queueDate").value!==today())return item.priority?"priority":"planned";
     const difference=minuteValue(item.start)-currentMinutes();
     if(difference<0)return "overdue";
@@ -31,7 +36,9 @@
 
   function queueCard(item){
     const level=urgency(item);
-    const tag=level==="overdue"?"Time passed":level==="soon"?"Due within 60 min":item.priority?"Priority":"Planned";
+    const completed=item.status==="Completed";
+    const tag=completed?"Completed":level==="overdue"?"Time passed":level==="soon"?"Due within 60 min":item.priority?"Priority":"Planned";
+    const canChange=completed?db.hasPermission("appointment.update"):db.hasPermission("appointment.complete");
     return `<article class="queueCard ${level}">
       <div class="queueCardTime"><strong>${esc(displayTime(item.start))}</strong><small>${esc(displayTime(item.end))}</small></div>
       <div class="queueCardBody">
@@ -43,6 +50,7 @@
           <span><b>Carrier</b>${esc(item.carrier||"Not provided")}</span><span><b>PO / BOL / Job</b>${esc(item.job||"—")}</span>
         </div>
         ${item.notes?`<p class="queueNotes">${esc(item.notes)}</p>`:""}
+        <div class="queueCardFooter"><span class="queueState ${completed?"completed":"pending"}">${completed?"Completed":`Pending • ${esc(item.status)}`}</span>${canChange?`<button class="${completed?"secondaryBtn":"greenBtn"} queueStatusAction" type="button" data-queue-id="${esc(item.id)}" data-queue-status="${completed?"scheduled":"completed"}" ${state.busyId===item.id?"disabled":""}>${state.busyId===item.id?"Saving…":completed?"Reopen as Pending":"Mark Complete"}</button>`:""}</div>
       </div>
     </article>`;
   }
@@ -65,13 +73,14 @@
   function renderFocus(rows){
     const next=rows.find(item=>$("queueDate").value!==today()||minuteValue(item.end)>=currentMinutes())||rows[0];
     if(!next){$("queueFocus").innerHTML=`<div><small>${esc(displayDate($("queueDate").value))}</small><h3>No active appointments scheduled</h3><p>The location has no inbound or outbound work in the execution queue for this date.</p></div>`;return}
-    $("queueFocus").innerHTML=`<div><small>Next Operational Focus • ${esc(displayDate($("queueDate").value))}</small><h3>${esc(displayTime(next.start))} — ${esc(next.direction)} ${esc(next.ref)}</h3><p>${esc(next.company)} • ${esc(next.truck)} • ${Number(next.skids||0)} skids • ${esc(next.dock)}</p></div><a class="secondaryBtn" href="./dashboard.html?v=46-db12&date=${esc($("queueDate").value)}">Open Schedule</a>`;
+    $("queueFocus").innerHTML=`<div><small>Next Operational Focus • ${esc(displayDate($("queueDate").value))}</small><h3>${esc(displayTime(next.start))} — ${esc(next.direction)} ${esc(next.ref)}</h3><p>${esc(next.company)} • ${esc(next.truck)} • ${Number(next.skids||0)} skids • ${esc(next.dock)}</p></div><a class="secondaryBtn" href="./dashboard.html?v=46-db13&date=${esc($("queueDate").value)}">Open Schedule</a>`;
   }
 
   function renderLane(direction,elementId,summaryId){
     const rows=state.rows.filter(item=>item.direction.toLowerCase()===direction);
     const skids=rows.reduce((sum,item)=>sum+Number(item.skids||0),0);
-    $(summaryId).textContent=`${rows.length} appointment${rows.length===1?"":"s"} • ${skids} skids`;
+    const view=$("queueStatus").selectedOptions[0]?.textContent||"Queue";
+    $(summaryId).textContent=`${rows.length} ${view.toLowerCase()} appointment${rows.length===1?"":"s"} • ${skids} skids`;
     $(elementId).innerHTML=rows.length?rows.map(queueCard).join(""):`<div class="emptyState">No ${direction} appointments for this date.</div>`;
   }
 
@@ -83,12 +92,27 @@
   function render(){
     clearError();
     const rows=queueRows();
-    const inbound=rows.filter(item=>item.direction==="Inbound"),outbound=rows.filter(item=>item.direction==="Outbound");
-    const totalSkids=rows.reduce((sum,item)=>sum+Number(item.skids||0),0);
+    const inbound=state.pendingRows.filter(item=>item.direction==="Inbound"),outbound=state.pendingRows.filter(item=>item.direction==="Outbound");
+    const totalSkids=state.pendingRows.reduce((sum,item)=>sum+Number(item.skids||0),0);
     $("queueMetrics").innerHTML=[
-      ["Appointments",rows.length],["Inbound",inbound.length],["Outbound",outbound.length],["Total Skids",totalSkids],["Priority",rows.filter(item=>item.priority).length],["Dock Blocks",state.blocks.length]
+      ["Pending",state.pendingRows.length],["Completed",state.completedRows.length],["Inbound Pending",inbound.length],["Outbound Pending",outbound.length],["Pending Skids",totalSkids],["Dock Blocks",state.blocks.length]
     ].map(([label,value])=>`<div class="metric"><small>${label}</small><strong>${value}</strong></div>`).join("");
-    renderFocus(rows);renderActions(rows);renderLane("inbound","inboundQueue","inboundSummary");renderLane("outbound","outboundQueue","outboundSummary");renderBlocks();
+    renderFocus(state.pendingRows);renderActions(state.pendingRows);renderLane("inbound","inboundQueue","inboundSummary");renderLane("outbound","outboundQueue","outboundSummary");renderBlocks();
+  }
+
+  function showNotice(message){
+    const notice=$("queueNotice");notice.textContent=message;notice.hidden=false;
+    window.clearTimeout(showNotice.timer);showNotice.timer=window.setTimeout(()=>notice.hidden=true,5000);
+  }
+
+  async function updateQueueStatus(id,status){
+    const item=db.getAppointments().find(appointment=>appointment.id===id);
+    if(!item||state.busyId)return;
+    try{
+      state.busyId=id;render();
+      await db.changeStatus(id,status,null);
+      showNotice(status==="completed"?`${item.ref} marked completed.`:`${item.ref} reopened as pending.`);
+    }catch(error){showError(error)}finally{state.busyId=null;render()}
   }
 
   function csv(){
@@ -110,12 +134,17 @@
       if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(link=>link.hidden=true);
       $("queueDate").value=today();
       $("queueDate").addEventListener("change",render);
+      $("queueStatus").addEventListener("change",render);
       $("queueLocation").addEventListener("change",()=>changeLocation().catch(showError));
       $("queueToday").addEventListener("click",()=>{$("queueDate").value=today();render()});
       $("queueTomorrow").addEventListener("click",()=>{$("queueDate").value=today(1);render()});
       $("refreshQueue").addEventListener("click",()=>changeLocation().catch(showError));
       $("printQueue").addEventListener("click",()=>window.print());
       $("exportQueue").addEventListener("click",csv);
+      document.querySelectorAll(".queueCards").forEach(container=>container.addEventListener("click",event=>{
+        const button=event.target.closest("[data-queue-id]");
+        if(button)updateQueueStatus(button.dataset.queueId,button.dataset.queueStatus);
+      }));
       await db.loadLocation($("queueLocation").value);render();
     }catch(error){showError(error)}
   }

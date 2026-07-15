@@ -1,4 +1,4 @@
-MaxDock v46-DB12 — Operations Intelligence Build
+MaxDock v46-DB13 — Operational Role and Queue Workflow Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -67,6 +67,10 @@ Integrated database operations
 - Hourly capacity heatmap
 - Dock-to-vehicle compatibility matrix
 - Privacy-safe AI Operations Brief with a working MaxDock rules fallback
+- Operational roles bypass the customer-facing Main Page after sign-in
+- System Admin and Site Admin land on Dashboard; Shipping Manager and Coordinator land on Operations Queue
+- Operations Queue supports Pending, All, and Completed views with Mark Complete and Reopen as Pending actions
+- Dashboard actions are compact, with Today’s Queue and Place Appointment visually prioritized
 - Compact page headings and a balanced header with the location selector beside the account controls
 
 Notes

@@ -428,9 +428,10 @@
   function applyPermissions(){
     const roleCode=db.getProfile()?.role_code;
     const isCustomer=roleCode==="customer";
+    const isOperational=db.isOperationalRole();
     const canSelectHeaderLocation=["system_admin","site_admin"].includes(roleCode);
     document.querySelectorAll(".locationPill").forEach(element=>element.hidden=!canSelectHeaderLocation);
-    document.querySelectorAll(".headerActions > .ghostBtn").forEach(element=>element.hidden=isCustomer);
+    document.querySelectorAll(".headerActions > .ghostBtn").forEach(element=>element.hidden=isCustomer||isOperational);
     if($("facilityBadge"))$("facilityBadge").hidden=isCustomer;
     const heroHint=document.querySelector(".heroHint");
     if(heroHint&&isCustomer)heroHint.textContent="Choose a Max Solutions location and an available appointment time.";
@@ -454,8 +455,12 @@
     setAppLoading(true);
     if(!await db.requireAuth())return;
     await db.loadContext();
+    if(PAGE==="requester"&&db.isOperationalRole()){
+      location.replace(`./${db.getLandingPage()}`);
+      return;
+    }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db12");
+      location.replace("./index.html?v=46-db13");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");

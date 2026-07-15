@@ -51,7 +51,8 @@
         if(error)throw error;
         const result=await window.MaxDockDB.client.rpc("complete_password_setup");
         if(result.error)throw result.error;
-        location.replace("./index.html");
+        await window.MaxDockDB.loadContext();
+        location.replace(`./${window.MaxDockDB.getLandingPage()}`);
       }catch(err){
         showError(err.message||"The password could not be saved.");
         button.disabled=false;

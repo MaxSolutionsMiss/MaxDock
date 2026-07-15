@@ -1,0 +1,22 @@
+MaxDock v46-DB13 deployment notes
+
+Database
+- No new database migration is required.
+- DB13 uses the existing secure change_appointment_status function.
+- Operational roles already have appointment.complete and appointment.update permissions.
+
+Role landing behavior
+- System Admin and Site Admin land on Dashboard.
+- Shipping Manager and Coordinator land on Operations Queue.
+- Operational roles do not see the customer-facing Main Page link.
+- Customer accounts continue to land on the Main Page booking workflow.
+
+Operations Queue
+- Pending is the default view.
+- All and Completed views remain available for shift review.
+- Authorized users can mark an appointment complete without a browser prompt.
+- A completed appointment can be reopened as pending, which restores Scheduled status.
+
+Dashboard
+- Today’s Queue and Place Appointment are compact, visually distinct primary actions.
+- Block Time, Export CSV, Print, and Export Current View are smaller supporting actions.

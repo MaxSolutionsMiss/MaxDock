@@ -2,8 +2,14 @@
   "use strict";
 
   function safeReturnTarget(){
-    const requested=new URLSearchParams(location.search).get("return")||"index.html";
-    if(!/^(index|dashboard|settings|admin)\.html(?:[?#].*)?$/.test(requested))return "index.html";
+    const requested=new URLSearchParams(location.search).get("return");
+    if(!requested||!/^(index|dashboard|queue|reports|settings|admin|my-appointments)\.html(?:[?#].*)?$/.test(requested))return null;
+    return requested;
+  }
+
+  function destination(){
+    const requested=safeReturnTarget();
+    if(!requested||window.MaxDockDB.isOperationalRole()&&/^index\.html/.test(requested))return window.MaxDockDB.getLandingPage();
     return requested;
   }
 
@@ -14,7 +20,8 @@
 
     try{
       if(await window.MaxDockDB.getSession()){
-        location.replace(`./${safeReturnTarget()}`);
+        await window.MaxDockDB.loadContext();
+        location.replace(`./${destination()}`);
         return;
       }
     }catch(err){
@@ -34,7 +41,7 @@
           document.getElementById("loginPassword").value
         );
         await window.MaxDockDB.loadContext();
-        location.replace(`./${safeReturnTarget()}`);
+        location.replace(`./${destination()}`);
       }catch(err){
         errorBox.textContent=err.message;
         errorBox.style.display="block";
