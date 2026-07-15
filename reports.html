@@ -4,28 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=46-db11">
-<link rel="stylesheet" href="./maxdock-db04.css?v=46-db11">
+<link rel="stylesheet" href="./maxdock.css?v=46-db12">
+<link rel="stylesheet" href="./maxdock-db04.css?v=46-db12">
 <title>MaxDock – Operational Reports</title>
 </head>
 <body data-page="reports">
 <header class="topbar">
   <div class="topbarInner">
     <div class="brandRow"><div class="brand">
-      <a class="logoLink" href="./index.html?v=46-db11" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+      <a class="logoLink" href="./index.html?v=46-db12" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
       <div><h1 class="appTitle">MaxDock</h1></div>
     </div></div>
     <div class="headerActions">
       <div class="locationPill"><label for="reportLocation">Location</label><select id="reportLocation"></select></div>
-      <a class="ghostBtn" href="./index.html?v=46-db11">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=46-db12">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6-1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=46-db11">My Appointments</a>
-          <a href="./dashboard.html?v=46-db11">Dashboard</a>
-          <a href="./reports.html?v=46-db11" aria-current="page">Reports</a>
-          <a href="./settings.html?v=46-db11">Settings</a>
-          <a href="./admin.html?v=46-db11">Admin</a>
+          <a href="./my-appointments.html?v=46-db12">My Appointments</a>
+          <a href="./queue.html?v=46-db12">Operations Queue</a>
+          <a href="./dashboard.html?v=46-db12">Dashboard</a>
+          <a href="./reports.html?v=46-db12" aria-current="page">Reports</a>
+          <a href="./settings.html?v=46-db12">Settings</a>
+          <a href="./admin.html?v=46-db12">Admin</a>
         </nav>
       </details>
     </div>
@@ -46,6 +47,24 @@
 
   <div class="metrics reportMetrics" id="reportMetrics"></div>
 
+  <section class="panel aiBriefPanel">
+    <div class="panelHeader aiBriefHeader">
+      <div><div class="aiTitleRow"><h3>AI Operations Brief</h3><span class="aiModeBadge" id="aiModeBadge">Not generated</span></div><small>Advisory analysis of aggregate operational data only. AI cannot change the schedule.</small></div>
+      <button class="primaryBtn" id="generateAiBrief" type="button">Generate Brief</button>
+    </div>
+    <div class="aiBriefContent" id="aiBriefContent"><div class="emptyState">Select a date range and generate a management-ready operations brief.</div></div>
+  </section>
+
+  <section class="panel reportVisualPanel">
+    <div class="panelHeader"><div><h3>Appointment &amp; Utilization Trend</h3><small>Daily volume with occupied dock capacity.</small></div><div class="chartLegend"><span><i class="volumeLegend"></i>Appointments</span><span><i class="utilizationLegend"></i>Utilization</span></div></div>
+    <div class="reportTrend" id="reportTrend"></div>
+  </section>
+
+  <section class="panel reportVisualPanel">
+    <div class="panelHeader"><div><h3>Capacity Heatmap</h3><small>Average occupied dock capacity by starting hour for the selected period.</small></div><div class="heatLegend"><span>Open</span><i class="heatLow"></i><i class="heatMedium"></i><i class="heatHigh"></i><span>Busy</span></div></div>
+    <div class="capacityHeatmap" id="capacityHeatmap"></div>
+  </section>
+
   <div class="reportGrid">
     <section class="panel"><div class="panelHeader"><h3>Vehicle Mix</h3></div><div class="reportBars" id="truckReport"></div></section>
     <section class="panel"><div class="panelHeader"><h3>Appointment Mix</h3></div><div class="reportBars" id="typeReport"></div></section>
@@ -58,9 +77,9 @@
   <div class="error" id="reportError" role="alert"></div>
 </main>
 
-<script src="./supabase-2.110.3.js?v=46-db11"></script>
-<script src="./maxdock-config.js?v=46-db11"></script>
-<script src="./maxdock-db.js?v=46-db11"></script>
-<script src="./maxdock-reports.js?v=46-db11"></script>
+<script src="./supabase-2.110.3.js?v=46-db12"></script>
+<script src="./maxdock-config.js?v=46-db12"></script>
+<script src="./maxdock-db.js?v=46-db12"></script>
+<script src="./maxdock-reports.js?v=46-db12"></script>
 </body>
 </html>

@@ -359,11 +359,14 @@
     $("setBuffer").value=settings.buffer;$("setBase").value=settings.base;$("setPerSkid").value=settings.perSkid;
     $("setFullTruck").value=settings.fullTruck;$("setPriorityMin").value=settings.priorityMin;
     const truckTypes=db.getLocationData()?.truckTypes||[];
-    $("docksList").innerHTML=dockDraft.map((dock,index)=>`<div class="dockCompatibilityCard">
-      <div class="dockItem"><input class="dockNameInput" data-dock-index="${index}" data-dock-id="${esc(dock.id||"")}" value="${esc(dock.name)}"><button class="dangerBtn" onclick="removeDock(${index})">Remove</button></div>
-      <div class="dockCompatibilityHeading">Vehicle types accepted at this dock</div>
-      <div class="dockCompatibilityOptions">${truckTypes.map(truck=>`<label><input class="dockTruckCheck" type="checkbox" data-dock-index="${index}" value="${esc(truck.code)}" ${(dock.truckTypeCodes||[]).includes(truck.code)?"checked":""}><span>${esc(truck.name)}</span></label>`).join("")}</div>
-    </div>`).join("");
+    $("docksList").innerHTML=`<div class="dockMatrixScroll"><table class="dockCompatibilityMatrix">
+      <thead><tr><th>Dock Door</th>${truckTypes.map(truck=>`<th title="${esc(truck.name)}">${esc(truck.name)}</th>`).join("")}<th>Action</th></tr></thead>
+      <tbody>${dockDraft.map((dock,index)=>`<tr>
+        <td><input class="dockNameInput" data-dock-index="${index}" data-dock-id="${esc(dock.id||"")}" value="${esc(dock.name)}" aria-label="Dock name"></td>
+        ${truckTypes.map(truck=>`<td><label class="dockMatrixCheck" title="${esc(dock.name)} accepts ${esc(truck.name)}"><input class="dockTruckCheck" type="checkbox" data-dock-index="${index}" value="${esc(truck.code)}" ${(dock.truckTypeCodes||[]).includes(truck.code)?"checked":""}><span aria-hidden="true">✓</span></label></td>`).join("")}
+        <td><button class="dangerBtn dockMatrixRemove" onclick="removeDock(${index})">Remove</button></td>
+      </tr>`).join("")}</tbody>
+    </table></div>`;
   };
 
   function captureDockDraft(){
@@ -432,6 +435,7 @@
     const heroHint=document.querySelector(".heroHint");
     if(heroHint&&isCustomer)heroHint.textContent="Choose a Max Solutions location and an available appointment time.";
     if(!db.hasPermission("appointment.create"))document.querySelectorAll('[onclick="openRequest()"]').forEach(element=>element.hidden=true);
+    document.querySelectorAll(".operationsQueueShortcut").forEach(element=>element.hidden=!db.hasPermission("operations.queue.view"));
     if(!db.hasPermission("block.manage"))document.querySelectorAll('[onclick="openBlockModal()"]').forEach(element=>element.hidden=true);
     if(!db.hasPermission("reports.view"))document.querySelectorAll('[onclick="exportCSV()"]').forEach(element=>element.hidden=true);
     if(!db.hasPermission("appointment.view"))document.querySelectorAll('a[href*="dashboard.html"]').forEach(element=>element.hidden=true);
@@ -441,7 +445,7 @@
     if($("scheduleEditHint"))$("scheduleEditHint").hidden=!canEditAppointments();
     const canManageSettings=db.hasPermission("settings.manage")&&db.hasPermission("dock.manage");
     if(!canManageSettings){
-      document.querySelectorAll('[onclick="saveSettings()"],[onclick="resetSettings()"],[onclick="addDock()"],.dockItem .dangerBtn').forEach(element=>element.hidden=true);
+      document.querySelectorAll('[onclick="saveSettings()"],[onclick="resetSettings()"],[onclick="addDock()"],.dockMatrixRemove').forEach(element=>element.hidden=true);
       document.querySelectorAll('#setOpen,#setClose,#setInterval,#setBuffer,#setBase,#setPerSkid,#setFullTruck,#setPriorityMin,.dockNameInput,.dockTruckCheck').forEach(element=>element.disabled=true);
     }
   }
@@ -451,7 +455,7 @@
     if(!await db.requireAuth())return;
     await db.loadContext();
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db11");
+      location.replace("./index.html?v=46-db12");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
@@ -466,7 +470,8 @@
     populateBookingLocations();
 
     if(PAGE==="dashboard"){
-      window.scrollTo(0,0);$("adminDate").value=todayISO();renderDashboard();
+      const requestedDate=new URLSearchParams(location.search).get("date");
+      window.scrollTo(0,0);$("adminDate").value=/^\d{4}-\d{2}-\d{2}$/.test(requestedDate||"")?requestedDate:todayISO();renderDashboard();
       $("editAppointmentForm")?.addEventListener("submit",saveEditedAppointment);
       $("editAppointmentModal")?.addEventListener("click",event=>{if(event.target===$("editAppointmentModal"))window.closeAppointmentEditor()});
     }

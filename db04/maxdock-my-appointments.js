@@ -27,6 +27,16 @@
     $("myAppointmentMetrics").innerHTML=[
       ["Upcoming",upcoming],["All Bookings",state.appointments.length],["Cancelled",cancelled],["Unread Notices",unread]
     ].map(([label,value])=>`<div class="metric"><small>${label}</small><strong>${value}</strong></div>`).join("");
+    renderNextAppointment();
+  }
+
+  function renderNextAppointment(){
+    const next=state.appointments.filter(isUpcoming).sort((a,b)=>new Date(a.start_at)-new Date(b.start_at))[0];
+    const panel=$("nextAppointmentSpotlight");
+    panel.hidden=!next;
+    if(!next)return;
+    const when=localParts(next.start_at,next.location_timezone);
+    panel.innerHTML=`<div><small>Next Appointment</small><h3>${esc(when.label)} • ${esc(next.location_name)}</h3><p>${esc(next.booking_reference)} • ${esc(next.appointment_type||"")} • ${esc(next.truck_type||"")} • ${Number(next.skid_count||0)} skids</p></div><button class="secondaryBtn" type="button" onclick="copyMyAppointment('${next.appointment_id}')">Copy Details</button>`;
   }
 
   function renderNotifications(){
@@ -75,6 +85,7 @@
     state.appointments=appointments.data||[];
     state.notifications=notifications.data||[];
     renderMetrics();renderNotifications();renderAppointments();
+    db.refreshNotificationBadge?.().catch(()=>{});
   }
 
   window.copyMyAppointment=async function(id){

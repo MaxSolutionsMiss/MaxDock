@@ -414,9 +414,26 @@
     if(!actions||document.getElementById("maxdockAccount"))return;
     const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
     const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
+    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db12";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+    bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
     const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
-    wrap.append(label,button);actions.prepend(wrap);
+    wrap.append(label,bell,button);actions.prepend(wrap);
+    bell.hidden=!hasPermission("notifications.view");
+    if(hasPermission("notifications.view"))refreshNotificationBadge().catch(()=>{});
+    if(!hasPermission("operations.queue.view"))document.querySelectorAll('a[href*="queue.html"]').forEach(a=>a.hidden=true);
     if(!hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(a=>a.hidden=true);
+  }
+  async function refreshNotificationBadge(){
+    const badge=document.getElementById("maxdockNotificationCount");
+    if(!badge||!state.profile||!hasPermission("notifications.view"))return 0;
+    const result=await client.from("user_notifications").select("id",{count:"exact",head:true})
+      .eq("user_id",state.profile.id).is("read_at",null);
+    throwIf(result.error,"Unable to load notification count");
+    const count=Number(result.count||0);
+    badge.textContent=count>99?"99+":String(count);
+    badge.hidden=count===0;
+    badge.parentElement?.setAttribute("aria-label",count?`Open notifications: ${count} unread`:"Open notifications");
+    return count;
   }
   function hasPermission(code){return state.permissions.has(code)}
 
@@ -427,7 +444,7 @@
   window.MaxDockDB={
     client,state,getSession,requireAuth,signIn,signOut,loadContext,selectLocation,loadLocation,
     fetchAppointments,availableSlots,bookAppointment,blockDockTime,changeStatus,updateAppointment,saveLocationSettings,
-    populateLocationSelect,addAccountControls,hasPermission,
+    populateLocationSelect,addAccountControls,refreshNotificationBadge,hasPermission,
     getProfile:()=>state.profile,getLocations:()=>state.locations,getCurrentLocation:()=>state.currentLocation,
     getSettings:()=>state.locationData?.legacySettings||null,getAppointments:()=>state.appointments,
     getLocationData:()=>state.locationData||null,

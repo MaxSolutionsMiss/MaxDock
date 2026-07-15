@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=46-db11">
-<link rel="stylesheet" href="./maxdock-db04.css?v=46-db11">
+<link rel="stylesheet" href="./maxdock.css?v=46-db12">
+<link rel="stylesheet" href="./maxdock-db04.css?v=46-db12">
 <title>MaxDock</title>
 </head>
 <body data-page="requester">
@@ -29,15 +29,16 @@
           <option>Bristol</option><option>Owen Sound</option><option>Concord</option><option>Markham</option>
         </select>
       </div>
-      <a class="ghostBtn" href="./index.html?v=46-db11">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=46-db12">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=46-db11">My Appointments</a>
-          <a href="./reports.html?v=46-db11">Reports</a>
-          <a href="./dashboard.html?v=46-db11">Dashboard</a>
-          <a href="./settings.html?v=46-db11">Settings</a>
-          <a href="./admin.html?v=46-db11">Admin</a>
+          <a href="./my-appointments.html?v=46-db12">My Appointments</a>
+          <a href="./queue.html?v=46-db12">Operations Queue</a>
+          <a href="./reports.html?v=46-db12">Reports</a>
+          <a href="./dashboard.html?v=46-db12">Dashboard</a>
+          <a href="./settings.html?v=46-db12">Settings</a>
+          <a href="./admin.html?v=46-db12">Admin</a>
         </nav>
       </details>
     </div>
@@ -49,6 +50,7 @@
       <div class="facilityBadge" id="facilityBadge"><span class="dot"></span><span id="facilityName">Max Solutions – Mississauga</span></div>
       <button class="requestMega" onclick="openRequest()">Request Appointment</button>
       <p class="heroHint">Choose an available time in a few quick steps.</p>
+      <a class="queueHomeShortcut operationsQueueShortcut" href="./queue.html?v=46-db12" hidden><span>Shipping &amp; Receiving</span><b>Open Today’s Operations Queue</b><small>Review inbound, outbound, and shift actions</small></a>
     </div>
   </section>
 </main>
@@ -137,7 +139,7 @@
           <div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">
             <button class="secondaryBtn" onclick="copyConfirmation()">Copy Confirmation</button>
             <button class="secondaryBtn" onclick="openEmailDraft()">Open Email Draft</button>
-            <a class="secondaryBtn" href="./my-appointments.html?v=46-db11">View My Appointments</a>
+            <a class="secondaryBtn" href="./my-appointments.html?v=46-db12">View My Appointments</a>
           </div>
         </div>
         <div class="error" id="err5"></div>
@@ -146,9 +148,9 @@
     </div>
   </div>
 </div>
-<script src="./supabase-2.110.3.js?v=46-db11"></script>
-<script src="./maxdock-config.js?v=46-db11"></script>
-<script src="./maxdock-db.js?v=46-db11"></script>
-<script src="./maxdock.js?v=46-db11"></script>
-<script src="./maxdock-integration.js?v=46-db11"></script>
+<script src="./supabase-2.110.3.js?v=46-db12"></script>
+<script src="./maxdock-config.js?v=46-db12"></script>
+<script src="./maxdock-db.js?v=46-db12"></script>
+<script src="./maxdock.js?v=46-db12"></script>
+<script src="./maxdock-integration.js?v=46-db12"></script>
 </body></html>

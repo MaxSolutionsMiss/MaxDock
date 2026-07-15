@@ -1,0 +1,28 @@
+MaxDock v46-DB12 deployment order
+
+Prerequisite
+- MaxDock DB-v01 through DB-v09 are already installed.
+- Keep maxdock-invite-user version 5 active.
+
+1. Run MaxDock_DB_v10_Operations_Intelligence.sql in Supabase.
+2. Confirm all six verification values are true.
+3. Deploy MaxDock_DB_v10_Edge_Function_maxdock-ai-brief.ts as index.ts for the
+   Supabase Edge Function named maxdock-ai-brief.
+4. Keep "Verify JWT with legacy secret" OFF. The function validates the live
+   user session and DB12 permission in its own code.
+5. Upload every file from MaxDock-v46-DB12-package to BOTH locations in the
+   GitHub MaxDock repository, replacing files with the same names:
+   - repository root
+   - db04 folder
+6. Sign in as a Shipping Manager and confirm Today’s Queue is visible on the
+   main page and Operations Queue separates inbound and outbound appointments.
+7. Open Reports and confirm the trend chart, capacity heatmap, and brief area.
+8. Open Settings as a System Admin or Site Admin and confirm the dock-to-vehicle
+   compatibility matrix saves correctly.
+
+AI behavior
+- Without OPENAI_API_KEY, Generate Brief returns MaxDock Rules Analysis so the
+  feature remains useful and does not pretend AI is active.
+- To activate AI later, add OPENAI_API_KEY to Supabase Edge Function secrets.
+- OPENAI_MODEL is optional; the function currently defaults to gpt-5.6.
+- Never put the OpenAI API key in GitHub or maxdock-config.js.
