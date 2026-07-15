@@ -200,8 +200,6 @@
 .dockMatrixCheck input:focus-visible+span{outline:3px solid rgba(37,99,235,.25);outline-offset:2px}
 
 .queueFilters{align-items:end;margin-bottom:18px}.queuePageHead{align-items:end}
-.queueHomeShortcut{display:grid;gap:2px;width:min(360px,100%);margin-top:18px;padding:13px 16px;border:1px solid #9edbe6;border-radius:15px;background:#fff;color:#0f2940;text-align:left;text-decoration:none;box-shadow:0 10px 24px rgba(14,116,144,.1)}
-.queueHomeShortcut span{color:#0e7490;font-size:8px;font-weight:950;text-transform:uppercase;letter-spacing:.08em}.queueHomeShortcut b{font-size:12px}.queueHomeShortcut small{color:#64748b;font-size:9px}
 .queueActionPanel,.queueBlocksPanel{margin-bottom:18px}
 .queueActionList{display:grid;gap:8px}
 .queueAction{display:grid;grid-template-columns:30px 1fr;align-items:center;gap:11px;padding:11px 13px;border:1px solid #e2e8f0;border-radius:13px;background:#fff}
@@ -247,3 +245,101 @@
   .queueFilters,.queuePageHead .toolbar,.notificationBell{display:none!important}
   .queueLanes{grid-template-columns:1fr 1fr}.queueCard,.queueAction,.queueFocus{break-inside:avoid;box-shadow:none}.queueCard{font-size:9px}.pageWrap{max-width:none}
 }
+
+/* DB14 calm visual hierarchy, mobile legibility, and TV schedule */
+html,body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-weight:400;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+b,strong{font-weight:650}
+.appTitle{font-weight:700;letter-spacing:-1px}
+.appSub,.loginEyebrow{font-weight:500;letter-spacing:.01em;text-transform:none}
+.pageHead h2{font-size:clamp(24px,2vw,31px);font-weight:650;letter-spacing:-.45px;line-height:1.15}
+.pageHead p,.panelIntro{font-size:13px;font-weight:400;line-height:1.55}
+.panel h3,.settingsGroup h3,.scheduleTitleBlock h3{font-size:16px;font-weight:620;letter-spacing:-.1px}
+.panelHeader small{color:#64748b;font-size:12px;font-weight:400;line-height:1.45}
+.menu a{font-size:14px;font-weight:550}
+.menu a[aria-current="page"]{font-weight:620}
+.accountControl span,.accountSignOut{font-weight:550}
+.headerActions .locationPill label,.locationPill label{font-weight:550;letter-spacing:0;text-transform:none}
+.locationPill select,.toolbar input,.toolbar select{font-weight:500}
+.ghostBtn,.primaryBtn,.secondaryBtn,.greenBtn,.dangerBtn,.tiny,.accountSignOut{font-weight:600}
+.primaryBtn,.greenBtn,.secondaryBtn,.dangerBtn{min-height:40px}
+.actionBtn{padding:10px 15px;border-radius:12px;font-size:13px;font-weight:600}
+.utilityBtn{min-height:36px;padding:7px 11px;border-radius:10px;background:#fff;color:#526070;border:1px solid #dbe3ea;box-shadow:none;font-size:12px;font-weight:500}
+.utilityBtn:hover{color:#0f2742;border-color:#b9c8d5;background:#f8fafc}
+.utilityToolbar{gap:7px}
+.textActionBtn{min-height:36px;padding:7px 10px;border-color:transparent;background:transparent;box-shadow:none;color:#155e8f;font-size:12px;font-weight:550}
+label,.field label,.filterField label{font-weight:550}
+.metric{padding:14px 15px;border-radius:18px;box-shadow:0 8px 22px rgba(6,26,45,.055)}
+.metric small,.adminSummaryCard span{font-size:12px;font-weight:500;letter-spacing:0;text-transform:none}
+.metric strong,.adminSummaryCard strong{font-weight:650;letter-spacing:-.55px}
+th,.dockCompatibilityMatrix th{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none}
+td{font-size:13px;line-height:1.45}
+.tiny{min-height:32px;padding:6px 9px;font-size:12px}
+.status,.adminRole,.adminUserStatus,.adminPendingBadge{font-weight:600;letter-spacing:0;text-transform:none}
+.adminLocationTag,.adminAllLocations,.adminDeliveryOption strong,.adminLocationsField legend,.adminDeliveryField legend,.adminAccessDetails label{font-weight:550;letter-spacing:0;text-transform:none}
+.dockCompatibilityHeading,.aiBriefSummary small,.aiModeBadge{font-weight:600;letter-spacing:0;text-transform:none}
+.dockCompatibilityOptions label{font-size:12px;font-weight:500}
+.reviewItem b{font-weight:550;letter-spacing:0;text-transform:none}
+.stepTitle{font-weight:650}.stepPill,.stepNum{font-weight:600}
+.scaleControl label,.timelineCorner,.dockLaneLabel small{font-weight:550;letter-spacing:0;text-transform:none}
+.scheduleDateTitle,.timeRulerTick span,.timeRulerTick.finalTimeLabel span{font-weight:600}
+.eventTime,.eventCompany{font-weight:600}.eventMeta{font-size:11px;font-weight:400}
+.notificationItem strong{font-size:13px;font-weight:600}.notificationItem p{font-size:12px;line-height:1.55}.notificationItem time{font-size:11px;font-weight:400}
+.nextAppointmentSpotlight small,.queueFocus small{margin-bottom:6px;color:#47758a;font-size:12px;font-weight:450;letter-spacing:0;text-transform:none}
+.nextAppointmentSpotlight h3{font-size:18px;font-weight:620}.nextAppointmentSpotlight p{font-size:13px;line-height:1.5}
+
+.dashboardActions{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.dashboardPrimaryActions,.dashboardUtilityActions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.dashboardActions .dashboardActionPrimary{min-height:42px;padding:10px 15px;border-radius:12px;font-size:13px;font-weight:620;box-shadow:0 9px 20px rgba(6,26,45,.12)}
+.dashboardActions .blockActionBtn{background:#edf4f8;color:#0f4661;border:1px solid #bfd4df;box-shadow:none}
+.dashboardUtilityActions{gap:6px}
+
+.queueFocus{padding:17px 19px}
+.queueFocus h3{margin:0;color:#334155;font-size:16px;font-weight:550;line-height:1.35;letter-spacing:0}
+.queueFocus h3 span{margin-right:4px;color:#0e7490;font-size:22px;font-weight:620;letter-spacing:-.25px}
+.queueFocus p{font-size:13px;line-height:1.5}
+.queueAction strong{font-size:13px;font-weight:580}.queueAction small{font-size:11px;line-height:1.45}.queueAction>span{font-weight:600}
+.queueClearState span{font-size:12px}
+.queueCard{grid-template-columns:92px 1fr;gap:15px;padding:15px}
+.queueCardTime{padding:10px 8px}.queueCardTime strong{font-size:16px;font-weight:620}.queueCardTime small{font-size:12px;font-weight:400}
+.queueCardTop>b{font-size:12px;font-weight:600}.queueTag{font-size:10px;font-weight:600;letter-spacing:0;text-transform:none}
+.queueCard h4{margin:6px 0 10px;font-size:15px;font-weight:620;line-height:1.35}
+.queueFacts{gap:9px 12px}.queueFacts span{color:#334155;font-size:12px;line-height:1.35}.queueFacts b{margin-bottom:2px;color:#718096;font-size:10px;font-weight:550;letter-spacing:0;text-transform:none}
+.queueNotes{font-size:12px;line-height:1.55}.queueState{font-size:11px;font-weight:550}.queueStatusAction{min-height:34px;padding:7px 10px;font-size:12px;font-weight:600}
+.queueBlock b,.queueBlock span{font-weight:600}.queueBlock small{font-size:11px}
+.reportBarLabel{font-size:12px;font-weight:550}.chartLegend,.heatLegend{font-size:11px;font-weight:500}
+.aiBriefGrid h4,.aiActions h4{font-size:13px;font-weight:600}.aiBriefGrid li,.aiBriefGrid p{font-size:12px;line-height:1.55}.aiActions b{font-size:12px;font-weight:600}.aiActions p{font-size:11px}.aiActions em{font-size:10px;font-weight:550}
+.heatCell small{font-size:11px;font-weight:500}.heatCell strong{font-weight:650}
+
+.tvScheduleBar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px;padding:10px 12px;border:1px solid #b7dde6;border-radius:13px;background:#effbfe;color:#285b6d;font-size:12px}
+.tvScheduleBar>div{display:flex;align-items:center;gap:8px}.liveDot{width:9px;height:9px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.13)}
+body.tvScheduleMode{overflow:hidden}
+body.tvScheduleMode .topbar{display:none}
+body.tvScheduleMode .screen{z-index:1000}
+#dockSchedulePanel.tvScheduleActive,#dockSchedulePanel:fullscreen{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;height:100vh;margin:0;padding:22px;border:0;border-radius:0;background:#f5f8fb;box-shadow:none}
+#dockSchedulePanel.tvScheduleActive .schedulePanelHeader,#dockSchedulePanel:fullscreen .schedulePanelHeader{flex:0 0 auto}
+#dockSchedulePanel.tvScheduleActive .timelineScroll,#dockSchedulePanel:fullscreen .timelineScroll{flex:1;min-height:0;border-radius:14px}
+#dockSchedulePanel.tvScheduleActive .scheduleTitleBlock h3,#dockSchedulePanel:fullscreen .scheduleTitleBlock h3{font-size:20px}
+#dockSchedulePanel.tvScheduleActive .timelineLane,#dockSchedulePanel:fullscreen .timelineLane{min-height:104px}
+#dockSchedulePanel.tvScheduleActive .dockTrack,#dockSchedulePanel:fullscreen .dockTrack{min-height:104px}
+#dockSchedulePanel.tvScheduleActive .scheduleEvent,#dockSchedulePanel:fullscreen .scheduleEvent{top:14px;height:76px}
+
+@media(max-width:760px){
+  .pageHead{gap:12px}.pageHead h2{font-size:25px}.panel{border-radius:20px;padding:14px}
+  .dashboardActions{width:100%;align-items:stretch}
+  .dashboardPrimaryActions{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  .dashboardPrimaryActions>*{width:100%!important}
+  .dashboardPrimaryActions .blockActionBtn{grid-column:1/-1}
+  .dashboardUtilityActions{width:100%;justify-content:flex-end}
+  .dashboardUtilityActions>*{width:auto!important}
+  .utilityToolbar{width:100%;justify-content:flex-end}.utilityToolbar .utilityBtn{width:auto!important}
+  .queueCard{grid-template-columns:1fr}.queueCardTime{display:flex;align-items:baseline;gap:9px;text-align:left}.queueCardTime small{margin:0}
+  .queueFacts{grid-template-columns:1fr 1fr}.queueFocus h3 span{display:block;margin:0 0 2px}
+  .queueCardFooter{align-items:flex-start}.queueStatusAction{min-height:38px}
+  .notificationPanel .panelHeader{align-items:flex-start}.textActionBtn{margin-left:auto}
+  #dockSchedulePanel.tvScheduleActive,#dockSchedulePanel:fullscreen{padding:12px}.tvScheduleBar{align-items:flex-start}.tvScheduleBar>div{align-items:flex-start}.tvScheduleBar .utilityBtn{flex:0 0 auto}
+}
+@media(max-width:420px){
+  .dashboardPrimaryActions{grid-template-columns:1fr}.dashboardPrimaryActions .blockActionBtn{grid-column:auto}
+  .queueFacts{grid-template-columns:1fr}.queueCardFooter{display:grid}.queueStatusAction{width:100%}
+}
+@media print{.tvModeButton,.tvScheduleBar{display:none!important}}

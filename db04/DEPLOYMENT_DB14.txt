@@ -1,0 +1,24 @@
+MaxDock v46-DB14 deployment notes
+
+Database
+- No new migration is required.
+- Coordinator schedule editing uses the existing appointment.update permission.
+- Customer remains limited to appointment.create and has no Operations Queue permission.
+
+Visual hierarchy
+- System fonts replace the previous heavy typography treatment.
+- Labels, metrics, table headers, and supporting text use sentence case and moderate weights.
+- Queue shipment facts are larger and readable on phones.
+- Print, export, and mark-read controls use one consistent low-emphasis style.
+- Today’s queue, Place appointment, and Block time remain the primary Dashboard actions.
+
+Role behavior
+- The redundant Operations Queue shortcut was removed from the Customer Main Page.
+- Coordinator retains the operational landing experience and can edit or move appointments.
+- Shipping Manager retains queue execution and completion controls.
+
+TV schedule
+- Select TV view in the Dock Schedule header.
+- The schedule fills the screen and refreshes appointment data every three seconds.
+- Select Exit TV view or press Escape to return to the normal Dashboard.
+- Browsers without the Fullscreen API still receive a full-window schedule overlay.

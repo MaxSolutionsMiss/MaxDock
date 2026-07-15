@@ -1,4 +1,4 @@
-MaxDock v46-DB13 — Operational Role and Queue Workflow Build
+MaxDock v46-DB14 — Visual Hierarchy and Live Schedule Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -71,6 +71,12 @@ Integrated database operations
 - System Admin and Site Admin land on Dashboard; Shipping Manager and Coordinator land on Operations Queue
 - Operations Queue supports Pending, All, and Completed views with Mark Complete and Reopen as Pending actions
 - Dashboard actions are compact, with Today’s Queue and Place Appointment visually prioritized
+- Calm system-font hierarchy with sentence-case labels and reduced heavy bold styling
+- Larger, mobile-readable Operations Queue shipment details
+- Consistent low-emphasis styling for print, export, and secondary text actions
+- Coordinator appointment editing and schedule movement through existing permissions
+- Full-screen TV schedule with automatic appointment refresh every three seconds
+- Customer Main Page contains only the booking workflow; the redundant queue shortcut is removed
 - Compact page headings and a balanced header with the location selector beside the account controls
 
 Notes

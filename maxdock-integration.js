@@ -9,7 +9,7 @@
   const originalFilteredDayAppointments=filteredDayAppointments;
 
   function canEditAppointments(){
-    return ["system_admin","site_admin"].includes(db.getProfile()?.role_code)
+    return ["system_admin","site_admin","coordinator"].includes(db.getProfile()?.role_code)
       &&db.hasPermission("appointment.update");
   }
   window.canEditMaxDockAppointment=canEditAppointments;
@@ -451,6 +451,59 @@
     }
   }
 
+  let tvRefreshTimer=null;
+  let tvRefreshBusy=false;
+
+  function updateTvStatus(message){
+    const status=$("tvRefreshStatus");
+    if(status)status.textContent=message;
+  }
+
+  async function refreshTvSchedule(){
+    if(tvRefreshBusy||document.hidden)return;
+    tvRefreshBusy=true;
+    try{
+      await db.fetchAppointments();
+      syncDatabaseState();
+      renderDashboard();
+      updateTvStatus(`Live schedule · updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"})} · refreshes every 3 seconds`);
+    }catch(error){
+      updateTvStatus(`Live refresh paused · ${error.message||"connection unavailable"}`);
+    }finally{
+      tvRefreshBusy=false;
+    }
+  }
+
+  function stopTvRefresh(){
+    if(tvRefreshTimer)window.clearInterval(tvRefreshTimer);
+    tvRefreshTimer=null;
+    tvRefreshBusy=false;
+  }
+
+  window.openTvSchedule=function(){
+    const panel=$("dockSchedulePanel");
+    if(!panel)return;
+    document.body.classList.add("tvScheduleMode");
+    panel.classList.add("tvScheduleActive");
+    $("tvScheduleBar").hidden=false;
+    $("tvModeButton").hidden=true;
+    updateTvStatus("Live schedule · connecting…");
+    if(panel.requestFullscreen&&!document.fullscreenElement)panel.requestFullscreen().catch(()=>{});
+    stopTvRefresh();
+    refreshTvSchedule();
+    tvRefreshTimer=window.setInterval(refreshTvSchedule,3000);
+  };
+
+  window.closeTvSchedule=function(){
+    const panel=$("dockSchedulePanel");
+    stopTvRefresh();
+    document.body.classList.remove("tvScheduleMode");
+    panel?.classList.remove("tvScheduleActive");
+    if($("tvScheduleBar"))$("tvScheduleBar").hidden=true;
+    if($("tvModeButton"))$("tvModeButton").hidden=false;
+    if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+  };
+
   async function initializeDatabaseApp(){
     setAppLoading(true);
     if(!await db.requireAuth())return;
@@ -460,7 +513,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db13");
+      location.replace("./index.html?v=46-db14");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
@@ -479,6 +532,7 @@
       window.scrollTo(0,0);$("adminDate").value=/^\d{4}-\d{2}-\d{2}$/.test(requestedDate||"")?requestedDate:todayISO();renderDashboard();
       $("editAppointmentForm")?.addEventListener("submit",saveEditedAppointment);
       $("editAppointmentModal")?.addEventListener("click",event=>{if(event.target===$("editAppointmentModal"))window.closeAppointmentEditor()});
+      document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&document.body.classList.contains("tvScheduleMode"))window.closeTvSchedule()});
     }
     if($("requestModal")){
       $("reqDate").value=$("adminDate")?.value||todayISO();toggleCompany();renderSlots();
@@ -487,7 +541,9 @@
     if(PAGE==="settings")renderSettings();
     applyPermissions();
     document.addEventListener("keydown",event=>{
-      if(event.key==="Escape"&&$("editAppointmentModal")?.classList.contains("show"))window.closeAppointmentEditor();
+      if(event.key!=="Escape")return;
+      if(document.body.classList.contains("tvScheduleMode"))window.closeTvSchedule();
+      else if($("editAppointmentModal")?.classList.contains("show"))window.closeAppointmentEditor();
     });
     setAppLoading(false);
   }
