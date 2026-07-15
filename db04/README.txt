@@ -1,4 +1,4 @@
-MaxDock v46-DB15 — Refined Booking and Action Layout Build
+MaxDock v46-DB16 — Smart Operations and Unified Interface Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -16,6 +16,7 @@ Database prerequisites
 8. MaxDock_DB_v08_User_Password_Reset_Audit.sql
 9. MaxDock_DB_v09_Operational_Features.sql
 10. MaxDock_DB_v10_Operations_Intelligence.sql
+11. MaxDock_DB_v11_Smart_Operations.sql
 
 Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
@@ -71,7 +72,7 @@ Integrated database operations
 - System Admin and Site Admin land on Dashboard; Shipping Manager and Coordinator land on Operations Queue
 - Operations Queue supports Pending, All, and Completed views with Mark Complete and Reopen as Pending actions
 - Dashboard actions are compact, with Today’s Queue and Place Appointment visually prioritized
-- Calm system-font hierarchy with sentence-case labels and reduced heavy bold styling
+- Calm type hierarchy with sentence-case labels and reduced heavy bold styling
 - Larger, mobile-readable Operations Queue shipment details
 - Consistent low-emphasis styling for print, export, and secondary text actions
 - Coordinator appointment editing and schedule movement through existing permissions
@@ -82,6 +83,15 @@ Integrated database operations
 - Dashboard primary actions use an aligned three-column layout on wider screens
 - Export and Print controls use equal dimensions and a consistent aligned utility group across Dashboard, Operations Queue, and Reports
 - Operational Reports now includes a matching Print control
+- Arial-first typography and standard 400/600/700 weights for a cleaner, more consistent interface
+- Unified primary, secondary, utility, and semantic button sizes across Dashboard, Queue, Reports, Settings, Admin, and booking flows
+- Responsive Queue date controls with equal-height Today, Tomorrow, and Refresh Queue actions
+- Morning Shift Brief with first load, peak period, docks in use, priority volume, and smart exception counts
+- Smart slot ranking based on compatible capacity, location workload, and an optional preferred time window
+- Operational users receive a balanced suggested dock while customer accounts never receive dock names
+- Personal reusable booking templates protected by owner-only row-level security
+- Permission-controlled appointment history using the existing immutable audit log
+- Smart scheduling, history, and booking RPCs restricted to signed-in MaxDock users
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.

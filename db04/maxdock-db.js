@@ -35,9 +35,9 @@
   }
   function isOperationalRole(roleCode=state.profile?.role_code){return OPERATIONAL_ROLES.has(roleCode)}
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db15";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db15";
-    return "index.html?v=46-db15";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db16";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db16";
+    return "index.html?v=46-db16";
   }
   function applyRoleNavigation(){
     const operational=isOperationalRole();
@@ -284,21 +284,70 @@
   }
   async function availableSlots(input){
     const data=state.locationData;
-    const result=await client.rpc("list_available_appointment_slots",{
+    const result=await client.rpc("list_smart_appointment_slots",{
       p_location_id:state.currentLocation.id,
       p_date:input.date,
       p_appointment_type_code:codeFor(data.appointmentNameToCode,input.type,"Appointment type"),
       p_truck_type_code:codeFor(data.truckNameToCode,input.truck,"Truck type"),
       p_skid_count:Number(input.skids||0),
       p_handling_type_code:codeFor(data.handlingNameToCode,input.handling,"Handling type"),
-      p_is_priority:Boolean(input.priority)
+      p_is_priority:Boolean(input.priority),
+      p_preferred_start_time:input.preferredStart||null,
+      p_preferred_end_time:input.preferredEnd||null
     });
     throwIf(result.error,"Unable to calculate available times");
     return (result.data||[]).map(row=>{
       const start=localDateTime(row.slot_start,state.currentLocation.timezone);
       const end=localDateTime(row.slot_end,state.currentLocation.timezone);
-      return {date:start.date,start:start.time,end:end.time,startAt:row.slot_start,endAt:row.slot_end,open:Number(row.available_docks)};
+      return {
+        date:start.date,start:start.time,end:end.time,startAt:row.slot_start,endAt:row.slot_end,
+        open:Number(row.available_docks),rank:Number(row.recommendation_rank),score:Number(row.recommendation_score),
+        recommendedDockId:row.recommended_dock_id||null,recommendedDockName:row.recommended_dock_name||null,
+        reason:row.recommendation_reason||"Compatible appointment time"
+      };
     });
+  }
+
+  async function listBookingTemplates(){
+    if(!state.currentLocation)return [];
+    const result=await client.from("booking_templates").select("*")
+      .eq("location_id",state.currentLocation.id).order("updated_at",{ascending:false});
+    throwIf(result.error,"Unable to load booking templates");
+    return result.data||[];
+  }
+
+  async function saveBookingTemplate(input){
+    const data=state.locationData;
+    const payload={
+      owner_user_id:state.profile.id,
+      location_id:state.currentLocation.id,
+      name:requireValue(String(input.name||"").trim(),"Template name"),
+      direction:normalize(input.direction),
+      requester_type:input.requesterType,
+      company_name:input.company||null,
+      appointment_type_code:codeFor(data.appointmentNameToCode,input.type,"Appointment type"),
+      truck_type_code:codeFor(data.truckNameToCode,input.truck,"Truck type"),
+      skid_count:Number(input.skids||0),
+      handling_type_code:codeFor(data.handlingNameToCode,input.handling,"Handling type"),
+      is_priority:Boolean(input.priority),
+      carrier_name:input.carrier||null,
+      preferred_start_time:input.preferredStart||null,
+      preferred_end_time:input.preferredEnd||null
+    };
+    const result=await client.from("booking_templates").upsert(payload,{onConflict:"owner_user_id,location_id,name"}).select("*").single();
+    throwIf(result.error,"Unable to save the booking template");
+    return result.data;
+  }
+
+  async function deleteBookingTemplate(id){
+    const result=await client.from("booking_templates").delete().eq("id",id).eq("owner_user_id",state.profile.id);
+    throwIf(result.error,"Unable to delete the booking template");
+  }
+
+  async function appointmentHistory(id){
+    const result=await client.rpc("get_appointment_history",{p_appointment_id:id});
+    throwIf(result.error,"Unable to load appointment history");
+    return result.data||[];
   }
   async function bookAppointment(input){
     const data=state.locationData;
@@ -431,7 +480,7 @@
     if(!actions||document.getElementById("maxdockAccount"))return;
     const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
     const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
-    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db15";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db16";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
     bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
     const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
     wrap.append(label,bell,button);actions.prepend(wrap);
@@ -461,6 +510,7 @@
   window.MaxDockDB={
     client,state,getSession,requireAuth,signIn,signOut,loadContext,selectLocation,loadLocation,
     fetchAppointments,availableSlots,bookAppointment,blockDockTime,changeStatus,updateAppointment,saveLocationSettings,
+    listBookingTemplates,saveBookingTemplate,deleteBookingTemplate,appointmentHistory,
     populateLocationSelect,addAccountControls,refreshNotificationBadge,hasPermission,isOperationalRole,getLandingPage,applyRoleNavigation,
     getProfile:()=>state.profile,getLocations:()=>state.locations,getCurrentLocation:()=>state.currentLocation,
     getSettings:()=>state.locationData?.legacySettings||null,getAppointments:()=>state.appointments,

@@ -1,0 +1,41 @@
+MaxDock v46-DB16 deployment notes
+
+Database
+- Apply MaxDock_DB_v11_Smart_Operations.sql once.
+- The migration creates owner-protected booking templates and smart slot recommendations.
+- It exposes the existing appointment audit log through a permission-controlled history function.
+- Coordinator receives audit.view so schedule changes can be understood before further edits.
+- No Edge Function update is required.
+
+Typography and buttons
+- Arial is the first-choice typeface across the application.
+- Font weights use standard 400, 500, 600, and 700 values for predictable rendering.
+- Primary, secondary, utility, danger, and completion actions have consistent dimensions.
+- Queue date fields and Today, Tomorrow, and Refresh Queue are all 42 pixels high.
+- Print and Export CSV remain aligned in the same page-head position.
+
+Operations Queue
+- A responsive Morning Shift Brief shows the first load, peak period, docks in use, priority count, and items needing review.
+- Smart exceptions include passed appointment times, near-term work, priority loads, missing carriers, zero skid quantities, special handling, and dock blocks.
+- Queue cards link permitted users to the appointment history.
+
+Smart booking
+- The three strongest slots are identified using available compatible docks, concurrent facility workload, and the optional preferred time window.
+- System Admin, Site Admin, Shipping Manager, and Coordinator can see the suggested dock.
+- Customer users see recommended times but never receive dock identifiers or dock names.
+- Final dock assignment balances scheduled minutes across compatible available docks.
+
+Templates
+- Any signed-in user can save reusable load settings for a location.
+- Dates, references, requester names, and email addresses are never stored in templates.
+- Templates are private to their owner and protected by row-level security.
+- Smart scheduling, history, and booking RPCs explicitly deny anonymous execution.
+
+Appointment history
+- History is available from the Dashboard appointment list and the Operations Queue.
+- It shows creation, edits, status changes, timestamps, and the responsible MaxDock user.
+- Existing audit records are reused; no duplicate history table is created.
+
+Deployment
+- Upload the updated root files and the matching db04 files.
+- Hard-refresh the browser after GitHub Pages finishes publishing.

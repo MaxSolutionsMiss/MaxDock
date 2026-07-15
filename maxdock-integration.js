@@ -3,6 +3,7 @@
 
   const db=window.MaxDockDB;
   let dockDraft=[];
+  let bookingTemplates=[];
   let slotRequestId=0;
   let editingAppointmentId=null;
   const originalOpenRequest=openRequest;
@@ -77,6 +78,90 @@
     select.disabled=locations.length<=1;
   }
 
+  function preferredWindow(){
+    const value=$("reqPreferredWindow")?.value||"";
+    const [start,end]=value.split("|");
+    return start&&end?{start,end}:{start:null,end:null};
+  }
+
+  function showTemplateNotice(message){
+    const notice=$("bookingTemplateNotice");
+    if(!notice)return;
+    notice.textContent=message;notice.hidden=false;
+    window.clearTimeout(showTemplateNotice.timer);
+    showTemplateNotice.timer=window.setTimeout(()=>notice.hidden=true,4500);
+  }
+
+  function renderBookingTemplates(selectedId=""){
+    const select=$("reqTemplateSelect");
+    if(!select)return;
+    select.innerHTML=`<option value="">Start without a template</option>${bookingTemplates.map(template=>`<option value="${esc(template.id)}">${esc(template.name)}</option>`).join("")}`;
+    select.value=selectedId&&bookingTemplates.some(template=>template.id===selectedId)?selectedId:"";
+    const selected=Boolean(select.value);
+    $("reqTemplateApply").disabled=!selected;
+    $("reqTemplateDelete").disabled=!selected;
+  }
+
+  async function refreshBookingTemplates(selectedId=""){
+    if(!$("reqTemplateSelect"))return;
+    bookingTemplates=await db.listBookingTemplates();
+    renderBookingTemplates(selectedId);
+  }
+
+  function nameForCode(map,code){return map?.get(code)?.name||""}
+
+  window.applySelectedBookingTemplate=async function(){
+    const template=bookingTemplates.find(item=>item.id===$("reqTemplateSelect")?.value);
+    if(!template)return;
+    const data=db.getLocationData();
+    $("reqDirection").value=template.direction==="outbound"?"Outbound":"Inbound";
+    $("reqRequesterType").value=template.requester_type;
+    if(!$("reqRequesterType").value){
+      $("reqRequesterType").insertAdjacentHTML("beforeend",`<option>${esc(template.requester_type)}</option>`);
+      $("reqRequesterType").value=template.requester_type;
+    }
+    $("reqCompany").value=template.company_name||"";
+    $("reqType").value=nameForCode(data.appointmentTypeByCode,template.appointment_type_code);
+    $("reqTruck").value=nameForCode(data.truckTypeByCode,template.truck_type_code);
+    $("reqHandling").value=nameForCode(data.handlingTypeByCode,template.handling_type_code);
+    $("reqSkids").value=String(template.skid_count??0);
+    $("reqPriority").value=template.is_priority?"Yes":"No";
+    $("reqCarrier").value=template.carrier_name||"";
+    const start=String(template.preferred_start_time||"").slice(0,5);
+    const end=String(template.preferred_end_time||"").slice(0,5);
+    $("reqPreferredWindow").value=start&&end?`${start}|${end}`:"";
+    toggleCompany();selectedSlot=null;$("selectedTimeDisplay").value="";
+    await renderSlots();
+    showTemplateNotice(`${template.name} applied. You can still change any field.`);
+  };
+
+  window.saveCurrentBookingTemplate=async function(){
+    const name=$("reqTemplateName")?.value.trim();
+    if(!name)return showTemplateNotice("Enter a template name first.");
+    try{
+      validate1();validate2();
+      const windowPreference=preferredWindow();
+      const requesterType=$("reqRequesterType").value;
+      const usesCompany=["Vendor","Customer","Other Sister Plant","Other"].includes(requesterType);
+      const saved=await db.saveBookingTemplate({
+        name,direction:$("reqDirection").value,requesterType,
+        company:usesCompany?$("reqCompany").value.trim():null,
+        type:$("reqType").value,truck:$("reqTruck").value,skids:Number($("reqSkids").value||0),
+        handling:$("reqHandling").value,priority:$("reqPriority").value==="Yes",
+        carrier:$("reqCarrier").value.trim(),preferredStart:windowPreference.start,preferredEnd:windowPreference.end
+      });
+      await refreshBookingTemplates(saved.id);$("reqTemplateName").value="";
+      showTemplateNotice(`${saved.name} saved for ${currentLocation}.`);
+    }catch(error){showTemplateNotice(error.message)}
+  };
+
+  window.deleteSelectedBookingTemplate=async function(){
+    const template=bookingTemplates.find(item=>item.id===$("reqTemplateSelect")?.value);
+    if(!template||!confirm(`Delete the ${template.name} booking template?`))return;
+    try{await db.deleteBookingTemplate(template.id);await refreshBookingTemplates();showTemplateNotice(`${template.name} deleted.`)}
+    catch(error){showTemplateNotice(error.message)}
+  };
+
   window.changeBookingLocation=async function(value){
     if(!value||value===currentLocation)return;
     await changeLocation(value);
@@ -94,6 +179,7 @@
       applyTheme(currentLocation);
       populateRequesterLocations();
       populateBookingLocations();
+      await refreshBookingTemplates();
       selectedSlot=null;
       if(PAGE==="dashboard")renderDashboard();
       if(PAGE==="requester")renderSlots();
@@ -113,6 +199,8 @@
     if(!db.hasPermission("appointment.create"))return alert("You do not have permission to create appointments.");
     populateBookingLocations();
     originalOpenRequest();
+    if($("templateSavePanel"))$("templateSavePanel").hidden=false;
+    if($("reqTemplateName"))$("reqTemplateName").value="";
   };
 
   renderSlots=async function(){
@@ -128,28 +216,39 @@
     const requestId=++slotRequestId;
     $("slotList").innerHTML=`<div class="notice">Checking live availability…</div>`;
     try{
+      const windowPreference=preferredWindow();
       const slots=await db.availableSlots({
         date,
         type:$("reqType").value,
         truck:$("reqTruck").value,
         skids:Number($("reqSkids").value||0),
         handling:$("reqHandling").value,
-        priority:$("reqPriority").value==="Yes"
+        priority:$("reqPriority").value==="Yes",
+        preferredStart:windowPreference.start,
+        preferredEnd:windowPreference.end
       });
       if(requestId!==slotRequestId)return;
       if(selectedSlot&&!slots.some(slot=>slot.date===selectedSlot.date&&slot.start===selectedSlot.start)){
         selectedSlot=null;
         $("selectedTimeDisplay").value="";
       }
-      $("slotList").innerHTML=slots.slice(0,40).map(slot=>{
+      const recommended=slots.filter(slot=>slot.rank<=3).sort((a,b)=>a.rank-b.rank);
+      const remaining=slots.filter(slot=>slot.rank>3).sort((a,b)=>a.start.localeCompare(b.start));
+      $("slotList").innerHTML=[...recommended,...remaining].slice(0,40).map(slot=>{
         const selected=selectedSlot&&selectedSlot.date===slot.date&&selectedSlot.start===slot.start;
-        return `<button type="button" class="slot ${selected?"selected":""}" data-start="${esc(slot.start)}" data-end="${esc(slot.end)}" data-date="${esc(slot.date)}" data-open="${Number(slot.open)}">
+        const recommendedSlot=slot.rank<=3;
+        const dockDetail=slot.recommendedDockName?`<span>Suggested dock · ${esc(slot.recommendedDockName)}</span>`:`<span>Dock assigned privately by the site</span>`;
+        return `<button type="button" class="slot smartSlot ${recommendedSlot?"recommendedSlot":""} ${selected?"selected":""}" data-start="${esc(slot.start)}" data-end="${esc(slot.end)}" data-date="${esc(slot.date)}" data-open="${Number(slot.open)}" data-dock-id="${esc(slot.recommendedDockId||"")}" data-dock-name="${esc(slot.recommendedDockName||"")}" data-rank="${Number(slot.rank)}">
+          ${recommendedSlot?`<em class="slotRecommendation">Recommended ${slot.rank}</em>`:""}
           <strong>${displayTime(slot.start)} – ${displayTime(slot.end)}</strong>
-          <small>${slot.open} dock${slot.open>1?"s":""} available<br>Dock assigned by site</small>
+          <small>${esc(slot.reason)}${dockDetail}</small>
         </button>`;
       }).join("")||`<div class="notice">No available time on this date. Try another day.</div>`;
       document.querySelectorAll(".slot[data-start]").forEach(element=>element.addEventListener("click",()=>{
-        selectedSlot={date:element.dataset.date,start:element.dataset.start,end:element.dataset.end,open:Number(element.dataset.open)};
+        selectedSlot={
+          date:element.dataset.date,start:element.dataset.start,end:element.dataset.end,open:Number(element.dataset.open),
+          recommendedDockId:element.dataset.dockId||null,recommendedDockName:element.dataset.dockName||null,rank:Number(element.dataset.rank||0)
+        };
         $("selectedTimeDisplay").value=`${displayTime(selectedSlot.start)} – ${displayTime(selectedSlot.end)}`;
         document.querySelectorAll(".slot[data-start]").forEach(slot=>slot.classList.toggle("selected",slot===element));
       }));
@@ -182,6 +281,7 @@
       };
       $("confirmBox").style.display="block";
       $("bookedRef").textContent=result.booking_reference;
+      if($("templateSavePanel"))$("templateSavePanel").hidden=true;
       if(PAGE==="dashboard")renderDashboard();
     }catch(err){
       showError(5,err.message);
@@ -199,6 +299,7 @@
         const isBlock=appointment.type==="Dock Block";
         const editable=canEditAppointments()&&!isBlock&&!['Completed','Cancelled','No Show'].includes(appointment.status);
         if(editable)actions.push(`<button class="tiny" onclick="openAppointmentEditor('${appointment.id}')">Edit</button>`);
+        if(!isBlock&&db.hasPermission("audit.view"))actions.push(`<button class="tiny secondaryBtn" onclick="openAppointmentHistory('${appointment.id}')">History</button>`);
         if(!["Completed","Cancelled"].includes(appointment.status)){
           if(!isBlock&&db.hasPermission("appointment.complete"))actions.push(`<button class="tiny" onclick="updateStatus('${appointment.id}','Completed')">Complete</button>`);
           if((isBlock&&db.hasPermission("block.manage"))||(!isBlock&&db.hasPermission("appointment.cancel"))){
@@ -267,6 +368,43 @@
     document.body.classList.remove("modalOpen");
     editingAppointmentId=null;
     $("editAppointmentForm")?.reset();
+  };
+
+  function historyDate(value){
+    if(!value)return "";
+    return new Date(value).toLocaleString(undefined,{year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+  }
+
+  function historyDetail(event){
+    const details=event.details||{};
+    const fields=Array.isArray(details.changed_fields)?details.changed_fields:[];
+    if(fields.length)return `${fields.join(", ")} changed`;
+    if(event.action==="status_changed")return `${String(details.from_status||"Unknown").replace(/_/g," ")} → ${String(details.to_status||"Unknown").replace(/_/g," ")}`;
+    if(event.action==="created")return "The appointment entered the MaxDock schedule.";
+    return "The appointment record was updated.";
+  }
+
+  window.openAppointmentHistory=async function(id){
+    if(!db.hasPermission("audit.view"))return;
+    const appointment=getAppointments().find(item=>item.id===id);
+    if(!appointment)return;
+    const timeline=$("appointmentHistoryTimeline"),error=$("appointmentHistoryError");
+    $("appointmentHistoryMeta").textContent=`${appointment.ref} • ${appointment.company}`;
+    timeline.innerHTML=`<div class="notice">Loading appointment activity…</div>`;
+    error.textContent="";error.style.display="none";
+    $("appointmentHistoryModal").classList.add("show");document.body.classList.add("modalOpen");
+    try{
+      const events=await db.appointmentHistory(id);
+      timeline.innerHTML=events.length?events.map(event=>`<article class="historyEvent">
+        <span class="historyDot" aria-hidden="true"></span>
+        <div><div class="historyEventTop"><strong>${esc(event.summary)}</strong><time>${esc(historyDate(event.changed_at))}</time></div><p>${esc(historyDetail(event))}</p><small>${esc(event.changed_by_name||"MaxDock system")}</small></div>
+      </article>`).join(""):`<div class="emptyState">No appointment activity was recorded.</div>`;
+    }catch(err){timeline.innerHTML="";error.textContent=err.message;error.style.display="block"}
+  };
+
+  window.closeAppointmentHistory=function(){
+    $("appointmentHistoryModal")?.classList.remove("show");
+    document.body.classList.remove("modalOpen");
   };
 
   async function saveEditedAppointment(event){
@@ -513,7 +651,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db15");
+      location.replace("./index.html?v=46-db16");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
@@ -526,13 +664,23 @@
     applyTheme(currentLocation);
     populateRequesterLocations();
     populateBookingLocations();
+    await refreshBookingTemplates();
+    $("reqTemplateSelect")?.addEventListener("change",event=>{
+      const selected=Boolean(event.target.value);
+      $("reqTemplateApply").disabled=!selected;
+      $("reqTemplateDelete").disabled=!selected;
+    });
 
     if(PAGE==="dashboard"){
-      const requestedDate=new URLSearchParams(location.search).get("date");
+      const query=new URLSearchParams(location.search);
+      const requestedDate=query.get("date");
       window.scrollTo(0,0);$("adminDate").value=/^\d{4}-\d{2}-\d{2}$/.test(requestedDate||"")?requestedDate:todayISO();renderDashboard();
       $("editAppointmentForm")?.addEventListener("submit",saveEditedAppointment);
       $("editAppointmentModal")?.addEventListener("click",event=>{if(event.target===$("editAppointmentModal"))window.closeAppointmentEditor()});
+      $("appointmentHistoryModal")?.addEventListener("click",event=>{if(event.target===$("appointmentHistoryModal"))window.closeAppointmentHistory()});
       document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&document.body.classList.contains("tvScheduleMode"))window.closeTvSchedule()});
+      const historyId=query.get("history");
+      if(historyId)setTimeout(()=>window.openAppointmentHistory(historyId),0);
     }
     if($("requestModal")){
       $("reqDate").value=$("adminDate")?.value||todayISO();toggleCompany();renderSlots();
@@ -543,6 +691,7 @@
     document.addEventListener("keydown",event=>{
       if(event.key!=="Escape")return;
       if(document.body.classList.contains("tvScheduleMode"))window.closeTvSchedule();
+      else if($("appointmentHistoryModal")?.classList.contains("show"))window.closeAppointmentHistory();
       else if($("editAppointmentModal")?.classList.contains("show"))window.closeAppointmentEditor();
     });
     setAppLoading(false);
