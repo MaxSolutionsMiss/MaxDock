@@ -1,4 +1,4 @@
-MaxDock v46-DB17 — TV Schedule and Selectable Reporting Build
+MaxDock v46-DB18 — Schedule Display and Configurable Queue Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -98,6 +98,13 @@ Integrated database operations
 - Report periods include Past 7 Days, Past 30 Days, This Month, and Custom Range
 - Featured report charts, daily tables, and CSV exports follow the selected report view
 - Dock Doors and Vehicle Compatibility uses the full Settings width with a compact, always-visible Action column
+- Operating Hours and Timing Rules are aligned in the same balanced Settings row
+- Open Full-Screen View launches a separate live schedule window so the original Dashboard remains available for editing
+- The schedule display follows the selected location and date, refreshes every three seconds, and provides a user-activated full-screen control
+- Full-screen schedule typography scales by available height and dock count for maximum readable distance
+- Operations Queue defaults to eight larger metrics, including Priority Loads and Due Soon
+- Morning Shift Brief cards are taller, color-coded, and easier to scan from a distance
+- Each signed-in user can customize visible briefing cards and Queue metrics or restore the default view
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.

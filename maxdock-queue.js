@@ -2,7 +2,9 @@
   "use strict";
   const db=window.MaxDockDB;
   const $=id=>document.getElementById(id);
-  const state={rows:[],pendingRows:[],completedRows:[],blocks:[],busyId:null};
+  const DEFAULT_PREFERENCES={brief:["first","peak","docks","priority","review"],metrics:["pending","completed","inbound","outbound","skids","blocks","priority","soon"]};
+  const VALID_PREFERENCES={brief:new Set(DEFAULT_PREFERENCES.brief),metrics:new Set(DEFAULT_PREFERENCES.metrics)};
+  const state={rows:[],pendingRows:[],completedRows:[],blocks:[],busyId:null,preferences:{brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics]}};
 
   function esc(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]))}
   function today(offset=0){const date=new Date();date.setDate(date.getDate()+offset);return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
@@ -13,6 +15,35 @@
   function clearError(){$("queueError").style.display="none"}
   function minuteValue(value){const [hour,minute]=String(value||"00:00").split(":").map(Number);return hour*60+minute}
   function currentMinutes(){const now=new Date();return now.getHours()*60+now.getMinutes()}
+
+  function preferenceStorageKey(){return `maxdock_queue_view_${db.getProfile()?.id||"user"}`}
+  function loadQueuePreferences(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(preferenceStorageKey())||"{}");
+      state.preferences={
+        brief:Array.isArray(saved.brief)?saved.brief.filter(key=>VALID_PREFERENCES.brief.has(key)):[],
+        metrics:Array.isArray(saved.metrics)?saved.metrics.filter(key=>VALID_PREFERENCES.metrics.has(key)):[]
+      };
+      if(!state.preferences.brief.length)state.preferences.brief=[...DEFAULT_PREFERENCES.brief];
+      if(!state.preferences.metrics.length)state.preferences.metrics=[...DEFAULT_PREFERENCES.metrics];
+    }catch{state.preferences={brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics]}}
+    syncPreferenceControls();
+  }
+  function saveQueuePreferences(){localStorage.setItem(preferenceStorageKey(),JSON.stringify(state.preferences))}
+  function syncPreferenceControls(){
+    document.querySelectorAll("[data-pref-section]").forEach(input=>{input.checked=state.preferences[input.dataset.prefSection]?.includes(input.value)||false});
+  }
+  function updateQueuePreference(input){
+    const section=input.dataset.prefSection,current=new Set(state.preferences[section]||[]);
+    if(input.checked)current.add(input.value);
+    else if(current.size>1)current.delete(input.value);
+    else{input.checked=true;return}
+    state.preferences[section]=[...current];saveQueuePreferences();render();
+  }
+  function resetQueuePreferences(){
+    state.preferences={brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics]};
+    saveQueuePreferences();syncPreferenceControls();render();
+  }
 
   function queueRows(){
     const date=$("queueDate").value;
@@ -39,7 +70,7 @@
     const completed=item.status==="Completed";
     const tag=completed?"Completed":level==="overdue"?"Time passed":level==="soon"?"Due within 60 min":item.priority?"Priority":"Planned";
     const canChange=completed?db.hasPermission("appointment.update"):db.hasPermission("appointment.complete");
-    const historyLink=db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=46-db17&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
+    const historyLink=db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=46-db18&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
     return `<article class="queueCard ${level}">
       <div class="queueCardTime"><strong>${esc(displayTime(item.start))}</strong><small>${esc(displayTime(item.end))}</small></div>
       <div class="queueCardBody">
@@ -95,19 +126,19 @@
       ?`Start with ${first.ref} at ${displayTime(first.start)} on ${first.dock}. ${actions.length?`${actions.length} item${actions.length===1?"":"s"} need review before or during the shift.`:"No immediate exceptions are showing."}`
       :`The selected date currently has no inbound or outbound execution work.`;
     const facts=[
-      ["First load",first?displayTime(first.start):"—"],
-      ["Peak period",peak?`${displayTime(`${String(peak.hour).padStart(2,"0")}:00`)} · ${peak.count} load${peak.count===1?"":"s"}`:"—"],
-      ["Docks in use",String(docks.size)],
-      ["Priority",String(priority)],
-      ["Needs review",String(actions.length)]
-    ];
-    $("morningBriefFacts").innerHTML=facts.map(([label,value])=>`<div><small>${esc(label)}</small><strong>${esc(value)}</strong></div>`).join("");
+      {key:"first",label:"First load",value:first?displayTime(first.start):"—"},
+      {key:"peak",label:"Peak period",value:peak?`${displayTime(`${String(peak.hour).padStart(2,"0")}:00`)} · ${peak.count} load${peak.count===1?"":"s"}`:"—"},
+      {key:"docks",label:"Doors in use",value:String(docks.size)},
+      {key:"priority",label:"Priority loads",value:String(priority)},
+      {key:"review",label:"Needs review",value:String(actions.length)}
+    ].filter(item=>state.preferences.brief.includes(item.key));
+    $("morningBriefFacts").innerHTML=facts.map(item=>`<div class="briefFact ${item.key}"><small>${esc(item.label)}</small><strong>${esc(item.value)}</strong></div>`).join("");
   }
 
   function renderFocus(rows){
     const next=rows.find(item=>$("queueDate").value!==today()||minuteValue(item.end)>=currentMinutes())||rows[0];
     if(!next){$("queueFocus").innerHTML=`<div><small>${esc(displayDate($("queueDate").value))}</small><h3>No active appointments scheduled</h3><p>The location has no inbound or outbound work in the execution queue for this date.</p></div>`;return}
-    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=46-db17&date=${esc($("queueDate").value)}">Open schedule</a>`;
+    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=46-db18&date=${esc($("queueDate").value)}">Open schedule</a>`;
   }
 
   function renderLane(direction,elementId,summaryId){
@@ -128,10 +159,15 @@
     const rows=queueRows();
     const inbound=state.pendingRows.filter(item=>item.direction==="Inbound"),outbound=state.pendingRows.filter(item=>item.direction==="Outbound");
     const totalSkids=state.pendingRows.reduce((sum,item)=>sum+Number(item.skids||0),0);
-    $("queueMetrics").innerHTML=[
-      ["Pending",state.pendingRows.length],["Completed",state.completedRows.length],["Inbound Pending",inbound.length],["Outbound Pending",outbound.length],["Pending Skids",totalSkids],["Dock Blocks",state.blocks.length]
-    ].map(([label,value])=>`<div class="metric"><small>${label}</small><strong>${value}</strong></div>`).join("");
     const actions=buildActions(state.pendingRows);
+    const metricItems=[
+      {key:"pending",label:"Pending",value:state.pendingRows.length},{key:"completed",label:"Completed",value:state.completedRows.length},
+      {key:"inbound",label:"Inbound",value:inbound.length},{key:"outbound",label:"Outbound",value:outbound.length},
+      {key:"skids",label:"Pending skids",value:totalSkids},{key:"blocks",label:"Dock blocks",value:state.blocks.length},
+      {key:"priority",label:"Priority loads",value:state.pendingRows.filter(item=>item.priority).length},
+      {key:"soon",label:"Due soon",value:state.pendingRows.filter(item=>urgency(item)==="soon").length}
+    ].filter(item=>state.preferences.metrics.includes(item.key));
+    $("queueMetrics").innerHTML=metricItems.map(item=>`<div class="metric queueMetric ${item.key}"><small>${esc(item.label)}</small><strong>${item.value}</strong></div>`).join("");
     renderMorningBrief(state.pendingRows,actions);renderFocus(state.pendingRows);renderActions(actions);renderLane("inbound","inboundQueue","inboundSummary");renderLane("outbound","outboundQueue","outboundSummary");renderBlocks();
   }
 
@@ -171,6 +207,7 @@
       if(!await db.requireAuth())return;
       await db.loadContext();
       if(!db.hasPermission("operations.queue.view"))throw new Error("This account cannot view the Operations Queue.");
+      loadQueuePreferences();
       db.selectLocation(localStorage.getItem("maxdock_location"));db.populateLocationSelect($("queueLocation"));db.addAccountControls();
       const role=db.getProfile()?.role_code;
       $("queueLocationPill").hidden=!["system_admin","site_admin"].includes(role);
@@ -185,6 +222,8 @@
       $("refreshQueue").addEventListener("click",()=>changeLocation().catch(showError));
       $("printQueue").addEventListener("click",()=>window.print());
       $("exportQueue").addEventListener("click",csv);
+      $("queueCustomizeMenu").addEventListener("change",event=>{if(event.target.matches("[data-pref-section]"))updateQueuePreference(event.target)});
+      $("resetQueuePreferences").addEventListener("click",resetQueuePreferences);
       document.querySelectorAll(".queueCards").forEach(container=>container.addEventListener("click",event=>{
         const button=event.target.closest("[data-queue-id]");
         if(button)updateQueueStatus(button.dataset.queueId,button.dataset.queueStatus);

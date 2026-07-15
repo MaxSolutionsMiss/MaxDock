@@ -1,0 +1,32 @@
+MaxDock v46-DB18 deployment notes
+
+Database and Edge Functions
+- No database migration is required after DB16 / schema v11.
+- No Edge Function update is required.
+- Queue display preferences are stored per signed-in user in the browser and contain no appointment data.
+
+Settings layout
+- Operating Hours and Timing Rules share the first Settings row.
+- Dock Doors and Vehicle Compatibility remains full width directly below them.
+- The empty half-row beside Timing Rules is removed.
+
+Schedule display
+- Dashboard TV View is renamed Open Full-Screen View.
+- The control launches a separate authenticated schedule display window for a second monitor.
+- The original Dashboard remains open and editable.
+- The display window follows the selected date and location and refreshes every three seconds.
+- Enter Full Screen is provided inside the display because browsers require a direct user click for native full-screen mode.
+- If a browser blocks the pop-up, MaxDock falls back to the existing in-page full-screen schedule.
+- Dock labels and appointment text scale according to available display height and active dock count.
+- Ten-dock layouts retain a readable minimum size and remain vertically scrollable when required.
+
+Operations Queue
+- Morning Shift Brief cards are taller and use distinct colors for First Load, Peak Period, Doors in Use, Priority Loads, and Needs Review.
+- The default metric row includes Pending, Completed, Inbound, Outbound, Pending Skids, Dock Blocks, Priority Loads, and Due Soon.
+- Customize View allows each user to choose visible briefing cards and Queue metrics.
+- Reset Default View restores all five briefing cards and all eight metrics.
+- At least one briefing card and one metric always remain visible.
+
+Deployment
+- Upload the updated root files and the matching db04 files.
+- Hard-refresh the browser after GitHub Pages finishes publishing.

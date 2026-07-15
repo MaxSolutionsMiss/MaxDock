@@ -441,15 +441,17 @@ function renderSchedule(items){
     120:0.9
   }[scale]||1.65;
 
-  const duration=Math.max(1,close-open);
-  const labelWidth=150;
   const scrollWidth=$("timelineShell")?.parentElement?.clientWidth||0;
+  const duration=Math.max(1,close-open);
+  const displayMode=document.body.classList.contains("tvScheduleMode");
+  const labelWidth=displayMode?Math.round(Math.max(170,Math.min(240,scrollWidth*.13))):150;
   const availableTrackWidth=Math.max(540,scrollWidth-labelWidth-2);
   const preferredTrackWidth=Math.max(540,Math.round(duration*basePxPerMinute));
   const trackWidth=Math.max(availableTrackWidth,preferredTrackWidth);
   const pxPerMinute=trackWidth/duration;
 
-  $("timelineShell").style.width=`${150+trackWidth}px`;
+  $("timelineShell").style.setProperty("--schedule-label-width",`${labelWidth}px`);
+  $("timelineShell").style.width=`${labelWidth+trackWidth}px`;
   $("timeRuler").style.width=`${trackWidth}px`;
 
   const ticks=[];
