@@ -1,4 +1,4 @@
-MaxDock v46-DB06 — Account Access and Demo Polish Build
+MaxDock v46-DB08 — Appointment Editing Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -11,6 +11,7 @@ Database prerequisites
 3. MaxDock_DB_v03_Appointment_Schedule.sql
 4. MaxDock_DB_v04_Booking_Functions.sql
 5. MaxDock_DB_v05_User_Administration.sql
+6. MaxDock_DB_v06_Appointment_Editing.sql
 
 Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
@@ -37,10 +38,14 @@ Integrated database operations
 - Temporary-password accounts that do not require an email invitation
 - Forced private password change after a temporary user's first sign-in
 - Username or email sign-in through Supabase Auth
+- System Admin username editing and protected account deletion
+- System Admin and Site Admin appointment editing from the timeline or appointment list
+- Single Yes/No appointment cancellation without a reason prompt
 - Compact page headings and a balanced header with the location selector beside the account controls
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.
 - Temporary credentials and invitation links must be shared privately.
+- Deleting a user removes the login while preserving appointment and audit history.
 - Permanent appointment deletion is intentionally omitted to preserve audit history.
 - The original MaxDock v46 visual interface is retained; maxdock-integration.js replaces its browser-storage data path at runtime.

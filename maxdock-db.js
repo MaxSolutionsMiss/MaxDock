@@ -230,9 +230,17 @@
       const master=handlingTypeByCode.get(x.handling_type_code);if(master)legacySettings.handlingAdj[master.name]=Number(x.adjustment_minutes);
     });
 
+    const appointmentTypes=(localTypesResult.data||[])
+      .map(x=>appointmentTypeByCode.get(x.appointment_type_code)).filter(Boolean);
+    const truckTypes=(localTrucksResult.data||[])
+      .map(x=>truckTypeByCode.get(x.truck_type_code)).filter(Boolean);
+    const handlingTypes=(localHandlingResult.data||[])
+      .map(x=>handlingTypeByCode.get(x.handling_type_code)).filter(Boolean);
+
     state.locationData={
       settingsRow:s,operatingHours:hoursResult.data||[],dockRows,dockById:mapBy(dockRows,"id"),
       appointmentTypeByCode,truckTypeByCode,handlingTypeByCode,
+      appointmentTypes,truckTypes,handlingTypes,
       appointmentNameToCode:mapNameToCode(masterTypes),truckNameToCode:mapNameToCode(masterTrucks),handlingNameToCode:mapNameToCode(masterHandling),
       legacySettings
     };
@@ -309,6 +317,30 @@
     return result.data;
   }
 
+  async function updateAppointment(input){
+    const result=await client.rpc("update_appointment_details",{
+      p_appointment_id:input.id,
+      p_date:input.date,
+      p_start_time:input.start,
+      p_dock_id:input.dockId,
+      p_direction:input.direction,
+      p_company_name:input.company||null,
+      p_appointment_type_code:input.appointmentTypeCode,
+      p_truck_type_code:input.truckTypeCode,
+      p_skid_count:Number(input.skids),
+      p_handling_type_code:input.handlingTypeCode,
+      p_is_priority:Boolean(input.priority),
+      p_requester_name:input.name,
+      p_requester_email:input.email,
+      p_carrier_name:input.carrier||null,
+      p_external_reference:input.reference,
+      p_notes:input.notes||null
+    });
+    throwIf(result.error,"Unable to edit the appointment");
+    await fetchAppointments();
+    return result.data;
+  }
+
   async function saveLocationSettings(input,dockInputs){
     const locationId=state.currentLocation.id;
     const settingsUpdate=await client.from("location_settings").update({
@@ -362,10 +394,16 @@
 
   window.MaxDockDB={
     client,state,getSession,requireAuth,signIn,signOut,loadContext,selectLocation,loadLocation,
-    fetchAppointments,availableSlots,bookAppointment,blockDockTime,changeStatus,saveLocationSettings,
+    fetchAppointments,availableSlots,bookAppointment,blockDockTime,changeStatus,updateAppointment,saveLocationSettings,
     populateLocationSelect,addAccountControls,hasPermission,
     getProfile:()=>state.profile,getLocations:()=>state.locations,getCurrentLocation:()=>state.currentLocation,
     getSettings:()=>state.locationData?.legacySettings||null,getAppointments:()=>state.appointments,
-    getDockRows:()=>state.locationData?.dockRows||[]
+    getDockRows:()=>state.locationData?.dockRows||[],
+    getAppointmentEditOptions:()=>({
+      docks:state.locationData?.dockRows||[],
+      appointmentTypes:state.locationData?.appointmentTypes||[],
+      truckTypes:state.locationData?.truckTypes||[],
+      handlingTypes:state.locationData?.handlingTypes||[]
+    })
   };
 })();
