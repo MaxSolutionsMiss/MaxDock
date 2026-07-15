@@ -1,0 +1,24 @@
+MaxDock v46-DB08 deployment order
+
+Prerequisite
+- MaxDock DB-v01 through DB-v05 are already installed.
+- The DB07 Edge Function remains deployed; no Edge Function update is needed.
+
+1. Run MaxDock_DB_v06_Appointment_Editing.sql in the Supabase SQL Editor.
+2. Confirm both verification values are true.
+3. Upload every file from MaxDock-v46-DB08-package to BOTH locations in the
+   GitHub MaxDock repository, replacing files with the same names:
+   - repository root
+   - db04 folder
+4. Open the live DB08 Dashboard as a System Admin or Site Admin.
+5. Verify:
+   - Cancel asks only for Yes/No and does not request a reason.
+   - Double-clicking an active appointment opens Edit Appointment.
+   - The Edit button in the appointment list opens the same editor.
+   - Saving checks operating hours, dock conflicts, and permitted location.
+
+Safety
+- Only System Admins and Site Admins can edit active appointments.
+- Completed, cancelled, and no-show appointments cannot be edited.
+- Appointment updates are recorded in the existing audit log.
+- Cancellation history is retained with a standard internal reason.

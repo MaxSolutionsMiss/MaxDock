@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=46-db07">
-<link rel="stylesheet" href="./maxdock-db04.css?v=46-db07">
+<link rel="stylesheet" href="./maxdock.css?v=46-db08">
+<link rel="stylesheet" href="./maxdock-db04.css?v=46-db08">
 <title>MaxDock – Dashboard</title>
 </head>
 <body data-page="dashboard">
@@ -29,13 +29,13 @@
           <option>Bristol</option><option>Owen Sound</option><option>Concord</option><option>Markham</option>
         </select>
       </div>
-      <a class="ghostBtn" href="./index.html?v=46-db07">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=46-db08">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./dashboard.html?v=46-db07" aria-current="page">Dashboard</a>
-          <a href="./settings.html?v=46-db07">Settings</a>
-          <a href="./admin.html?v=46-db07">Admin</a>
+          <a href="./dashboard.html?v=46-db08" aria-current="page">Dashboard</a>
+          <a href="./settings.html?v=46-db08">Settings</a>
+          <a href="./admin.html?v=46-db08">Admin</a>
         </nav>
       </details>
     </div>
@@ -77,7 +77,7 @@
     <div class="schedulePanelHeader">
       <div class="scheduleCompactBar">
         <div class="scheduleTitleBlock">
-          <h3>Dock Schedule</h3>
+          <div><h3>Dock Schedule</h3><small id="scheduleEditHint" class="scheduleEditHint" hidden>Double-click an appointment to edit</small></div>
         </div>
 
         <div class="scheduleNavCenter">
@@ -220,6 +220,44 @@
 </div>
 
 
+<div class="modalOverlay" id="editAppointmentModal" role="dialog" aria-modal="true" aria-labelledby="editAppointmentTitle">
+  <div class="modal appointmentEditModal">
+    <div class="modalHead">
+      <div>
+        <h2 id="editAppointmentTitle">Edit Appointment</h2>
+        <p id="editAppointmentMeta">Update the schedule and shipment details.</p>
+      </div>
+      <button class="closeBtn" type="button" onclick="closeAppointmentEditor()" aria-label="Close">×</button>
+    </div>
+    <form class="modalBody" id="editAppointmentForm">
+      <div class="formGrid appointmentEditGrid">
+        <div class="field"><label for="editApptDate">Date *</label><input id="editApptDate" type="date" required></div>
+        <div class="field"><label for="editApptStart">Start time *</label><input id="editApptStart" type="time" required></div>
+        <div class="field"><label for="editApptDock">Dock *</label><select id="editApptDock" required></select></div>
+        <div class="field"><label for="editApptDirection">Direction *</label><select id="editApptDirection"><option value="inbound">Inbound</option><option value="outbound">Outbound</option></select></div>
+        <div class="field"><label for="editApptType">Appointment type *</label><select id="editApptType" required></select></div>
+        <div class="field"><label for="editApptTruck">Truck type *</label><select id="editApptTruck" required></select></div>
+        <div class="field"><label for="editApptSkids">Skids *</label><input id="editApptSkids" type="number" min="0" required></div>
+        <div class="field"><label for="editApptHandling">Handling *</label><select id="editApptHandling" required></select></div>
+        <div class="field"><label for="editApptPriority">Priority</label><select id="editApptPriority"><option value="false">No</option><option value="true">Yes</option></select></div>
+        <div class="field"><label for="editApptCompany">Company / location</label><input id="editApptCompany"></div>
+        <div class="field"><label for="editApptName">Requester name *</label><input id="editApptName" required></div>
+        <div class="field"><label for="editApptEmail">Requester email *</label><input id="editApptEmail" type="email" required></div>
+        <div class="field"><label for="editApptCarrier">Carrier / courier</label><input id="editApptCarrier"></div>
+        <div class="field"><label for="editApptReference">PO / BOL / Job # *</label><input id="editApptReference" required></div>
+        <div class="field full"><label for="editApptNotes">Notes</label><textarea id="editApptNotes"></textarea></div>
+      </div>
+      <div class="notice appointmentEditNotice">The ending time is recalculated automatically from the appointment type, truck, skids, handling, and priority.</div>
+      <div class="error" id="editAppointmentError" role="alert"></div>
+      <div class="wizardNav">
+        <button class="secondaryBtn" type="button" onclick="closeAppointmentEditor()">Cancel</button>
+        <div class="rightNav"><button class="primaryBtn" id="saveAppointmentButton" type="submit">Save Appointment</button></div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
 <div class="modalOverlay" id="blockTimeModal">
   <div class="modal blockModal">
     <div class="modalHead">
@@ -329,9 +367,9 @@
   </div>
 </div>
 
-<script src="./supabase-2.110.3.js?v=46-db07"></script>
-<script src="./maxdock-config.js?v=46-db07"></script>
-<script src="./maxdock-db.js?v=46-db07"></script>
-<script src="./maxdock.js?v=46-db07"></script>
-<script src="./maxdock-integration.js?v=46-db07"></script>
+<script src="./supabase-2.110.3.js?v=46-db08"></script>
+<script src="./maxdock-config.js?v=46-db08"></script>
+<script src="./maxdock-db.js?v=46-db08"></script>
+<script src="./maxdock.js?v=46-db08"></script>
+<script src="./maxdock-integration.js?v=46-db08"></script>
 </body></html>

@@ -118,3 +118,14 @@
   .adminModalLeftActions{width:100%}
 }
 @media(max-width:480px){.adminLocationOptions{grid-template-columns:1fr}}
+
+/* DB-v08 appointment editing */
+.scheduleEditHint{display:block;margin-top:5px;color:#64748b;font-size:10px;font-weight:800;letter-spacing:.02em}
+.scheduleEvent.appointmentEditable{cursor:pointer;transition:filter .16s ease,box-shadow .16s ease,transform .16s ease}
+.scheduleEvent.appointmentEditable:hover{filter:brightness(1.04);box-shadow:0 10px 24px rgba(6,26,45,.2);transform:translateY(-1px)}
+.appointmentEditableRow{cursor:pointer}
+.appointmentEditableRow:hover td{background:#f0f9ff}
+.appointmentEditModal{width:min(860px,100%)}
+.appointmentEditGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.appointmentEditNotice{margin-top:14px}
+@media(max-width:680px){.appointmentEditGrid{grid-template-columns:1fr}}

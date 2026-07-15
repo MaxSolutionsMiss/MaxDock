@@ -513,8 +513,11 @@ function renderSchedule(items){
         a.status==="Completed"?"completed":
         a.status==="Cancelled"?"cancelled":
         a.direction==="Outbound"?"outbound":"inbound";
+      const canOpenEditor=a.type!=="Dock Block"&&!['Completed','Cancelled','No Show'].includes(a.status)
+        &&(!window.canEditMaxDockAppointment||window.canEditMaxDockAppointment());
 
-      return `<div class="scheduleEvent ${cls} ${a.priority?"priority":""}"
+      return `<div class="scheduleEvent ${cls} ${a.priority?"priority":""} ${canOpenEditor?"appointmentEditable":""}"
+        ${canOpenEditor?`data-appointment-id="${esc(a.id)}" ondblclick="openAppointmentEditor('${esc(a.id)}')"`:""}
         style="left:${left}px;width:${width}px"
         title="${esc(a.company)} • ${displayTime(a.start)}–${displayTime(a.end)}">
         <div class="eventTime">${displayTime(a.start)}–${displayTime(a.end)}</div>
