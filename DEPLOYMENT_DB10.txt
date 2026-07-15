@@ -1,0 +1,24 @@
+MaxDock v46-DB10 deployment order
+
+Prerequisite
+- MaxDock DB-v01 through DB-v07 are already installed.
+- The existing maxdock-invite-user Edge Function is active.
+
+1. Run MaxDock_DB_v08_User_Password_Reset_Audit.sql in Supabase.
+2. Confirm all three verification values are true.
+3. Deploy the DB10 index.ts to maxdock-invite-user with legacy JWT verification OFF.
+4. Upload every file from MaxDock-v46-DB10-package to BOTH locations in the
+   GitHub MaxDock repository, replacing files with the same names:
+   - repository root
+   - db04 folder
+5. Sign in as a System Admin, open Admin, edit a user, and select Reset Password.
+6. Confirm the temporary password is shown once and can be copied.
+7. Sign in as that user and confirm MaxDock requires a private password change.
+
+Security behavior
+- Only an active System Admin can reset another user's password.
+- A System Admin cannot reset their own account from the Admin page.
+- The old password stops working immediately.
+- The server creates a unique 18-character temporary password.
+- Passwords are never written to MaxDock database tables or audit records.
+- The reset actor, target, time, and non-secret metadata are recorded.

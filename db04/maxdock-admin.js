@@ -164,6 +164,7 @@
     $("userRole").disabled=isSelf;
     $("userActive").disabled=isSelf;
     $("selfNotice").hidden=!isSelf;
+    $("resetPasswordButton").hidden=!editing||isSelf;
     $("deleteUserButton").hidden=!editing||isSelf;
     renderLocationOptions(user?.location_ids||[]);
     updateLocationMode();
@@ -183,6 +184,7 @@
     $("userEmail").disabled=false;
     $("userRole").disabled=false;
     $("userActive").disabled=false;
+    $("resetPasswordButton").hidden=true;
     $("deleteUserButton").hidden=true;
     $("userDeliveryField").hidden=false;
     $("userEmailField").hidden=false;
@@ -208,7 +210,7 @@
 
   function accessText(item){
     const loginUrl=new URL("./login.html",location.href).href;
-    const lines=["MaxDock access",`Name: ${item.fullName}`,`Username: ${item.username}`];
+    const lines=[item.operation==="password_reset"?"MaxDock password reset":"MaxDock access",`Name: ${item.fullName}`,`Username: ${item.username}`];
     if(item.kind==="temporary_password"){
       lines.push(`Temporary password: ${item.password}`);
       lines.push(`Sign in: ${loginUrl}`);
@@ -224,8 +226,11 @@
   function showAccessPackage(item){
     state.accessPackage=item;
     const isPassword=item.kind==="temporary_password";
-    $("accessModalTitle").textContent=isPassword?"Temporary login ready":"Invitation link ready";
-    $("accessModalIntro").textContent=isPassword
+    const isReset=item.operation==="password_reset";
+    $("accessModalTitle").textContent=isReset?"Password reset ready":isPassword?"Temporary login ready":"Invitation link ready";
+    $("accessModalIntro").textContent=isReset
+      ? "The old password no longer works. Share this temporary login privately; it is shown only here."
+      : isPassword
       ? "Share these credentials privately. The password is shown only here."
       : "Copy the secure link or open a prepared Outlook draft.";
     $("accessDetails").innerHTML=`
@@ -286,6 +291,34 @@
         email:data.contactEmail||(!isSyntheticEmail(user.email)?user.email:""),invitationLink:data.invitationLink
       });
     }catch(error){showFatalError(error)}finally{setLoading(false)}
+  }
+
+  async function resetCurrentUserPassword(){
+    const user=state.editingUser;
+    if(!user||user.user_id===state.currentUserId)return;
+    const label=user.full_name||user.username;
+    if(!confirm(`Reset the password for ${label}? Their current password will stop working immediately.`))return;
+
+    const button=$("resetPasswordButton");
+    button.disabled=true;button.textContent="Resetting…";setFormError();
+    try{
+      const data=await invokeAccountService({action:"reset_password",userId:user.user_id});
+      closeUserModal();
+      showAccessPackage({
+        kind:"temporary_password",
+        operation:"password_reset",
+        fullName:data.fullName||label,
+        username:data.username||user.username,
+        email:!isSyntheticEmail(user.email)?user.email:"",
+        password:data.password
+      });
+      setLoading(true,"Refreshing users…");
+      await loadUsers();
+    }catch(error){
+      setFormError(error?.message||"The password could not be reset.");
+    }finally{
+      setLoading(false);button.disabled=false;button.textContent="Reset Password";
+    }
   }
 
   async function deleteCurrentUser(){
@@ -388,6 +421,7 @@
     $("addUserButton").addEventListener("click",()=>openUserModal());
     $("closeUserModal").addEventListener("click",closeUserModal);
     $("cancelUserButton").addEventListener("click",closeUserModal);
+    $("resetPasswordButton").addEventListener("click",resetCurrentUserPassword);
     $("deleteUserButton").addEventListener("click",deleteCurrentUser);
     $("userRole").addEventListener("change",updateLocationMode);
     $("userSearch").addEventListener("input",renderUsers);
