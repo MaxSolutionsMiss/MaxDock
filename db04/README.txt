@@ -1,4 +1,4 @@
-MaxDock v46-DB16 — Smart Operations and Unified Interface Build
+MaxDock v46-DB17 — TV Schedule and Selectable Reporting Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -92,6 +92,12 @@ Integrated database operations
 - Personal reusable booking templates protected by owner-only row-level security
 - Permission-controlled appointment history using the existing immutable audit log
 - Smart scheduling, history, and booking RPCs restricted to signed-in MaxDock users
+- Full-screen TV schedule expands dock lanes, appointment cards, and shipment details to use the available display height
+- TV mode automatically returns to the normal schedule proportions after exit
+- Operational Reports offers Overview, Truck Flow, Skid Movement, and Dock Utilization views
+- Report periods include Past 7 Days, Past 30 Days, This Month, and Custom Range
+- Featured report charts, daily tables, and CSV exports follow the selected report view
+- Dock Doors and Vehicle Compatibility uses the full Settings width with a compact, always-visible Action column
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.

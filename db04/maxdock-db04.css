@@ -537,3 +537,114 @@ label,.field label,.filterField label,.metric small,.adminSummaryCard span,.queu
 @media(max-width:390px){
   .queueFilterActions{grid-template-columns:1fr}.morningBriefFacts{grid-template-columns:1fr}
 }
+
+/* DB17 proportional TV schedule, selectable reporting, and compact dock settings */
+#dockSchedulePanel.tvScheduleActive .timelineScroll,#dockSchedulePanel:fullscreen .timelineScroll{
+  display:flex;
+  overflow:auto
+}
+#dockSchedulePanel.tvScheduleActive .timelineShell,#dockSchedulePanel:fullscreen .timelineShell{
+  display:flex;
+  flex:1 0 auto;
+  flex-direction:column;
+  min-height:100%
+}
+#dockSchedulePanel.tvScheduleActive .timelineHeader,#dockSchedulePanel:fullscreen .timelineHeader{
+  flex:0 0 62px;
+  min-height:62px
+}
+#dockSchedulePanel.tvScheduleActive .timeRuler,#dockSchedulePanel:fullscreen .timeRuler{min-height:62px}
+#dockSchedulePanel.tvScheduleActive .timeRulerTick span,#dockSchedulePanel:fullscreen .timeRulerTick span,
+#dockSchedulePanel.tvScheduleActive .timeRulerEndLabel span,#dockSchedulePanel:fullscreen .timeRulerEndLabel span{top:21px;font-size:14px}
+#dockSchedulePanel.tvScheduleActive .timelineBody,#dockSchedulePanel:fullscreen .timelineBody{
+  display:flex;
+  flex:1 0 auto;
+  flex-direction:column;
+  min-height:0
+}
+#dockSchedulePanel.tvScheduleActive .timelineLane,#dockSchedulePanel:fullscreen .timelineLane{
+  flex:1 0 112px;
+  min-height:112px
+}
+#dockSchedulePanel.tvScheduleActive .dockTrack,#dockSchedulePanel:fullscreen .dockTrack{
+  height:100%;
+  min-height:100%
+}
+#dockSchedulePanel.tvScheduleActive .scheduleEvent,#dockSchedulePanel:fullscreen .scheduleEvent{
+  top:10%;
+  bottom:10%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  height:auto;
+  min-height:78px;
+  padding:clamp(10px,1.2vh,18px) clamp(11px,1vw,18px);
+  border-radius:clamp(13px,1vw,20px)
+}
+#dockSchedulePanel.tvScheduleActive .dockLaneLabel,#dockSchedulePanel:fullscreen .dockLaneLabel{padding:16px 18px}
+#dockSchedulePanel.tvScheduleActive .dockLaneLabel strong,#dockSchedulePanel:fullscreen .dockLaneLabel strong{font-size:clamp(17px,1.2vw,24px)}
+#dockSchedulePanel.tvScheduleActive .dockLaneLabel small,#dockSchedulePanel:fullscreen .dockLaneLabel small{font-size:clamp(11px,.75vw,15px);text-transform:none;letter-spacing:0}
+#dockSchedulePanel.tvScheduleActive .eventTime,#dockSchedulePanel:fullscreen .eventTime{font-size:clamp(13px,.9vw,18px)}
+#dockSchedulePanel.tvScheduleActive .eventCompany,#dockSchedulePanel:fullscreen .eventCompany{font-size:clamp(15px,1.05vw,21px);margin-top:5px}
+#dockSchedulePanel.tvScheduleActive .eventMeta,#dockSchedulePanel:fullscreen .eventMeta{
+  display:-webkit-box;
+  margin-top:5px;
+  overflow:hidden;
+  font-size:clamp(12px,.82vw,16px);
+  line-height:1.3;
+  white-space:normal;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2
+}
+
+.reportFilters{
+  display:grid;
+  grid-template-columns:minmax(210px,1.15fr) minmax(180px,.85fr) minmax(170px,.8fr) minmax(170px,.8fr) auto;
+  align-items:end
+}
+.reportCustomDates{display:contents}
+.reportFilters .filterField{min-width:0}
+.reportFilters #runReport{height:42px;white-space:nowrap}
+.reportMetrics{grid-template-columns:repeat(9,minmax(0,1fr))}
+.reportSeriesLegend{display:flex;align-items:center;gap:8px}
+.chartLegend i.inboundLegend,.chartLegend i.outboundLegend,.chartLegend i.utilizationBarLegend{display:inline-block;width:16px;height:5px;border-radius:9px}
+.inboundLegend,.trendInboundBar{background:#0ea5b7;fill:#0ea5b7}
+.outboundLegend,.trendOutboundBar{background:#2563eb;fill:#2563eb}
+.utilizationBarLegend,.trendCapacityBar{background:#7c3aed;fill:#7c3aed}
+.trendInboundBar,.trendOutboundBar,.trendCapacityBar{opacity:.84}
+.dailyReportTable{min-width:780px}
+
+.settingsGrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
+.operatingSettings{grid-column:1}.timingSettings{grid-column:2}.dockCompatibilitySettings{grid-column:1/-1}
+.dockCompatibilitySettings .stepIntro{max-width:820px;margin-bottom:13px}
+.dockCompatibilitySettings .dockMatrixScroll{overflow:auto}
+.dockCompatibilitySettings .dockCompatibilityMatrix{width:100%;min-width:760px;table-layout:fixed}
+.dockCompatibilitySettings .dockCompatibilityMatrix th:first-child,
+.dockCompatibilitySettings .dockCompatibilityMatrix td:first-child{width:170px;min-width:170px}
+.dockCompatibilitySettings .dockCompatibilityMatrix th:not(:first-child):not(:last-child){width:auto}
+.dockCompatibilitySettings .dockCompatibilityMatrix .dockNameInput{width:100%;min-width:0;height:38px}
+.dockCompatibilitySettings .dockMatrixActionCell{
+  position:sticky;
+  right:0;
+  z-index:4;
+  width:104px;
+  min-width:104px;
+  background:#fff;
+  box-shadow:-8px 0 12px rgba(15,23,42,.045)
+}
+.dockCompatibilitySettings th.dockMatrixActionCell{z-index:5;background:#edf4f8}
+.dockCompatibilitySettings tr:hover td.dockMatrixActionCell{background:#f8fbfd}
+.dockCompatibilitySettings .dockMatrixRemove{width:88px;min-height:36px;padding:0 10px;font-size:12px}
+
+@media(max-width:1100px){
+  .reportFilters{grid-template-columns:1fr 1fr auto}.reportFilters #runReport{grid-column:3;grid-row:1}.reportCustomDates{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px}.reportMetrics{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  #dockSchedulePanel.tvScheduleActive .timelineLane,#dockSchedulePanel:fullscreen .timelineLane{flex-basis:104px;min-height:104px}
+  .reportFilters{grid-template-columns:1fr 1fr}.reportFilters #runReport{grid-column:1/-1;grid-row:auto;width:100%}.reportMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .settingsGrid{grid-template-columns:1fr}.operatingSettings,.timingSettings,.dockCompatibilitySettings{grid-column:1}
+}
+@media(max-width:520px){
+  .reportFilters{grid-template-columns:1fr}.reportCustomDates{grid-template-columns:1fr}.reportFilters #runReport{grid-column:1}.reportMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dockCompatibilitySettings{padding:13px}.dockCompatibilitySettings .dockCompatibilityMatrix{min-width:680px}
+}

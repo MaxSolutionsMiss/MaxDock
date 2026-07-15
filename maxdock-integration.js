@@ -498,11 +498,11 @@
     $("setFullTruck").value=settings.fullTruck;$("setPriorityMin").value=settings.priorityMin;
     const truckTypes=db.getLocationData()?.truckTypes||[];
     $("docksList").innerHTML=`<div class="dockMatrixScroll"><table class="dockCompatibilityMatrix">
-      <thead><tr><th>Dock Door</th>${truckTypes.map(truck=>`<th title="${esc(truck.name)}">${esc(truck.name)}</th>`).join("")}<th>Action</th></tr></thead>
+      <thead><tr><th>Dock Door</th>${truckTypes.map(truck=>`<th title="${esc(truck.name)}">${esc(truck.name)}</th>`).join("")}<th class="dockMatrixActionCell">Action</th></tr></thead>
       <tbody>${dockDraft.map((dock,index)=>`<tr>
         <td><input class="dockNameInput" data-dock-index="${index}" data-dock-id="${esc(dock.id||"")}" value="${esc(dock.name)}" aria-label="Dock name"></td>
         ${truckTypes.map(truck=>`<td><label class="dockMatrixCheck" title="${esc(dock.name)} accepts ${esc(truck.name)}"><input class="dockTruckCheck" type="checkbox" data-dock-index="${index}" value="${esc(truck.code)}" ${(dock.truckTypeCodes||[]).includes(truck.code)?"checked":""}><span aria-hidden="true">✓</span></label></td>`).join("")}
-        <td><button class="dangerBtn dockMatrixRemove" onclick="removeDock(${index})">Remove</button></td>
+        <td class="dockMatrixActionCell"><button class="dangerBtn dockMatrixRemove" onclick="removeDock(${index})">Remove</button></td>
       </tr>`).join("")}</tbody>
     </table></div>`;
   };
@@ -626,6 +626,7 @@
     $("tvScheduleBar").hidden=false;
     $("tvModeButton").hidden=true;
     updateTvStatus("Live schedule · connecting…");
+    renderDashboard();
     if(panel.requestFullscreen&&!document.fullscreenElement)panel.requestFullscreen().catch(()=>{});
     stopTvRefresh();
     refreshTvSchedule();
@@ -640,6 +641,7 @@
     if($("tvScheduleBar"))$("tvScheduleBar").hidden=true;
     if($("tvModeButton"))$("tvModeButton").hidden=false;
     if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+    window.requestAnimationFrame(()=>renderDashboard());
   };
 
   async function initializeDatabaseApp(){
@@ -651,7 +653,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db16");
+      location.replace("./index.html?v=46-db17");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");

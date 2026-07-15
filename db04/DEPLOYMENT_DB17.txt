@@ -1,0 +1,31 @@
+MaxDock v46-DB17 deployment notes
+
+Database and Edge Functions
+- No database migration is required after DB16 / schema v11.
+- No Edge Function update is required.
+- All new reports are calculated from the existing permission-filtered appointment data.
+
+TV schedule
+- Full-screen TV mode distributes visible dock lanes across the available screen height.
+- Dock labels, appointment cards, and shipment details enlarge proportionately for broadcast displays.
+- Longer appointment details wrap to a second line instead of being cut off.
+- A large number of docks remains scrollable with a minimum readable row height.
+- Exiting TV mode restores the standard Dashboard schedule proportions.
+
+Operational Reports
+- Report View includes Operations Overview, Truck Flow, Skid Movement, and Dock Utilization.
+- Date Range includes Past 7 Days, Past 30 Days, This Month, and Custom Range.
+- The featured chart, legend, daily summary columns, and CSV export change with the selected report view.
+- Truck Flow separates inbound and outbound truck counts by date.
+- Skid Movement separates inbound and outbound skid volume by date.
+- Dock Utilization shows occupied capacity and a capacity-focused daily table.
+- AI Operations Brief continues using the selected location and date range.
+
+Settings
+- Operating Hours and Timing Rules share a balanced top row.
+- Dock Doors and Vehicle Compatibility spans the full Settings width.
+- The dock table is more compact and its Action column remains visible while scrolling.
+
+Deployment
+- Upload the updated root files and the matching db04 files.
+- Hard-refresh the browser after GitHub Pages finishes publishing.
