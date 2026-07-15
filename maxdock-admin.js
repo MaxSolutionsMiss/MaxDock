@@ -101,11 +101,14 @@
 
   function updateLocationMode(){
     const isSystemAdmin=$("userRole").value==="system_admin";
+    const isCustomer=$("userRole").value==="customer";
     $("userLocationsField").classList.toggle("systemAdminLocations",isSystemAdmin);
     $("userLocations").querySelectorAll("input").forEach(input=>input.disabled=isSystemAdmin);
     $("locationHelp").textContent=isSystemAdmin
       ? "System Admins automatically have access to every MaxDock location."
-      : "Select every MaxDock location this user may access.";
+      : isCustomer
+        ? "Select every MaxDock location this customer may book."
+        : "Select every MaxDock location this user may access.";
   }
 
   function selectedDeliveryMethod(){return document.querySelector('input[name="deliveryMethod"]:checked')?.value||"invite_link"}

@@ -1,0 +1,26 @@
+MaxDock v46-DB09 deployment order
+
+Prerequisite
+- MaxDock DB-v01 through DB-v06 are already installed.
+- The DB07 Edge Function remains deployed; no Edge Function update is needed.
+
+1. Run MaxDock_DB_v07_Customer_Booking_Access.sql in the Supabase SQL Editor.
+2. Confirm all four verification values are true.
+3. Upload every file from MaxDock-v46-DB09-package to BOTH locations in the
+   GitHub MaxDock repository, replacing files with the same names:
+   - repository root
+   - db04 folder
+4. In Admin, create a Customer user and select every location that customer
+   may book.
+5. Sign in as the Customer and verify:
+   - no location selector in the header;
+   - no Dashboard, Settings, or Admin menu;
+   - the account name and Sign Out remain visible;
+   - location is selected in Step 1 of Request Appointment;
+   - availability changes when the booking location changes.
+
+Role behavior
+- System Admin and Site Admin: header location selector remains visible.
+- Shipping Manager and Coordinator: header location selector is hidden.
+- Customer: booking-only main page and in-wizard location selection.
+- Customers can view available times but cannot read scheduled appointments.

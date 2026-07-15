@@ -112,6 +112,7 @@ function nextStep(n){
 }
 function validate1(){
   clearError(1);
+  required("reqLocation","Max Solutions location");
   if(!$("companyWrap").classList.contains("hidden"))required("reqCompany","Company / Location Name");
 }
 function validate2(){clearError(2);if(Number($("reqSkids").value||0)<0)throw new Error("Skids cannot be negative.")}

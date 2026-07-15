@@ -61,6 +61,22 @@
     toggleCompany();
   }
 
+  function populateBookingLocations(){
+    const select=$("reqLocation");
+    if(!select)return;
+    const locations=db.getLocations();
+    select.innerHTML=locations.map(location=>`<option value="${esc(location.name)}">${esc(location.name)}</option>`).join("");
+    select.value=currentLocation;
+    if(!select.value&&locations[0])select.value=locations[0].name;
+    select.disabled=locations.length<=1;
+  }
+
+  window.changeBookingLocation=async function(value){
+    if(!value||value===currentLocation)return;
+    await changeLocation(value);
+    populateBookingLocations();
+  };
+
   changeLocation=async function(value){
     const previous=currentLocation;
     try{
@@ -71,6 +87,7 @@
       db.populateLocationSelect($("locationSelect"));
       applyTheme(currentLocation);
       populateRequesterLocations();
+      populateBookingLocations();
       selectedSlot=null;
       if(PAGE==="dashboard")renderDashboard();
       if(PAGE==="requester")renderSlots();
@@ -88,6 +105,7 @@
 
   openRequest=function(){
     if(!db.hasPermission("appointment.create"))return alert("You do not have permission to create appointments.");
+    populateBookingLocations();
     originalOpenRequest();
   };
 
@@ -383,6 +401,15 @@
   };
 
   function applyPermissions(){
+    const roleCode=db.getProfile()?.role_code;
+    const isCustomer=roleCode==="customer";
+    const canSelectHeaderLocation=["system_admin","site_admin"].includes(roleCode);
+    document.querySelectorAll(".locationPill").forEach(element=>element.hidden=!canSelectHeaderLocation);
+    document.querySelectorAll(".headerActions > .ghostBtn").forEach(element=>element.hidden=isCustomer);
+    document.querySelectorAll(".headerActions .menuDetails").forEach(element=>element.hidden=isCustomer);
+    if($("facilityBadge"))$("facilityBadge").hidden=isCustomer;
+    const heroHint=document.querySelector(".heroHint");
+    if(heroHint&&isCustomer)heroHint.textContent="Choose a Max Solutions location and an available appointment time.";
     if(!db.hasPermission("appointment.create"))document.querySelectorAll('[onclick="openRequest()"]').forEach(element=>element.hidden=true);
     if(!db.hasPermission("block.manage"))document.querySelectorAll('[onclick="openBlockModal()"]').forEach(element=>element.hidden=true);
     if(!db.hasPermission("reports.view"))document.querySelectorAll('[onclick="exportCSV()"]').forEach(element=>element.hidden=true);
@@ -399,6 +426,10 @@
     setAppLoading(true);
     if(!await db.requireAuth())return;
     await db.loadContext();
+    if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
+      location.replace("./index.html?v=46-db09");
+      return;
+    }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
     if(PAGE==="settings"&&!db.hasPermission("settings.view"))throw new Error("This account cannot view MaxDock settings.");
     await db.loadLocation(currentLocation);
@@ -408,6 +439,7 @@
     db.addAccountControls();
     applyTheme(currentLocation);
     populateRequesterLocations();
+    populateBookingLocations();
 
     if(PAGE==="dashboard"){
       window.scrollTo(0,0);$("adminDate").value=todayISO();renderDashboard();

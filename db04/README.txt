@@ -1,4 +1,4 @@
-MaxDock v46-DB08 — Appointment Editing Build
+MaxDock v46-DB09 — Customer Booking Experience Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -12,6 +12,7 @@ Database prerequisites
 4. MaxDock_DB_v04_Booking_Functions.sql
 5. MaxDock_DB_v05_User_Administration.sql
 6. MaxDock_DB_v06_Appointment_Editing.sql
+7. MaxDock_DB_v07_Customer_Booking_Access.sql
 
 Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
@@ -41,6 +42,10 @@ Integrated database operations
 - System Admin username editing and protected account deletion
 - System Admin and Site Admin appointment editing from the timeline or appointment list
 - Single Yes/No appointment cancellation without a reason prompt
+- Booking-only Customer role without schedule, settings, report, or administration access
+- Appointment location selection inside Step 1 of the booking wizard
+- Header location selection limited to System Admin and Site Admin
+- Customer availability access without visibility into scheduled appointment records
 - Compact page headings and a balanced header with the location selector beside the account controls
 
 Notes
