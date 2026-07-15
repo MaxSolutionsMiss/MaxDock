@@ -390,7 +390,7 @@
   saveSettings=async function(){
     const button=document.querySelector('[onclick="saveSettings()"]');
     try{
-      if(!db.hasPermission("settings.manage")||!db.hasPermission("dock.manage"))throw new Error("Only a MaxDock system administrator can change these settings and dock doors.");
+      if(!db.hasPermission("settings.manage")||!db.hasPermission("dock.manage"))throw new Error("Only an authorized MaxDock administrator can change these settings and dock doors.");
       captureDockDraft();
       const docks=dockDraft.map(dock=>({...dock,name:dock.name.trim(),truckTypeCodes:[...new Set(dock.truckTypeCodes||[])]})).filter(dock=>dock.name);
       if(!docks.length)throw new Error("At least one active dock is required.");
