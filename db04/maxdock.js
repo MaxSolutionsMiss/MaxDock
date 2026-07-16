@@ -121,12 +121,13 @@ function validate3(){clearError(3);required("reqDate","Requested Date");if(!sele
 function validate4(){clearError(4);required("reqName","Requester Name");required("reqEmail","Requester Email");required("reqRef","PO / BOL / Job #")}
 function toggleCompany(){
   if(!$("reqRequesterType"))return;
-  const show=["Vendor","Customer","Other Sister Plant","Other"].includes($("reqRequesterType").value);
+  const show=["Vendor","Customer","Other Sister Plant","Other Max Solutions location (not listed)","Other"].includes($("reqRequesterType").value);
   $("companyWrap").classList.toggle("hidden",!show);
+  window.updateBookingRouteSummary?.();
 }
 function requesterCompany(){
   const type=$("reqRequesterType").value;
-  if(["Vendor","Customer","Other Sister Plant","Other"].includes(type)){
+  if(["Vendor","Customer","Other Sister Plant","Other Max Solutions location (not listed)","Other"].includes(type)){
     return `${type}: ${$("reqCompany").value.trim()||"TBD"}`;
   }
   return type;
@@ -175,7 +176,8 @@ function renderReview(){
     <h3 class="stepTitle">Review and book</h3>
     <p class="stepIntro">Confirm the appointment details.</p>
     <div class="reviewCard"><div class="reviewRows">
-      <div class="reviewItem"><b>Facility</b>Max Solutions – ${esc(currentLocation)}</div>
+      <div class="reviewItem"><b>Appointment site</b>Max Solutions – ${esc(currentLocation)}</div>
+      <div class="reviewItem"><b>Route</b>${esc(window.getBookingRouteText?.()||requesterCompany())}</div>
       <div class="reviewItem"><b>Date / Time</b>${esc(selectedSlot?.date||"")} | ${selectedSlot?displayTime(selectedSlot.start)+" – "+displayTime(selectedSlot.end):""}</div>
       <div class="reviewItem"><b>Direction</b>${esc($("reqDirection").value)}</div>
       <div class="reviewItem"><b>Appointment Type</b>${esc($("reqType").value)}</div>
@@ -374,9 +376,11 @@ function renderDashboard(){
   const scheduleItems=filteredDayAppointments();
   const range=dashboardDateRange();
   const rangeItems=filteredRangeAppointments();
+  const physicalRange=rangeItems.filter(a=>!a.linkedMovement);
+  const linkedMovements=rangeItems.filter(a=>a.linkedMovement);
   const activeRange=rangeItems.filter(a=>a.status!=="Cancelled");
-  const completed=rangeItems.filter(a=>a.status==="Completed").length;
-  const scheduled=rangeItems.filter(a=>a.status==="Scheduled").length;
+  const completed=physicalRange.filter(a=>a.status==="Completed").length;
+  const scheduled=physicalRange.filter(a=>a.status==="Scheduled").length;
   const priority=activeRange.filter(a=>a.priority).length;
   const inboundSkids=activeRange
     .filter(a=>a.direction==="Inbound"&&a.type!=="Dock Block")
@@ -386,7 +390,8 @@ function renderDashboard(){
     .reduce((sum,a)=>sum+Number(a.skids||0),0);
 
   $("metrics").innerHTML=[
-    ["Appointments",rangeItems.length],
+    ["Appointments",physicalRange.length],
+    ["Linked Movements",linkedMovements.length],
     ["Scheduled",scheduled],
     ["Completed",completed],
     ["Priority",priority],
@@ -517,7 +522,9 @@ function renderSchedule(items){
 
   $("timeRuler").innerHTML=regularTickHTML+endLabelHTML;
 
-  $("timelineBody").innerHTML=settings.docks.map(dock=>{
+  const scheduleLanes=[...settings.docks];
+  if(items.some(item=>item.linkedMovement))scheduleLanes.push("Linked movement");
+  $("timelineBody").innerHTML=scheduleLanes.map(dock=>{
     const dockItems=items
       .filter(a=>a.dock===dock)
       .sort((a,b)=>a.start.localeCompare(b.start));
@@ -546,27 +553,28 @@ function renderSchedule(items){
       const displayStyle=displayMode
         ?`;--event-time-font:${eventTimeFont.toFixed(1)}px;--event-company-font:${eventCompanyFont.toFixed(1)}px;--event-meta-font:${eventMetaFont.toFixed(1)}px;--event-pad-x:${eventPaddingX.toFixed(1)}px`
         :"";
-      const cls=a.type==="Dock Block"?"blocked":
+      const cls=a.linkedMovement?"linkedMovement":
+        a.type==="Dock Block"?"blocked":
         a.status==="Completed"?"completed":
         a.status==="Cancelled"?"cancelled":
         a.direction==="Outbound"?"outbound":"inbound";
-      const canOpenEditor=a.type!=="Dock Block"&&!['Completed','Cancelled','No Show'].includes(a.status)
+      const canOpenEditor=!a.linkedMovement&&a.type!=="Dock Block"&&!['Completed','Cancelled','No Show'].includes(a.status)
         &&(!window.canEditMaxDockAppointment||window.canEditMaxDockAppointment());
 
       return `<div class="scheduleEvent ${cls} ${a.priority?"priority":""} ${a.afterHours?"afterHours":""} ${canOpenEditor?"appointmentEditable":""}"
         ${canOpenEditor?`data-appointment-id="${esc(a.id)}" ondblclick="openAppointmentEditor('${esc(a.id)}')"`:""}
         style="left:${left}px;width:${width}px${displayStyle}"
-        title="${esc(a.company)} • ${displayTime(a.start)}–${displayTime(a.end)}${a.afterHours?" • After-hours staff override":""}">
+        title="${esc(a.routeOriginName&&a.routeDestinationName?`${a.routeOriginName} → ${a.routeDestinationName}`:a.company)} • ${displayTime(a.start)}–${displayTime(a.end)}${a.linkedMovement?" • Linked schedule view":""}${a.afterHours?" • After-hours staff override":""}">
         <div class="eventTime">${esc(timeLabel)}</div>
         <div class="eventCompany">${esc(a.company)}</div>
-        <div class="eventMeta">${esc(a.type)} • ${esc(a.truck||"")} ${a.skids?`• ${esc(a.skids)} skids`:""}</div>
+        <div class="eventMeta">${a.linkedMovement?"Linked movement • ":""}${esc(a.type)} • ${esc(a.truck||"")} ${a.skids?`• ${esc(a.skids)} skids`:""}</div>
       </div>`;
     }).join("");
 
     return `<div class="timelineLane">
       <div class="dockLaneLabel">
         <strong>${esc(dock)}</strong>
-        <small>${dockItems.length} appointment${dockItems.length===1?"":"s"}</small>
+        <small>${dockItems.length} ${dock==="Linked movement"?"movement":"appointment"}${dockItems.length===1?"":"s"}</small>
       </div>
       <div class="dockTrack" style="width:${trackWidth}px;background-size:${scale*pxPerMinute}px 100%">
         ${events}
