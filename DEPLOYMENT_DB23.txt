@@ -1,0 +1,31 @@
+MaxDock v46-DB23 Deployment
+
+Changes
+- Adds a staff-only custom appointment time option for System Admin, Site Admin, Shipping Manager, and Coordinator accounts with appointment-create permission.
+- Warns when the proposed appointment falls outside the selected location's operating hours and requires an explicit confirmation before booking.
+- Keeps Customer accounts restricted to normal capacity-ready appointment slots inside operating hours.
+- Records whether the appointment used an after-hours override, who confirmed it, and when it was confirmed.
+- Expands the Dashboard schedule timeline when an appointment starts early, ends late, or crosses midnight.
+- Detects reverse intersite routes within 18 hours and shows potential return-load recommendations during booking, on Dashboard, and in Operations Queue.
+- Keeps route consolidation advisory only; MaxDock never changes or merges appointments automatically.
+
+Database
+- Apply MaxDock_DB_v15_After_Hours_Return_Loads.sql using migration name maxdock_db23_after_hours_return_loads.
+- The migration adds after-hours audit columns and installs the staff preview, updated booking, proposed-route matching, and scheduled-route opportunity RPCs.
+
+Edge Functions
+- No Edge Function deployment is required for DB23.
+
+Frontend
+- Publish all changed root files and their mirrored db04 copies.
+- Hard-refresh the browser after GitHub Pages finishes deploying.
+
+Verification
+1. Sign in as a Coordinator or administrator, open Place Appointment, and confirm Staff Scheduling Override appears in Step 3.
+2. Enable Use Custom Time, choose a time outside operating hours, and confirm the warning asks whether the choice is intentional.
+3. Cancel the warning and confirm no time is selected; repeat and accept it, then confirm the Review step marks the audited override.
+4. Sign in as a Customer and confirm no staff override controls are visible and outside-hours booking is rejected by the database.
+5. Create or identify two structured MaxDock intersite appointments on reverse routes with non-overlapping times no more than 18 hours apart.
+6. Confirm Potential Return Loads appears during booking and on Dashboard and Operations Queue.
+7. Confirm each suggestion identifies both booking references and says it is a recommendation only.
+8. Confirm after-hours appointments appear on the Dashboard timeline and carry an After Hours marker in the appointment list and Operations Queue.

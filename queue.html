@@ -4,30 +4,30 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=46-db22">
-<link rel="stylesheet" href="./maxdock-db04.css?v=46-db22">
+<link rel="stylesheet" href="./maxdock.css?v=46-db23">
+<link rel="stylesheet" href="./maxdock-db04.css?v=46-db23">
 <title>MaxDock – Operations Queue</title>
 </head>
 <body data-page="queue">
 <header class="topbar">
   <div class="topbarInner">
     <div class="brandRow"><div class="brand">
-      <a class="logoLink" href="./index.html?v=46-db22" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+      <a class="logoLink" href="./index.html?v=46-db23" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
       <div><h1 class="appTitle">MaxDock</h1></div>
     </div></div>
     <div class="headerActions">
       <div class="locationPill" id="queueLocationPill"><label for="queueLocation">Location</label><select id="queueLocation"></select></div>
-      <a class="ghostBtn" href="./index.html?v=46-db22">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=46-db23">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=46-db22">My Appointments</a>
-          <a href="./queue.html?v=46-db22" aria-current="page">Operations Queue</a>
-          <a href="./dashboard.html?v=46-db22">Dashboard</a>
-          <a href="./reports.html?v=46-db22">Reports</a>
-          <a href="./settings.html?v=46-db22">Settings</a>
-          <a href="./admin.html?v=46-db22">User Management</a>
-          <a href="./data.html?v=46-db22">Data Integration</a>
+          <a href="./my-appointments.html?v=46-db23">My Appointments</a>
+          <a href="./queue.html?v=46-db23" aria-current="page">Operations Queue</a>
+          <a href="./dashboard.html?v=46-db23">Dashboard</a>
+          <a href="./reports.html?v=46-db23">Reports</a>
+          <a href="./settings.html?v=46-db23">Settings</a>
+          <a href="./admin.html?v=46-db23">User Management</a>
+          <a href="./data.html?v=46-db23">Data Integration</a>
         </nav>
       </details>
     </div>
@@ -94,6 +94,11 @@
   <section class="queueFocus" id="queueFocus"></section>
   <div class="queueNotice" id="queueNotice" role="status" aria-live="polite" hidden></div>
 
+  <section class="panel returnLoadPanel" id="queueReturnLoadPanel" hidden>
+    <div class="panelHeader"><div><h3>Potential Return Loads</h3><small>Confirm the carrier and timing with both sites before changing transportation.</small></div></div>
+    <div class="returnLoadList" id="queueReturnLoadList"></div>
+  </section>
+
   <section class="panel queueActionPanel">
     <div class="panelHeader"><div><h3>Shift Action List</h3><small id="queueActionSummary"></small></div></div>
     <div class="queueActionList" id="queueActions"></div>
@@ -117,9 +122,9 @@
   <div class="error" id="queueError" role="alert"></div>
 </main>
 
-<script src="./supabase-2.110.3.js?v=46-db22"></script>
-<script src="./maxdock-config.js?v=46-db22"></script>
-<script src="./maxdock-db.js?v=46-db22"></script>
-<script src="./maxdock-queue.js?v=46-db22"></script>
+<script src="./supabase-2.110.3.js?v=46-db23"></script>
+<script src="./maxdock-config.js?v=46-db23"></script>
+<script src="./maxdock-db.js?v=46-db23"></script>
+<script src="./maxdock-queue.js?v=46-db23"></script>
 </body>
 </html>

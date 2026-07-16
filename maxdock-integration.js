@@ -4,12 +4,17 @@
   const db=window.MaxDockDB;
   let dockDraft=[];
   let bookingTemplates=[];
+  let bookingReturnLoads=[];
   let slotRequestId=0;
   let editingAppointmentId=null;
   const scheduleDisplayMode=PAGE==="dashboard"&&new URLSearchParams(location.search).get("display")==="1";
   const originalOpenRequest=openRequest;
+  const originalRenderReview=renderReview;
   const originalFilteredDayAppointments=filteredDayAppointments;
   const originalRenderDashboard=renderDashboard;
+  let dashboardReturnLoads=[];
+  let dashboardReturnLoadSignature="";
+  let dashboardReturnLoadRequestId=0;
   let dashboardPreferenceReady=false;
   let lastDashboardPreferenceSignature="";
   let liveAppointmentStop=null;
@@ -46,7 +51,51 @@
   renderDashboard=function(){
     originalRenderDashboard();
     saveDashboardPreference();
+    refreshDashboardReturnLoads();
   };
+
+  function formatReturnLoadGap(value){
+    const minutes=Math.max(0,Number(value||0));
+    const hours=Math.floor(minutes/60),remaining=minutes%60;
+    return hours?`${hours}h${remaining?` ${remaining}m`:""}`:`${remaining}m`;
+  }
+
+  function returnLoadCard(item){
+    const firstTime=new Date(item.first_start_at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+    const secondTime=new Date(item.second_start_at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+    return `<article class="returnLoadCard">
+      <div class="returnLoadIcon" aria-hidden="true">↔</div>
+      <div><strong>${esc(item.first_booking_reference)} + ${esc(item.second_booking_reference)}</strong>
+        <p>${esc(item.first_origin_name)} → ${esc(item.first_destination_name)} · ${esc(firstTime)}<br>${esc(item.second_origin_name)} → ${esc(item.second_destination_name)} · ${esc(secondTime)}</p>
+        <small>${formatReturnLoadGap(item.turnaround_minutes)} turnaround · ${Number(item.combined_skids||0)} combined skids · recommendation only</small>
+      </div>
+    </article>`;
+  }
+
+  function renderDashboardReturnLoads(){
+    const panel=$("dashboardReturnLoadPanel"),list=$("dashboardReturnLoadList");
+    if(!panel||!list)return;
+    panel.hidden=!dashboardReturnLoads.length;
+    list.innerHTML=dashboardReturnLoads.map(returnLoadCard).join("");
+  }
+
+  async function refreshDashboardReturnLoads(force=false){
+    if(PAGE!=="dashboard"||!$("adminDate")||db.getProfile()?.role_code==="customer")return;
+    const date=$("adminDate").value||todayISO();
+    const signature=`${db.getCurrentLocation()?.id||""}|${date}`;
+    if(!force&&signature===dashboardReturnLoadSignature)return;
+    dashboardReturnLoadSignature=signature;
+    const requestId=++dashboardReturnLoadRequestId;
+    try{
+      const rows=await db.listReturnLoadOpportunities(date,date);
+      if(requestId!==dashboardReturnLoadRequestId)return;
+      dashboardReturnLoads=rows;renderDashboardReturnLoads();
+    }catch(error){
+      if(requestId!==dashboardReturnLoadRequestId)return;
+      dashboardReturnLoads=[];renderDashboardReturnLoads();
+      console.warn("Return-load suggestions are temporarily unavailable.",error);
+    }
+  }
 
   function canEditAppointments(){
     return ["system_admin","site_admin","coordinator"].includes(db.getProfile()?.role_code)
@@ -123,6 +172,121 @@
     return start&&end?{start,end}:{start:null,end:null};
   }
 
+  function isStaffScheduler(){
+    return db.getProfile()?.role_code!=="customer"&&db.hasPermission("appointment.create");
+  }
+
+  function customBookingSignature(){
+    return [$("reqDate")?.value,$("reqCustomTime")?.value,$("reqDirection")?.value,$("reqRequesterType")?.value,
+      $("reqType")?.value,$("reqTruck")?.value,$("reqSkids")?.value,$("reqHandling")?.value,$("reqPriority")?.value].join("|");
+  }
+
+  function clearBookingReturnLoads(){
+    bookingReturnLoads=[];
+    const notice=$("returnLoadBookingNotice");
+    if(notice){notice.hidden=true;notice.innerHTML="";}
+  }
+
+  function clearSelectedBookingTime(){
+    selectedSlot=null;
+    if($("selectedTimeDisplay"))$("selectedTimeDisplay").value="";
+    clearBookingReturnLoads();
+  }
+
+  function configureStaffTimeOverride(reset=false){
+    const panel=$("staffTimeOverride");
+    if(!panel)return;
+    panel.hidden=!isStaffScheduler();
+    const toggle=$("reqStaffCustomToggle"),controls=$("staffTimeControls"),status=$("staffTimeStatus");
+    if(reset||panel.hidden){
+      if(toggle)toggle.checked=false;
+      if(controls)controls.hidden=true;
+      if(status){status.hidden=true;status.textContent="";status.dataset.state="";}
+      if($("reqCustomTime"))$("reqCustomTime").value="";
+    }
+    if($("reqCustomTime"))$("reqCustomTime").step=String(Math.max(1,Number(settings.interval||15))*60);
+  }
+
+  window.toggleStaffCustomTime=function(){
+    if(!isStaffScheduler())return;
+    const enabled=Boolean($("reqStaffCustomToggle")?.checked);
+    if($("staffTimeControls"))$("staffTimeControls").hidden=!enabled;
+    if($("staffTimeStatus")){$("staffTimeStatus").hidden=true;$("staffTimeStatus").textContent="";}
+    clearSelectedBookingTime();
+    if(enabled&&!$("reqCustomTime").value)$("reqCustomTime").value=settings.open||"08:00";
+    renderSlots();
+  };
+
+  function renderBookingReturnLoads(){
+    const notice=$("returnLoadBookingNotice");
+    if(!notice)return;
+    notice.hidden=!bookingReturnLoads.length;
+    notice.innerHTML=bookingReturnLoads.length?`<strong>Potential return load</strong><p>${bookingReturnLoads.map(item=>
+      `${esc(item.booking_reference)} · ${esc(item.origin_location_name)} → ${esc(item.destination_location_name)} · ${formatReturnLoadGap(item.time_gap_minutes)} gap`
+    ).join("<br>")}</p><small>Consider using one truck for the outbound and return movement. Confirm with both sites and the carrier; MaxDock will not merge appointments automatically.</small>`:"";
+  }
+
+  async function refreshBookingReturnLoadMatches(){
+    clearBookingReturnLoads();
+    if(!isStaffScheduler()||!selectedSlot?.startAt||!selectedSlot?.endAt)return;
+    try{
+      bookingReturnLoads=await db.findReturnLoadMatches({
+        direction:$("reqDirection").value,requesterType:$("reqRequesterType").value,
+        startAt:selectedSlot.startAt,endAt:selectedSlot.endAt
+      });
+      renderBookingReturnLoads();
+    }catch(error){
+      console.warn("Return-load suggestions are temporarily unavailable.",error);
+    }
+  }
+
+  window.useStaffCustomTime=async function(){
+    if(!isStaffScheduler())return;
+    const status=$("staffTimeStatus"),button=document.querySelector('#staffTimeControls button[onclick*="useStaffCustomTime"]');
+    try{
+      const date=$("reqDate").value,time=$("reqCustomTime").value;
+      if(!date)throw new Error("Choose the appointment date first.");
+      if(!time)throw new Error("Choose a custom start time.");
+      if(button){button.disabled=true;button.textContent="Checking…";}
+      status.hidden=false;status.dataset.state="working";status.textContent="Checking dock, capacity, and operating hours…";
+      const preview=await db.previewStaffAppointmentTime({
+        date,start:time,direction:$("reqDirection").value,type:$("reqType").value,
+        truck:$("reqTruck").value,skids:Number($("reqSkids").value||0),handling:$("reqHandling").value,
+        priority:$("reqPriority").value==="Yes"
+      });
+      let confirmed=false;
+      if(preview.isAfterHours){
+        const hours=preview.isOpenDay&&preview.openTime&&preview.closeTime
+          ?`${displayTime(preview.openTime)}–${displayTime(preview.closeTime)}`:"closed on this date";
+        confirmed=window.confirm(`This appointment is outside ${currentLocation}'s operating hours (${hours}).\n\nIs this intentional? Select OK to confirm the staff override.`);
+        if(!confirmed)throw new Error("The outside-hours appointment was not confirmed.");
+      }
+      selectedSlot={
+        date:preview.date,start:preview.start,end:preview.end,startAt:preview.startAt,endAt:preview.endAt,
+        recommendedDockId:preview.recommendedDockId,recommendedDockName:preview.recommendedDockName,
+        afterHours:preview.isAfterHours,afterHoursConfirmed:confirmed,custom:true,requestSignature:customBookingSignature()
+      };
+      $("selectedTimeDisplay").value=`${new Date(`${preview.date}T12:00:00`).toLocaleDateString(undefined,{month:"short",day:"numeric"})} · ${displayTime(preview.start)} – ${displayTime(preview.end)}${preview.isAfterHours?" · AFTER HOURS":""}`;
+      status.dataset.state=preview.isAfterHours?"warning":"ready";
+      status.textContent=preview.isAfterHours
+        ?`Confirmed staff override · ${preview.recommendedDockName||"compatible dock"} available. This decision will be recorded with the appointment.`
+        :`Custom staff time is available · ${preview.recommendedDockName||"compatible dock"} recommended.`;
+      await refreshBookingReturnLoadMatches();
+    }catch(error){
+      clearSelectedBookingTime();
+      status.hidden=false;status.dataset.state="error";status.textContent=error.message;
+    }finally{
+      if(button){button.disabled=false;button.textContent="Review custom time";}
+    }
+  };
+
+  renderReview=function(){
+    originalRenderReview();
+    if(!$("reviewContent"))return;
+    if(selectedSlot?.afterHours)$("reviewContent").insertAdjacentHTML("beforeend",`<div class="afterHoursReview"><strong>After-hours staff override confirmed</strong><span>This appointment is intentionally outside normal operating hours and the confirmation will be audited.</span></div>`);
+    if(bookingReturnLoads.length)$("reviewContent").insertAdjacentHTML("beforeend",`<div class="returnLoadReview"><strong>Potential return load</strong><span>${bookingReturnLoads.length} reverse-route appointment${bookingReturnLoads.length===1?"":"s"} found. Confirm with both sites and the carrier after booking.</span></div>`);
+  };
+
   function showTemplateNotice(message){
     const notice=$("bookingTemplateNotice");
     if(!notice)return;
@@ -169,7 +333,7 @@
     const start=String(template.preferred_start_time||"").slice(0,5);
     const end=String(template.preferred_end_time||"").slice(0,5);
     $("reqPreferredWindow").value=start&&end?`${start}|${end}`:"";
-    toggleCompany();selectedSlot=null;$("selectedTimeDisplay").value="";
+    toggleCompany();clearSelectedBookingTime();
     await renderSlots();
     showTemplateNotice(`${template.name} applied. You can still change any field.`);
   };
@@ -219,7 +383,7 @@
       populateRequesterLocations();
       populateBookingLocations();
       await refreshBookingTemplates();
-      selectedSlot=null;
+      clearSelectedBookingTime();
       if(PAGE==="dashboard")renderDashboard();
       if(PAGE==="requester")renderSlots();
       if(PAGE==="settings")renderSettings();
@@ -237,6 +401,8 @@
   openRequest=function(){
     if(!db.hasPermission("appointment.create"))return alert("You do not have permission to create appointments.");
     populateBookingLocations();
+    configureStaffTimeOverride(true);
+    clearBookingReturnLoads();
     originalOpenRequest();
     if($("templateSavePanel"))$("templateSavePanel").hidden=false;
     if($("reqTemplateName"))$("reqTemplateName").value="";
@@ -244,6 +410,7 @@
 
   renderSlots=async function(){
     if(!$("slotList")||!$("reqDate"))return;
+    if(!selectedSlot)clearBookingReturnLoads();
     if(!db.getCurrentLocation()){
       $("slotList").innerHTML=`<div class="notice">Loading live availability…</div>`;
       return;
@@ -252,6 +419,17 @@
     $("reqDate").value=date;
     const localDate=new Date(date+"T00:00:00");
     $("slotDateLabel").textContent=localDate.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"});
+    if($("reqStaffCustomToggle")?.checked&&isStaffScheduler()){
+      if(selectedSlot?.custom&&selectedSlot.requestSignature!==customBookingSignature()){
+        clearSelectedBookingTime();
+        if($("staffTimeStatus")){
+          $("staffTimeStatus").hidden=false;$("staffTimeStatus").dataset.state="";
+          $("staffTimeStatus").textContent="The load details changed. Review the custom time again.";
+        }
+      }
+      $("slotList").innerHTML=`<div class="notice">Enter a custom staff time above, then select <b>Review custom time</b>. MaxDock will warn and require confirmation when it is outside operating hours.</div>`;
+      return;
+    }
     const requestId=++slotRequestId;
     $("slotList").innerHTML=`<div class="notice">Checking live availability…</div>`;
     try{
@@ -269,8 +447,7 @@
       });
       if(requestId!==slotRequestId)return;
       if(selectedSlot&&!slots.some(slot=>slot.date===selectedSlot.date&&slot.start===selectedSlot.start)){
-        selectedSlot=null;
-        $("selectedTimeDisplay").value="";
+        clearSelectedBookingTime();
       }
       const suggestedDate=slots[0]?.date||date;
       if(suggestedDate!==date){
@@ -285,22 +462,24 @@
         const dockDetail=slot.recommendedDockName?`<span>Suggested dock · ${esc(slot.recommendedDockName)}</span>`:`<span>Dock assigned privately by the site</span>`;
         const dateDetail=slot.alternativeDate?`<span class="slotAlternativeDate">${new Date(`${slot.date}T12:00:00`).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span>`:"";
         const capacityDetail=slot.capacityEnabled?`<span class="slotCapacityDetail">Projected occupancy · ${Number(slot.projectedOccupied)} skids · ${Number(slot.availableCapacity)} spaces remaining</span>`:"";
-        return `<button type="button" class="slot smartSlot ${recommendedSlot?"recommendedSlot":""} ${slot.capacityWarning?"capacityWarning":""} ${slot.alternativeDate?"alternativeDateSlot":""} ${selected?"selected":""}" data-start="${esc(slot.start)}" data-end="${esc(slot.end)}" data-date="${esc(slot.date)}" data-open="${Number(slot.open)}" data-dock-id="${esc(slot.recommendedDockId||"")}" data-dock-name="${esc(slot.recommendedDockName||"")}" data-rank="${Number(slot.rank)}" data-capacity-warning="${slot.capacityWarning?"1":"0"}">
+        return `<button type="button" class="slot smartSlot ${recommendedSlot?"recommendedSlot":""} ${slot.capacityWarning?"capacityWarning":""} ${slot.alternativeDate?"alternativeDateSlot":""} ${selected?"selected":""}" data-start="${esc(slot.start)}" data-end="${esc(slot.end)}" data-start-at="${esc(slot.startAt||"")}" data-end-at="${esc(slot.endAt||"")}" data-date="${esc(slot.date)}" data-open="${Number(slot.open)}" data-dock-id="${esc(slot.recommendedDockId||"")}" data-dock-name="${esc(slot.recommendedDockName||"")}" data-rank="${Number(slot.rank)}" data-capacity-warning="${slot.capacityWarning?"1":"0"}">
           ${recommendedSlot?`<em class="slotRecommendation">Recommended ${slot.rank}</em>`:""}
           ${slot.capacityWarning?`<em class="slotCapacityWarning">Capacity warning</em>`:""}${dateDetail}
           <strong>${displayTime(slot.start)} – ${displayTime(slot.end)}</strong>
           <small>${esc(slot.reason)}${capacityDetail}${dockDetail}</small>
         </button>`;
       }).join("")||`<div class="notice">No available time on this date. Try another day.</div>`;
-      document.querySelectorAll(".slot[data-start]").forEach(element=>element.addEventListener("click",()=>{
+      document.querySelectorAll(".slot[data-start]").forEach(element=>element.addEventListener("click",async()=>{
         selectedSlot={
-          date:element.dataset.date,start:element.dataset.start,end:element.dataset.end,open:Number(element.dataset.open),
+          date:element.dataset.date,start:element.dataset.start,end:element.dataset.end,startAt:element.dataset.startAt,endAt:element.dataset.endAt,open:Number(element.dataset.open),
           recommendedDockId:element.dataset.dockId||null,recommendedDockName:element.dataset.dockName||null,rank:Number(element.dataset.rank||0)
         };
         if($("reqDate").value!==selectedSlot.date)$("reqDate").value=selectedSlot.date;
         $("selectedTimeDisplay").value=`${new Date(`${selectedSlot.date}T12:00:00`).toLocaleDateString(undefined,{month:"short",day:"numeric"})} · ${displayTime(selectedSlot.start)} – ${displayTime(selectedSlot.end)}`;
         document.querySelectorAll(".slot[data-start]").forEach(slot=>slot.classList.toggle("selected",slot===element));
+        await refreshBookingReturnLoadMatches();
       }));
+      if(selectedSlot)await refreshBookingReturnLoadMatches();
     }catch(err){
       if(requestId!==slotRequestId)return;
       $("slotList").innerHTML=`<div class="error liveError">${esc(err.message)}</div>`;
@@ -321,7 +500,8 @@
         priority:$("reqPriority").value==="Yes",name:$("reqName").value.trim(),
         email:$("reqEmail").value.trim(),reference:$("reqRef").value.trim(),
         company:usesCompany?$("reqCompany").value.trim():null,
-        carrier:$("reqCarrier").value.trim(),notes:$("reqNotes").value.trim()
+        carrier:$("reqCarrier").value.trim(),notes:$("reqNotes").value.trim(),
+        afterHoursConfirmed:Boolean(selectedSlot.afterHoursConfirmed)
       });
       lastBooked=getAppointments().find(appointment=>appointment.id===result.appointment_id)||{
         ref:result.booking_reference,location:currentLocation,date:selectedSlot.date,start:selectedSlot.start,end:selectedSlot.end,
@@ -356,7 +536,7 @@
           }
         }
         return `<tr ${editable?`class="appointmentEditableRow" data-appointment-id="${esc(appointment.id)}" title="Double-click to edit"`:""}>
-          <td><b>${esc(appointment.ref)}</b></td><td>${esc(appointment.date)}</td><td>${displayTime(appointment.start)}–${displayTime(appointment.end)}</td>
+          <td><b>${esc(appointment.ref)}</b></td><td>${esc(appointment.date)}</td><td>${displayTime(appointment.start)}–${displayTime(appointment.end)}${appointment.afterHours?` <span class="afterHoursBadge">After hours</span>`:""}</td>
           <td>${esc(appointment.dock)}</td><td>${esc(appointment.company)}</td><td>${esc(appointment.type)}</td>
           <td>${esc(appointment.truck||"")} / ${esc(appointment.skids||0)}</td><td>${statusBadge(appointment.status)}</td>
           <td>${actions.join(" ")||"—"}</td>
@@ -674,6 +854,7 @@
     if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(element=>element.hidden=true);
     if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"],a[href*="data.html"]').forEach(element=>element.hidden=true);
     if($("scheduleEditHint"))$("scheduleEditHint").hidden=!canEditAppointments();
+    configureStaffTimeOverride(false);
     const canManageSettings=db.hasPermission("settings.manage")&&db.hasPermission("dock.manage");
     if(!canManageSettings){
       document.querySelectorAll('[onclick="saveSettings()"],[onclick="resetSettings()"],[onclick="addDock()"],.dockMatrixRemove').forEach(element=>element.hidden=true);
@@ -734,7 +915,7 @@
     const date=$("adminDate")?.value||todayISO();
     const locationName=db.getCurrentLocation()?.name||currentLocation;
     const url=new URL("./dashboard.html",location.href);
-    url.searchParams.set("v","46-db22");
+    url.searchParams.set("v","46-db23");
     url.searchParams.set("display","1");
     url.searchParams.set("date",date);
     url.searchParams.set("location",locationName);
@@ -803,7 +984,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db22");
+      location.replace("./index.html?v=46-db23");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
@@ -849,6 +1030,7 @@
     }
     if($("requestModal")){
       $("reqDate").value=$("adminDate")?.value||todayISO();toggleCompany();renderSlots();
+      ["reqDirection","reqRequesterType","reqType","reqPriority","reqCustomTime"].forEach(id=>$(id)?.addEventListener("change",()=>renderSlots()));
       if(new URLSearchParams(location.search).get("open")==="request")setTimeout(openRequest,0);
     }
     if(PAGE==="settings"){
@@ -876,7 +1058,7 @@
       liveAppointmentStop=db.startLiveRefresh(async()=>{
         if(document.body.classList.contains("tvScheduleMode"))return;
         if(PAGE==="dashboard"){
-          await db.fetchAppointments();syncDatabaseState();renderDashboard();
+          await db.fetchAppointments();syncDatabaseState();renderDashboard();await refreshDashboardReturnLoads(true);
           const status=$("dashboardLiveStatus");
           if(status)status.innerHTML=`<span class="liveDot"></span>Live appointments · updated ${new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"})}`;
         }

@@ -6,7 +6,7 @@
   const queueDisplayMode=query.get("display")==="1";
   const DEFAULT_PREFERENCES={brief:["first","peak","docks","priority","review"],metrics:["pending","completed","inbound","outbound","skids","blocks","priority","soon"]};
   const VALID_PREFERENCES={brief:new Set(DEFAULT_PREFERENCES.brief),metrics:new Set(DEFAULT_PREFERENCES.metrics)};
-  const state={rows:[],pendingRows:[],completedRows:[],blocks:[],busyId:null,
+  const state={rows:[],pendingRows:[],completedRows:[],blocks:[],returnLoads:[],busyId:null,
     preferences:{brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics]},
     view:{status:"pending",dateMode:"today",customDate:"",locationName:""}};
 
@@ -19,6 +19,11 @@
   function clearError(){$("queueError").style.display="none"}
   function minuteValue(value){const [hour,minute]=String(value||"00:00").split(":").map(Number);return hour*60+minute}
   function currentMinutes(){const now=new Date();return now.getHours()*60+now.getMinutes()}
+  function formatGap(value){const total=Math.max(0,Number(value||0)),hours=Math.floor(total/60),minutes=total%60;return hours?`${hours}h${minutes?` ${minutes}m`:""}`:`${minutes}m`}
+
+  async function loadReturnLoads(){
+    state.returnLoads=await db.listReturnLoadOpportunities($("queueDate")?.value||today(),$("queueDate")?.value||today());
+  }
 
   let queueDisplayTimer=null,queueDisplayBusy=false;
   function updateQueueDisplayStatus(message){
@@ -32,7 +37,7 @@
     if(queueDisplayBusy||state.busyId||document.hidden)return;
     queueDisplayBusy=true;
     try{
-      await db.fetchAppointments();
+      await Promise.all([db.fetchAppointments(),loadReturnLoads()]);
       render();
       const updated=new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"});
       updateQueueDisplayStatus(`${displayDate($("queueDate").value)} · ${db.getCurrentLocation()?.name||"MaxDock"} · updated ${updated} · refreshes every 5 seconds`);
@@ -56,7 +61,7 @@
   }
   window.openQueueDisplay=function(){
     const url=new URL("./queue.html",location.href);
-    url.searchParams.set("v","46-db22");
+    url.searchParams.set("v","46-db23");
     url.searchParams.set("display","1");
     url.searchParams.set("date",$("queueDate").value||today());
     url.searchParams.set("status",$("queueStatus").value||"pending");
@@ -178,11 +183,11 @@
     const completed=item.status==="Completed";
     const tag=completed?"Completed":level==="overdue"?"Time passed":level==="soon"?"Due within 60 min":item.priority?"Priority":"Planned";
     const canChange=completed?db.hasPermission("appointment.update"):db.hasPermission("appointment.complete");
-    const historyLink=db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=46-db22&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
+    const historyLink=db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=46-db23&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
     return `<article class="queueCard ${level}">
       <div class="queueCardTime"><strong>${esc(displayTime(item.start))}</strong><small>${esc(displayTime(item.end))}</small></div>
       <div class="queueCardBody">
-        <div class="queueCardTop"><b>${esc(item.ref)}</b><span class="queueTag">${esc(tag)}</span></div>
+        <div class="queueCardTop"><b>${esc(item.ref)}</b><span class="queueTag">${esc(item.afterHours?"After hours":tag)}</span></div>
         <h4>${esc(item.company||"Unspecified company")}</h4>
         <div class="queueFacts">
           <span><b>Dock</b>${esc(item.dock)}</span><span><b>Vehicle</b>${esc(item.truck||"—")}</span>
@@ -246,7 +251,7 @@
   function renderFocus(rows){
     const next=rows.find(item=>$("queueDate").value!==today()||minuteValue(item.end)>=currentMinutes())||rows[0];
     if(!next){$("queueFocus").innerHTML=`<div><small>${esc(displayDate($("queueDate").value))}</small><h3>No active appointments scheduled</h3><p>The location has no inbound or outbound work in the execution queue for this date.</p></div>`;return}
-    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=46-db22&date=${esc($("queueDate").value)}">Open schedule</a>`;
+    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=46-db23&date=${esc($("queueDate").value)}">Open schedule</a>`;
   }
 
   function renderLane(direction,elementId,summaryId){
@@ -260,6 +265,20 @@
   function renderBlocks(){
     $("queueBlocksPanel").hidden=!state.blocks.length;
     $("queueBlocks").innerHTML=state.blocks.map(block=>`<article class="queueBlock"><b>${esc(block.dock)}</b><span>${esc(displayTime(block.start))}–${esc(displayTime(block.end))}</span><small>${esc(block.handling||"Dock restriction")}</small></article>`).join("");
+  }
+
+  function renderReturnLoads(){
+    const panel=$("queueReturnLoadPanel"),list=$("queueReturnLoadList");
+    panel.hidden=!state.returnLoads.length;
+    list.innerHTML=state.returnLoads.map(item=>{
+      const firstTime=new Date(item.first_start_at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+      const secondTime=new Date(item.second_start_at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+      return `<article class="returnLoadCard"><div class="returnLoadIcon" aria-hidden="true">↔</div><div>
+        <strong>${esc(item.first_booking_reference)} + ${esc(item.second_booking_reference)}</strong>
+        <p>${esc(item.first_origin_name)} → ${esc(item.first_destination_name)} · ${esc(firstTime)}<br>${esc(item.second_origin_name)} → ${esc(item.second_destination_name)} · ${esc(secondTime)}</p>
+        <small>${formatGap(item.turnaround_minutes)} turnaround · ${Number(item.combined_skids||0)} combined skids · recommendation only</small>
+      </div></article>`;
+    }).join("");
   }
 
   function render(){
@@ -276,7 +295,7 @@
       {key:"soon",label:"Due soon",value:state.pendingRows.filter(item=>urgency(item)==="soon").length}
     ].filter(item=>state.preferences.metrics.includes(item.key));
     $("queueMetrics").innerHTML=metricItems.map(item=>`<div class="metric queueMetric ${item.key}"><small>${esc(item.label)}</small><strong>${item.value}</strong></div>`).join("");
-    renderMorningBrief(state.pendingRows,actions);renderFocus(state.pendingRows);renderActions(actions);renderLane("inbound","inboundQueue","inboundSummary");renderLane("outbound","outboundQueue","outboundSummary");renderBlocks();
+    renderMorningBrief(state.pendingRows,actions);renderFocus(state.pendingRows);renderReturnLoads();renderActions(actions);renderLane("inbound","inboundQueue","inboundSummary");renderLane("outbound","outboundQueue","outboundSummary");renderBlocks();
   }
 
   function showNotice(message){
@@ -290,6 +309,7 @@
     try{
       state.busyId=id;render();
       await db.changeStatus(id,status,null);
+      await loadReturnLoads();
       showNotice(status==="completed"?`${item.ref} marked completed.`:`${item.ref} reopened as pending.`);
     }catch(error){showError(error)}finally{state.busyId=null;render()}
   }
@@ -306,6 +326,7 @@
     try{
       await db.loadLocation($("queueLocation").value);
       localStorage.setItem("maxdock_location",db.getCurrentLocation()?.name||$("queueLocation").value);
+      await loadReturnLoads();
       render();saveQueuePreferences();
     }
     finally{if(button){button.disabled=false;button.textContent=label||"Refresh queue"}}
@@ -325,11 +346,11 @@
       const savedDate=state.view.dateMode==="tomorrow"?today(1):state.view.dateMode==="custom"&&state.view.customDate?state.view.customDate:today();
       $("queueDate").value=/^\d{4}-\d{2}-\d{2}$/.test(query.get("date")||"")?query.get("date"):savedDate;
       $("queueStatus").value=["pending","all","completed"].includes(query.get("status"))?query.get("status"):state.view.status;
-      $("queueDate").addEventListener("change",()=>{render();saveQueuePreferences()});
+      $("queueDate").addEventListener("change",()=>{loadReturnLoads().then(render).catch(showError);saveQueuePreferences()});
       $("queueStatus").addEventListener("change",()=>{render();saveQueuePreferences()});
       $("queueLocation").addEventListener("change",()=>changeLocation().catch(showError));
-      $("queueToday").addEventListener("click",()=>{$("queueDate").value=today();render();saveQueuePreferences()});
-      $("queueTomorrow").addEventListener("click",()=>{$("queueDate").value=today(1);render();saveQueuePreferences()});
+      $("queueToday").addEventListener("click",()=>{$("queueDate").value=today();loadReturnLoads().then(render).catch(showError);saveQueuePreferences()});
+      $("queueTomorrow").addEventListener("click",()=>{$("queueDate").value=today(1);loadReturnLoads().then(render).catch(showError);saveQueuePreferences()});
       $("refreshQueue").addEventListener("click",()=>changeLocation().catch(showError));
       $("openQueueDisplay").addEventListener("click",window.openQueueDisplay);
       $("printQueue").addEventListener("click",()=>window.print());
@@ -347,7 +368,7 @@
       document.addEventListener("keydown",event=>{
         if(event.key==="Escape"&&document.body.classList.contains("queueDisplayMode")&&(!queueDisplayMode||!document.fullscreenElement))window.closeQueueDisplay();
       });
-      await db.loadLocation($("queueLocation").value);render();
+      await db.loadLocation($("queueLocation").value);await loadReturnLoads();render();
       preferenceStatus("Saved to your login","saved");
       if(queueDisplayMode){
         document.title=`MaxDock Operations Queue — ${db.getCurrentLocation()?.name||"Display"}`;

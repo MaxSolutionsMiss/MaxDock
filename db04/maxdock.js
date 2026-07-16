@@ -80,7 +80,7 @@ function getAppointments(){
 function saveAppointments(items){localStorage.setItem(LS_APPTS,JSON.stringify(items))}
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function minutes(t){const [h,m]=t.split(":").map(Number);return h*60+m}
-function hhmm(m){return `${String(Math.floor(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`}
+function hhmm(m){const normalized=((m%1440)+1440)%1440;return `${String(Math.floor(normalized/60)).padStart(2,"0")}:${String(normalized%60).padStart(2,"0")}`}
 function displayTime(t){const [h,m]=t.split(":").map(Number);return `${h%12||12}:${String(m).padStart(2,"0")} ${h<12?"AM":"PM"}`}
 function overlaps(s1,e1,s2,e2){return s1<e2&&e1>s2}
 function statusBadge(s){return `<span class="status ${s==="Completed"?"completed":s==="Cancelled"?"cancelled":""}">${esc(s)}</span>`}
@@ -442,8 +442,14 @@ function scheduleTimeRange(start,end,compact=false){
   return `${startLabel}–${endLabel}`;
 }
 function renderSchedule(items){
-  const open=minutes(settings.open);
-  const close=minutes(settings.close);
+  const operatingOpen=minutes(settings.open);
+  const operatingClose=minutes(settings.close);
+  const itemStartMinutes=items.map(item=>minutes(item.start));
+  const itemEndMinutes=items.map(item=>minutes(item.end)+(item.endDate&&item.endDate>item.date?1440:0));
+  const earliest=itemStartMinutes.length?Math.min(...itemStartMinutes):operatingOpen;
+  const latest=itemEndMinutes.length?Math.max(...itemEndMinutes):operatingClose;
+  const open=Math.max(0,Math.min(operatingOpen,Math.floor(earliest/60)*60));
+  const close=Math.min(2880,Math.max(operatingClose,Math.ceil(latest/60)*60));
   const scale=Number($("scheduleScale")?.value||60);
 
   const basePxPerMinute={
@@ -518,7 +524,7 @@ function renderSchedule(items){
 
     const events=dockItems.map(a=>{
       const start=Math.max(open,minutes(a.start));
-      const end=Math.min(close,minutes(a.end));
+      const end=Math.min(close,minutes(a.end)+(a.endDate&&a.endDate>a.date?1440:0));
       if(end<=open||start>=close)return"";
 
       const left=Math.max(0,(start-open)*pxPerMinute);
@@ -547,10 +553,10 @@ function renderSchedule(items){
       const canOpenEditor=a.type!=="Dock Block"&&!['Completed','Cancelled','No Show'].includes(a.status)
         &&(!window.canEditMaxDockAppointment||window.canEditMaxDockAppointment());
 
-      return `<div class="scheduleEvent ${cls} ${a.priority?"priority":""} ${canOpenEditor?"appointmentEditable":""}"
+      return `<div class="scheduleEvent ${cls} ${a.priority?"priority":""} ${a.afterHours?"afterHours":""} ${canOpenEditor?"appointmentEditable":""}"
         ${canOpenEditor?`data-appointment-id="${esc(a.id)}" ondblclick="openAppointmentEditor('${esc(a.id)}')"`:""}
         style="left:${left}px;width:${width}px${displayStyle}"
-        title="${esc(a.company)} • ${displayTime(a.start)}–${displayTime(a.end)}">
+        title="${esc(a.company)} • ${displayTime(a.start)}–${displayTime(a.end)}${a.afterHours?" • After-hours staff override":""}">
         <div class="eventTime">${esc(timeLabel)}</div>
         <div class="eventCompany">${esc(a.company)}</div>
         <div class="eventMeta">${esc(a.type)} • ${esc(a.truck||"")} ${a.skids?`• ${esc(a.skids)} skids`:""}</div>
