@@ -25,6 +25,7 @@
     appointments:[]
   };
   const OPERATIONAL_ROLES=new Set(["system_admin","site_admin","shipping_manager","coordinator"]);
+  const LIVE_REFRESH_MS=5000;
   const preferenceSaveTimers=new Map();
   let usageTimer=null;
   let usageStarted=false;
@@ -39,9 +40,9 @@
   }
   function isOperationalRole(roleCode=state.profile?.role_code){return OPERATIONAL_ROLES.has(roleCode)}
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db20";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db20";
-    return "index.html?v=46-db20";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db21";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db21";
+    return "index.html?v=46-db21";
   }
   function applyRoleNavigation(){
     const operational=isOperationalRole();
@@ -71,6 +72,31 @@
     return value;
   }
   function throwIf(error,context){if(error)throw new Error(`${context}: ${message(error)}`)}
+
+  function startLiveRefresh(task,options={}){
+    if(typeof task!=="function")throw new Error("A MaxDock live-refresh task is required.");
+    let stopped=false,busy=false;
+    const interval=Math.max(LIVE_REFRESH_MS,Number(options.interval||LIVE_REFRESH_MS));
+    const run=async()=>{
+      if(stopped||busy||(document.hidden&&!options.runWhenHidden))return;
+      busy=true;
+      try{await task()}
+      catch(error){
+        if(typeof options.onError==="function")options.onError(error);
+        else console.warn("MaxDock live refresh paused",error);
+      }finally{busy=false}
+    };
+    const timer=window.setInterval(()=>run(),interval);
+    const onVisibility=()=>{if(!document.hidden)run()};
+    document.addEventListener("visibilitychange",onVisibility);
+    const stop=()=>{
+      if(stopped)return;
+      stopped=true;window.clearInterval(timer);document.removeEventListener("visibilitychange",onVisibility);
+    };
+    window.addEventListener("pagehide",stop,{once:true});
+    if(options.immediate)window.setTimeout(()=>run(),0);
+    return stop;
+  }
 
   function preferenceStorageKey(key){
     return `maxdock_preference_${state.session?.user?.id||"user"}_${key}`;
@@ -330,6 +356,13 @@
       perSkid:Number(s.minutes_per_skid),
       fullTruck:Number(s.full_truck_minimum_minutes),
       priorityMin:Number(s.priority_minimum_minutes),
+      capacityEnabled:Boolean(s.capacity_enabled),
+      capacityTotal:Number(s.skid_capacity||0),
+      capacityReserve:Number(s.capacity_reserve_skids||0),
+      capacityMode:s.capacity_enforcement_mode||"warn",
+      capacityOccupied:Number(s.current_occupied_skids||0),
+      capacityAsOf:s.inventory_as_of||null,
+      capacitySource:s.capacity_last_source||"manual",
       docks:dockRows.map(x=>x.name),
       truckSetup:{},typeAdj:{},handlingAdj:{}
     };
@@ -372,16 +405,18 @@
   }
   async function availableSlots(input){
     const data=state.locationData;
-    const result=await client.rpc("list_smart_appointment_slots",{
+    const result=await client.rpc("list_capacity_aware_appointment_slots",{
       p_location_id:state.currentLocation.id,
       p_date:input.date,
+      p_direction:normalize(input.direction||"inbound"),
       p_appointment_type_code:codeFor(data.appointmentNameToCode,input.type,"Appointment type"),
       p_truck_type_code:codeFor(data.truckNameToCode,input.truck,"Truck type"),
       p_skid_count:Number(input.skids||0),
       p_handling_type_code:codeFor(data.handlingNameToCode,input.handling,"Handling type"),
       p_is_priority:Boolean(input.priority),
       p_preferred_start_time:input.preferredStart||null,
-      p_preferred_end_time:input.preferredEnd||null
+      p_preferred_end_time:input.preferredEnd||null,
+      p_search_days:7
     });
     throwIf(result.error,"Unable to calculate available times");
     return (result.data||[]).map(row=>{
@@ -391,7 +426,10 @@
         date:start.date,start:start.time,end:end.time,startAt:row.slot_start,endAt:row.slot_end,
         open:Number(row.available_docks),rank:Number(row.recommendation_rank),score:Number(row.recommendation_score),
         recommendedDockId:row.recommended_dock_id||null,recommendedDockName:row.recommended_dock_name||null,
-        reason:row.recommendation_reason||"Compatible appointment time"
+        reason:row.recommendation_reason||"Compatible appointment time",
+        capacityEnabled:Boolean(row.capacity_enabled),capacityWarning:Boolean(row.capacity_warning),
+        projectedOccupied:Number(row.projected_occupied_skids||0),availableCapacity:Number(row.available_skid_capacity||0),
+        capacityMessage:row.capacity_message||"",alternativeDate:Boolean(row.alternative_date)
       };
     });
   }
@@ -513,7 +551,11 @@
     const settingsUpdate=await client.from("location_settings").update({
       slot_interval_minutes:Number(input.interval),buffer_minutes:Number(input.buffer),base_minutes:Number(input.base),
       minutes_per_skid:Number(input.perSkid),full_truck_minimum_minutes:Number(input.fullTruck),
-      priority_minimum_minutes:Number(input.priorityMin)
+      priority_minimum_minutes:Number(input.priorityMin),capacity_enabled:Boolean(input.capacityEnabled),
+      skid_capacity:Number(input.capacityTotal)>0?Number(input.capacityTotal):null,
+      capacity_reserve_skids:Number(input.capacityReserve||0),capacity_enforcement_mode:input.capacityMode||"warn",
+      current_occupied_skids:Number(input.capacityOccupied||0),
+      inventory_as_of:input.capacityAsOf||new Date().toISOString(),capacity_last_source:"manual"
     }).eq("location_id",locationId);
     throwIf(settingsUpdate.error,"Unable to save location settings");
 
@@ -568,7 +610,7 @@
     if(!actions||document.getElementById("maxdockAccount"))return;
     const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
     const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
-    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db20";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db21";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
     bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
     const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
     wrap.append(label,bell,button);actions.prepend(wrap);
@@ -599,7 +641,7 @@
     client,state,getSession,requireAuth,signIn,signOut,loadContext,selectLocation,loadLocation,
     fetchAppointments,availableSlots,bookAppointment,blockDockTime,changeStatus,updateAppointment,saveLocationSettings,
     listBookingTemplates,saveBookingTemplate,deleteBookingTemplate,appointmentHistory,
-    loadPreference,savePreference,queuePreferenceSave,recordUsage,startUsageTracking,
+    loadPreference,savePreference,queuePreferenceSave,recordUsage,startUsageTracking,startLiveRefresh,LIVE_REFRESH_MS,
     populateLocationSelect,addAccountControls,refreshNotificationBadge,hasPermission,isOperationalRole,getLandingPage,applyRoleNavigation,
     getProfile:()=>state.profile,getLocations:()=>state.locations,getCurrentLocation:()=>state.currentLocation,
     getSettings:()=>state.locationData?.legacySettings||null,getAppointments:()=>state.appointments,

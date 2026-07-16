@@ -1,4 +1,4 @@
-MaxDock v46-DB20 — Account Recovery, Saved Views, and Adoption Build
+MaxDock v46-DB21 — Live Scheduling, Warehouse Capacity, and MIS Integration Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -19,6 +19,7 @@ Database prerequisites
 11. MaxDock_DB_v11_Smart_Operations.sql
 12. MaxDock_DB_v12_Customer_Access.sql
 13. MaxDock_DB_v13_User_Preferences_Usage.sql
+14. MaxDock_DB_v14_Live_Capacity_MIS.sql
 
 Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
@@ -78,7 +79,7 @@ Integrated database operations
 - Larger, mobile-readable Operations Queue shipment details
 - Consistent low-emphasis styling for print, export, and secondary text actions
 - Coordinator appointment editing and schedule movement through existing permissions
-- Full-screen TV schedule with automatic appointment refresh every three seconds
+- Dashboard, Queue, Reports, My Appointments, booking availability, and full-screen displays refresh appointment data every five seconds
 - Customer Main Page contains only the booking workflow; the redundant queue shortcut is removed
 - Compact page headings and a balanced header with the location selector beside the account controls
 - Request Appointment uses the same calm system typeface as the authenticated pages with a lighter, more readable weight
@@ -102,7 +103,7 @@ Integrated database operations
 - Dock Doors and Vehicle Compatibility uses the full Settings width with a compact, always-visible Action column
 - Operating Hours and Timing Rules are aligned in the same balanced Settings row
 - Open Full-Screen View launches a separate live schedule window so the original Dashboard remains available for editing
-- The schedule display follows the selected location and date, refreshes every three seconds, and provides a user-activated full-screen control
+- The schedule display follows the selected location and date, refreshes every five seconds, and provides a user-activated full-screen control
 - Full-screen schedule typography scales by available height and dock count for maximum readable distance
 - Operations Queue defaults to eight larger metrics, including Priority Loads and Due Soon
 - Morning Shift Brief cards are taller, color-coded, and easier to scan from a distance
@@ -112,7 +113,7 @@ Integrated database operations
 - New and edited Customer accounts no longer require individual permitted-location selections
 - MaxDock password forms and temporary-password creation use Supabase's supported 6-character minimum
 - Operations Queue provides a separate live full-screen window while the original Queue remains available on the working monitor
-- Full-screen Operations Queue follows the selected location, date, and view and refreshes appointment data every three seconds
+- Full-screen Operations Queue follows the selected location, date, and view and refreshes appointment data every five seconds
 - Subtle self-service password recovery from the sign-in page using Supabase's secure email reset flow
 - A forgotten username no longer blocks access because the connected email address can also be used to sign in
 - Dashboard, Operations Queue, and Reports views save automatically to the signed-in user's profile
@@ -121,6 +122,11 @@ Integrated database operations
 - Saved Reports preferences include location, report view, date preset, and custom dates
 - System Admin adoption reporting shows tracked logins, active days, recent visible-app time, page views, and last activity for each user
 - Usage analytics store privacy-conscious daily aggregates only and do not record appointment content, typed values, or passwords
+- Each location can optionally define total skid capacity, current occupied skids, reserved safety space, and warning or enforcement behaviour
+- Capacity projections combine the latest inventory baseline with scheduled inbound and outbound skid movement
+- Enforced capacity removes over-capacity inbound slots and suggests the earliest workable operating date
+- System Admin MIS settings store non-secret connection metadata for a future server-side database bridge
+- Daily inventory CSV imports update location occupancy baselines and preserve an auditable import history
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.
@@ -134,3 +140,5 @@ Notes
 - The original MaxDock v46 visual interface is retained; maxdock-integration.js replaces its browser-storage data path at runtime.
 - Password recovery email delivery depends on the Supabase Auth email provider and the deployed set-password.html URL remaining in the Auth redirect allow list.
 - Aggregate usage tracking begins after DB20 is deployed; earlier activity is not reconstructed.
+- The DB21 live MIS bridge is configuration-ready but remains inactive until the MIS database type, network route, credentials secret, and source-table mapping are approved.
+- MIS database passwords must be stored as protected server-side secrets and must never be entered in MaxDock browser fields.

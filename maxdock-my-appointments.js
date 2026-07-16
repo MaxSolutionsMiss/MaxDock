@@ -3,6 +3,7 @@
   const db=window.MaxDockDB;
   const $=id=>document.getElementById(id);
   const state={appointments:[],notifications:[]};
+  let stopLiveRefresh=null;
 
   function esc(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]))}
   function title(value){return String(value||"").replace(/_/g," ").replace(/\b\w/g,char=>char.toUpperCase())}
@@ -85,6 +86,7 @@
     state.appointments=appointments.data||[];
     state.notifications=notifications.data||[];
     renderMetrics();renderNotifications();renderAppointments();
+    $("myAppointmentsError").style.display="none";
     db.refreshNotificationBadge?.().catch(()=>{});
   }
 
@@ -121,6 +123,10 @@
       $("myAppointmentFilter").addEventListener("change",renderAppointments);
       $("markNotificationsRead").addEventListener("click",()=>markAllRead().catch(showError));
       await refresh();
+      stopLiveRefresh=db.startLiveRefresh(async()=>{
+        await refresh();
+        if($("myAppointmentsLiveStatus"))$("myAppointmentsLiveStatus").innerHTML=`<span class="liveDot"></span>Live appointments · updated ${new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"})}`;
+      },{onError:error=>{if($("myAppointmentsLiveStatus"))$("myAppointmentsLiveStatus").textContent=`Live refresh paused · ${error.message||"connection unavailable"}`}});
     }catch(error){showError(error)}
   }
   document.addEventListener("DOMContentLoaded",init);

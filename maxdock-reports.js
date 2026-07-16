@@ -6,6 +6,7 @@
   let chartRows=[];
   let preferenceReady=false;
   let lastPreferenceSignature="";
+  let stopLiveRefresh=null;
 
   const REPORT_VIEWS={
     overview:{
@@ -306,6 +307,10 @@
       $("reportStart").addEventListener("change",saveReportPreference);$("reportEnd").addEventListener("change",saveReportPreference);
       $("runReport").addEventListener("click",updateSelection);$("exportReport").addEventListener("click",exportCsv);$("generateAiBrief").addEventListener("click",generateAiBrief);
       await db.loadLocation($("reportLocation").value);render();saveReportPreference();
+      stopLiveRefresh=db.startLiveRefresh(async()=>{
+        await db.fetchAppointments();render();
+        if($("reportLiveStatus"))$("reportLiveStatus").innerHTML=`<span class="liveDot"></span>Live appointments · updated ${new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"})}`;
+      },{onError:error=>{if($("reportLiveStatus"))$("reportLiveStatus").textContent=`Live refresh paused · ${error.message||"connection unavailable"}`}});
     }catch(error){showError(error)}
   }
   document.addEventListener("DOMContentLoaded",init);

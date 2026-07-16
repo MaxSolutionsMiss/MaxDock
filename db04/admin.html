@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=46-db20">
-<link rel="stylesheet" href="./maxdock-db04.css?v=46-db20">
+<link rel="stylesheet" href="./maxdock.css?v=46-db21">
+<link rel="stylesheet" href="./maxdock-db04.css?v=46-db21">
 <title>MaxDock – Admin</title>
 </head>
 <body data-page="admin">
@@ -14,21 +14,21 @@
   <div class="topbarInner">
     <div class="brandRow">
       <div class="brand">
-        <a class="logoLink" href="./index.html?v=46-db20" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+        <a class="logoLink" href="./index.html?v=46-db21" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
         <div><h1 class="appTitle">MaxDock</h1></div>
       </div>
     </div>
     <div class="headerActions">
-      <a class="ghostBtn" href="./index.html?v=46-db20">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=46-db21">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=46-db20">My Appointments</a>
-          <a href="./queue.html?v=46-db20">Operations Queue</a>
-          <a href="./reports.html?v=46-db20">Reports</a>
-          <a href="./dashboard.html?v=46-db20">Dashboard</a>
-          <a href="./settings.html?v=46-db20">Settings</a>
-          <a href="./admin.html?v=46-db20" aria-current="page">Admin</a>
+          <a href="./my-appointments.html?v=46-db21">My Appointments</a>
+          <a href="./queue.html?v=46-db21">Operations Queue</a>
+          <a href="./reports.html?v=46-db21">Reports</a>
+          <a href="./dashboard.html?v=46-db21">Dashboard</a>
+          <a href="./settings.html?v=46-db21">Settings</a>
+          <a href="./admin.html?v=46-db21" aria-current="page">Admin</a>
         </nav>
       </details>
     </div>
@@ -61,6 +61,44 @@
         <thead><tr><th>User</th><th>Role</th><th>Locations</th><th>Status</th><th>Usage</th><th>Last activity</th><th>Action</th></tr></thead>
         <tbody id="userTableBody"><tr><td colspan="7">Loading MaxDock users…</td></tr></tbody>
       </table>
+    </div>
+  </section>
+
+  <section class="panel misIntegrationPanel" id="misIntegrationPanel">
+    <div class="panelHeader misPanelHeader">
+      <div><h3>MIS Data Integration</h3><p class="panelIntro">Import warehouse inventory now and prepare a secure server-side connection to the company MIS database.</p></div>
+      <span class="misConnectionBadge" id="misConnectionBadge">Loading…</span>
+    </div>
+    <form id="misIntegrationForm" class="misIntegrationForm">
+      <div class="formGrid">
+        <div class="field"><label for="misSyncMode">Data method</label><select id="misSyncMode"><option value="manual_csv">Daily CSV upload</option><option value="secure_bridge">Future secure database bridge</option></select></div>
+        <div class="field"><label for="misDatabaseType">Database type</label><select id="misDatabaseType"><option value="sql_server">Microsoft SQL Server</option><option value="postgresql">PostgreSQL</option><option value="mysql">MySQL</option><option value="oracle">Oracle</option><option value="other">Other</option></select></div>
+        <div class="field"><label for="misServerName">Server name or private host</label><input id="misServerName" type="text" autocomplete="off" placeholder="MIS-SQL01 or private host name"></div>
+        <div class="field"><label for="misServerPort">Port</label><input id="misServerPort" type="number" min="1" max="65535" placeholder="1433"></div>
+        <div class="field"><label for="misDatabaseName">Database name</label><input id="misDatabaseName" type="text" autocomplete="off" placeholder="ProductionMIS"></div>
+        <div class="field"><label for="misSourceName">Source or MIS name</label><input id="misSourceName" type="text" placeholder="Example: GlobeTek"></div>
+        <div class="field"><label for="misDailySyncTime">Preferred daily sync time</label><input id="misDailySyncTime" type="time" value="05:00"></div>
+        <div class="field"><label for="misCredentialSecret">Server credential secret name</label><input id="misCredentialSecret" type="text" autocomplete="off" placeholder="MAXDOCK_MIS_CONNECTION"><small>Reference only. Do not enter a password.</small></div>
+        <div class="field full misEnableField"><label class="adminToggle"><input id="misEnabled" type="checkbox"><span>Enable the configured data method</span></label></div>
+      </div>
+      <div class="notice misSecurityNotice">Database credentials are never stored in this page. A future live bridge will run server-side using protected Supabase secrets and approved network access.</div>
+      <div class="error" id="misSettingsError" role="alert"></div>
+      <div class="misFormActions"><span id="misSettingsStatus" role="status"></span><button class="primaryBtn" id="saveMisSettings" type="submit">Save Integration Settings</button></div>
+    </form>
+
+    <div class="misImportGrid">
+      <section class="misImportCard">
+        <div><h4>Daily Warehouse Inventory Import</h4><p>Upload current occupied skids by location. This immediately updates the capacity baseline used for booking recommendations.</p></div>
+        <label class="field"><span>Inventory CSV file</span><input id="misInventoryFile" type="file" accept=".csv,text/csv"></label>
+        <div class="misImportActions"><button class="secondaryBtn" id="downloadMisTemplate" type="button">Download CSV Template</button><button class="greenBtn" id="importMisInventory" type="button">Import Inventory</button></div>
+        <small>Required columns: location_code, snapshot_at, occupied_skids. Optional: total_skid_capacity, reserve_skids, notes.</small>
+        <div class="error" id="misImportError" role="alert"></div>
+        <div class="notice" id="misImportResult" hidden></div>
+      </section>
+      <section class="misImportCard">
+        <div><h4>Recent Imports</h4><p id="misLastSync">No successful import recorded yet.</p></div>
+        <div class="tableScroll"><table class="misImportTable"><thead><tr><th scope="col">When</th><th scope="col">File</th><th scope="col">Rows</th><th scope="col">By</th></tr></thead><tbody id="misImportHistory"><tr><td colspan="4">Loading import history…</td></tr></tbody></table></div>
+      </section>
     </div>
   </section>
 </main>
@@ -120,9 +158,10 @@
   </div>
 </div>
 
-<script src="./supabase-2.110.3.js?v=46-db20"></script>
-<script src="./maxdock-config.js?v=46-db20"></script>
-<script src="./maxdock-db.js?v=46-db20"></script>
-<script src="./maxdock-admin.js?v=46-db20"></script>
+<script src="./supabase-2.110.3.js?v=46-db21"></script>
+<script src="./maxdock-config.js?v=46-db21"></script>
+<script src="./maxdock-db.js?v=46-db21"></script>
+<script src="./maxdock-admin.js?v=46-db21"></script>
+<script src="./maxdock-mis.js?v=46-db21"></script>
 </body>
 </html>

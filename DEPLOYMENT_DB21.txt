@@ -1,0 +1,36 @@
+MaxDock v46-DB21 Deployment
+
+Changes
+- Refreshes appointment-driven Dashboard, Queue, Reports, My Appointments, booking availability, and full-screen displays every five seconds.
+- Adds optional warehouse skid-capacity settings for each location.
+- Projects space using the latest occupied-skid baseline plus scheduled inbound and outbound movement.
+- Supports warning-only capacity guidance or enforced capacity with automatic next-date suggestions.
+- Adds System Admin MIS connection metadata without storing database passwords in the browser.
+- Adds daily inventory CSV import, a downloadable template, and recent-import history.
+
+Database
+- Apply MaxDock_DB_v14_Live_Capacity_MIS.sql.
+- This extends location settings, adds inventory snapshots and MIS configuration/audit tables, and installs capacity-aware scheduling and import RPCs.
+
+Edge Functions
+- No Edge Function deployment is required for the DB21 daily CSV import.
+- A future live MIS bridge will require an approved server-side connector, protected credentials, network access, and source-table mapping.
+
+Frontend
+- Publish all changed root files and their mirrored db04 copies.
+- Hard-refresh the browser after GitHub Pages finishes deploying.
+
+Inventory CSV
+- Required columns: location_code, snapshot_at, occupied_skids.
+- Optional columns: total_skid_capacity, reserve_skids, notes.
+- Use the template available in Admin > MIS Data Integration.
+
+Verification
+1. Open Dashboard, Queue, Reports, and My Appointments and confirm the live timestamp advances every five seconds.
+2. Open both full-screen displays and confirm their live data refreshes every five seconds.
+3. In Settings, enable skid capacity for one test location, enter total/occupied/reserve values, and choose Warn.
+4. Confirm inbound booking cards show projected occupancy and remaining space.
+5. Change the location to Enforce, request an inbound load that exceeds capacity, and confirm MaxDock suggests the earliest workable date.
+6. Confirm outbound appointments reduce projected occupancy.
+7. In Admin, download the inventory template and import a test CSV using a valid location code.
+8. Confirm the import appears in Recent Imports and the location capacity baseline updates in Settings.
