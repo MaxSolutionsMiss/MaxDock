@@ -2,6 +2,8 @@
   "use strict";
   const db=window.MaxDockDB;
   const $=id=>document.getElementById(id);
+  const query=new URLSearchParams(location.search);
+  const queueDisplayMode=query.get("display")==="1";
   const DEFAULT_PREFERENCES={brief:["first","peak","docks","priority","review"],metrics:["pending","completed","inbound","outbound","skids","blocks","priority","soon"]};
   const VALID_PREFERENCES={brief:new Set(DEFAULT_PREFERENCES.brief),metrics:new Set(DEFAULT_PREFERENCES.metrics)};
   const state={rows:[],pendingRows:[],completedRows:[],blocks:[],busyId:null,preferences:{brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics]}};
@@ -15,6 +17,71 @@
   function clearError(){$("queueError").style.display="none"}
   function minuteValue(value){const [hour,minute]=String(value||"00:00").split(":").map(Number);return hour*60+minute}
   function currentMinutes(){const now=new Date();return now.getHours()*60+now.getMinutes()}
+
+
+  let queueDisplayTimer=null,queueDisplayBusy=false;
+  function updateQueueDisplayStatus(message){
+    if($("queueDisplayStatus"))$("queueDisplayStatus").textContent=message;
+  }
+  function stopQueueDisplayRefresh(){
+    if(queueDisplayTimer)window.clearInterval(queueDisplayTimer);
+    queueDisplayTimer=null;queueDisplayBusy=false;
+  }
+  async function refreshQueueDisplay(){
+    if(queueDisplayBusy||state.busyId||document.hidden)return;
+    queueDisplayBusy=true;
+    try{
+      await db.fetchAppointments();
+      render();
+      updateQueueDisplayStatus(`${displayDate($("queueDate").value)} · ${db.getCurrentLocation()?.name||"MaxDock"} · updated ${new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"})} · refreshes every 3 seconds`);
+    }catch(error){
+      updateQueueDisplayStatus(`Live refresh paused · ${error.message||"connection unavailable"}`);
+    }finally{queueDisplayBusy=false}
+  }
+  function activateQueueDisplay(requestNative=false){
+    document.body.classList.add("queueDisplayMode");
+    if($("queueDisplayBar"))$("queueDisplayBar").hidden=false;
+    if($("openQueueDisplay"))$("openQueueDisplay").hidden=true;
+    updateQueueDisplayStatus("Live queue · connecting…");
+    stopQueueDisplayRefresh();
+    refreshQueueDisplay();
+    queueDisplayTimer=window.setInterval(refreshQueueDisplay,3000);
+    if(requestNative&&document.documentElement.requestFullscreen&&!document.fullscreenElement){
+      document.documentElement.requestFullscreen().catch(()=>{});
+    }
+  }
+  window.openQueueDisplay=function(){
+    const url=new URL("./queue.html",location.href);
+    url.searchParams.set("v","46-db19");
+    url.searchParams.set("display","1");
+    url.searchParams.set("date",$("queueDate").value||today());
+    url.searchParams.set("status",$("queueStatus").value||"pending");
+    url.searchParams.set("location",db.getCurrentLocation()?.name||$("queueLocation").value);
+    const width=Math.max(900,window.screen?.availWidth||window.innerWidth);
+    const height=Math.max(650,window.screen?.availHeight||window.innerHeight);
+    const left=window.screen?.availLeft||0,top=window.screen?.availTop||0;
+    const displayWindow=window.open(url.toString(),"maxdockQueueDisplay",`popup=yes,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`);
+    if(displayWindow)displayWindow.focus();
+    else activateQueueDisplay(true);
+  };
+  window.enterQueueFullscreen=function(){
+    if(document.documentElement.requestFullscreen&&!document.fullscreenElement){
+      document.documentElement.requestFullscreen().catch(error=>updateQueueDisplayStatus(`Full screen was not available · ${error.message||"use the browser display controls"}`));
+    }
+  };
+  window.closeQueueDisplay=function(){
+    stopQueueDisplayRefresh();
+    if(queueDisplayMode){
+      const closeWindow=()=>window.close();
+      if(document.fullscreenElement)document.exitFullscreen().then(closeWindow).catch(closeWindow);
+      else closeWindow();
+      return;
+    }
+    document.body.classList.remove("queueDisplayMode");
+    if($("queueDisplayBar"))$("queueDisplayBar").hidden=true;
+    if($("openQueueDisplay"))$("openQueueDisplay").hidden=false;
+    if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+  };
 
   function preferenceStorageKey(){return `maxdock_queue_view_${db.getProfile()?.id||"user"}`}
   function loadQueuePreferences(){
@@ -70,7 +137,7 @@
     const completed=item.status==="Completed";
     const tag=completed?"Completed":level==="overdue"?"Time passed":level==="soon"?"Due within 60 min":item.priority?"Priority":"Planned";
     const canChange=completed?db.hasPermission("appointment.update"):db.hasPermission("appointment.complete");
-    const historyLink=db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=46-db18&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
+    const historyLink=db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=46-db19&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
     return `<article class="queueCard ${level}">
       <div class="queueCardTime"><strong>${esc(displayTime(item.start))}</strong><small>${esc(displayTime(item.end))}</small></div>
       <div class="queueCardBody">
@@ -138,7 +205,7 @@
   function renderFocus(rows){
     const next=rows.find(item=>$("queueDate").value!==today()||minuteValue(item.end)>=currentMinutes())||rows[0];
     if(!next){$("queueFocus").innerHTML=`<div><small>${esc(displayDate($("queueDate").value))}</small><h3>No active appointments scheduled</h3><p>The location has no inbound or outbound work in the execution queue for this date.</p></div>`;return}
-    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=46-db18&date=${esc($("queueDate").value)}">Open schedule</a>`;
+    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=46-db19&date=${esc($("queueDate").value)}">Open schedule</a>`;
   }
 
   function renderLane(direction,elementId,summaryId){
@@ -208,18 +275,21 @@
       await db.loadContext();
       if(!db.hasPermission("operations.queue.view"))throw new Error("This account cannot view the Operations Queue.");
       loadQueuePreferences();
-      db.selectLocation(localStorage.getItem("maxdock_location"));db.populateLocationSelect($("queueLocation"));db.addAccountControls();
+      const requestedLocation=query.get("location");
+      db.selectLocation(requestedLocation||localStorage.getItem("maxdock_location"));db.populateLocationSelect($("queueLocation"));db.addAccountControls();
       const role=db.getProfile()?.role_code;
       $("queueLocationPill").hidden=!["system_admin","site_admin"].includes(role);
       if(role!=="system_admin")document.querySelectorAll('a[href*="admin.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(link=>link.hidden=true);
-      $("queueDate").value=today();
+      $("queueDate").value=/^\d{4}-\d{2}-\d{2}$/.test(query.get("date")||"")?query.get("date"):today();
+      if(["pending","all","completed"].includes(query.get("status")))$("queueStatus").value=query.get("status");
       $("queueDate").addEventListener("change",render);
       $("queueStatus").addEventListener("change",render);
       $("queueLocation").addEventListener("change",()=>changeLocation().catch(showError));
       $("queueToday").addEventListener("click",()=>{$("queueDate").value=today();render()});
       $("queueTomorrow").addEventListener("click",()=>{$("queueDate").value=today(1);render()});
       $("refreshQueue").addEventListener("click",()=>changeLocation().catch(showError));
+      $("openQueueDisplay").addEventListener("click",window.openQueueDisplay);
       $("printQueue").addEventListener("click",()=>window.print());
       $("exportQueue").addEventListener("click",csv);
       $("queueCustomizeMenu").addEventListener("change",event=>{if(event.target.matches("[data-pref-section]"))updateQueuePreference(event.target)});
@@ -228,7 +298,18 @@
         const button=event.target.closest("[data-queue-id]");
         if(button)updateQueueStatus(button.dataset.queueId,button.dataset.queueStatus);
       }));
+      document.addEventListener("fullscreenchange",()=>{
+        if($("queueFullscreenButton"))$("queueFullscreenButton").hidden=Boolean(document.fullscreenElement);
+        if(!queueDisplayMode&&!document.fullscreenElement&&document.body.classList.contains("queueDisplayMode"))window.closeQueueDisplay();
+      });
+      document.addEventListener("keydown",event=>{
+        if(event.key==="Escape"&&document.body.classList.contains("queueDisplayMode")&&(!queueDisplayMode||!document.fullscreenElement))window.closeQueueDisplay();
+      });
       await db.loadLocation($("queueLocation").value);render();
+      if(queueDisplayMode){
+        document.title=`MaxDock Operations Queue — ${db.getCurrentLocation()?.name||"Display"}`;
+        activateQueueDisplay(false);
+      }
     }catch(error){showError(error)}
   }
   document.addEventListener("DOMContentLoaded",init);

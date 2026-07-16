@@ -430,6 +430,16 @@ function goDashboardToday(){
   $("adminDate").value=todayISO();
   renderDashboard();
 }
+function scheduleTimeRange(start,end,compact=false){
+  const startLabel=displayTime(start),endLabel=displayTime(end);
+  if(!compact)return `${startLabel}–${endLabel}`;
+  const startSuffix=startLabel.match(/\s([AP]M)$/i)?.[1]||"";
+  const endSuffix=endLabel.match(/\s([AP]M)$/i)?.[1]||"";
+  if(startSuffix&&startSuffix.toLowerCase()===endSuffix.toLowerCase()){
+    return `${startLabel.replace(/\s[AP]M$/i,"")}–${endLabel}`;
+  }
+  return `${startLabel}–${endLabel}`;
+}
 function renderSchedule(items){
   const open=minutes(settings.open);
   const close=minutes(settings.close);
@@ -512,6 +522,23 @@ function renderSchedule(items){
 
       const left=Math.max(0,(start-open)*pxPerMinute);
       const width=Math.max(48,(end-start)*pxPerMinute);
+      let timeLabel=scheduleTimeRange(a.start,a.end,displayMode);
+      const displayScale=Math.max(1,Number(window.maxdockScheduleDisplayScale||1));
+      const eventPaddingX=displayMode?Math.max(7,Math.min(13,8+(displayScale-1)*3)):11;
+      const eventInnerWidth=Math.max(24,width-(eventPaddingX*2));
+      if(displayMode&&width<92)timeLabel=displayTime(a.start).replace(":00","");
+      const eventTimeFont=displayMode
+        ?Math.max(10,Math.min(22,15*displayScale,eventInnerWidth/Math.max(1,timeLabel.length*.64)))
+        :15;
+      const eventCompanyFont=displayMode
+        ?Math.max(12,Math.min(25,18*displayScale,12+(eventInnerWidth/22)))
+        :18;
+      const eventMetaFont=displayMode
+        ?Math.max(10,Math.min(17,12*displayScale,10+(eventInnerWidth/45)))
+        :12;
+      const displayStyle=displayMode
+        ?`;--event-time-font:${eventTimeFont.toFixed(1)}px;--event-company-font:${eventCompanyFont.toFixed(1)}px;--event-meta-font:${eventMetaFont.toFixed(1)}px;--event-pad-x:${eventPaddingX.toFixed(1)}px`
+        :"";
       const cls=a.type==="Dock Block"?"blocked":
         a.status==="Completed"?"completed":
         a.status==="Cancelled"?"cancelled":
@@ -521,9 +548,9 @@ function renderSchedule(items){
 
       return `<div class="scheduleEvent ${cls} ${a.priority?"priority":""} ${canOpenEditor?"appointmentEditable":""}"
         ${canOpenEditor?`data-appointment-id="${esc(a.id)}" ondblclick="openAppointmentEditor('${esc(a.id)}')"`:""}
-        style="left:${left}px;width:${width}px"
+        style="left:${left}px;width:${width}px${displayStyle}"
         title="${esc(a.company)} • ${displayTime(a.start)}–${displayTime(a.end)}">
-        <div class="eventTime">${displayTime(a.start)}–${displayTime(a.end)}</div>
+        <div class="eventTime">${esc(timeLabel)}</div>
         <div class="eventCompany">${esc(a.company)}</div>
         <div class="eventMeta">${esc(a.type)} • ${esc(a.truck||"")} ${a.skids?`• ${esc(a.skids)} skids`:""}</div>
       </div>`;

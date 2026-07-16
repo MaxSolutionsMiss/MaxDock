@@ -749,3 +749,86 @@ label,.field label,.filterField label,.metric small,.adminSummaryCard span,.queu
   .morningBriefLeadTop{display:grid}.queueCustomize{justify-self:start}.morningBriefFacts{grid-template-columns:1fr}
   .queueCustomizeMenu fieldset{grid-template-columns:1fr}
 }
+
+/* DB19 readable schedule cards and separate Operations Queue display */
+#dockSchedulePanel.tvScheduleActive .scheduleEvent,#dockSchedulePanel:fullscreen .scheduleEvent{
+  padding-left:var(--event-pad-x,var(--display-pad-x,11px));
+  padding-right:var(--event-pad-x,var(--display-pad-x,11px));
+  overflow:hidden
+}
+#dockSchedulePanel.tvScheduleActive .scheduleEvent>*,
+#dockSchedulePanel:fullscreen .scheduleEvent>*{min-width:0;max-width:100%}
+#dockSchedulePanel.tvScheduleActive .eventTime,#dockSchedulePanel:fullscreen .eventTime{
+  overflow:hidden;
+  font-size:var(--event-time-font,var(--display-time-font,15px));
+  line-height:1.14;
+  text-overflow:clip;
+  white-space:nowrap
+}
+#dockSchedulePanel.tvScheduleActive .eventCompany,#dockSchedulePanel:fullscreen .eventCompany{
+  display:-webkit-box;
+  overflow:hidden;
+  overflow-wrap:anywhere;
+  font-size:var(--event-company-font,var(--display-company-font,18px));
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2
+}
+#dockSchedulePanel.tvScheduleActive .eventMeta,#dockSchedulePanel:fullscreen .eventMeta{
+  font-size:var(--event-meta-font,var(--display-meta-font,12px));
+  overflow-wrap:anywhere;
+  -webkit-line-clamp:3
+}
+
+.queueFilters{grid-template-columns:minmax(170px,.8fr) minmax(150px,.7fr) minmax(470px,1.8fr)}
+.queueFilterActions{grid-template-columns:repeat(4,minmax(108px,1fr))}
+.queueDisplayBar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:14px;
+  padding:11px 13px;
+  border:1px solid #b7dde6;
+  border-radius:14px;
+  background:#effbfe;
+  color:#285b6d
+}
+.queueDisplayBar>div{display:flex;align-items:center;gap:9px}
+.queueDisplayBar>div>div{display:grid;gap:2px}
+.queueDisplayBar strong{color:#17354a;font-size:14px}
+.queueDisplayBar span{font-size:12px}
+.queueDisplayActions{display:flex!important;gap:8px}
+body.queueDisplayMode{overflow:auto;background:#f5f8fb}
+body.queueDisplayMode .topbar,
+body.queueDisplayMode .queuePageHead,
+body.queueDisplayMode .queueFilters{display:none}
+body.queueDisplayMode .screen{width:100%;max-width:none;padding:16px 20px 24px}
+body.queueDisplayMode .queueDisplayBar{position:sticky;top:0;z-index:100;margin-bottom:16px}
+body.queueDisplayMode .queueCustomize{display:none}
+body.queueDisplayMode .morningBrief{grid-template-columns:minmax(300px,1.2fr) minmax(560px,1.8fr);padding:22px 24px}
+body.queueDisplayMode .morningBrief h3{font-size:clamp(22px,1.6vw,30px)}
+body.queueDisplayMode .morningBrief p{font-size:clamp(13px,.9vw,17px)}
+body.queueDisplayMode .morningBriefFacts>div{min-height:96px}
+body.queueDisplayMode .morningBriefFacts strong{font-size:clamp(20px,1.5vw,29px)}
+body.queueDisplayMode #queueMetrics{grid-template-columns:repeat(8,minmax(120px,1fr))}
+body.queueDisplayMode #queueMetrics .metric{min-height:96px}
+body.queueDisplayMode .queueFocus h3{font-size:clamp(18px,1.25vw,24px)}
+body.queueDisplayMode .queueFocus h3 span{font-size:clamp(24px,1.75vw,33px)}
+body.queueDisplayMode .queueCard{grid-template-columns:110px 1fr;padding:18px}
+body.queueDisplayMode .queueCardTime strong{font-size:20px}
+body.queueDisplayMode .queueCard h4{font-size:18px}
+body.queueDisplayMode .queueFacts span{font-size:13px}
+body.queueDisplayMode .queueAction strong{font-size:14px}
+
+@media(max-width:1100px){
+  .queueFilters{grid-template-columns:1fr 1fr}.queueFilterActions{grid-column:1/-1}
+  body.queueDisplayMode .morningBrief{grid-template-columns:1fr}
+  body.queueDisplayMode #queueMetrics{grid-template-columns:repeat(4,minmax(120px,1fr))}
+}
+@media(max-width:620px){
+  .queueFilterActions{grid-template-columns:1fr 1fr}
+  body.queueDisplayMode .screen{padding:10px}
+  .queueDisplayBar{align-items:flex-start}.queueDisplayBar>div:first-child{align-items:flex-start}
+  .queueDisplayActions{flex-direction:column}
+  body.queueDisplayMode #queueMetrics{grid-template-columns:1fr 1fr}
+}

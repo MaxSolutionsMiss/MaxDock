@@ -1,0 +1,31 @@
+MaxDock v46-DB19 Deployment
+
+Changes
+- Full-screen appointment text is sized against each appointment card's real width.
+- Time ranges are compact in display mode and shipment details wrap instead of clipping.
+- Customer accounts automatically receive all active MaxDock locations.
+- Existing Customer accounts are backfilled with all active locations.
+- Customer location checkboxes are replaced by a clear automatic-access message in Admin.
+- Password entry is reduced from 10 characters to Supabase's supported minimum of 6.
+- Operations Queue can open in a separate live display window and enter browser full screen.
+- The live Queue follows the selected location, date, and queue view and refreshes every 3 seconds.
+
+Database
+- Apply MaxDock_DB_v12_Customer_Access.sql.
+- This updates admin_update_user and safely adds missing active-location access for existing Customer accounts.
+
+Edge Function
+- Deploy supabase/functions/maxdock-invite-user/index.ts as maxdock-invite-user.
+- Keep Verify JWT OFF because this existing function performs its own Supabase session validation.
+
+Frontend
+- Publish the root files and the mirrored db04 files.
+- Hard-refresh the browser after GitHub Pages finishes deploying.
+
+Verification
+1. Open Dashboard, open the full-screen schedule, and confirm appointment times and details are not cut off.
+2. In Admin, choose Customer and confirm every active location is automatically selected and locked.
+3. Create a Customer and confirm the booking wizard can choose any active location.
+4. Create a temporary-password user with 6 or more characters and complete the private-password setup.
+5. Open Operations Queue, select a date and view, then choose Open full-screen view.
+6. Confirm the new Queue window refreshes and the original MaxDock window remains usable.

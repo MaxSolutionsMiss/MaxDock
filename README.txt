@@ -1,4 +1,4 @@
-MaxDock v46-DB18 — Schedule Display and Configurable Queue Build
+MaxDock v46-DB19 — Readable Displays and Customer Access Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -17,6 +17,7 @@ Database prerequisites
 9. MaxDock_DB_v09_Operational_Features.sql
 10. MaxDock_DB_v10_Operations_Intelligence.sql
 11. MaxDock_DB_v11_Smart_Operations.sql
+12. MaxDock_DB_v12_Customer_Access.sql
 
 Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
@@ -105,6 +106,12 @@ Integrated database operations
 - Operations Queue defaults to eight larger metrics, including Priority Loads and Due Soon
 - Morning Shift Brief cards are taller, color-coded, and easier to scan from a distance
 - Each signed-in user can customize visible briefing cards and Queue metrics or restore the default view
+- Full-screen schedule cards cap typography to their actual appointment width, use a compact time range, and wrap shipment details without horizontal clipping
+- Customer accounts automatically receive every active MaxDock location and choose the booking location inside the appointment workflow
+- New and edited Customer accounts no longer require individual permitted-location selections
+- MaxDock password forms and temporary-password creation use Supabase's supported 6-character minimum
+- Operations Queue provides a separate live full-screen window while the original Queue remains available on the working monitor
+- Full-screen Operations Queue follows the selected location, date, and view and refreshes appointment data every three seconds
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.
