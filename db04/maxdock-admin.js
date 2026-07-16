@@ -473,7 +473,6 @@
       if($("accessModal").classList.contains("show"))closeAccessModal();
       else if($("userModal").classList.contains("show"))closeUserModal();
     });
-    await window.MaxDockMIS?.initialize();
     setLoading(false);
   }
 

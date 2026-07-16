@@ -292,7 +292,7 @@
       const saved=await db.loadPreference("reports",{locationName:"",view:"overview",preset:"30",customStart:"",customEnd:""});
       db.selectLocation(saved.locationName);db.populateLocationSelect($("reportLocation"));db.addAccountControls();
       $("reportLocation").parentElement.hidden=!["system_admin","site_admin"].includes(db.getProfile()?.role_code);
-      if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"]').forEach(link=>link.hidden=true);
+      if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"],a[href*="data.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("ai.insights"))$("generateAiBrief").hidden=true;
       $("reportView").value=Object.prototype.hasOwnProperty.call(REPORT_VIEWS,saved.view)?saved.view:"overview";

@@ -18,7 +18,7 @@
     if(!db.hasPermission("appointment.view"))document.querySelectorAll('a[href*="dashboard.html"]').forEach(link=>link.hidden=true);
     if(!db.hasPermission("reports.view"))document.querySelectorAll('a[href*="reports.html"]').forEach(link=>link.hidden=true);
     if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(link=>link.hidden=true);
-    if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"]').forEach(link=>link.hidden=true);
+    if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"],a[href*="data.html"]').forEach(link=>link.hidden=true);
   }
 
   function renderMetrics(){
