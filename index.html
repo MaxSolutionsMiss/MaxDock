@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=46-db23">
-<link rel="stylesheet" href="./maxdock-db04.css?v=46-db23">
+<link rel="stylesheet" href="./maxdock.css?v=46-db24">
+<link rel="stylesheet" href="./maxdock-db04.css?v=46-db24">
 <title>MaxDock</title>
 </head>
 <body data-page="requester">
@@ -29,17 +29,17 @@
           <option>Bristol</option><option>Owen Sound</option><option>Concord</option><option>Markham</option>
         </select>
       </div>
-      <a class="ghostBtn" href="./index.html?v=46-db23">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=46-db24">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=46-db23">My Appointments</a>
-          <a href="./queue.html?v=46-db23">Operations Queue</a>
-          <a href="./reports.html?v=46-db23">Reports</a>
-          <a href="./dashboard.html?v=46-db23">Dashboard</a>
-          <a href="./settings.html?v=46-db23">Settings</a>
-          <a href="./admin.html?v=46-db23">User Management</a>
-          <a href="./data.html?v=46-db23">Data Integration</a>
+          <a href="./my-appointments.html?v=46-db24">My Appointments</a>
+          <a href="./queue.html?v=46-db24">Operations Queue</a>
+          <a href="./reports.html?v=46-db24">Reports</a>
+          <a href="./dashboard.html?v=46-db24">Dashboard</a>
+          <a href="./settings.html?v=46-db24">Settings</a>
+          <a href="./admin.html?v=46-db24">User Management</a>
+          <a href="./data.html?v=46-db24">Data Integration</a>
         </nav>
       </details>
     </div>
@@ -63,7 +63,7 @@
     </div>
     <div class="modalBody">
       <div class="steps">
-        <div class="stepPill active" id="pill1"><span class="stepNum">1</span><span>Location &amp; Load</span></div>
+        <div class="stepPill active" id="pill1"><span class="stepNum">1</span><span>Route &amp; Load</span></div>
         <div class="stepPill" id="pill2"><span class="stepNum">2</span><span>Truck &amp; Skids</span></div>
         <div class="stepPill" id="pill3"><span class="stepNum">3</span><span>Date &amp; Time</span></div>
         <div class="stepPill" id="pill4"><span class="stepNum">4</span><span>Contact</span></div>
@@ -78,13 +78,14 @@
       <div class="templateNotice" id="bookingTemplateNotice" role="status" aria-live="polite" hidden></div>
 
       <section class="stepPanel active" id="step1">
-        <h3 class="stepTitle">Where are you booking?</h3>
-        <p class="stepIntro">Choose the Max Solutions location, then enter the basic load information.</p>
+        <h3 class="stepTitle">Where is this load moving?</h3>
+        <p class="stepIntro">Choose the site where the appointment happens, its direction there, and the other end of the shipment.</p>
         <div class="formGrid">
-          <div class="field full bookingLocationField"><label for="reqLocation">Max Solutions location *</label><select id="reqLocation" onchange="changeBookingLocation(this.value)" required></select><small>Available times will come from the selected location.</small></div>
-          <div class="field"><label>Direction</label><select id="reqDirection"><option>Inbound</option><option>Outbound</option></select></div>
-          <div class="field"><label>Requester Type / Location</label><select id="reqRequesterType" onchange="toggleCompany()"><option>Guelph</option><option>Pickering</option><option>Bristol</option><option>Vendor</option><option>Customer</option><option>Other Sister Plant</option><option>Other</option></select></div>
+          <div class="field full bookingLocationField"><label for="reqLocation">Appointment site *</label><select id="reqLocation" onchange="changeBookingLocation(this.value)" required></select><small>This is the MaxDock schedule and dock where the appointment will be placed.</small></div>
+          <div class="field"><label for="reqDirection">Movement at this site</label><select id="reqDirection"><option value="Inbound">Inbound</option><option value="Outbound">Outbound</option></select></div>
+          <div class="field"><label for="reqRequesterType">Other end of the shipment</label><select id="reqRequesterType" onchange="toggleCompany()"><option>Guelph</option><option>Pickering</option><option>Bristol</option><option>Vendor</option><option>Customer</option><option>Other Max Solutions location (not listed)</option><option>Other</option></select></div>
           <div class="field full hidden" id="companyWrap"><label>Company / Location Name *</label><input id="reqCompany"></div>
+          <div class="bookingRouteSummary field full" id="bookingRouteSummary" role="status" aria-live="polite"></div>
           <div class="field"><label>Appointment Type</label><select id="reqType"><option>Raw Material</option><option>Finished Goods</option><option>Sister Plant Transfer</option><option>Vendor Delivery</option><option>Customer Pickup</option><option>Return / Rework</option><option>Other</option></select></div>
           <div class="field"><label>Priority</label><select id="reqPriority"><option>No</option><option>Yes</option></select></div>
         </div>
@@ -164,7 +165,7 @@
           <div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">
             <button class="secondaryBtn" onclick="copyConfirmation()">Copy Confirmation</button>
             <button class="secondaryBtn" onclick="openEmailDraft()">Open Email Draft</button>
-            <a class="secondaryBtn" href="./my-appointments.html?v=46-db23">View My Appointments</a>
+            <a class="secondaryBtn" href="./my-appointments.html?v=46-db24">View My Appointments</a>
           </div>
         </div>
         <div class="error" id="err5"></div>
@@ -173,9 +174,9 @@
     </div>
   </div>
 </div>
-<script src="./supabase-2.110.3.js?v=46-db23"></script>
-<script src="./maxdock-config.js?v=46-db23"></script>
-<script src="./maxdock-db.js?v=46-db23"></script>
-<script src="./maxdock.js?v=46-db23"></script>
-<script src="./maxdock-integration.js?v=46-db23"></script>
+<script src="./supabase-2.110.3.js?v=46-db24"></script>
+<script src="./maxdock-config.js?v=46-db24"></script>
+<script src="./maxdock-db.js?v=46-db24"></script>
+<script src="./maxdock.js?v=46-db24"></script>
+<script src="./maxdock-integration.js?v=46-db24"></script>
 </body></html>

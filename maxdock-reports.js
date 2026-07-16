@@ -88,7 +88,7 @@
     if(!start||!end||start>end)throw new Error("Choose a valid report date range.");
     const dates=eachDate(start,end);
     if(dates.length>93)throw new Error("Choose a report range of 93 days or less.");
-    const all=db.getAppointments().filter(item=>item.date>=start&&item.date<=end);
+    const all=db.getAppointments().filter(item=>!item.linkedMovement&&item.date>=start&&item.date<=end);
     const appointments=all.filter(item=>item.type!=="Dock Block");
     const booked=appointments.filter(active);
     const cancelled=appointments.filter(item=>item.status==="Cancelled");

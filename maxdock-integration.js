@@ -149,11 +149,14 @@
   function populateRequesterLocations(){
     const select=$("reqRequesterType");
     if(!select)return;
-    const locationOptions=db.getLocations()
+    const previous=select.value;
+    const locationOptions=db.getLocationDirectory()
       .filter(location=>location.name!==currentLocation)
-      .map(location=>`<option>${esc(location.name)}</option>`);
-    select.innerHTML=[...locationOptions,"<option>Vendor</option>","<option>Customer</option>","<option>Other Sister Plant</option>","<option>Other</option>"].join("");
+      .map(location=>`<option value="${esc(location.name)}">${esc(location.name)} · MaxDock site</option>`);
+    select.innerHTML=[...locationOptions,"<option>Vendor</option>","<option>Customer</option>","<option>Other Max Solutions location (not listed)</option>","<option>Other</option>"].join("");
+    if([...select.options].some(option=>option.value===previous))select.value=previous;
     toggleCompany();
+    updateBookingRouteSummary();
   }
 
   function populateBookingLocations(){
@@ -163,8 +166,41 @@
     select.innerHTML=locations.map(location=>`<option value="${esc(location.name)}">${esc(location.name)}</option>`).join("");
     select.value=currentLocation;
     if(!select.value&&locations[0])select.value=locations[0].name;
-    select.disabled=locations.length<=1;
+    select.disabled=false;
+    select.title=locations.length===1?"This account can book appointments at one MaxDock site.":"Choose the MaxDock site where the appointment will happen.";
+    updateBookingRouteSummary();
   }
+
+  function requesterUsesCompany(value=$("reqRequesterType")?.value){
+    return ["Vendor","Customer","Other Sister Plant","Other Max Solutions location (not listed)","Other"].includes(value);
+  }
+
+  function bookingRoute(){
+    const site=currentLocation||$("reqLocation")?.value||"Appointment site";
+    const requesterType=$("reqRequesterType")?.value||"Other end";
+    const counterpart=requesterUsesCompany(requesterType)?($("reqCompany")?.value.trim()||requesterType):requesterType;
+    const inbound=$("reqDirection")?.value!=="Outbound";
+    return {origin:inbound?counterpart:site,destination:inbound?site:counterpart,site,direction:inbound?"Inbound":"Outbound"};
+  }
+
+  window.getBookingRouteText=function(){
+    const route=bookingRoute();
+    return `${route.origin} → ${route.destination} · ${route.direction.toLowerCase()} at ${route.site}`;
+  };
+
+  function updateBookingRouteSummary(){
+    const summary=$("bookingRouteSummary");
+    const site=currentLocation||$("reqLocation")?.value||"this site";
+    const inboundOption=[...($("reqDirection")?.options||[])].find(option=>option.value==="Inbound");
+    const outboundOption=[...($("reqDirection")?.options||[])].find(option=>option.value==="Outbound");
+    if(inboundOption)inboundOption.textContent=`Inbound to ${site}`;
+    if(outboundOption)outboundOption.textContent=`Outbound from ${site}`;
+    if(!summary)return;
+    const internalSite=db.getLocationDirectory().some(location=>location.name===$("reqRequesterType")?.value);
+    const linkedText=internalSite?" The MaxDock site at the other end will see a linked, read-only movement.":"";
+    summary.innerHTML=`<strong>Route</strong><span>${esc(window.getBookingRouteText())}</span><small>This creates the dock appointment at ${esc(site)}.${linkedText}</small>`;
+  }
+  window.updateBookingRouteSummary=updateBookingRouteSummary;
 
   function preferredWindow(){
     const value=$("reqPreferredWindow")?.value||"";
@@ -232,6 +268,7 @@
     try{
       bookingReturnLoads=await db.findReturnLoadMatches({
         direction:$("reqDirection").value,requesterType:$("reqRequesterType").value,
+        company:requesterUsesCompany()?$("reqCompany").value.trim():null,
         startAt:selectedSlot.startAt,endAt:selectedSlot.endAt
       });
       renderBookingReturnLoads();
@@ -345,7 +382,7 @@
       validate1();validate2();
       const windowPreference=preferredWindow();
       const requesterType=$("reqRequesterType").value;
-      const usesCompany=["Vendor","Customer","Other Sister Plant","Other"].includes(requesterType);
+      const usesCompany=requesterUsesCompany(requesterType);
       const saved=await db.saveBookingTemplate({
         name,direction:$("reqDirection").value,requesterType,
         company:usesCompany?$("reqCompany").value.trim():null,
@@ -366,7 +403,8 @@
   };
 
   window.changeBookingLocation=async function(value){
-    if(!value||value===currentLocation)return;
+    if(!value)return;
+    if(value===currentLocation){updateBookingRouteSummary();return}
     await changeLocation(value);
     populateBookingLocations();
   };
@@ -492,7 +530,7 @@
       validate1();validate2();validate3();validate4();clearError(5);
       if(button){button.disabled=true;button.textContent="Booking…";}
       const requesterType=$("reqRequesterType").value;
-      const usesCompany=["Vendor","Customer","Other Sister Plant","Other"].includes(requesterType);
+      const usesCompany=requesterUsesCompany(requesterType);
       const result=await db.bookAppointment({
         date:selectedSlot.date,start:selectedSlot.start,direction:$("reqDirection").value,
         requesterType,type:$("reqType").value,truck:$("reqTruck").value,
@@ -526,20 +564,20 @@
       .map(appointment=>{
         const actions=[];
         const isBlock=appointment.type==="Dock Block";
-        const editable=canEditAppointments()&&!isBlock&&!['Completed','Cancelled','No Show'].includes(appointment.status);
+        const editable=canEditAppointments()&&!appointment.linkedMovement&&!isBlock&&!['Completed','Cancelled','No Show'].includes(appointment.status);
         if(editable)actions.push(`<button class="tiny" onclick="openAppointmentEditor('${appointment.id}')">Edit</button>`);
-        if(!isBlock&&db.hasPermission("audit.view"))actions.push(`<button class="tiny secondaryBtn" onclick="openAppointmentHistory('${appointment.id}')">History</button>`);
-        if(!["Completed","Cancelled"].includes(appointment.status)){
+        if(!appointment.linkedMovement&&!isBlock&&db.hasPermission("audit.view"))actions.push(`<button class="tiny secondaryBtn" onclick="openAppointmentHistory('${appointment.id}')">History</button>`);
+        if(!appointment.linkedMovement&&!["Completed","Cancelled"].includes(appointment.status)){
           if(!isBlock&&db.hasPermission("appointment.complete"))actions.push(`<button class="tiny" onclick="updateStatus('${appointment.id}','Completed')">Complete</button>`);
           if((isBlock&&db.hasPermission("block.manage"))||(!isBlock&&db.hasPermission("appointment.cancel"))){
             actions.push(`<button class="tiny" onclick="updateStatus('${appointment.id}','Cancelled')">${isBlock?"Cancel Block":"Cancel"}</button>`);
           }
         }
         return `<tr ${editable?`class="appointmentEditableRow" data-appointment-id="${esc(appointment.id)}" title="Double-click to edit"`:""}>
-          <td><b>${esc(appointment.ref)}</b></td><td>${esc(appointment.date)}</td><td>${displayTime(appointment.start)}–${displayTime(appointment.end)}${appointment.afterHours?` <span class="afterHoursBadge">After hours</span>`:""}</td>
-          <td>${esc(appointment.dock)}</td><td>${esc(appointment.company)}</td><td>${esc(appointment.type)}</td>
+          <td><b>${esc(appointment.ref)}</b>${appointment.linkedMovement?` <span class="linkedMovementBadge">Linked</span>`:""}</td><td>${esc(appointment.date)}</td><td>${displayTime(appointment.start)}–${displayTime(appointment.end)}${appointment.afterHours?` <span class="afterHoursBadge">After hours</span>`:""}</td>
+          <td>${esc(appointment.dock)}</td><td>${esc(appointment.routeOriginName&&appointment.routeDestinationName?`${appointment.routeOriginName} → ${appointment.routeDestinationName}`:appointment.company)}</td><td>${esc(appointment.type)}</td>
           <td>${esc(appointment.truck||"")} / ${esc(appointment.skids||0)}</td><td>${statusBadge(appointment.status)}</td>
-          <td>${actions.join(" ")||"—"}</td>
+          <td>${appointment.linkedMovement?`<span class="linkedReadOnlyLabel">Read-only site view</span>`:(actions.join(" ")||"—")}</td>
         </tr>`;
       }).join("");
     $("apptTable").innerHTML=rows||`<tr><td colspan="9">No appointments in the selected date range.</td></tr>`;
@@ -558,7 +596,7 @@
   window.openAppointmentEditor=function(id){
     if(!canEditAppointments())return;
     const appointment=getAppointments().find(item=>item.id===id);
-    if(!appointment||appointment.type==="Dock Block"||['Completed','Cancelled','No Show'].includes(appointment.status))return;
+    if(!appointment||appointment.linkedMovement||appointment.type==="Dock Block"||['Completed','Cancelled','No Show'].includes(appointment.status))return;
     const raw=appointment.raw||{};
     const options=db.getAppointmentEditOptions();
     editingAppointmentId=id;
@@ -915,7 +953,7 @@
     const date=$("adminDate")?.value||todayISO();
     const locationName=db.getCurrentLocation()?.name||currentLocation;
     const url=new URL("./dashboard.html",location.href);
-    url.searchParams.set("v","46-db23");
+    url.searchParams.set("v","46-db24");
     url.searchParams.set("display","1");
     url.searchParams.set("date",date);
     url.searchParams.set("location",locationName);
@@ -984,7 +1022,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db23");
+      location.replace("./index.html?v=46-db24");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
@@ -1030,7 +1068,14 @@
     }
     if($("requestModal")){
       $("reqDate").value=$("adminDate")?.value||todayISO();toggleCompany();renderSlots();
-      ["reqDirection","reqRequesterType","reqType","reqPriority","reqCustomTime"].forEach(id=>$(id)?.addEventListener("change",()=>renderSlots()));
+      $("reqDirection")?.addEventListener("change",()=>{updateBookingRouteSummary();renderSlots()});
+      $("reqRequesterType")?.addEventListener("change",()=>{
+        if($("reqRequesterType").value==="Customer")$("reqDirection").value="Outbound";
+        if($("reqRequesterType").value==="Vendor")$("reqDirection").value="Inbound";
+        toggleCompany();updateBookingRouteSummary();renderSlots();
+      });
+      $("reqCompany")?.addEventListener("input",updateBookingRouteSummary);
+      ["reqType","reqPriority","reqCustomTime"].forEach(id=>$(id)?.addEventListener("change",()=>renderSlots()));
       if(new URLSearchParams(location.search).get("open")==="request")setTimeout(openRequest,0);
     }
     if(PAGE==="settings"){

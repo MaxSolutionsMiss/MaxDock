@@ -20,6 +20,7 @@
     profile:null,
     permissions:new Set(),
     locations:[],
+    locationDirectory:[],
     currentLocation:null,
     locationData:null,
     appointments:[]
@@ -40,9 +41,9 @@
   }
   function isOperationalRole(roleCode=state.profile?.role_code){return OPERATIONAL_ROLES.has(roleCode)}
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db23";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db23";
-    return "index.html?v=46-db23";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db24";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db24";
+    return "index.html?v=46-db24";
   }
   function applyRoleNavigation(){
     const operational=isOperationalRole();
@@ -232,7 +233,7 @@
     if(usageTimer)window.clearInterval(usageTimer);
     usageTimer=null;usageStarted=false;usageLastSampleAt=0;
     await client.auth.signOut();
-    state.session=null;state.profile=null;state.permissions.clear();state.locations=[];
+    state.session=null;state.profile=null;state.permissions.clear();state.locations=[];state.locationDirectory=[];
     location.replace("./login.html");
   }
 
@@ -252,14 +253,17 @@
       await new Promise(()=>{});
     }
 
-    const [permissionResult,locationResult]=await Promise.all([
+    const [permissionResult,locationResult,directoryResult]=await Promise.all([
       client.from("role_permissions").select("permission_code").eq("role_code",state.profile.role_code),
-      client.from("locations").select("id,code,name,timezone,is_active").eq("is_active",true).order("name")
+      client.from("locations").select("id,code,name,timezone,is_active").eq("is_active",true).order("name"),
+      client.rpc("list_active_location_directory")
     ]);
     throwIf(permissionResult.error,"Unable to load role permissions");
     throwIf(locationResult.error,"Unable to load permitted locations");
+    throwIf(directoryResult.error,"Unable to load the MaxDock location directory");
     state.permissions=new Set((permissionResult.data||[]).map(x=>x.permission_code));
     state.locations=locationResult.data||[];
+    state.locationDirectory=directoryResult.data||[];
     if(!state.locations.length)throw new Error("This user has no permitted MaxDock locations.");
     startUsageTracking();
     return state;
@@ -273,10 +277,12 @@
 
   async function fetchAppointments(){
     if(!state.currentLocation)return [];
-    const result=await client.from("appointments").select("*")
-      .eq("location_id",state.currentLocation.id).order("start_at",{ascending:true});
+    const result=state.profile?.role_code==="customer"
+      ?await client.from("appointments").select("*").eq("location_id",state.currentLocation.id).order("start_at",{ascending:true})
+      :await client.rpc("list_location_schedule",{p_location_id:state.currentLocation.id});
     throwIf(result.error,"Unable to load appointments");
-    state.appointments=(result.data||[]).map(mapAppointment);
+    const rows=state.profile?.role_code==="customer"?(result.data||[]):(result.data||[]).map(item=>item.schedule_record||item);
+    state.appointments=rows.map(mapAppointment);
     return state.appointments;
   }
 
@@ -285,7 +291,8 @@
     const start=localDateTime(row.start_at,state.currentLocation.timezone);
     const end=localDateTime(row.end_at,state.currentLocation.timezone);
     const dock=data.dockById?.get(row.dock_id);
-    const requesterLocation=state.locations.find(x=>x.id===row.requester_location_id);
+    const requesterLocation=state.locationDirectory.find(x=>x.id===row.requester_location_id);
+    const linkedMovement=Boolean(row.is_linked_movement);
     const isBlock=row.entry_kind==="block";
     return {
       id:row.id,
@@ -295,10 +302,10 @@
       start:start.time,
       end:end.time,
       endDate:end.date,
-      dock:dock?.name||"Unassigned",
+      dock:linkedMovement?"Linked movement":(dock?.name||"Unassigned"),
       dockId:row.dock_id,
-      direction:titleCase(row.direction||"Inbound"),
-      company:isBlock?`Blocked: ${row.block_reason}`:(row.company_name||requesterLocation?.name||row.requester_type||"TBD"),
+      direction:titleCase(row.display_direction||row.direction||"Inbound"),
+      company:isBlock?`Blocked: ${row.block_reason}`:(row.display_counterpart_location_name||row.company_name||requesterLocation?.name||row.requester_type||"TBD"),
       type:isBlock?"Dock Block":(data.appointmentTypeByCode?.get(row.appointment_type_code)?.name||row.appointment_type_code||""),
       truck:isBlock?"N/A":(data.truckTypeByCode?.get(row.truck_type_code)?.name||row.truck_type_code||""),
       skids:Number(row.skid_count||0),
@@ -311,6 +318,11 @@
       notes:row.notes||"",
       requesterLocationId:row.requester_location_id||null,
       requesterLocationName:requesterLocation?.name||"",
+      linkedMovement,
+      readOnly:linkedMovement,
+      physicalLocationId:row.physical_location_id||row.location_id,
+      routeOriginName:row.route_origin_name||"",
+      routeDestinationName:row.route_destination_name||"",
       afterHours:Boolean(row.is_after_hours_override),
       status:titleCase(row.status),
       created:row.created_at,
@@ -407,6 +419,12 @@
     const code=map?.get(normalize(name));
     return requireValue(code,label);
   }
+  function internalRequesterLocation(requesterType,company){
+    return state.locationDirectory.find(location=>
+      normalize(location.name)===normalize(requesterType)
+      || (company&&normalize(location.name)===normalize(company))
+    );
+  }
   async function availableSlots(input){
     const data=state.locationData;
     const result=await client.rpc("list_capacity_aware_appointment_slots",{
@@ -481,7 +499,7 @@
   }
   async function bookAppointment(input){
     const data=state.locationData;
-    const requesterLocation=state.locations.find(x=>normalize(x.name)===normalize(input.requesterType));
+    const requesterLocation=internalRequesterLocation(input.requesterType,input.company);
     const result=await client.rpc("book_appointment",{
       p_location_id:state.currentLocation.id,
       p_date:input.date,
@@ -534,7 +552,7 @@
     };
   }
   async function findReturnLoadMatches(input){
-    const requesterLocation=state.locations.find(x=>normalize(x.name)===normalize(input.requesterType));
+    const requesterLocation=internalRequesterLocation(input.requesterType,input.company);
     if(!requesterLocation||!input.startAt||!input.endAt)return [];
     const result=await client.rpc("find_return_load_matches",{
       p_location_id:state.currentLocation.id,
@@ -664,7 +682,7 @@
     if(!actions||document.getElementById("maxdockAccount"))return;
     const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
     const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
-    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db23";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db24";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
     bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
     const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
     wrap.append(label,bell,button);actions.prepend(wrap);
@@ -697,7 +715,7 @@
     listBookingTemplates,saveBookingTemplate,deleteBookingTemplate,appointmentHistory,
     loadPreference,savePreference,queuePreferenceSave,recordUsage,startUsageTracking,startLiveRefresh,LIVE_REFRESH_MS,
     populateLocationSelect,addAccountControls,refreshNotificationBadge,hasPermission,isOperationalRole,getLandingPage,applyRoleNavigation,
-    getProfile:()=>state.profile,getLocations:()=>state.locations,getCurrentLocation:()=>state.currentLocation,
+    getProfile:()=>state.profile,getLocations:()=>state.locations,getLocationDirectory:()=>state.locationDirectory,getCurrentLocation:()=>state.currentLocation,
     getSettings:()=>state.locationData?.legacySettings||null,getAppointments:()=>state.appointments,
     getLocationData:()=>state.locationData||null,
     getDockRows:()=>state.locationData?.dockRows||[],
