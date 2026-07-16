@@ -24,7 +24,7 @@ const defaultSettings={
   capacityEnabled:false,capacityTotal:0,capacityReserve:0,capacityMode:"warn",capacityOccupied:0,capacityAsOf:null,
   docks:["Dock 1","Dock 2"],
   truckSetup:{"53 ft Trailer":20,"48 ft Trailer":18,"26 ft Straight Truck":12,"Cube Van":8,"Courier Van":5},
-  typeAdj:{"Raw Material":15,"Finished Goods":0,"Sister Plant Transfer":0,"Vendor Delivery":5,"Customer Pickup":5,"Return / Rework":15,"Other":0},
+  typeAdj:{"Raw Material":15,"Finished Goods":0,"WIP":0,"Sister Plant Transfer":0,"Vendor Delivery":5,"Customer Pickup":5,"Return / Rework":15,"Other":0},
   handlingAdj:{"Standard":0,"Mixed SKUs":10,"Requires Counting":10,"Paperwork / Samples":10,"Special Handling":15}
 };
 
@@ -51,13 +51,19 @@ function migrateOldData(){
   }
 }
 function applyTheme(location){
-  const t=locationThemes[location]||locationThemes.Mississauga;
+  const t=locationThemes.Mississauga;
+  const accent=locationThemes[location]||t;
   const r=document.documentElement.style;
   r.setProperty("--theme-1",t.a);r.setProperty("--theme-2",t.b);r.setProperty("--theme-3",t.c);
   r.setProperty("--theme-soft",t.soft);r.setProperty("--theme-soft-2",t.soft2);
   r.setProperty("--theme-glow-a",t.ga);r.setProperty("--theme-glow-b",t.gb);r.setProperty("--theme-glow-c",t.gc);
   r.setProperty("--theme-shadow",t.shadow);
   r.setProperty("--theme-gradient",`linear-gradient(135deg,${t.a},${t.b} 56%,${t.c})`);
+  r.setProperty("--location-accent-dark",accent.a);
+  r.setProperty("--location-accent",accent.b);
+  r.setProperty("--location-accent-secondary",accent.c);
+  r.setProperty("--location-accent-soft",accent.soft);
+  r.setProperty("--location-accent-shadow",accent.shadow);
   if($("locationSelect"))$("locationSelect").value=location;
   if($("facilityName"))$("facilityName").textContent=`Max Solutions – ${location}`;
   if($("modalFacility"))$("modalFacility").textContent=`Max Solutions – ${location}`;
@@ -95,7 +101,7 @@ function openRequest(){
   $("confirmBox").style.display="none";
   showStep(1);toggleCompany();renderSlots();
 }
-function closeRequest(){$("requestModal")?.classList.remove("show")}
+function closeRequest(){window.closeEfficiencyOpportunity?.();$("requestModal")?.classList.remove("show")}
 function showStep(n){
   document.querySelectorAll(".stepPanel").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll(".stepPill").forEach(x=>x.classList.remove("active"));
@@ -113,7 +119,8 @@ function nextStep(n){
 }
 function validate1(){
   clearError(1);
-  required("reqLocation","Max Solutions location");
+  required("reqLocation","Sending from location");
+  required("reqRequesterType","Sending to location");
   if(!$("companyWrap").classList.contains("hidden"))required("reqCompany","Company / Location Name");
 }
 function validate2(){clearError(2);if(Number($("reqSkids").value||0)<0)throw new Error("Skids cannot be negative.")}
@@ -121,16 +128,12 @@ function validate3(){clearError(3);required("reqDate","Requested Date");if(!sele
 function validate4(){clearError(4);required("reqName","Requester Name");required("reqEmail","Requester Email");required("reqRef","PO / BOL / Job #")}
 function toggleCompany(){
   if(!$("reqRequesterType"))return;
-  const show=["Vendor","Customer","Other Sister Plant","Other Max Solutions location (not listed)","Other"].includes($("reqRequesterType").value);
+  const show=false;
   $("companyWrap").classList.toggle("hidden",!show);
   window.updateBookingRouteSummary?.();
 }
 function requesterCompany(){
-  const type=$("reqRequesterType").value;
-  if(["Vendor","Customer","Other Sister Plant","Other Max Solutions location (not listed)","Other"].includes(type)){
-    return `${type}: ${$("reqCompany").value.trim()||"TBD"}`;
-  }
-  return type;
+  return $("reqRequesterType").value;
 }
 function calculateDuration(){
   const skids=Number($("reqSkids").value||0);
