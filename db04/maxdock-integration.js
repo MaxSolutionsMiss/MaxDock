@@ -605,6 +605,7 @@
     const usableHeight=Math.max(420,window.innerHeight-190);
     const estimatedLaneHeight=usableHeight/dockCount;
     const scale=Math.max(1,Math.min(2.25,estimatedLaneHeight/112));
+    window.maxdockScheduleDisplayScale=scale;
     panel.style.setProperty("--display-scale",scale.toFixed(3));
     panel.style.setProperty("--display-dock-font",`${(18*scale).toFixed(1)}px`);
     panel.style.setProperty("--display-dock-meta-font",`${(11*scale).toFixed(1)}px`);
@@ -642,7 +643,7 @@
     const date=$("adminDate")?.value||todayISO();
     const locationName=db.getCurrentLocation()?.name||currentLocation;
     const url=new URL("./dashboard.html",location.href);
-    url.searchParams.set("v","46-db18");
+    url.searchParams.set("v","46-db19");
     url.searchParams.set("display","1");
     url.searchParams.set("date",date);
     url.searchParams.set("location",locationName);
@@ -706,7 +707,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db18");
+      location.replace("./index.html?v=46-db19");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
