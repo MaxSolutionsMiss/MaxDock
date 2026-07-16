@@ -148,7 +148,13 @@
 
   async function initialize(){
     if(initialized)return;initialized=true;
-    if(db.getProfile()?.role_code!=="system_admin"){$("misIntegrationPanel").hidden=true;return}
+    if(!await db.requireAuth())return;
+    await db.loadContext();
+    if(db.getProfile()?.role_code!=="system_admin"){
+      location.replace("./index.html?v=46-db22");
+      return;
+    }
+    db.addAccountControls();
     $("misIntegrationForm").addEventListener("submit",saveSettings);
     $("misSyncMode").addEventListener("change",updateConnectionView);
     $("misEnabled").addEventListener("change",updateConnectionView);
@@ -159,4 +165,10 @@
   }
 
   window.MaxDockMIS={initialize,parseCsv};
+  if(document.body?.dataset.page==="data"){
+    document.addEventListener("DOMContentLoaded",()=>initialize().catch(error=>{
+      setError("misSettingsError",error);
+      if($("misConnectionBadge"))$("misConnectionBadge").textContent="Unable to load";
+    }));
+  }
 })();

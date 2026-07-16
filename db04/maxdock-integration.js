@@ -672,7 +672,7 @@
     if(!db.hasPermission("appointment.view"))document.querySelectorAll('a[href*="dashboard.html"]').forEach(element=>element.hidden=true);
     if(!db.hasPermission("reports.view"))document.querySelectorAll('a[href*="reports.html"]').forEach(element=>element.hidden=true);
     if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(element=>element.hidden=true);
-    if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"]').forEach(element=>element.hidden=true);
+    if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"],a[href*="data.html"]').forEach(element=>element.hidden=true);
     if($("scheduleEditHint"))$("scheduleEditHint").hidden=!canEditAppointments();
     const canManageSettings=db.hasPermission("settings.manage")&&db.hasPermission("dock.manage");
     if(!canManageSettings){
@@ -734,7 +734,7 @@
     const date=$("adminDate")?.value||todayISO();
     const locationName=db.getCurrentLocation()?.name||currentLocation;
     const url=new URL("./dashboard.html",location.href);
-    url.searchParams.set("v","46-db21");
+    url.searchParams.set("v","46-db22");
     url.searchParams.set("display","1");
     url.searchParams.set("date",date);
     url.searchParams.set("location",locationName);
@@ -803,7 +803,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db21");
+      location.replace("./index.html?v=46-db22");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
