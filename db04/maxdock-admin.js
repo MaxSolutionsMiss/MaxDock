@@ -50,6 +50,20 @@
     return new Intl.DateTimeFormat(undefined,{year:"numeric",month:"short",day:"numeric"}).format(new Date(value));
   }
 
+  function formatDateTime(value){
+    if(!value)return "No tracked activity";
+    return new Intl.DateTimeFormat(undefined,{year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(new Date(value));
+  }
+
+  function formatDuration(seconds){
+    const total=Math.max(0,Number(seconds)||0);
+    if(total<60)return total?"< 1 min":"0 min";
+    const minutes=Math.round(total/60);
+    if(minutes<60)return `${minutes} min`;
+    const hours=Math.floor(minutes/60),remainder=minutes%60;
+    return remainder?`${hours} hr ${remainder} min`:`${hours} hr`;
+  }
+
   function roleByCode(code){return state.roles.find(role=>role.code===code)}
   function isSyntheticEmail(email){return String(email||"").toLowerCase().endsWith("@maxdock.internal")}
   function displayEmail(user){return !user.email||isSyntheticEmail(user.email)?`Username: ${user.username}`:user.email}
@@ -57,7 +71,8 @@
   function updateSummary(){
     $("totalUsers").textContent=state.users.length;
     $("activeUsers").textContent=state.users.filter(user=>user.is_active).length;
-    $("systemAdmins").textContent=state.users.filter(user=>user.is_active&&user.role_code==="system_admin").length;
+    $("usedLast7").textContent=state.users.filter(user=>Number(user.active_days_7)>0).length;
+    $("neverUsed").textContent=state.users.filter(user=>!user.last_activity_at).length;
   }
 
   function renderUsers(){
@@ -73,15 +88,22 @@
       const pending=user.must_change_password?'<span class="adminPendingBadge">Password change required</span>':"";
       const accessButton=user.must_change_password
         ? `<button class="tiny adminCreateLink" type="button" data-user-id="${escapeHtml(user.user_id)}">Setup Link</button>`:"";
+      const usage=user.last_activity_at
+        ? `<div class="adminUsageCell"><strong>${Number(user.tracked_logins)||0} tracked login${Number(user.tracked_logins)===1?"":"s"}</strong><span>${Number(user.active_days_30)||0} active day${Number(user.active_days_30)===1?"":"s"} · ${escapeHtml(formatDuration(user.active_seconds_30))} in 30 days</span><small>${Number(user.page_views_30)||0} page view${Number(user.page_views_30)===1?"":"s"} in 30 days</small></div>`
+        : '<div class="adminUsageCell empty"><strong>No tracked use yet</strong><span>Tracking begins with DB20</span></div>';
+      const lastActivity=user.last_activity_at
+        ? `<div class="adminLastActivity"><strong>${escapeHtml(formatDateTime(user.last_activity_at))}</strong><span>Last sign-in: ${escapeHtml(formatDate(user.last_sign_in_at))}</span></div>`
+        : `<div class="adminLastActivity empty"><strong>No tracked activity</strong><span>Last sign-in: ${escapeHtml(formatDate(user.last_sign_in_at))}</span></div>`;
       return `<tr>
         <td><div class="adminUserIdentity"><strong>${escapeHtml(user.full_name||user.username||"Unnamed user")}</strong><span>${escapeHtml(displayEmail(user))}</span></div></td>
         <td><span class="adminRole role-${escapeHtml(user.role_code)}">${escapeHtml(user.role_name||roleByCode(user.role_code)?.name||user.role_code)}</span></td>
         <td><div class="adminLocationTags">${locations}</div></td>
         <td><div class="adminStatusStack"><span class="adminUserStatus ${user.is_active?"active":"inactive"}"><i></i>${user.is_active?"Active":"Inactive"}</span>${pending}</div></td>
-        <td>${escapeHtml(formatDate(user.last_sign_in_at))}</td>
+        <td>${usage}</td>
+        <td>${lastActivity}</td>
         <td><div class="adminRowActions">${accessButton}<button class="tiny adminEditUser" type="button" data-user-id="${escapeHtml(user.user_id)}">Edit</button></div></td>
       </tr>`;
-    }).join("")||'<tr><td colspan="6">No users match this search.</td></tr>';
+    }).join("")||'<tr><td colspan="7">No users match this search.</td></tr>';
     document.querySelectorAll(".adminEditUser").forEach(button=>button.addEventListener("click",()=>openUserModal(button.dataset.userId)));
     document.querySelectorAll(".adminCreateLink").forEach(button=>button.addEventListener("click",()=>createExistingSetupLink(button.dataset.userId)));
     updateSummary();
@@ -278,9 +300,14 @@
   }
 
   async function loadUsers(){
-    const result=await db.client.rpc("admin_list_users");
-    if(result.error)throw result.error;
-    state.users=result.data||[];
+    const [usersResult,usageResult]=await Promise.all([
+      db.client.rpc("admin_list_users"),
+      db.client.rpc("admin_list_user_usage")
+    ]);
+    if(usersResult.error)throw usersResult.error;
+    if(usageResult.error)throw usageResult.error;
+    const usageByUser=new Map((usageResult.data||[]).map(item=>[item.user_id,item]));
+    state.users=(usersResult.data||[]).map(user=>({...user,...(usageByUser.get(user.user_id)||{})}));
     renderUsers();
   }
 

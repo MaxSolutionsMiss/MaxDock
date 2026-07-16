@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=46-db19">
-<link rel="stylesheet" href="./maxdock-db04.css?v=46-db19">
+<link rel="stylesheet" href="./maxdock.css?v=46-db20">
+<link rel="stylesheet" href="./maxdock-db04.css?v=46-db20">
 <title>MaxDock – Internal Sign In</title>
 </head>
 <body data-page="login" class="loginPage">
@@ -29,11 +29,28 @@
         <button class="primaryBtn loginButton" id="loginButton" type="submit">Sign In</button>
       </form>
       <p class="loginHelp">Accounts are created by a MaxDock administrator. Public sign-up is disabled.</p>
+      <div class="loginRecoveryEntry">
+        <button class="loginTextButton" id="openRecovery" type="button">Forgot your username or password?</button>
+      </div>
+      <form id="recoveryForm" class="loginRecoveryPanel" hidden>
+        <div class="loginRecoveryHead">
+          <strong>Recover your MaxDock access</strong>
+          <p>Enter the email connected to your account. We’ll send a secure password-reset link. You can also use this email instead of your username when signing in. If no email was added to the account, ask your MaxDock administrator to reset it.</p>
+        </div>
+        <div class="field">
+          <label for="recoveryEmail">Account email</label>
+          <input id="recoveryEmail" type="email" autocomplete="email" placeholder="name@company.com" required>
+        </div>
+        <div class="error loginError" id="recoveryError" role="alert"></div>
+        <div class="loginRecoverySuccess" id="recoverySuccess" role="status" hidden></div>
+        <button class="primaryBtn loginButton" id="recoveryButton" type="submit">Send Reset Link</button>
+        <button class="loginTextButton loginBackButton" id="closeRecovery" type="button">Back to sign in</button>
+      </form>
     </section>
   </main>
-<script src="./supabase-2.110.3.js?v=46-db19"></script>
-<script src="./maxdock-config.js?v=46-db19"></script>
-<script src="./maxdock-db.js?v=46-db19"></script>
-<script src="./maxdock-auth.js?v=46-db19"></script>
+<script src="./supabase-2.110.3.js?v=46-db20"></script>
+<script src="./maxdock-config.js?v=46-db20"></script>
+<script src="./maxdock-db.js?v=46-db20"></script>
+<script src="./maxdock-auth.js?v=46-db20"></script>
 </body>
 </html>

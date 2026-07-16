@@ -14,21 +14,25 @@
 
     const hashParams=new URLSearchParams(location.hash.replace(/^#/,""));
     const queryParams=new URLSearchParams(location.search);
+    const recoveryMode=queryParams.get("recovery")==="1"||hashParams.get("type")==="recovery";
+    document.getElementById("passwordTitle").textContent=recoveryMode?"Reset your password":"Set your password";
     const invitationError=hashParams.get("error_description")||queryParams.get("error_description");
     if(invitationError){
       showError(decodeURIComponent(invitationError.replace(/\+/g," ")));
-      intro.textContent="This invitation link could not be opened.";
+      intro.textContent=recoveryMode?"This password-reset link could not be opened.":"This invitation link could not be opened.";
       return;
     }
 
     try{
       const session=await window.MaxDockDB.getSession();
-      if(!session?.user)throw new Error("This setup session is invalid or has expired. Ask your MaxDock administrator for a new setup link, or sign in again with your temporary password.");
+      if(!session?.user)throw new Error(recoveryMode
+        ? "This password-reset session is invalid or has expired. Return to sign in and request a new reset link."
+        : "This setup session is invalid or has expired. Ask your MaxDock administrator for a new setup link, or sign in again with your temporary password.");
       const profileResult=await window.MaxDockDB.client.from("profiles").select("username,full_name").eq("id",session.user.id).maybeSingle();
       const profile=profileResult.data;
       intro.textContent=profile
-        ? `Choose a private password for ${profile.full_name||profile.username} (${profile.username}).`
-        : "Choose a private password to complete your MaxDock account setup.";
+        ? `${recoveryMode?"Reset":"Choose"} a private password for ${profile.full_name||profile.username} (${profile.username}).`
+        : recoveryMode?"Choose a new private password for your MaxDock account.":"Choose a private password to complete your MaxDock account setup.";
       form.hidden=false;
     }catch(err){
       showError(err.message);

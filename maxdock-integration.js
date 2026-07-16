@@ -9,6 +9,43 @@
   const scheduleDisplayMode=PAGE==="dashboard"&&new URLSearchParams(location.search).get("display")==="1";
   const originalOpenRequest=openRequest;
   const originalFilteredDayAppointments=filteredDayAppointments;
+  const originalRenderDashboard=renderDashboard;
+  let dashboardPreferenceReady=false;
+  let lastDashboardPreferenceSignature="";
+
+  function dashboardPreferenceStatus(message,status){
+    const element=$("dashboardPreferenceStatus");
+    if(!element)return;
+    element.textContent=message;element.dataset.status=status||"";
+  }
+  function dashboardDatePreference(){
+    const value=$("adminDate")?.value||todayISO();
+    const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
+    const tomorrowValue=`${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,"0")}-${String(tomorrow.getDate()).padStart(2,"0")}`;
+    if(value===todayISO())return {dateMode:"today",customDate:""};
+    if(value===tomorrowValue)return {dateMode:"tomorrow",customDate:""};
+    return {dateMode:"custom",customDate:value};
+  }
+  function saveDashboardPreference(){
+    if(PAGE!=="dashboard"||scheduleDisplayMode||!dashboardPreferenceReady)return;
+    const value={
+      locationName:db.getCurrentLocation()?.name||currentLocation,
+      status:$("adminStatus")?.value||"All",
+      scheduleScale:$("scheduleScale")?.value||"60",
+      dashboardRangeMode,
+      customRangeStart:dashboardCustomStart,
+      customRangeEnd:dashboardCustomEnd,
+      ...dashboardDatePreference()
+    };
+    const signature=JSON.stringify(value);
+    if(signature===lastDashboardPreferenceSignature)return;
+    lastDashboardPreferenceSignature=signature;
+    db.queuePreferenceSave("dashboard",value,dashboardPreferenceStatus);
+  }
+  renderDashboard=function(){
+    originalRenderDashboard();
+    saveDashboardPreference();
+  };
 
   function canEditAppointments(){
     return ["system_admin","site_admin","coordinator"].includes(db.getProfile()?.role_code)
@@ -643,7 +680,7 @@
     const date=$("adminDate")?.value||todayISO();
     const locationName=db.getCurrentLocation()?.name||currentLocation;
     const url=new URL("./dashboard.html",location.href);
-    url.searchParams.set("v","46-db19");
+    url.searchParams.set("v","46-db20");
     url.searchParams.set("display","1");
     url.searchParams.set("date",date);
     url.searchParams.set("location",locationName);
@@ -701,13 +738,18 @@
     await db.loadContext();
     const query=new URLSearchParams(location.search);
     const requestedLocation=query.get("location");
-    if(requestedLocation&&db.getLocations().some(item=>item.name===requestedLocation))currentLocation=requestedLocation;
+    const savedDashboard=PAGE==="dashboard"?await db.loadPreference("dashboard",{
+      locationName:"",status:"All",scheduleScale:"60",dateMode:"today",customDate:"",
+      dashboardRangeMode:"Daily",customRangeStart:todayISO(),customRangeEnd:todayISO()
+    }):null;
+    const preferredLocation=requestedLocation||savedDashboard?.locationName;
+    if(preferredLocation&&db.getLocations().some(item=>item.name===preferredLocation))currentLocation=preferredLocation;
     if(PAGE==="requester"&&db.isOperationalRole()){
       location.replace(`./${db.getLandingPage()}`);
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db19");
+      location.replace("./index.html?v=46-db20");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
@@ -729,7 +771,18 @@
 
     if(PAGE==="dashboard"){
       const requestedDate=query.get("date");
-      window.scrollTo(0,0);$("adminDate").value=/^\d{4}-\d{2}-\d{2}$/.test(requestedDate||"")?requestedDate:todayISO();renderDashboard();
+      const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
+      const tomorrowValue=`${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,"0")}-${String(tomorrow.getDate()).padStart(2,"0")}`;
+      const savedDate=savedDashboard?.dateMode==="tomorrow"?tomorrowValue
+        :savedDashboard?.dateMode==="custom"&&/^\d{4}-\d{2}-\d{2}$/.test(savedDashboard.customDate||"")?savedDashboard.customDate
+        :todayISO();
+      $("adminStatus").value=["All","Scheduled","Completed","Cancelled"].includes(savedDashboard?.status)?savedDashboard.status:"All";
+      if($("scheduleScale")&&["30","60","120"].includes(String(savedDashboard?.scheduleScale)))$("scheduleScale").value=String(savedDashboard.scheduleScale);
+      dashboardRangeMode=["Daily","Weekly","Monthly","Yearly","Custom"].includes(savedDashboard?.dashboardRangeMode)?savedDashboard.dashboardRangeMode:"Daily";
+      dashboardCustomStart=/^\d{4}-\d{2}-\d{2}$/.test(savedDashboard?.customRangeStart||"")?savedDashboard.customRangeStart:todayISO();
+      dashboardCustomEnd=/^\d{4}-\d{2}-\d{2}$/.test(savedDashboard?.customRangeEnd||"")?savedDashboard.customRangeEnd:todayISO();
+      window.scrollTo(0,0);$("adminDate").value=/^\d{4}-\d{2}-\d{2}$/.test(requestedDate||"")?requestedDate:savedDate;
+      dashboardPreferenceReady=true;renderDashboard();dashboardPreferenceStatus("This view is saved to your login.","saved");
       $("editAppointmentForm")?.addEventListener("submit",saveEditedAppointment);
       $("editAppointmentModal")?.addEventListener("click",event=>{if(event.target===$("editAppointmentModal"))window.closeAppointmentEditor()});
       $("appointmentHistoryModal")?.addEventListener("click",event=>{if(event.target===$("appointmentHistoryModal"))window.closeAppointmentHistory()});

@@ -1,0 +1,32 @@
+MaxDock v46-DB20 Deployment
+
+Changes
+- Adds a low-emphasis “Forgot your username or password?” recovery option to the sign-in page.
+- Sends a secure Supabase Auth reset link to the email connected to the MaxDock account.
+- Allows the connected email address to be used when the username is forgotten.
+- Saves Dashboard, Operations Queue, and Reports views to each signed-in user.
+- Preserves relative choices such as Today and Tomorrow instead of reopening a stale calendar date.
+- Adds privacy-conscious System Admin adoption metrics for tracked logins, active days, page views, visible-app time, and last activity.
+- Stores daily aggregate usage only; no appointment content, typed form values, or passwords are recorded.
+
+Database
+- Apply MaxDock_DB_v13_User_Preferences_Usage.sql.
+- This creates user_preferences and user_usage_daily, owner-protected preference RPCs, a usage recorder, and a System Admin reporting RPC.
+- No Edge Function update is required for DB20.
+
+Supabase Auth
+- Confirm the deployed set-password.html URL is in Authentication > URL Configuration > Redirect URLs.
+- Password reset email delivery uses the configured Supabase Auth email provider.
+- Accounts created without a real contact email continue to use the System Admin reset-password action.
+
+Frontend
+- Publish the root files and the mirrored db04 files.
+- Hard-refresh the browser after GitHub Pages finishes deploying.
+
+Verification
+1. On login.html, select “Forgot your username or password?”, enter an account email, and confirm the generic success message appears.
+2. Open the reset email, choose a new password, and confirm MaxDock opens the correct role landing page.
+3. In Operations Queue, select Today, Pending, a location, and preferred briefing/metric cards. Sign out and sign in on another device or browser, then confirm the view returns.
+4. Repeat the saved-view check on Dashboard and Reports.
+5. In Admin, confirm every user row shows tracked usage or “No tracked use yet,” plus last activity and last Supabase sign-in.
+6. Confirm the Used in last 7 days and No tracked use yet summary cards update after signed-in activity.

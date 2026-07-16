@@ -6,7 +6,9 @@
   const queueDisplayMode=query.get("display")==="1";
   const DEFAULT_PREFERENCES={brief:["first","peak","docks","priority","review"],metrics:["pending","completed","inbound","outbound","skids","blocks","priority","soon"]};
   const VALID_PREFERENCES={brief:new Set(DEFAULT_PREFERENCES.brief),metrics:new Set(DEFAULT_PREFERENCES.metrics)};
-  const state={rows:[],pendingRows:[],completedRows:[],blocks:[],busyId:null,preferences:{brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics]}};
+  const state={rows:[],pendingRows:[],completedRows:[],blocks:[],busyId:null,
+    preferences:{brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics]},
+    view:{status:"pending",dateMode:"today",customDate:"",locationName:""}};
 
   function esc(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]))}
   function today(offset=0){const date=new Date();date.setDate(date.getDate()+offset);return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
@@ -17,7 +19,6 @@
   function clearError(){$("queueError").style.display="none"}
   function minuteValue(value){const [hour,minute]=String(value||"00:00").split(":").map(Number);return hour*60+minute}
   function currentMinutes(){const now=new Date();return now.getHours()*60+now.getMinutes()}
-
 
   let queueDisplayTimer=null,queueDisplayBusy=false;
   function updateQueueDisplayStatus(message){
@@ -52,7 +53,7 @@
   }
   window.openQueueDisplay=function(){
     const url=new URL("./queue.html",location.href);
-    url.searchParams.set("v","46-db19");
+    url.searchParams.set("v","46-db20");
     url.searchParams.set("display","1");
     url.searchParams.set("date",$("queueDate").value||today());
     url.searchParams.set("status",$("queueStatus").value||"pending");
@@ -84,19 +85,54 @@
   };
 
   function preferenceStorageKey(){return `maxdock_queue_view_${db.getProfile()?.id||"user"}`}
-  function loadQueuePreferences(){
+  function legacyQueuePreferences(){
     try{
       const saved=JSON.parse(localStorage.getItem(preferenceStorageKey())||"{}");
-      state.preferences={
+      return {
         brief:Array.isArray(saved.brief)?saved.brief.filter(key=>VALID_PREFERENCES.brief.has(key)):[],
         metrics:Array.isArray(saved.metrics)?saved.metrics.filter(key=>VALID_PREFERENCES.metrics.has(key)):[]
       };
-      if(!state.preferences.brief.length)state.preferences.brief=[...DEFAULT_PREFERENCES.brief];
-      if(!state.preferences.metrics.length)state.preferences.metrics=[...DEFAULT_PREFERENCES.metrics];
-    }catch{state.preferences={brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics]}}
+    }catch{return {}}
+  }
+  async function loadQueuePreferences(){
+    const legacy=legacyQueuePreferences();
+    const saved=await db.loadPreference("queue",{
+      brief:legacy.brief?.length?legacy.brief:[...DEFAULT_PREFERENCES.brief],
+      metrics:legacy.metrics?.length?legacy.metrics:[...DEFAULT_PREFERENCES.metrics],
+      status:"pending",dateMode:"today",customDate:"",locationName:""
+    });
+    state.preferences={
+      brief:Array.isArray(saved.brief)?saved.brief.filter(key=>VALID_PREFERENCES.brief.has(key)):[],
+      metrics:Array.isArray(saved.metrics)?saved.metrics.filter(key=>VALID_PREFERENCES.metrics.has(key)):[]
+    };
+    if(!state.preferences.brief.length)state.preferences.brief=[...DEFAULT_PREFERENCES.brief];
+    if(!state.preferences.metrics.length)state.preferences.metrics=[...DEFAULT_PREFERENCES.metrics];
+    state.view={
+      status:["pending","all","completed"].includes(saved.status)?saved.status:"pending",
+      dateMode:["today","tomorrow","custom"].includes(saved.dateMode)?saved.dateMode:"today",
+      customDate:/^\d{4}-\d{2}-\d{2}$/.test(saved.customDate||"")?saved.customDate:"",
+      locationName:String(saved.locationName||"")
+    };
     syncPreferenceControls();
   }
-  function saveQueuePreferences(){localStorage.setItem(preferenceStorageKey(),JSON.stringify(state.preferences))}
+  function preferenceStatus(message,status){
+    const element=$("queuePreferenceStatus");
+    if(!element)return;
+    element.textContent=message;element.dataset.status=status||"";
+  }
+  function currentDatePreference(){
+    const value=$("queueDate").value;
+    if(value===today())return {dateMode:"today",customDate:""};
+    if(value===today(1))return {dateMode:"tomorrow",customDate:""};
+    return {dateMode:"custom",customDate:value};
+  }
+  function saveQueuePreferences(){
+    if(queueDisplayMode)return;
+    const datePreference=currentDatePreference();
+    state.view={status:$("queueStatus").value||"pending",locationName:db.getCurrentLocation()?.name||"",...datePreference};
+    try{localStorage.setItem(preferenceStorageKey(),JSON.stringify(state.preferences))}catch(_ignored){}
+    db.queuePreferenceSave("queue",{...state.view,brief:state.preferences.brief,metrics:state.preferences.metrics},preferenceStatus);
+  }
   function syncPreferenceControls(){
     document.querySelectorAll("[data-pref-section]").forEach(input=>{input.checked=state.preferences[input.dataset.prefSection]?.includes(input.value)||false});
   }
@@ -137,7 +173,7 @@
     const completed=item.status==="Completed";
     const tag=completed?"Completed":level==="overdue"?"Time passed":level==="soon"?"Due within 60 min":item.priority?"Priority":"Planned";
     const canChange=completed?db.hasPermission("appointment.update"):db.hasPermission("appointment.complete");
-    const historyLink=db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=46-db19&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
+    const historyLink=db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=46-db20&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
     return `<article class="queueCard ${level}">
       <div class="queueCardTime"><strong>${esc(displayTime(item.start))}</strong><small>${esc(displayTime(item.end))}</small></div>
       <div class="queueCardBody">
@@ -205,7 +241,7 @@
   function renderFocus(rows){
     const next=rows.find(item=>$("queueDate").value!==today()||minuteValue(item.end)>=currentMinutes())||rows[0];
     if(!next){$("queueFocus").innerHTML=`<div><small>${esc(displayDate($("queueDate").value))}</small><h3>No active appointments scheduled</h3><p>The location has no inbound or outbound work in the execution queue for this date.</p></div>`;return}
-    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=46-db19&date=${esc($("queueDate").value)}">Open schedule</a>`;
+    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=46-db20&date=${esc($("queueDate").value)}">Open schedule</a>`;
   }
 
   function renderLane(direction,elementId,summaryId){
@@ -265,7 +301,7 @@
     try{
       await db.loadLocation($("queueLocation").value);
       localStorage.setItem("maxdock_location",db.getCurrentLocation()?.name||$("queueLocation").value);
-      render();
+      render();saveQueuePreferences();
     }
     finally{if(button){button.disabled=false;button.textContent=label||"Refresh queue"}}
   }
@@ -274,20 +310,21 @@
       if(!await db.requireAuth())return;
       await db.loadContext();
       if(!db.hasPermission("operations.queue.view"))throw new Error("This account cannot view the Operations Queue.");
-      loadQueuePreferences();
+      await loadQueuePreferences();
       const requestedLocation=query.get("location");
-      db.selectLocation(requestedLocation||localStorage.getItem("maxdock_location"));db.populateLocationSelect($("queueLocation"));db.addAccountControls();
+      db.selectLocation(requestedLocation||state.view.locationName||localStorage.getItem("maxdock_location"));db.populateLocationSelect($("queueLocation"));db.addAccountControls();
       const role=db.getProfile()?.role_code;
       $("queueLocationPill").hidden=!["system_admin","site_admin"].includes(role);
       if(role!=="system_admin")document.querySelectorAll('a[href*="admin.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(link=>link.hidden=true);
-      $("queueDate").value=/^\d{4}-\d{2}-\d{2}$/.test(query.get("date")||"")?query.get("date"):today();
-      if(["pending","all","completed"].includes(query.get("status")))$("queueStatus").value=query.get("status");
-      $("queueDate").addEventListener("change",render);
-      $("queueStatus").addEventListener("change",render);
+      const savedDate=state.view.dateMode==="tomorrow"?today(1):state.view.dateMode==="custom"&&state.view.customDate?state.view.customDate:today();
+      $("queueDate").value=/^\d{4}-\d{2}-\d{2}$/.test(query.get("date")||"")?query.get("date"):savedDate;
+      $("queueStatus").value=["pending","all","completed"].includes(query.get("status"))?query.get("status"):state.view.status;
+      $("queueDate").addEventListener("change",()=>{render();saveQueuePreferences()});
+      $("queueStatus").addEventListener("change",()=>{render();saveQueuePreferences()});
       $("queueLocation").addEventListener("change",()=>changeLocation().catch(showError));
-      $("queueToday").addEventListener("click",()=>{$("queueDate").value=today();render()});
-      $("queueTomorrow").addEventListener("click",()=>{$("queueDate").value=today(1);render()});
+      $("queueToday").addEventListener("click",()=>{$("queueDate").value=today();render();saveQueuePreferences()});
+      $("queueTomorrow").addEventListener("click",()=>{$("queueDate").value=today(1);render();saveQueuePreferences()});
       $("refreshQueue").addEventListener("click",()=>changeLocation().catch(showError));
       $("openQueueDisplay").addEventListener("click",window.openQueueDisplay);
       $("printQueue").addEventListener("click",()=>window.print());
@@ -306,6 +343,7 @@
         if(event.key==="Escape"&&document.body.classList.contains("queueDisplayMode")&&(!queueDisplayMode||!document.fullscreenElement))window.closeQueueDisplay();
       });
       await db.loadLocation($("queueLocation").value);render();
+      preferenceStatus("Saved to your login","saved");
       if(queueDisplayMode){
         document.title=`MaxDock Operations Queue — ${db.getCurrentLocation()?.name||"Display"}`;
         activateQueueDisplay(false);
