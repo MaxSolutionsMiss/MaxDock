@@ -12,7 +12,9 @@ Changes
 
 Database
 - Apply MaxDock_DB_v16_Linked_Site_Movements.sql using migration name maxdock_db24_linked_site_movements.
+- Apply MaxDock_DB_v16a_Remove_Duplicate_Route_Index.sql using migration name maxdock_db24_remove_duplicate_route_index.
 - The migration installs the authenticated active-site directory, internal-route normalization trigger, historical route backfill, and secured staff schedule projection RPC.
+- The maintenance migration removes a redundant route index because DB23 already provides the same lookup index.
 
 Edge Functions
 - No Edge Function deployment is required for DB24.

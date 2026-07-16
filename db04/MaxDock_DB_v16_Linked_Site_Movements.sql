@@ -89,10 +89,6 @@ where a.entry_kind = 'appointment'
     or lower(trim(l.name)) = lower(trim(coalesce(a.requester_type, '')))
   );
 
-create index if not exists appointments_requester_location_schedule_idx
-on public.appointments (requester_location_id, start_at)
-where entry_kind = 'appointment' and requester_location_id is not null;
-
 create or replace function public.list_location_schedule(p_location_id uuid)
 returns table (schedule_record jsonb)
 language plpgsql
