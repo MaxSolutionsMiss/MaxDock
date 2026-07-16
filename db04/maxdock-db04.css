@@ -878,11 +878,33 @@ body.queueDisplayMode .queueAction strong{font-size:14px}
 .misImportTable th,.misImportTable td{font-size:12px}
 .misImportTable td:first-child{white-space:nowrap}
 
+/* DB23 staff after-hours scheduling and intersite return-load intelligence */
+.staffTimeOverride{margin:4px 0 14px;padding:15px;border:1px solid #c9d8e3;border-radius:15px;background:#f7fafc}
+.staffTimeOverrideHead{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.staffTimeOverrideHead strong{display:block;color:#17354a;font-size:13px}.staffTimeOverrideHead small{display:block;max-width:600px;margin-top:4px;color:#607681;font-size:11px;line-height:1.45}
+.staffTimeToggle{display:flex;align-items:center;gap:7px;white-space:nowrap;color:#254e62;font-size:11px;font-weight:800;cursor:pointer}.staffTimeToggle input{width:17px;height:17px;accent-color:#0e7490}
+.staffTimeControls{display:flex;align-items:end;gap:10px;margin-top:14px;padding-top:13px;border-top:1px solid #dce6eb}.staffTimeControls .field{min-width:190px}.staffTimeControls button{margin-bottom:1px}
+.staffTimeStatus{margin-top:12px;padding:10px 12px;border-radius:11px;background:#eef5f8;color:#365d6d;font-size:11px;font-weight:750;line-height:1.45}
+.staffTimeStatus[data-state="working"]{background:#eef6ff;color:#1d4f91}.staffTimeStatus[data-state="ready"]{background:#ecfdf5;color:#166534}.staffTimeStatus[data-state="warning"]{border:1px solid #f3c179;background:#fff8e8;color:#8a4b08}.staffTimeStatus[data-state="error"]{background:#fff1f2;color:#a51d35}
+.afterHoursReview,.returnLoadReview{display:grid;gap:3px;margin-top:12px;padding:12px 14px;border-radius:12px;font-size:11px;line-height:1.45}.afterHoursReview{border:1px solid #f3c179;background:#fff8e8;color:#7c4508}.returnLoadReview{border:1px solid #9ed9d0;background:#effcf8;color:#176447}
+.afterHoursReview strong,.returnLoadReview strong{font-size:12px}.afterHoursReview span,.returnLoadReview span{color:inherit}
+.afterHoursBadge{display:inline-flex;margin-left:5px;padding:3px 6px;border-radius:99px;background:#fff0cc;color:#8a4b08;font-size:8px;font-weight:850;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.scheduleEvent.afterHours{outline:3px solid #f59e0b;outline-offset:-3px}.scheduleEvent.afterHours::after{content:"After hours";position:absolute;right:5px;bottom:4px;padding:2px 5px;border-radius:99px;background:#7c4508;color:#fff;font-size:7px;font-weight:850;text-transform:uppercase;letter-spacing:.04em}
+.returnLoadBookingNotice{margin:12px 0;padding:13px 14px;border:1px solid #8ed5c6;border-radius:13px;background:linear-gradient(135deg,#effcf8,#eff9ff);color:#185947}
+.returnLoadBookingNotice strong{display:block;font-size:12px}.returnLoadBookingNotice p{margin:5px 0;color:#285f55;font-size:11px;line-height:1.5}.returnLoadBookingNotice small{display:block;color:#4b756d;font-size:10px;line-height:1.45}
+.returnLoadPanel{margin-bottom:18px;border-top:4px solid #0f9f88;background:linear-gradient(180deg,#f5fffc,#fff)}
+.returnLoadPanel .panelHeader{align-items:flex-start}.returnLoadPanel .panelHeader h3{margin:0}.returnLoadPanel .panelHeader small{display:block;margin-top:4px;color:#5b746f;font-size:10px}
+.returnLoadList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.returnLoadCard{display:grid;grid-template-columns:38px 1fr;gap:11px;padding:13px;border:1px solid #bde5dc;border-radius:13px;background:#fff}
+.returnLoadIcon{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:#dff7f1;color:#087963;font-size:19px;font-weight:900}.returnLoadCard strong{color:#174b42;font-size:11px}.returnLoadCard p{margin:5px 0;color:#3e625b;font-size:10px;line-height:1.5}.returnLoadCard small{display:block;color:#648078;font-size:9px;font-weight:700;line-height:1.4}
+.queueCard .queueTag{max-width:110px;text-align:center}
+
 @media(max-width:1100px){
   .queueFilters{grid-template-columns:1fr 1fr}.queueFilterActions{grid-column:1/-1}
   body.queueDisplayMode .morningBrief{grid-template-columns:1fr}
   body.queueDisplayMode #queueMetrics{grid-template-columns:repeat(4,minmax(120px,1fr))}
   .misImportGrid{grid-template-columns:1fr}
+  .returnLoadList{grid-template-columns:1fr}
 }
 @media(max-width:620px){
   .queueFilterActions{grid-template-columns:1fr 1fr}
@@ -891,4 +913,5 @@ body.queueDisplayMode .queueAction strong{font-size:14px}
   .queueDisplayActions{flex-direction:column}
   body.queueDisplayMode #queueMetrics{grid-template-columns:1fr 1fr}
   .capacitySettingsHead{flex-direction:column}.misFormActions{align-items:stretch;flex-direction:column}.misFormActions .primaryBtn{width:100%}
+  .staffTimeOverrideHead,.staffTimeControls{align-items:stretch;flex-direction:column}.staffTimeToggle{white-space:normal}.staffTimeControls .field{min-width:0}
 }

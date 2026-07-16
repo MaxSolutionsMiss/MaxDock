@@ -40,9 +40,9 @@
   }
   function isOperationalRole(roleCode=state.profile?.role_code){return OPERATIONAL_ROLES.has(roleCode)}
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db22";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db22";
-    return "index.html?v=46-db22";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db23";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db23";
+    return "index.html?v=46-db23";
   }
   function applyRoleNavigation(){
     const operational=isOperationalRole();
@@ -294,6 +294,7 @@
       date:start.date,
       start:start.time,
       end:end.time,
+      endDate:end.date,
       dock:dock?.name||"Unassigned",
       dockId:row.dock_id,
       direction:titleCase(row.direction||"Inbound"),
@@ -308,6 +309,9 @@
       carrier:row.carrier_name||"",
       job:row.external_reference||"",
       notes:row.notes||"",
+      requesterLocationId:row.requester_location_id||null,
+      requesterLocationName:requesterLocation?.name||"",
+      afterHours:Boolean(row.is_after_hours_override),
       status:titleCase(row.status),
       created:row.created_at,
       raw:row
@@ -495,11 +499,61 @@
       p_company_name:input.company||null,
       p_requester_location_id:requesterLocation?.id||null,
       p_carrier_name:input.carrier||null,
-      p_notes:input.notes||null
+      p_notes:input.notes||null,
+      p_after_hours_confirmed:Boolean(input.afterHoursConfirmed)
     });
     throwIf(result.error,"Unable to book the appointment");
     await fetchAppointments();
     return result.data;
+  }
+  async function previewStaffAppointmentTime(input){
+    const data=state.locationData;
+    const result=await client.rpc("preview_staff_appointment_time",{
+      p_location_id:state.currentLocation.id,
+      p_date:input.date,
+      p_start_time:input.start,
+      p_direction:normalize(input.direction),
+      p_appointment_type_code:codeFor(data.appointmentNameToCode,input.type,"Appointment type"),
+      p_truck_type_code:codeFor(data.truckNameToCode,input.truck,"Truck type"),
+      p_skid_count:Number(input.skids||0),
+      p_handling_type_code:codeFor(data.handlingNameToCode,input.handling,"Handling type"),
+      p_is_priority:Boolean(input.priority)
+    });
+    throwIf(result.error,"Unable to preview the staff appointment time");
+    const row=result.data||{};
+    const start=localDateTime(row.start_at,state.currentLocation.timezone);
+    const end=localDateTime(row.end_at,state.currentLocation.timezone);
+    return {
+      date:start.date,start:start.time,end:end.time,startAt:row.start_at,endAt:row.end_at,
+      duration:Number(row.duration_minutes||0),isAfterHours:Boolean(row.is_after_hours),
+      isOpenDay:Boolean(row.is_open_day),openTime:String(row.operating_open_time||"").slice(0,5),
+      closeTime:String(row.operating_close_time||"").slice(0,5),recommendedDockId:row.recommended_dock_id||null,
+      recommendedDockName:row.recommended_dock_name||null,capacityEnabled:Boolean(row.capacity_enabled),
+      projectedOccupied:Number(row.projected_occupied_skids||0),availableCapacity:Number(row.available_skid_capacity||0),
+      capacityMessage:row.capacity_message||""
+    };
+  }
+  async function findReturnLoadMatches(input){
+    const requesterLocation=state.locations.find(x=>normalize(x.name)===normalize(input.requesterType));
+    if(!requesterLocation||!input.startAt||!input.endAt)return [];
+    const result=await client.rpc("find_return_load_matches",{
+      p_location_id:state.currentLocation.id,
+      p_direction:normalize(input.direction),
+      p_requester_location_id:requesterLocation.id,
+      p_start_at:input.startAt,
+      p_end_at:input.endAt,
+      p_window_hours:18
+    });
+    throwIf(result.error,"Unable to check return-load opportunities");
+    return result.data||[];
+  }
+  async function listReturnLoadOpportunities(dateFrom,dateTo=dateFrom){
+    if(!state.currentLocation||state.profile?.role_code==="customer")return [];
+    const result=await client.rpc("list_return_load_opportunities",{
+      p_location_id:state.currentLocation.id,p_date_from:dateFrom,p_date_to:dateTo
+    });
+    throwIf(result.error,"Unable to load return-load opportunities");
+    return result.data||[];
   }
   async function blockDockTime(input){
     const byName=new Map((state.locationData?.dockRows||[]).map(d=>[normalize(d.name),d.id]));
@@ -610,7 +664,7 @@
     if(!actions||document.getElementById("maxdockAccount"))return;
     const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
     const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
-    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db22";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db23";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
     bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
     const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
     wrap.append(label,bell,button);actions.prepend(wrap);
@@ -639,7 +693,7 @@
 
   window.MaxDockDB={
     client,state,getSession,requireAuth,signIn,signOut,loadContext,selectLocation,loadLocation,
-    fetchAppointments,availableSlots,bookAppointment,blockDockTime,changeStatus,updateAppointment,saveLocationSettings,
+    fetchAppointments,availableSlots,bookAppointment,previewStaffAppointmentTime,findReturnLoadMatches,listReturnLoadOpportunities,blockDockTime,changeStatus,updateAppointment,saveLocationSettings,
     listBookingTemplates,saveBookingTemplate,deleteBookingTemplate,appointmentHistory,
     loadPreference,savePreference,queuePreferenceSave,recordUsage,startUsageTracking,startLiveRefresh,LIVE_REFRESH_MS,
     populateLocationSelect,addAccountControls,refreshNotificationBadge,hasPermission,isOperationalRole,getLandingPage,applyRoleNavigation,
