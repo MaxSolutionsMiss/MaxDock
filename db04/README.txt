@@ -1,4 +1,4 @@
-MaxDock v46-DB21 — Live Scheduling, Warehouse Capacity, and MIS Integration Build
+MaxDock v46-DB23 — Staff Scheduling and Return-Load Intelligence Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -20,6 +20,7 @@ Database prerequisites
 12. MaxDock_DB_v12_Customer_Access.sql
 13. MaxDock_DB_v13_User_Preferences_Usage.sql
 14. MaxDock_DB_v14_Live_Capacity_MIS.sql
+15. MaxDock_DB_v15_After_Hours_Return_Loads.sql
 
 Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
@@ -127,6 +128,13 @@ Integrated database operations
 - Enforced capacity removes over-capacity inbound slots and suggests the earliest workable operating date
 - System Admin MIS settings store non-secret connection metadata for a future server-side database bridge
 - Daily inventory CSV imports update location occupancy baselines and preserve an auditable import history
+- Authorized staff can review and intentionally confirm a custom appointment time outside operating hours
+- Customer accounts remain restricted to ordinary available times inside operating hours
+- After-hours confirmations record the confirming staff user and timestamp for auditability
+- Dashboard timelines expand to show early, late, and cross-midnight after-hours appointments
+- Internal MaxDock-to-MaxDock routes are checked for reverse movements within an 18-hour consolidation window
+- Booking, Dashboard, and Operations Queue show potential return-load recommendations to staff
+- Return-load recommendations never merge appointments automatically and require confirmation with both sites and the carrier
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.
@@ -142,3 +150,4 @@ Notes
 - Aggregate usage tracking begins after DB20 is deployed; earlier activity is not reconstructed.
 - The DB21 live MIS bridge is configuration-ready but remains inactive until the MIS database type, network route, credentials secret, and source-table mapping are approved.
 - MIS database passwords must be stored as protected server-side secrets and must never be entered in MaxDock browser fields.
+- DB23 route matching relies on the structured requester location selected for internal MaxDock transfers; free-text vendor and customer names are not treated as internal routes.
