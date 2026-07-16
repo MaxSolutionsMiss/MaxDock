@@ -12,6 +12,7 @@
   const originalRenderDashboard=renderDashboard;
   let dashboardPreferenceReady=false;
   let lastDashboardPreferenceSignature="";
+  let liveAppointmentStop=null;
 
   function dashboardPreferenceStatus(message,status){
     const element=$("dashboardPreferenceStatus");
@@ -257,6 +258,7 @@
       const windowPreference=preferredWindow();
       const slots=await db.availableSlots({
         date,
+        direction:$("reqDirection").value,
         type:$("reqType").value,
         truck:$("reqTruck").value,
         skids:Number($("reqSkids").value||0),
@@ -270,16 +272,24 @@
         selectedSlot=null;
         $("selectedTimeDisplay").value="";
       }
-      const recommended=slots.filter(slot=>slot.rank<=3).sort((a,b)=>a.rank-b.rank);
-      const remaining=slots.filter(slot=>slot.rank>3).sort((a,b)=>a.start.localeCompare(b.start));
+      const suggestedDate=slots[0]?.date||date;
+      if(suggestedDate!==date){
+        const suggestion=new Date(`${suggestedDate}T12:00:00`).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"});
+        $("slotDateLabel").textContent=`No capacity-ready time on the requested date · next available ${suggestion}`;
+      }
+      const recommended=slots.filter(slot=>slot.rank<=3&&!slot.capacityWarning).sort((a,b)=>a.rank-b.rank);
+      const remaining=slots.filter(slot=>!recommended.includes(slot)).sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
       $("slotList").innerHTML=[...recommended,...remaining].slice(0,40).map(slot=>{
         const selected=selectedSlot&&selectedSlot.date===slot.date&&selectedSlot.start===slot.start;
-        const recommendedSlot=slot.rank<=3;
+        const recommendedSlot=slot.rank<=3&&!slot.capacityWarning;
         const dockDetail=slot.recommendedDockName?`<span>Suggested dock · ${esc(slot.recommendedDockName)}</span>`:`<span>Dock assigned privately by the site</span>`;
-        return `<button type="button" class="slot smartSlot ${recommendedSlot?"recommendedSlot":""} ${selected?"selected":""}" data-start="${esc(slot.start)}" data-end="${esc(slot.end)}" data-date="${esc(slot.date)}" data-open="${Number(slot.open)}" data-dock-id="${esc(slot.recommendedDockId||"")}" data-dock-name="${esc(slot.recommendedDockName||"")}" data-rank="${Number(slot.rank)}">
+        const dateDetail=slot.alternativeDate?`<span class="slotAlternativeDate">${new Date(`${slot.date}T12:00:00`).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span>`:"";
+        const capacityDetail=slot.capacityEnabled?`<span class="slotCapacityDetail">Projected occupancy · ${Number(slot.projectedOccupied)} skids · ${Number(slot.availableCapacity)} spaces remaining</span>`:"";
+        return `<button type="button" class="slot smartSlot ${recommendedSlot?"recommendedSlot":""} ${slot.capacityWarning?"capacityWarning":""} ${slot.alternativeDate?"alternativeDateSlot":""} ${selected?"selected":""}" data-start="${esc(slot.start)}" data-end="${esc(slot.end)}" data-date="${esc(slot.date)}" data-open="${Number(slot.open)}" data-dock-id="${esc(slot.recommendedDockId||"")}" data-dock-name="${esc(slot.recommendedDockName||"")}" data-rank="${Number(slot.rank)}" data-capacity-warning="${slot.capacityWarning?"1":"0"}">
           ${recommendedSlot?`<em class="slotRecommendation">Recommended ${slot.rank}</em>`:""}
+          ${slot.capacityWarning?`<em class="slotCapacityWarning">Capacity warning</em>`:""}${dateDetail}
           <strong>${displayTime(slot.start)} – ${displayTime(slot.end)}</strong>
-          <small>${esc(slot.reason)}${dockDetail}</small>
+          <small>${esc(slot.reason)}${capacityDetail}${dockDetail}</small>
         </button>`;
       }).join("")||`<div class="notice">No available time on this date. Try another day.</div>`;
       document.querySelectorAll(".slot[data-start]").forEach(element=>element.addEventListener("click",()=>{
@@ -287,7 +297,8 @@
           date:element.dataset.date,start:element.dataset.start,end:element.dataset.end,open:Number(element.dataset.open),
           recommendedDockId:element.dataset.dockId||null,recommendedDockName:element.dataset.dockName||null,rank:Number(element.dataset.rank||0)
         };
-        $("selectedTimeDisplay").value=`${displayTime(selectedSlot.start)} – ${displayTime(selectedSlot.end)}`;
+        if($("reqDate").value!==selectedSlot.date)$("reqDate").value=selectedSlot.date;
+        $("selectedTimeDisplay").value=`${new Date(`${selectedSlot.date}T12:00:00`).toLocaleDateString(undefined,{month:"short",day:"numeric"})} · ${displayTime(selectedSlot.start)} – ${displayTime(selectedSlot.end)}`;
         document.querySelectorAll(".slot[data-start]").forEach(slot=>slot.classList.toggle("selected",slot===element));
       }));
     }catch(err){
@@ -534,6 +545,13 @@
     $("setOpen").value=settings.open;$("setClose").value=settings.close;$("setInterval").value=String(settings.interval);
     $("setBuffer").value=settings.buffer;$("setBase").value=settings.base;$("setPerSkid").value=settings.perSkid;
     $("setFullTruck").value=settings.fullTruck;$("setPriorityMin").value=settings.priorityMin;
+    $("setCapacityEnabled").checked=Boolean(settings.capacityEnabled);
+    $("setCapacityTotal").value=settings.capacityTotal||"";
+    $("setCapacityOccupied").value=Number(settings.capacityOccupied||0);
+    $("setCapacityReserve").value=Number(settings.capacityReserve||0);
+    $("setCapacityMode").value=settings.capacityMode==="enforce"?"enforce":"warn";
+    $("setCapacityAsOf").value=capacityDateTimeValue(settings.capacityAsOf);
+    updateCapacityControls();
     const truckTypes=db.getLocationData()?.truckTypes||[];
     $("docksList").innerHTML=`<div class="dockMatrixScroll"><table class="dockCompatibilityMatrix">
       <thead><tr><th>Dock Door</th>${truckTypes.map(truck=>`<th title="${esc(truck.name)}">${esc(truck.name)}</th>`).join("")}<th class="dockMatrixActionCell">Action</th></tr></thead>
@@ -544,6 +562,29 @@
       </tr>`).join("")}</tbody>
     </table></div>`;
   };
+
+  function capacityDateTimeValue(value){
+    if(!value)return "";
+    const date=new Date(value);if(Number.isNaN(date.getTime()))return "";
+    const parts=new Intl.DateTimeFormat("en-CA",{
+      timeZone:db.getCurrentLocation()?.timezone||"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit",
+      hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+    }).formatToParts(date);
+    const part=type=>parts.find(item=>item.type===type)?.value||"";
+    return `${part("year")}-${part("month")}-${part("day")}T${part("hour")}:${part("minute")}`;
+  }
+
+  function updateCapacityControls(){
+    const enabled=Boolean($("setCapacityEnabled")?.checked);
+    ["setCapacityTotal","setCapacityOccupied","setCapacityReserve","setCapacityMode","setCapacityAsOf"].forEach(id=>{if($(id))$(id).disabled=!enabled});
+    const total=Number($("setCapacityTotal")?.value||0),occupied=Number($("setCapacityOccupied")?.value||0),reserve=Number($("setCapacityReserve")?.value||0);
+    const available=Math.max(total-reserve-occupied,0),summary=$("capacitySettingsSummary");
+    if(!summary)return;
+    summary.textContent=enabled
+      ?`${available.toLocaleString()} working skid spaces available now · ${$("setCapacityMode").value==="enforce"?"over-capacity inbound times will be blocked":"over-capacity inbound times will show a warning"}.`
+      :"Capacity planning is off for this location. Appointment booking continues to use dock and operating-hour availability only.";
+    summary.dataset.state=enabled?(occupied>Math.max(total-reserve,0)?"over":"active"):"off";
+  }
 
   function captureDockDraft(){
     const inputs=[...document.querySelectorAll(".dockNameInput")];
@@ -578,9 +619,22 @@
       settings.interval=Number($("setInterval").value||15);settings.buffer=Number($("setBuffer").value||10);
       settings.base=Number($("setBase").value||10);settings.perSkid=Number($("setPerSkid").value||2);
       settings.fullTruck=Number($("setFullTruck").value||75);settings.priorityMin=Number($("setPriorityMin").value||75);
+      settings.capacityEnabled=Boolean($("setCapacityEnabled")?.checked);
+      settings.capacityTotal=Number($("setCapacityTotal")?.value||0);
+      settings.capacityOccupied=Number($("setCapacityOccupied")?.value||0);
+      settings.capacityReserve=Number($("setCapacityReserve")?.value||0);
+      settings.capacityMode=$("setCapacityMode")?.value==="enforce"?"enforce":"warn";
+      const capacityAsOf=$("setCapacityAsOf")?.value;
+      settings.capacityAsOf=capacityAsOf?new Date(capacityAsOf).toISOString():new Date().toISOString();
       if(minutes(settings.open)>=minutes(settings.close))throw new Error("Close time must be later than open time.");
       for(const [label,value] of [["Buffer",settings.buffer],["Base minutes",settings.base],["Minutes per skid",settings.perSkid],["Full truck minimum",settings.fullTruck],["Priority minimum",settings.priorityMin]]){
         if(!Number.isFinite(value)||value<0)throw new Error(`${label} must be zero or greater.`);
+      }
+      if(settings.capacityEnabled){
+        if(!Number.isInteger(settings.capacityTotal)||settings.capacityTotal<1)throw new Error("Total skid capacity must be a whole number greater than zero.");
+        if(!Number.isInteger(settings.capacityOccupied)||settings.capacityOccupied<0)throw new Error("Currently occupied skids must be a whole number of zero or greater.");
+        if(!Number.isInteger(settings.capacityReserve)||settings.capacityReserve<0)throw new Error("Reserved safety space must be a whole number of zero or greater.");
+        if(settings.capacityReserve>=settings.capacityTotal)throw new Error("Reserved safety space must be lower than total skid capacity.");
       }
       if(button){button.disabled=true;button.textContent="Saving…";}
       await db.saveLocationSettings(settings,docks);
@@ -623,7 +677,7 @@
     const canManageSettings=db.hasPermission("settings.manage")&&db.hasPermission("dock.manage");
     if(!canManageSettings){
       document.querySelectorAll('[onclick="saveSettings()"],[onclick="resetSettings()"],[onclick="addDock()"],.dockMatrixRemove').forEach(element=>element.hidden=true);
-      document.querySelectorAll('#setOpen,#setClose,#setInterval,#setBuffer,#setBase,#setPerSkid,#setFullTruck,#setPriorityMin,.dockNameInput,.dockTruckCheck').forEach(element=>element.disabled=true);
+      document.querySelectorAll('#setOpen,#setClose,#setInterval,#setBuffer,#setBase,#setPerSkid,#setFullTruck,#setPriorityMin,#setCapacityEnabled,#setCapacityTotal,#setCapacityOccupied,#setCapacityReserve,#setCapacityMode,#setCapacityAsOf,.dockNameInput,.dockTruckCheck').forEach(element=>element.disabled=true);
     }
   }
 
@@ -662,7 +716,7 @@
       syncDatabaseState();
       updateScheduleDisplayScale();
       renderDashboard();
-      updateTvStatus(`Live schedule · updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"})} · refreshes every 3 seconds`);
+      updateTvStatus(`Live schedule · updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"})} · refreshes every 5 seconds`);
     }catch(error){
       updateTvStatus(`Live refresh paused · ${error.message||"connection unavailable"}`);
     }finally{
@@ -680,7 +734,7 @@
     const date=$("adminDate")?.value||todayISO();
     const locationName=db.getCurrentLocation()?.name||currentLocation;
     const url=new URL("./dashboard.html",location.href);
-    url.searchParams.set("v","46-db20");
+    url.searchParams.set("v","46-db21");
     url.searchParams.set("display","1");
     url.searchParams.set("date",date);
     url.searchParams.set("location",locationName);
@@ -705,7 +759,7 @@
     if(requestNative&&panel.requestFullscreen&&!document.fullscreenElement)panel.requestFullscreen().catch(()=>{});
     stopTvRefresh();
     refreshTvSchedule();
-    tvRefreshTimer=window.setInterval(refreshTvSchedule,3000);
+    tvRefreshTimer=window.setInterval(refreshTvSchedule,db.LIVE_REFRESH_MS);
   };
 
   window.enterScheduleFullscreen=function(){
@@ -749,7 +803,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=46-db20");
+      location.replace("./index.html?v=46-db21");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
@@ -797,7 +851,11 @@
       $("reqDate").value=$("adminDate")?.value||todayISO();toggleCompany();renderSlots();
       if(new URLSearchParams(location.search).get("open")==="request")setTimeout(openRequest,0);
     }
-    if(PAGE==="settings")renderSettings();
+    if(PAGE==="settings"){
+      renderSettings();
+      $("setCapacityEnabled")?.addEventListener("change",updateCapacityControls);
+      ["setCapacityTotal","setCapacityOccupied","setCapacityReserve","setCapacityMode"].forEach(id=>$(id)?.addEventListener("input",updateCapacityControls));
+    }
     applyPermissions();
     if(scheduleDisplayMode){
       document.body.classList.add("scheduleDisplayWindow");
@@ -814,6 +872,19 @@
       else if($("appointmentHistoryModal")?.classList.contains("show"))window.closeAppointmentHistory();
       else if($("editAppointmentModal")?.classList.contains("show"))window.closeAppointmentEditor();
     });
+    if(!scheduleDisplayMode){
+      liveAppointmentStop=db.startLiveRefresh(async()=>{
+        if(document.body.classList.contains("tvScheduleMode"))return;
+        if(PAGE==="dashboard"){
+          await db.fetchAppointments();syncDatabaseState();renderDashboard();
+          const status=$("dashboardLiveStatus");
+          if(status)status.innerHTML=`<span class="liveDot"></span>Live appointments · updated ${new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"})}`;
+        }
+        if($("requestModal")?.classList.contains("show")&&$("step3")?.classList.contains("active"))await renderSlots();
+      },{onError:error=>{
+        const status=$("dashboardLiveStatus");if(status)status.textContent=`Live refresh paused · ${error.message||"connection unavailable"}`;
+      }});
+    }
     setAppLoading(false);
   }
 

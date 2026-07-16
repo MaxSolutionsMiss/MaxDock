@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=46-db20">
-<link rel="stylesheet" href="./maxdock-db04.css?v=46-db20">
+<link rel="stylesheet" href="./maxdock.css?v=46-db21">
+<link rel="stylesheet" href="./maxdock-db04.css?v=46-db21">
 <title>MaxDock – Settings</title>
 </head>
 <body data-page="settings">
@@ -29,16 +29,16 @@
           <option>Bristol</option><option>Owen Sound</option><option>Concord</option><option>Markham</option>
         </select>
       </div>
-      <a class="ghostBtn" href="./index.html?v=46-db20">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=46-db21">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=46-db20">My Appointments</a>
-          <a href="./queue.html?v=46-db20">Operations Queue</a>
-          <a href="./reports.html?v=46-db20">Reports</a>
-          <a href="./dashboard.html?v=46-db20">Dashboard</a>
-          <a href="./settings.html?v=46-db20" aria-current="page">Settings</a>
-          <a href="./admin.html?v=46-db20">Admin</a>
+          <a href="./my-appointments.html?v=46-db21">My Appointments</a>
+          <a href="./queue.html?v=46-db21">Operations Queue</a>
+          <a href="./reports.html?v=46-db21">Reports</a>
+          <a href="./dashboard.html?v=46-db21">Dashboard</a>
+          <a href="./settings.html?v=46-db21" aria-current="page">Settings</a>
+          <a href="./admin.html?v=46-db21">Admin</a>
         </nav>
       </details>
     </div>
@@ -46,7 +46,7 @@
 </header>
 <main class="screen pageWrap">
   <div class="pageHead">
-    <div><h2>Settings</h2><p>Manage dock names, accepted vehicle types, operating hours, and appointment timing.</p></div>
+    <div><h2>Settings</h2><p>Manage operating hours, dock compatibility, appointment timing, and optional warehouse skid capacity.</p></div>
     <div class="toolbar"><button class="greenBtn" onclick="saveSettings()">Save Settings</button><button class="secondaryBtn" onclick="resetSettings()">Reset Defaults</button></div>
   </div>
   <div class="settingsGrid">
@@ -65,6 +65,20 @@
       <div class="docksList" id="docksList"></div>
       <button class="secondaryBtn" style="margin-top:10px" onclick="addDock()">Add Dock</button>
     </section>
+    <section class="settingsGroup capacitySettings">
+      <div class="capacitySettingsHead">
+        <div><h3>Warehouse Skid Capacity</h3><p class="stepIntro">Optional. Use current inventory plus scheduled inbound and outbound skids to protect available storage space.</p></div>
+        <label class="adminToggle capacityToggle"><input id="setCapacityEnabled" type="checkbox"><span>Enable for this location</span></label>
+      </div>
+      <div class="formGrid">
+        <div class="field"><label for="setCapacityTotal">Total skid capacity</label><input id="setCapacityTotal" type="number" min="1" step="1" placeholder="2000"></div>
+        <div class="field"><label for="setCapacityOccupied">Currently occupied skids</label><input id="setCapacityOccupied" type="number" min="0" step="1" placeholder="1600"></div>
+        <div class="field"><label for="setCapacityReserve">Reserved safety space</label><input id="setCapacityReserve" type="number" min="0" step="1" value="0"><small>Skid spaces kept unavailable for operational flexibility.</small></div>
+        <div class="field"><label for="setCapacityMode">Booking behaviour</label><select id="setCapacityMode"><option value="warn">Warn but allow booking</option><option value="enforce">Block and suggest next date</option></select></div>
+        <div class="field full"><label for="setCapacityAsOf">Inventory count as of</label><input id="setCapacityAsOf" type="datetime-local"><small>Update this after a physical count or daily MIS import.</small></div>
+      </div>
+      <div class="capacitySummary" id="capacitySettingsSummary" role="status"></div>
+    </section>
     <section class="settingsGroup timingSettings">
       <h3>Timing Rules</h3>
       <div class="formGrid">
@@ -76,9 +90,9 @@
     </section>
   </div>
 </main>
-<script src="./supabase-2.110.3.js?v=46-db20"></script>
-<script src="./maxdock-config.js?v=46-db20"></script>
-<script src="./maxdock-db.js?v=46-db20"></script>
-<script src="./maxdock.js?v=46-db20"></script>
-<script src="./maxdock-integration.js?v=46-db20"></script>
+<script src="./supabase-2.110.3.js?v=46-db21"></script>
+<script src="./maxdock-config.js?v=46-db21"></script>
+<script src="./maxdock-db.js?v=46-db21"></script>
+<script src="./maxdock.js?v=46-db21"></script>
+<script src="./maxdock-integration.js?v=46-db21"></script>
 </body></html>

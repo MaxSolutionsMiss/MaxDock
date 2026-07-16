@@ -34,9 +34,12 @@
     try{
       await db.fetchAppointments();
       render();
-      updateQueueDisplayStatus(`${displayDate($("queueDate").value)} · ${db.getCurrentLocation()?.name||"MaxDock"} · updated ${new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"})} · refreshes every 3 seconds`);
+      const updated=new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"});
+      updateQueueDisplayStatus(`${displayDate($("queueDate").value)} · ${db.getCurrentLocation()?.name||"MaxDock"} · updated ${updated} · refreshes every 5 seconds`);
+      if($("queueLiveStatus"))$("queueLiveStatus").innerHTML=`<span class="liveDot"></span>Live appointments · updated ${updated}`;
     }catch(error){
       updateQueueDisplayStatus(`Live refresh paused · ${error.message||"connection unavailable"}`);
+      if($("queueLiveStatus"))$("queueLiveStatus").textContent=`Live refresh paused · ${error.message||"connection unavailable"}`;
     }finally{queueDisplayBusy=false}
   }
   function activateQueueDisplay(requestNative=false){
@@ -46,14 +49,14 @@
     updateQueueDisplayStatus("Live queue · connecting…");
     stopQueueDisplayRefresh();
     refreshQueueDisplay();
-    queueDisplayTimer=window.setInterval(refreshQueueDisplay,3000);
+    queueDisplayTimer=window.setInterval(refreshQueueDisplay,db.LIVE_REFRESH_MS);
     if(requestNative&&document.documentElement.requestFullscreen&&!document.fullscreenElement){
       document.documentElement.requestFullscreen().catch(()=>{});
     }
   }
   window.openQueueDisplay=function(){
     const url=new URL("./queue.html",location.href);
-    url.searchParams.set("v","46-db20");
+    url.searchParams.set("v","46-db21");
     url.searchParams.set("display","1");
     url.searchParams.set("date",$("queueDate").value||today());
     url.searchParams.set("status",$("queueStatus").value||"pending");
@@ -82,6 +85,8 @@
     if($("queueDisplayBar"))$("queueDisplayBar").hidden=true;
     if($("openQueueDisplay"))$("openQueueDisplay").hidden=false;
     if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+    refreshQueueDisplay();
+    queueDisplayTimer=window.setInterval(refreshQueueDisplay,db.LIVE_REFRESH_MS);
   };
 
   function preferenceStorageKey(){return `maxdock_queue_view_${db.getProfile()?.id||"user"}`}
@@ -173,7 +178,7 @@
     const completed=item.status==="Completed";
     const tag=completed?"Completed":level==="overdue"?"Time passed":level==="soon"?"Due within 60 min":item.priority?"Priority":"Planned";
     const canChange=completed?db.hasPermission("appointment.update"):db.hasPermission("appointment.complete");
-    const historyLink=db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=46-db20&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
+    const historyLink=db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=46-db21&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
     return `<article class="queueCard ${level}">
       <div class="queueCardTime"><strong>${esc(displayTime(item.start))}</strong><small>${esc(displayTime(item.end))}</small></div>
       <div class="queueCardBody">
@@ -241,7 +246,7 @@
   function renderFocus(rows){
     const next=rows.find(item=>$("queueDate").value!==today()||minuteValue(item.end)>=currentMinutes())||rows[0];
     if(!next){$("queueFocus").innerHTML=`<div><small>${esc(displayDate($("queueDate").value))}</small><h3>No active appointments scheduled</h3><p>The location has no inbound or outbound work in the execution queue for this date.</p></div>`;return}
-    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=46-db20&date=${esc($("queueDate").value)}">Open schedule</a>`;
+    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=46-db21&date=${esc($("queueDate").value)}">Open schedule</a>`;
   }
 
   function renderLane(direction,elementId,summaryId){
@@ -347,7 +352,7 @@
       if(queueDisplayMode){
         document.title=`MaxDock Operations Queue — ${db.getCurrentLocation()?.name||"Display"}`;
         activateQueueDisplay(false);
-      }
+      }else queueDisplayTimer=window.setInterval(refreshQueueDisplay,db.LIVE_REFRESH_MS);
     }catch(error){showError(error)}
   }
   document.addEventListener("DOMContentLoaded",init);

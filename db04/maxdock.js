@@ -21,6 +21,7 @@ const locationThemes={
 
 const defaultSettings={
   open:"07:00",close:"16:30",interval:15,buffer:10,base:10,perSkid:2,fullTruck:75,priorityMin:75,
+  capacityEnabled:false,capacityTotal:0,capacityReserve:0,capacityMode:"warn",capacityOccupied:0,capacityAsOf:null,
   docks:["Dock 1","Dock 2"],
   truckSetup:{"53 ft Trailer":20,"48 ft Trailer":18,"26 ft Straight Truck":12,"Cube Van":8,"Courier Van":5},
   typeAdj:{"Raw Material":15,"Finished Goods":0,"Sister Plant Transfer":0,"Vendor Delivery":5,"Customer Pickup":5,"Return / Rework":15,"Other":0},
