@@ -4,6 +4,8 @@
   const $=id=>document.getElementById(id);
   let reportRows=[];
   let chartRows=[];
+  let preferenceReady=false;
+  let lastPreferenceSignature="";
 
   const REPORT_VIEWS={
     overview:{
@@ -41,6 +43,25 @@
   function group(items,key){const counts=new Map();items.forEach(item=>counts.set(item[key]||"Unspecified",(counts.get(item[key]||"Unspecified")||0)+1));return [...counts].sort((a,b)=>b[1]-a[1])}
   function bars(items){const max=Math.max(1,...items.map(([,count])=>count));return items.length?items.map(([label,count])=>`<div class="reportBar"><div class="reportBarLabel"><span>${esc(label)}</span><b>${count}</b></div><div class="reportBarTrack"><i style="width:${Math.round(count/max*100)}%"></i></div></div>`).join(""):`<div class="emptyState">No data in this range.</div>`}
   function selectedView(){return REPORT_VIEWS[$("reportView")?.value]||REPORT_VIEWS.overview}
+  function preferenceStatus(message,status){
+    const element=$("reportPreferenceStatus");
+    if(!element)return;
+    element.textContent=message;element.dataset.status=status||"";
+  }
+  function saveReportPreference(){
+    if(!preferenceReady)return;
+    const value={
+      locationName:db.getCurrentLocation()?.name||$("reportLocation").value||"",
+      view:$("reportView").value,
+      preset:$("reportPreset").value,
+      customStart:$("reportStart").value,
+      customEnd:$("reportEnd").value
+    };
+    const signature=JSON.stringify(value);
+    if(signature===lastPreferenceSignature)return;
+    lastPreferenceSignature=signature;
+    db.queuePreferenceSave("reports",value,preferenceStatus);
+  }
 
   function setDatePreset(value){
     const custom=value==="custom";
@@ -260,24 +281,31 @@
     }catch(error){showError(error)}
   }
 
-  async function changeLocation(){await db.loadLocation($("reportLocation").value);resetBrief();render()}
-  function updateSelection(){try{resetBrief();render()}catch(error){showError(error)}}
+  async function changeLocation(){await db.loadLocation($("reportLocation").value);resetBrief();render();saveReportPreference()}
+  function updateSelection(){try{resetBrief();render();saveReportPreference()}catch(error){showError(error)}}
 
   async function init(){
     try{
       if(!await db.requireAuth())return;await db.loadContext();
       if(!db.hasPermission("reports.view"))throw new Error("This account cannot view operational reports.");
-      db.selectLocation();db.populateLocationSelect($("reportLocation"));db.addAccountControls();
+      const saved=await db.loadPreference("reports",{locationName:"",view:"overview",preset:"30",customStart:"",customEnd:""});
+      db.selectLocation(saved.locationName);db.populateLocationSelect($("reportLocation"));db.addAccountControls();
       $("reportLocation").parentElement.hidden=!["system_admin","site_admin"].includes(db.getProfile()?.role_code);
       if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("ai.insights"))$("generateAiBrief").hidden=true;
-      setDatePreset($("reportPreset").value);
+      $("reportView").value=Object.prototype.hasOwnProperty.call(REPORT_VIEWS,saved.view)?saved.view:"overview";
+      $("reportPreset").value=["7","30","month","custom"].includes(saved.preset)?saved.preset:"30";
+      if($("reportPreset").value==="custom"&&/^\d{4}-\d{2}-\d{2}$/.test(saved.customStart||"")&&/^\d{4}-\d{2}-\d{2}$/.test(saved.customEnd||"")){
+        $("reportCustomDates").hidden=false;$("reportStart").value=saved.customStart;$("reportEnd").value=saved.customEnd;
+      }else setDatePreset($("reportPreset").value);
+      preferenceReady=true;preferenceStatus("This report view is saved to your login.","saved");
       $("reportLocation").addEventListener("change",()=>changeLocation().catch(showError));
       $("reportView").addEventListener("change",updateSelection);
-      $("reportPreset").addEventListener("change",event=>{setDatePreset(event.target.value);if(event.target.value!=="custom")updateSelection()});
+      $("reportPreset").addEventListener("change",event=>{setDatePreset(event.target.value);if(event.target.value!=="custom")updateSelection();else saveReportPreference()});
+      $("reportStart").addEventListener("change",saveReportPreference);$("reportEnd").addEventListener("change",saveReportPreference);
       $("runReport").addEventListener("click",updateSelection);$("exportReport").addEventListener("click",exportCsv);$("generateAiBrief").addEventListener("click",generateAiBrief);
-      await db.loadLocation($("reportLocation").value);render();
+      await db.loadLocation($("reportLocation").value);render();saveReportPreference();
     }catch(error){showError(error)}
   }
   document.addEventListener("DOMContentLoaded",init);

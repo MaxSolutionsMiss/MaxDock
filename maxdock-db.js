@@ -25,6 +25,10 @@
     appointments:[]
   };
   const OPERATIONAL_ROLES=new Set(["system_admin","site_admin","shipping_manager","coordinator"]);
+  const preferenceSaveTimers=new Map();
+  let usageTimer=null;
+  let usageStarted=false;
+  let usageLastSampleAt=0;
 
   function message(error,fallback){
     return error?.message||fallback||"An unexpected MaxDock database error occurred.";
@@ -35,9 +39,9 @@
   }
   function isOperationalRole(roleCode=state.profile?.role_code){return OPERATIONAL_ROLES.has(roleCode)}
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db19";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db19";
-    return "index.html?v=46-db19";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db20";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db20";
+    return "index.html?v=46-db20";
   }
   function applyRoleNavigation(){
     const operational=isOperationalRole();
@@ -68,6 +72,85 @@
   }
   function throwIf(error,context){if(error)throw new Error(`${context}: ${message(error)}`)}
 
+  function preferenceStorageKey(key){
+    return `maxdock_preference_${state.session?.user?.id||"user"}_${key}`;
+  }
+  function readLocalPreference(key){
+    try{
+      const value=JSON.parse(localStorage.getItem(preferenceStorageKey(key))||"{}");
+      return value&&typeof value==="object"&&!Array.isArray(value)?value:{};
+    }catch{return {}}
+  }
+  async function loadPreference(key,defaults={}){
+    const local=readLocalPreference(key);
+    const fallback={...defaults,...local};
+    try{
+      const result=await client.rpc("get_user_preference",{p_preference_key:key});
+      if(result.error)throw result.error;
+      const remote=result.data&&typeof result.data==="object"&&!Array.isArray(result.data)?result.data:{};
+      const value={...defaults,...remote};
+      localStorage.setItem(preferenceStorageKey(key),JSON.stringify(value));
+      return value;
+    }catch{return fallback}
+  }
+  async function savePreference(key,preferences){
+    const value=preferences&&typeof preferences==="object"&&!Array.isArray(preferences)?preferences:{};
+    try{localStorage.setItem(preferenceStorageKey(key),JSON.stringify(value))}catch(_ignored){}
+    const result=await client.rpc("save_user_preference",{p_preference_key:key,p_preferences:value});
+    throwIf(result.error,"Unable to save your MaxDock view");
+    return result.data||value;
+  }
+  function queuePreferenceSave(key,preferences,onStatus){
+    if(preferenceSaveTimers.has(key))window.clearTimeout(preferenceSaveTimers.get(key));
+    if(typeof onStatus==="function")onStatus("Saving view…","saving");
+    preferenceSaveTimers.set(key,window.setTimeout(async()=>{
+      preferenceSaveTimers.delete(key);
+      try{
+        await savePreference(key,preferences);
+        if(typeof onStatus==="function")onStatus("Saved to your login","saved");
+      }catch(error){
+        if(typeof onStatus==="function")onStatus("Saved on this device","local");
+        console.warn(error);
+      }
+    },650));
+  }
+  async function recordUsage(eventType,pageCode,activeSeconds=0){
+    if(!state.session?.user)return;
+    const result=await client.rpc("record_user_usage",{
+      p_event_type:eventType,
+      p_page_code:String(pageCode||"app").toLowerCase().replace(/[^a-z0-9_-]/g,"-").slice(0,40),
+      p_active_seconds:Number(activeSeconds||0)
+    });
+    if(result.error)throw result.error;
+  }
+  function startUsageTracking(){
+    if(usageStarted||!state.session?.user)return;
+    usageStarted=true;
+    usageLastSampleAt=Date.now();
+    const page=String(document.body?.dataset?.page||location.pathname.split("/").pop()?.replace(/\.html$/i,"")||"app")
+      .toLowerCase().replace(/[^a-z0-9_-]/g,"-").slice(0,40);
+    recordUsage("page_view",page,0).catch(()=>{});
+    const heartbeat=(includeHiddenInterval=false)=>{
+      const now=Date.now();
+      const activeSeconds=Math.min(120,Math.max(0,Math.floor((now-usageLastSampleAt)/1000)));
+      usageLastSampleAt=now;
+      if((document.hidden&&!includeHiddenInterval)||!state.session?.user||activeSeconds<1)return;
+      const key=`maxdock_usage_heartbeat_${state.session.user.id}`;
+      try{
+        const previous=Number(localStorage.getItem(key)||0);
+        if(now-previous<45000)return;
+        localStorage.setItem(key,String(now));
+      }catch(_ignored){}
+      recordUsage("heartbeat",page,activeSeconds).catch(()=>{});
+    };
+    usageTimer=window.setInterval(heartbeat,60000);
+    window.setTimeout(heartbeat,5000);
+    document.addEventListener("visibilitychange",()=>{
+      if(document.hidden)heartbeat(true);
+      else usageLastSampleAt=Date.now();
+    });
+  }
+
   async function getSession(){
     const {data,error}=await client.auth.getSession();
     throwIf(error,"Unable to read the login session");
@@ -90,6 +173,7 @@
       const {data,error}=await client.auth.signInWithPassword({email:login,password});
       throwIf(error,"Sign-in failed");
       state.session=data.session;
+      await recordUsage("login","login",0).catch(()=>{});
       return data;
     }
 
@@ -115,9 +199,12 @@
     });
     throwIf(sessionResult.error,"Sign-in failed");
     state.session=sessionResult.data.session;
+    await recordUsage("login","login",0).catch(()=>{});
     return sessionResult.data;
   }
   async function signOut(){
+    if(usageTimer)window.clearInterval(usageTimer);
+    usageTimer=null;usageStarted=false;usageLastSampleAt=0;
     await client.auth.signOut();
     state.session=null;state.profile=null;state.permissions.clear();state.locations=[];
     location.replace("./login.html");
@@ -148,6 +235,7 @@
     state.permissions=new Set((permissionResult.data||[]).map(x=>x.permission_code));
     state.locations=locationResult.data||[];
     if(!state.locations.length)throw new Error("This user has no permitted MaxDock locations.");
+    startUsageTracking();
     return state;
   }
 
@@ -480,7 +568,7 @@
     if(!actions||document.getElementById("maxdockAccount"))return;
     const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
     const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
-    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db19";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db20";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
     bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
     const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
     wrap.append(label,bell,button);actions.prepend(wrap);
@@ -511,6 +599,7 @@
     client,state,getSession,requireAuth,signIn,signOut,loadContext,selectLocation,loadLocation,
     fetchAppointments,availableSlots,bookAppointment,blockDockTime,changeStatus,updateAppointment,saveLocationSettings,
     listBookingTemplates,saveBookingTemplate,deleteBookingTemplate,appointmentHistory,
+    loadPreference,savePreference,queuePreferenceSave,recordUsage,startUsageTracking,
     populateLocationSelect,addAccountControls,refreshNotificationBadge,hasPermission,isOperationalRole,getLandingPage,applyRoleNavigation,
     getProfile:()=>state.profile,getLocations:()=>state.locations,getCurrentLocation:()=>state.currentLocation,
     getSettings:()=>state.locationData?.legacySettings||null,getAppointments:()=>state.appointments,

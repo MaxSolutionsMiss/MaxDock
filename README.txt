@@ -1,4 +1,4 @@
-MaxDock v46-DB19 — Readable Displays and Customer Access Build
+MaxDock v46-DB20 — Account Recovery, Saved Views, and Adoption Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -18,6 +18,7 @@ Database prerequisites
 10. MaxDock_DB_v10_Operations_Intelligence.sql
 11. MaxDock_DB_v11_Smart_Operations.sql
 12. MaxDock_DB_v12_Customer_Access.sql
+13. MaxDock_DB_v13_User_Preferences_Usage.sql
 
 Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
@@ -112,6 +113,14 @@ Integrated database operations
 - MaxDock password forms and temporary-password creation use Supabase's supported 6-character minimum
 - Operations Queue provides a separate live full-screen window while the original Queue remains available on the working monitor
 - Full-screen Operations Queue follows the selected location, date, and view and refreshes appointment data every three seconds
+- Subtle self-service password recovery from the sign-in page using Supabase's secure email reset flow
+- A forgotten username no longer blocks access because the connected email address can also be used to sign in
+- Dashboard, Operations Queue, and Reports views save automatically to the signed-in user's profile
+- Saved Queue preferences include Today/Tomorrow/custom date mode, Pending/All/Completed view, location, briefing cards, and metrics
+- Saved Dashboard preferences include location, appointment status, schedule scale, operating period, and relative date mode
+- Saved Reports preferences include location, report view, date preset, and custom dates
+- System Admin adoption reporting shows tracked logins, active days, recent visible-app time, page views, and last activity for each user
+- Usage analytics store privacy-conscious daily aggregates only and do not record appointment content, typed values, or passwords
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.
@@ -123,3 +132,5 @@ Notes
 - Deleting a user removes the login while preserving appointment and audit history.
 - Permanent appointment deletion is intentionally omitted to preserve audit history.
 - The original MaxDock v46 visual interface is retained; maxdock-integration.js replaces its browser-storage data path at runtime.
+- Password recovery email delivery depends on the Supabase Auth email provider and the deployed set-password.html URL remaining in the Auth redirect allow list.
+- Aggregate usage tracking begins after DB20 is deployed; earlier activity is not reconstructed.
