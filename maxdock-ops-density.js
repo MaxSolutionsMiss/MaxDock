@@ -71,7 +71,7 @@
   }
 
   async function initializeDashboardDensity(){
-    const ready=await waitFor(()=>$("metrics")&&document.querySelector(".dashboardFilters")&&$("adminDate"));
+    const ready=await waitFor(()=>db?.getProfile?.()?.id&&$("metrics")?.children.length&&document.querySelector(".dashboardFilters")&&$("adminDate"));
     if(!ready)return;
 
     const metrics=$("metrics");
@@ -189,7 +189,7 @@
   }
 
   async function initializeQueueDensity(){
-    const ready=await waitFor(()=>document.querySelector(".queuePageHead")&&document.querySelector(".queueFilters")&&$("queueCustomizeMenu")&&$("queueMetrics"));
+    const ready=await waitFor(()=>db?.getProfile?.()?.id&&document.querySelector(".queuePageHead")&&document.querySelector(".queueFilters")&&$("queueCustomizeMenu")&&$("queueMetrics")?.children.length);
     if(!ready)return;
 
     const pageHead=document.querySelector(".queuePageHead");
