@@ -1,0 +1,39 @@
+MaxDock v46-DB25 Deployment
+
+Changes
+- Retains the established full-interface color theme for each selected MaxDock location.
+- Condenses the appointment modal to reduce vertical scrolling on desktop and mobile screens.
+- Moves the compact template selector and Use/Delete controls into the modal header.
+- Replaces the visible origin field with the automatically assigned current location.
+- Makes every new booking outbound from that assigned origin.
+- Adds a Destination Type choice for Max Solutions, Customer, or Vendor.
+- Lists active MaxDock sites when Max Solutions is selected and opens a destination-name field for Customer or Vendor.
+- Removes Other Sister Plant and other ambiguous free-text destination categories.
+- Shows the signed-in requester's name and email automatically and pre-fills the Contact step.
+- Adds WIP and VIP to the appointment-type list at every active location.
+- Stops the five-second live refresh from rebuilding Pick an Available Time while the user is choosing a slot.
+- Shows return-load intelligence in a prominent Opportunity for Efficiency pop-up.
+- Keeps the destination's reciprocal schedule view automatic and read-only.
+
+Database
+- Apply MaxDock_DB_v17_WIP_Appointment_Type.sql using migration name maxdock_db25_wip_appointment_type.
+- Apply MaxDock_DB_v17a_VIP_Appointment_Type.sql using migration name maxdock_db25_vip_appointment_type.
+- The migrations add WIP and VIP to the appointment-type master and enable both for every active location.
+
+Edge Functions
+- No Edge Function deployment is required for DB25.
+
+Frontend
+- Publish all changed root files and their mirrored db04 copies.
+- Hard-refresh the browser after GitHub Pages finishes deploying.
+
+Verification
+1. Switch among several locations and confirm each established location theme remains active across the interface.
+2. Open Place Appointment and confirm the compact modal does not show a separate origin field.
+3. Confirm Destination Type offers Max Solutions, Customer, and Vendor, with no Other Sister Plant choice.
+4. Confirm Max Solutions lists active sites except the origin, while Customer and Vendor open a destination-name field.
+5. Confirm the route is always outbound from the assigned origin and a Max Solutions destination sees the linked movement as inbound.
+6. Confirm Requester shows the signed-in user's name and email and the same fields are pre-filled in Contact and Reference.
+7. Confirm WIP and VIP appear in Appointment Type and produce valid available slots and bookings.
+8. Leave Pick an Available Time open for at least 15 seconds and confirm the slot list does not rebuild or jump.
+9. Select a time with a reverse-route match and confirm Opportunity for Efficiency opens as a pop-up and remains advisory only.

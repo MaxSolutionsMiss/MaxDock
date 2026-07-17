@@ -24,7 +24,7 @@ const defaultSettings={
   capacityEnabled:false,capacityTotal:0,capacityReserve:0,capacityMode:"warn",capacityOccupied:0,capacityAsOf:null,
   docks:["Dock 1","Dock 2"],
   truckSetup:{"53 ft Trailer":20,"48 ft Trailer":18,"26 ft Straight Truck":12,"Cube Van":8,"Courier Van":5},
-  typeAdj:{"Raw Material":15,"Finished Goods":0,"Sister Plant Transfer":0,"Vendor Delivery":5,"Customer Pickup":5,"Return / Rework":15,"Other":0},
+  typeAdj:{"Raw Material":15,"Finished Goods":0,"WIP":0,"VIP":0,"Sister Plant Transfer":0,"Vendor Delivery":5,"Customer Pickup":5,"Return / Rework":15,"Other":0},
   handlingAdj:{"Standard":0,"Mixed SKUs":10,"Requires Counting":10,"Paperwork / Samples":10,"Special Handling":15}
 };
 
@@ -95,7 +95,7 @@ function openRequest(){
   $("confirmBox").style.display="none";
   showStep(1);toggleCompany();renderSlots();
 }
-function closeRequest(){$("requestModal")?.classList.remove("show")}
+function closeRequest(){window.closeEfficiencyOpportunity?.();$("requestModal")?.classList.remove("show")}
 function showStep(n){
   document.querySelectorAll(".stepPanel").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll(".stepPill").forEach(x=>x.classList.remove("active"));
@@ -113,24 +113,24 @@ function nextStep(n){
 }
 function validate1(){
   clearError(1);
-  required("reqLocation","Max Solutions location");
-  if(!$("companyWrap").classList.contains("hidden"))required("reqCompany","Company / Location Name");
+  required("reqLocation","Assigned location");
+  required("reqRequesterType","Destination type");
+  if($("reqRequesterType").value==="Max Solutions")required("reqDestination","Destination");
+  else required("reqCompany",`${$("reqRequesterType").value} name`);
 }
 function validate2(){clearError(2);if(Number($("reqSkids").value||0)<0)throw new Error("Skids cannot be negative.")}
 function validate3(){clearError(3);required("reqDate","Requested Date");if(!selectedSlot)throw new Error("Please choose an available time.")}
 function validate4(){clearError(4);required("reqName","Requester Name");required("reqEmail","Requester Email");required("reqRef","PO / BOL / Job #")}
 function toggleCompany(){
   if(!$("reqRequesterType"))return;
-  const show=["Vendor","Customer","Other Sister Plant","Other Max Solutions location (not listed)","Other"].includes($("reqRequesterType").value);
-  $("companyWrap").classList.toggle("hidden",!show);
+  const external=["Customer","Vendor"].includes($("reqRequesterType").value);
+  $("companyWrap")?.classList.toggle("hidden",!external);
+  $("internalDestinationWrap")?.classList.toggle("hidden",external);
+  if($("reqCompanyLabel"))$("reqCompanyLabel").textContent=`${$("reqRequesterType").value} name *`;
   window.updateBookingRouteSummary?.();
 }
 function requesterCompany(){
-  const type=$("reqRequesterType").value;
-  if(["Vendor","Customer","Other Sister Plant","Other Max Solutions location (not listed)","Other"].includes(type)){
-    return `${type}: ${$("reqCompany").value.trim()||"TBD"}`;
-  }
-  return type;
+  return $("reqRequesterType").value==="Max Solutions"?$("reqDestination").value:$("reqCompany").value.trim();
 }
 function calculateDuration(){
   const skids=Number($("reqSkids").value||0);
@@ -181,7 +181,7 @@ function renderReview(){
       <div class="reviewItem"><b>Date / Time</b>${esc(selectedSlot?.date||"")} | ${selectedSlot?displayTime(selectedSlot.start)+" – "+displayTime(selectedSlot.end):""}</div>
       <div class="reviewItem"><b>Direction</b>${esc($("reqDirection").value)}</div>
       <div class="reviewItem"><b>Appointment Type</b>${esc($("reqType").value)}</div>
-      <div class="reviewItem"><b>Requester</b>${esc(requesterCompany())}</div>
+      <div class="reviewItem"><b>Destination</b>${esc(requesterCompany())}</div>
       <div class="reviewItem"><b>Truck / Skids</b>${esc($("reqTruck").value)} / ${esc($("reqSkids").value)} skids</div>
       <div class="reviewItem"><b>Handling</b>${esc($("reqHandling").value)}</div>
       <div class="reviewItem"><b>Contact</b>${esc($("reqName").value)} | ${esc($("reqEmail").value)}</div>
