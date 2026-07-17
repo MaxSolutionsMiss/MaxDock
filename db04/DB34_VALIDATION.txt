@@ -1,0 +1,15 @@
+DB34 validation checklist
+
+- Root and db04 DB34 stylesheets have identical blob content.
+- Root and db04 configuration loaders both identify MaxDock-v55-DB34.
+- DB34 loads after DB33, preserving the existing operational-density and preference logic.
+- Dashboard primary actions use one identical 136 x 40 pixel desktop specification and one color treatment.
+- Dashboard page heading and actions align to opposite page edges.
+- Schedule Date, Appointment Status, and Date Range use the same label and field typography.
+- Dashboard KPI cards use a 68-pixel compact minimum height.
+- Operations Queue toolbar has no outer white panel, border, radius, padding, or shadow.
+- Queue filters and actions align directly to the page workspace.
+- Global interface typography uses the same Segoe-led system font stack.
+- Booking modal adds a six-pixel white perimeter and increased body/footer spacing.
+- Mobile layouts retain full-width controls and a full-screen booking modal.
+- Frontend only: no database, SQL, Edge Function, or appointment-processing changes.
