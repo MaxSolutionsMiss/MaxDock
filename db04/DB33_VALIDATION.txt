@@ -1,0 +1,11 @@
+DB33 validation summary
+
+- Root and db04 DB33 CSS files have matching blob content.
+- Root and db04 DB33 JavaScript files have matching blob content.
+- Root and db04 configuration loaders use MaxDock-v54-DB33.
+- DB33 assets use new filenames and v54-db33 cache markers.
+- Dashboard preference initialization waits for the authenticated profile and rendered metrics.
+- Queue compaction waits for the authenticated profile and rendered queue metrics.
+- Dashboard defaults to five metrics and allows one to six.
+- Queue preserves prior custom selections; only a previously untouched eight-metric default is reduced to five.
+- All changes are frontend-only.
