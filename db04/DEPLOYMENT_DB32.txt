@@ -1,0 +1,27 @@
+MaxDock v53-DB32 Deployment
+
+Changes
+- Makes the five booking-step cards lighter, smaller, and visually secondary to the booking information.
+- Keeps the step numbers centered while reducing their size and visual weight.
+- Narrows the desktop booking modal from 1000 px to 880 px and allows the workflow to use more vertical space.
+- Reflows Step 1 from five columns into a three-column layout so the window can be narrower without crowding fields.
+- Places the Route and Requester labels above their values.
+- Adds more breathing room between the step row and What are you sending?
+
+Database
+- No database migration is required for DB32.
+
+Edge Functions
+- No Edge Function deployment is required for DB32.
+
+Frontend
+- Publish the changed root files and their mirrored db04 copies.
+- Hard-refresh after GitHub Pages finishes deploying.
+
+Verification
+1. Confirm the booking modal is visibly narrower on desktop.
+2. Confirm Step 1 wraps cleanly into two field rows.
+3. Confirm the five step cards use light fixed theme colors and smaller centered numbers.
+4. Confirm there is additional spacing before What are you sending?
+5. Confirm Route and Requester appear above their values.
+6. Confirm mobile remains full width and usable.
