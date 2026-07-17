@@ -925,18 +925,17 @@ body.customerAccount .greenBtn{background:var(--theme-gradient);box-shadow:0 8px
 .bookingTemplateCompact .utilityBtn{padding:0 10px}
 .requestModalCompact .modalBody{padding:9px 14px 13px;overflow:auto}
 .requestModalCompact .steps{gap:7px;margin-bottom:10px}
-.requestModalCompact .stepPill{--step-accent:#155e8f;--step-dark:#0f466b;--step-soft:#eef8fc;--step-border:#b9d8e7;position:relative;overflow:hidden;grid-template-columns:auto auto;grid-template-rows:1fr;gap:9px;min-height:52px;padding:8px 10px;border-color:var(--step-border);border-radius:13px;background:linear-gradient(145deg,var(--step-soft),#fff 72%);color:var(--step-dark);font-size:14px;font-weight:700;line-height:1.2;text-align:center;align-items:center;align-content:center;justify-content:center;justify-items:center;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
-.requestModalCompact .stepPill::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--step-accent);opacity:.72}
-.requestModalCompact .stepPill:nth-child(2){--step-accent:#0f766e;--step-dark:#115e59;--step-soft:#ecfdf8;--step-border:#a9ded5}
-.requestModalCompact .stepPill:nth-child(3){--step-accent:#2563a0;--step-dark:#1e4f82;--step-soft:#eff6ff;--step-border:#b9d2ed}
-.requestModalCompact .stepPill:nth-child(4){--step-accent:#6d5aa8;--step-dark:#57468b;--step-soft:#f5f3ff;--step-border:#d5cff0}
-.requestModalCompact .stepPill:nth-child(5){--step-accent:#a16207;--step-dark:#854d0e;--step-soft:#fffbeb;--step-border:#efd79a}
-.requestModalCompact .stepNum{width:29px;height:29px;border:1px solid var(--step-border);background:#fff;color:var(--step-accent);font-size:13px;font-weight:750;line-height:1}
-.requestModalCompact .stepPill.active{transform:translateY(-1px);border-color:var(--step-accent);background:linear-gradient(135deg,var(--step-accent),var(--step-dark));color:#fff;box-shadow:0 9px 20px color-mix(in srgb,var(--step-accent) 25%,transparent)}
-.requestModalCompact .stepPill.active::before{background:rgba(255,255,255,.9);opacity:.9}
-.requestModalCompact .stepPill.active .stepNum{border-color:#fff;background:#fff;color:var(--step-accent);box-shadow:0 4px 11px rgba(6,26,45,.2)}
-.requestModalCompact .stepPill.completed{border-color:var(--step-accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--step-accent) 18%,transparent)}
-.requestModalCompact .stepPill.completed .stepNum{background:var(--step-accent);color:#fff}
+.requestModalCompact .stepPill{--step-accent:#155e8f;position:relative;grid-template-columns:auto auto;grid-template-rows:1fr;gap:12px;min-height:62px;padding:8px 12px;border:2px solid transparent;border-radius:13px;background:var(--step-accent);color:#fff;font-size:15.5px;font-weight:750;line-height:1.2;text-align:center;align-items:center;align-content:center;justify-content:center;justify-items:center;box-shadow:0 7px 16px rgba(6,26,45,.12);transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+.requestModalCompact .stepPill::before{content:none}
+.requestModalCompact .stepPill:nth-child(2){--step-accent:#0f766e}
+.requestModalCompact .stepPill:nth-child(3){--step-accent:#2563a0}
+.requestModalCompact .stepPill:nth-child(4){--step-accent:#6d5aa8}
+.requestModalCompact .stepPill:nth-child(5){--step-accent:#a16207}
+.requestModalCompact .stepNum{width:auto;height:auto;border:0;border-radius:0;background:transparent;color:inherit;font-size:40px;font-weight:850;line-height:.9}
+.requestModalCompact .stepPill.active{transform:translateY(-2px);border-color:#fff;background:var(--step-accent);color:#fff;box-shadow:0 0 0 3px var(--step-accent),0 11px 23px rgba(6,26,45,.25);filter:saturate(1.12) brightness(.94)}
+.requestModalCompact .stepPill.active .stepNum{border:0;background:transparent;color:inherit;box-shadow:none}
+.requestModalCompact .stepPill.completed{border-color:rgba(255,255,255,.7);background:var(--step-accent);color:#fff;box-shadow:0 7px 16px rgba(6,26,45,.16);filter:saturate(.9)}
+.requestModalCompact .stepPill.completed .stepNum{background:transparent;color:inherit}
 .requestModalCompact .stepTitle{margin-bottom:2px;font-size:18px}.requestModalCompact .stepIntro{margin-bottom:9px;font-size:11px}
 .requestModalCompact .formGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .requestModalCompact .bookingRouteFields{grid-template-columns:.66fr .92fr 1.85fr 1.08fr .52fr;align-items:end}
@@ -984,7 +983,7 @@ body.customerAccount .greenBtn{background:var(--theme-gradient);box-shadow:0 8px
 @media(max-width:620px){
   .bookingRouteSummary,.bookingRequesterSummary{grid-template-columns:1fr}.bookingRouteSummary strong,.bookingRequesterSummary strong{grid-row:auto;justify-self:start}
   .requestModalCompact .modalHead{display:grid;grid-template-columns:1fr auto;gap:7px;padding:9px 10px}.requestModalCompact .closeBtn{grid-column:2;grid-row:1}.bookingTemplateCompact{grid-column:1/-1;grid-row:2;width:100%;max-width:none;margin:0;grid-template-columns:minmax(0,1fr) auto auto}.bookingTemplateCompact .bookingTemplateField{grid-column:auto}.bookingTemplateCompact .utilityBtn{width:auto}
-  .requestModalCompact .modalBody{padding:7px 10px 10px}.requestModalCompact .steps{gap:4px}.requestModalCompact .stepPill{display:grid;grid-template-columns:1fr;justify-items:center;align-content:center;min-width:0;min-height:58px;padding:6px 3px;font-size:11.5px;line-height:1.15;text-align:center}.requestModalCompact .stepNum{width:25px;height:25px;font-size:11px}
+  .requestModalCompact .modalBody{padding:7px 10px 10px}.requestModalCompact .steps{gap:4px}.requestModalCompact .stepPill{display:grid;grid-template-columns:1fr;gap:2px;justify-items:center;align-content:center;min-width:0;min-height:72px;padding:6px 3px;font-size:12.5px;line-height:1.15;text-align:center}.requestModalCompact .stepNum{width:auto;height:auto;font-size:32px}
   .requestModalCompact .formGrid,.requestModalCompact .bookingRouteFields{grid-template-columns:1fr 1fr;gap:6px}.requestModalCompact .bookingRouteFields .field>label{white-space:normal}.requestModalCompact #companyWrap,.requestModalCompact #internalDestinationWrap{grid-column:1/-1}.requestModalCompact .bookingSummaryRow{grid-template-columns:1fr}.requestModalCompact .bookingRouteSummary,.requestModalCompact .bookingRequesterSummary{grid-template-columns:auto 1fr}.requestModalCompact .bookingRouteSummary strong,.requestModalCompact .bookingRequesterSummary strong{grid-row:1/3}
   .requestModalCompact .reviewRows{grid-template-columns:1fr 1fr}.requestModalCompact .slots{max-height:205px;grid-template-columns:1fr 1fr}
   .efficiencyOpportunityModal{padding:25px 20px;border-radius:0}
@@ -996,3 +995,28 @@ body.customerAccount .greenBtn{background:var(--theme-gradient);box-shadow:0 8px
   .capacitySettingsHead{flex-direction:column}.misFormActions{align-items:stretch;flex-direction:column}.misFormActions .primaryBtn{width:100%}
   .staffTimeOverrideHead,.staffTimeControls{align-items:stretch;flex-direction:column}.staffTimeToggle{white-space:normal}.staffTimeControls .field{min-width:0}
 }
+
+/* DB30 larger readable interface typography */
+body{font-size:15px}
+.appSub{font-size:13px}
+.accountControl span{font-size:13px}.accountSignOut{font-size:12px}
+.headerActions .locationPill label,.locationPill label{font-size:12px}
+.pageHead p,.panelIntro{font-size:14px}.panelHeader small{font-size:13px}
+.menu a{font-size:15px}
+label,.field label,.filterField label{font-size:13px}
+input,select,textarea{font-size:14px}
+th,.dockCompatibilityMatrix th{font-size:13px}td{font-size:14px}
+.actionBtn{font-size:14px}.utilityBtn,.textActionBtn,.tiny{font-size:13px}
+.metric small,.adminSummaryCard span{font-size:13px}
+.notificationItem strong{font-size:14px}.notificationItem p{font-size:13px}.notificationItem time{font-size:12px}
+.requestModalCompact .modalHead h2{font-size:22px}.requestModalCompact .modalHead p{font-size:12px}
+.bookingTemplateCompact .bookingTemplateField label{font-size:10px}.bookingTemplateCompact .bookingTemplateField select,.bookingTemplateCompact .utilityBtn{font-size:12px}
+.requestModalCompact .stepTitle{font-size:20px}.requestModalCompact .stepIntro{font-size:12px}
+.requestModalCompact .field label{font-size:11px}.requestModalCompact .field small{font-size:10px}
+.requestModalCompact input,.requestModalCompact select,.requestModalCompact textarea{font-size:13px}
+.requestModalCompact .bookingRouteSummary strong,.requestModalCompact .bookingRequesterSummary strong{font-size:9px}
+.requestModalCompact .bookingRouteSummary span,.requestModalCompact .bookingRequesterSummary span{font-size:12px}
+.requestModalCompact .bookingRouteSummary small,.requestModalCompact .bookingRequesterSummary small{font-size:10px}
+.requestModalCompact .wizardNav button{font-size:12px}.requestModalCompact .notice{font-size:11px}
+.requestModalCompact .slotTools button{font-size:11px}.requestModalCompact .staffTimeOverrideHead small{font-size:10px}
+.requestModalCompact .reviewItem{font-size:12px}.requestModalCompact .reviewItem b{font-size:10px}

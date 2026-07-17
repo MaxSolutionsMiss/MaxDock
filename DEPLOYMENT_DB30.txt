@@ -1,0 +1,27 @@
+MaxDock v51-DB30 Deployment
+
+Changes
+- Replaces the booking-step gradients with solid stage colors and white text.
+- Removes the circular number badges and top ribbon from every booking step.
+- Enlarges step numbers substantially while keeping each number aligned with its label.
+- Keeps the current and completed step states visible through borders, depth, and saturation rather than gradients.
+- Increases shared navigation, label, control, table, subtitle, and modal detail text by approximately ten percent.
+- Closes any open gear menu when the user clicks outside it or presses Escape.
+
+Database
+- No database migration is required for DB30.
+
+Edge Functions
+- No Edge Function deployment is required for DB30.
+
+Frontend
+- Publish all changed root files and their mirrored db04 copies.
+- Hard-refresh after GitHub Pages finishes deploying v51-db30 assets.
+
+Verification
+1. Open Place Appointment and confirm all five step cards use solid colors with no top ribbon or number circles.
+2. Confirm each large number is white and aligned with its step label.
+3. Advance through the wizard and confirm active and completed states remain visually distinct.
+4. Confirm appointment labels, controls, summaries, subtitle, navigation, and general interface text are easier to read.
+5. Open the gear menu, click anywhere outside it, and confirm it closes.
+6. Open the gear menu again, press Escape, and confirm it closes.
