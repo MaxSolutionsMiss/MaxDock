@@ -1,0 +1,35 @@
+MaxDock v48-DB27 Deployment
+
+Changes
+- Places Direction first in Route & Load, followed by destination type, destination, appointment type, and priority.
+- Shows customer accounts an Outbound-to-Max-Solutions booking flow while storing the selected Max site appointment as inbound.
+- Lets customer accounts choose any active Max Solutions receiving location.
+- Adds Customer/Vendor type and canonical company name to Customer access accounts in User Management.
+- Reuses the assigned external identity during booking and does not expose other customer or vendor names to external users.
+- Gives staff a standardized customer/vendor company directory for consistent booking reports.
+- Uses the Mississauga/Max logo color palette for customer booking controls regardless of destination.
+- Removes the synthetic Linked movement schedule lane; cross-site loads appear only on a configured real dock.
+- Keeps cross-site receiving cards read-only and visually hatched without labeling their dock as Linked movement.
+
+Database
+- Apply MaxDock_DB_v19_Customer_Identity_Booking.sql using migration name maxdock_db27_customer_identity_booking.
+- The migration adds external identity fields, a privacy-filtered company directory, and identity-aware System Admin user RPCs.
+- Existing Customer access accounts must be opened once in User Management and assigned their Customer/Vendor type and canonical company name before booking.
+
+Edge Function
+- Deploy supabase/functions/maxdock-invite-user/index.ts as maxdock-invite-user.
+- Keep legacy JWT verification disabled because username_login is intentionally public and every management action performs its own session and System Admin checks.
+
+Frontend
+- Publish all changed root files and their mirrored db04 copies.
+- Hard-refresh after GitHub Pages finishes deploying v48-db27 assets.
+
+Verification
+1. Edit an existing Customer access account and assign Customer or Vendor plus its canonical company name.
+2. Sign in as that user and confirm the Place Appointment controls use the fixed Max/Mississauga palette.
+3. Confirm Direction reads Outbound, Destination type is fixed to Max Solutions, and every active Max location is available.
+4. Confirm no other external company names are visible to the customer.
+5. Book at a selected Max location and confirm the appointment is inbound on that location's assigned receiving dock.
+6. As staff, choose Customer or Vendor and confirm company names come from the standardized directory.
+7. Open Dashboard at a receiving site and confirm cross-site cards appear only in configured dock lanes.
+8. Confirm no Linked movement lane is added, including when older unmatched cross-site records exist.

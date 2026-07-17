@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=47-db26">
-<link rel="stylesheet" href="./maxdock-db04.css?v=47-db26">
+<link rel="stylesheet" href="./maxdock.css?v=48-db27">
+<link rel="stylesheet" href="./maxdock-db04.css?v=48-db27">
 <title>MaxDock – Dashboard</title>
 </head>
 <body data-page="dashboard">
@@ -29,17 +29,17 @@
           <option>Bristol</option><option>Owen Sound</option><option>Concord</option><option>Markham</option>
         </select>
       </div>
-      <a class="ghostBtn" href="./index.html?v=47-db26">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=48-db27">Main Page</a>
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=47-db26">My Appointments</a>
-          <a href="./queue.html?v=47-db26">Operations Queue</a>
-          <a href="./reports.html?v=47-db26">Reports</a>
-          <a href="./dashboard.html?v=47-db26" aria-current="page">Dashboard</a>
-          <a href="./settings.html?v=47-db26">Settings</a>
-          <a href="./admin.html?v=47-db26">User Management</a>
-          <a href="./data.html?v=47-db26">Data Integration</a>
+          <a href="./my-appointments.html?v=48-db27">My Appointments</a>
+          <a href="./queue.html?v=48-db27">Operations Queue</a>
+          <a href="./reports.html?v=48-db27">Reports</a>
+          <a href="./dashboard.html?v=48-db27" aria-current="page">Dashboard</a>
+          <a href="./settings.html?v=48-db27">Settings</a>
+          <a href="./admin.html?v=48-db27">User Management</a>
+          <a href="./data.html?v=48-db27">Data Integration</a>
         </nav>
       </details>
     </div>
@@ -54,7 +54,7 @@
     </div>
     <div class="dashboardActions">
       <div class="dashboardPrimaryActions">
-        <a class="primaryBtn dashboardActionPrimary queueActionBtn operationsQueueShortcut" href="./queue.html?v=47-db26">Today’s queue</a>
+        <a class="primaryBtn dashboardActionPrimary queueActionBtn operationsQueueShortcut" href="./queue.html?v=48-db27">Today’s queue</a>
         <button class="primaryBtn dashboardActionPrimary appointmentActionBtn" onclick="openRequest()">Place appointment</button>
         <button class="secondaryBtn dashboardActionPrimary blockActionBtn" onclick="openBlockModal()">Block time</button>
       </div>
@@ -175,10 +175,10 @@
         <p class="stepIntro" id="bookingRouteIntro">Choose the destination. Outbound is selected by default for staff.</p>
         <input id="reqLocation" type="hidden" required>
         <div class="formGrid bookingRouteFields">
+          <div class="field compactDirection"><label for="reqDirection">Direction</label><select id="reqDirection"><option>Outbound</option><option>Inbound</option></select></div>
           <div class="field"><label id="reqRouteTypeLabel" for="reqRequesterType">Destination type</label><select id="reqRequesterType"><option>Max Solutions</option><option>Customer</option><option>Vendor</option></select></div>
           <div class="field" id="internalDestinationWrap"><label id="reqCounterpartyLabel" for="reqDestination">Destination</label><select id="reqDestination"><option>Guelph</option><option>Pickering</option><option>Bristol</option></select></div>
-          <div class="field hidden" id="companyWrap"><label id="reqCompanyLabel" for="reqCompany">Customer name *</label><input id="reqCompany" placeholder="Enter destination name"></div>
-          <div class="field compactDirection"><label for="reqDirection">Direction</label><select id="reqDirection"><option>Outbound</option><option>Inbound</option></select></div>
+          <div class="field hidden" id="companyWrap"><label id="reqCompanyLabel" for="reqCompany">Customer name *</label><select id="reqCompany"><option value="">Choose a customer</option></select></div>
           <div class="field"><label for="reqType">Appointment type</label><select id="reqType"><option>Raw Material</option><option>Finished Goods</option><option>WIP</option><option>Sister Plant Transfer</option><option>Vendor Delivery</option><option>Customer Pickup</option><option>Return / Rework</option><option>Other</option></select></div>
           <div class="field"><label>Priority</label><select id="reqPriority"><option>No</option><option>Yes</option></select></div>
           <div class="bookingSummaryRow full">
@@ -262,7 +262,7 @@
           <div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">
             <button class="secondaryBtn" onclick="copyConfirmation()">Copy Confirmation</button>
             <button class="secondaryBtn" onclick="openEmailDraft()">Open Email Draft</button>
-            <a class="secondaryBtn" href="./my-appointments.html?v=47-db26">View My Appointments</a>
+            <a class="secondaryBtn" href="./my-appointments.html?v=48-db27">View My Appointments</a>
           </div>
         </div>
         <div class="error" id="err5"></div>
@@ -447,9 +447,9 @@
   </div>
 </div>
 
-<script src="./supabase-2.110.3.js?v=47-db26"></script>
-<script src="./maxdock-config.js?v=47-db26"></script>
-<script src="./maxdock-db.js?v=47-db26"></script>
-<script src="./maxdock.js?v=47-db26"></script>
-<script src="./maxdock-integration.js?v=47-db26"></script>
+<script src="./supabase-2.110.3.js?v=48-db27"></script>
+<script src="./maxdock-config.js?v=48-db27"></script>
+<script src="./maxdock-db.js?v=48-db27"></script>
+<script src="./maxdock.js?v=48-db27"></script>
+<script src="./maxdock-integration.js?v=48-db27"></script>
 </body></html>
