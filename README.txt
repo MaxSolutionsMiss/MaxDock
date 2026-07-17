@@ -1,4 +1,4 @@
-MaxDock v49-DB28 — Customer Privacy and Location Access Build
+MaxDock v50-DB29 — Booking Step and Route Layout Polish
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -152,6 +152,8 @@ Integrated database operations
 - Staff type a Customer or Vendor name into a blank field without exposing a saved company directory
 - Signed-in external users reuse the company identity assigned in User Management without displaying a company list
 - Booking step numbers and labels are enlarged and vertically centered in their tabs
+- Booking stages use distinct, restrained colors with clear active and completed states
+- Route fields keep compact selectors while the destination-name control receives additional width and aligned inputs
 - Customer booking controls use the fixed Mississauga/Max brand palette instead of location-specific colors
 - Dashboard schedules contain configured dock lanes only; cross-site loads render on their assigned receiving dock
 - WIP remains active and VIP is removed from new appointment choices

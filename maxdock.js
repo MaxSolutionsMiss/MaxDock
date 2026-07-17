@@ -99,8 +99,13 @@ function openRequest(){
 function closeRequest(){window.closeEfficiencyOpportunity?.();$("requestModal")?.classList.remove("show")}
 function showStep(n){
   document.querySelectorAll(".stepPanel").forEach(x=>x.classList.remove("active"));
-  document.querySelectorAll(".stepPill").forEach(x=>x.classList.remove("active"));
-  $("step"+n)?.classList.add("active");$("pill"+n)?.classList.add("active");
+  document.querySelectorAll(".stepPill").forEach((pill,index)=>{
+    pill.classList.toggle("active",index===n-1);
+    pill.classList.toggle("completed",index<n-1);
+    if(index===n-1)pill.setAttribute("aria-current","step");
+    else pill.removeAttribute("aria-current");
+  });
+  $("step"+n)?.classList.add("active");
   if(n===3)renderSlots();if(n===5)renderReview();
 }
 function showError(n,msg){const e=$("err"+n);if(e){e.textContent=msg;e.style.display="block"}}

@@ -1,0 +1,26 @@
+MaxDock v50-DB29 Deployment
+
+Changes
+- Enlarges the booking-step labels and gives each stage a distinct, restrained color treatment.
+- Makes the current step visually prominent and marks earlier steps as completed as the user progresses.
+- Shortens Direction, Destination type, Appointment type, and Priority in the Route & Load row.
+- Gives the destination-name field approximately twice the space of the compact fields.
+- Bottom-aligns the Route & Load controls so a long label cannot push one input below the others.
+- Gives destination-name controls a full row on narrow mobile screens.
+
+Database
+- No database migration is required for DB29.
+
+Edge Functions
+- No Edge Function deployment is required for DB29.
+
+Frontend
+- Publish all changed root files and their mirrored db04 copies.
+- Hard-refresh after GitHub Pages finishes deploying v50-db29 assets.
+
+Verification
+1. Open Place Appointment and confirm the five step labels are larger and visually distinct.
+2. Move through the wizard and confirm the active and completed steps are obvious.
+3. Choose Customer or Vendor and confirm the destination-name field is wide and aligned with the other controls.
+4. Confirm Direction, Destination type, Appointment type, and Priority remain compact.
+5. On a narrow screen, confirm the destination-name field occupies a full row.
