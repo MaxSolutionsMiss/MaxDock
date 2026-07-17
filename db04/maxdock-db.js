@@ -41,9 +41,9 @@
   }
   function isOperationalRole(roleCode=state.profile?.role_code){return OPERATIONAL_ROLES.has(roleCode)}
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=48-db27";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=48-db27";
-    return "index.html?v=48-db27";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=49-db28";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=49-db28";
+    return "index.html?v=49-db28";
   }
   function applyRoleNavigation(){
     const operational=isOperationalRole();
@@ -700,7 +700,7 @@
     if(!actions||document.getElementById("maxdockAccount"))return;
     const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
     const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
-    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=48-db27";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=49-db28";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
     bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
     const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
     wrap.append(label,bell,button);actions.prepend(wrap);

@@ -4,7 +4,6 @@
   const db=window.MaxDockDB;
   let dockDraft=[];
   let bookingTemplates=[];
-  let externalCompanies=[];
   let bookingReturnLoads=[];
   let bookingReturnLoadPopupSignature="";
   let slotRequestId=0;
@@ -168,14 +167,13 @@
     if(!select)return;
     const previous=select.value;
     const customer=isExternalAccount();
-    const locationOptions=db.getLocationDirectory()
+    const locationOptions=(customer?db.getLocations():db.getLocationDirectory())
       .filter(location=>customer||location.name!==currentLocation)
       .map(location=>`<option value="${esc(location.name)}">${esc(location.name)}</option>`);
     select.innerHTML=locationOptions.join("");
     const preferred=customer?currentLocation:previous;
     if([...select.options].some(option=>option.value===preferred))select.value=preferred;
     else if(select.options[0])select.value=select.options[0].value;
-    populateExternalCompanyOptions();
     toggleCompany();
     updateBookingRouteSummary();
   }
@@ -188,15 +186,6 @@
       partyType:profile.external_party_type||"Customer",
       organizationName:String(profile.organization_name||"").trim()
     };
-  }
-
-  function populateExternalCompanyOptions(){
-    const select=$("reqCompany");if(!select)return;
-    const type=$("reqRequesterType")?.value||"Customer";
-    const previous=select.value;
-    const matches=externalCompanies.filter(item=>item.party_type===type&&item.company_name);
-    select.innerHTML=`<option value="">Choose a ${esc(type.toLowerCase())}</option>${matches.map(item=>`<option value="${esc(item.company_name)}">${esc(item.company_name)}</option>`).join("")}`;
-    if(matches.some(item=>item.company_name===previous))select.value=previous;
   }
 
   function populateBookingLocations(){
@@ -491,11 +480,9 @@
       $("reqCompany").value="";
     }else if(["Customer","Vendor"].includes(template.requester_type)){
       $("reqRequesterType").value=template.requester_type;
-      populateExternalCompanyOptions();
       $("reqCompany").value=template.company_name||"";
     }else{
       $("reqRequesterType").value="Customer";
-      populateExternalCompanyOptions();
       $("reqCompany").value=template.company_name||template.requester_type||"";
     }
     const templateType=nameForCode(data.appointmentTypeByCode,template.appointment_type_code);
@@ -1108,7 +1095,7 @@
     const date=$("adminDate")?.value||todayISO();
     const locationName=db.getCurrentLocation()?.name||currentLocation;
     const url=new URL("./dashboard.html",location.href);
-    url.searchParams.set("v","48-db27");
+    url.searchParams.set("v","49-db28");
     url.searchParams.set("display","1");
     url.searchParams.set("date",date);
     url.searchParams.set("location",locationName);
@@ -1177,13 +1164,12 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=48-db27");
+      location.replace("./index.html?v=49-db28");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
     if(PAGE==="settings"&&!db.hasPermission("settings.view"))throw new Error("This account cannot view MaxDock settings.");
     await db.loadLocation(currentLocation);
-    externalCompanies=await db.listExternalCompanies();
     syncDatabaseState();
     localStorage.setItem(LS_LOCATION,currentLocation);
     db.populateLocationSelect($("locationSelect"));
@@ -1225,7 +1211,7 @@
     if($("requestModal")){
       $("reqDate").value=$("adminDate")?.value||todayISO();toggleCompany();renderSlots();
       $("reqRequesterType")?.addEventListener("change",()=>{
-        populateExternalCompanyOptions();toggleCompany();updateBookingRouteSummary();clearSelectedBookingTime();renderSlots();
+        toggleCompany();updateBookingRouteSummary();clearSelectedBookingTime();renderSlots();
       });
       $("reqDirection")?.addEventListener("change",()=>{
         updateBookingRouteSummary();clearSelectedBookingTime();renderSlots();
@@ -1235,7 +1221,7 @@
         else updateBookingRouteSummary();
         clearSelectedBookingTime();renderSlots();
       });
-      $("reqCompany")?.addEventListener("change",updateBookingRouteSummary);
+      $("reqCompany")?.addEventListener("input",updateBookingRouteSummary);
       ["reqType","reqPriority","reqCustomTime"].forEach(id=>$(id)?.addEventListener("change",()=>renderSlots()));
       $("efficiencyOpportunityModal")?.addEventListener("click",event=>{if(event.target===$("efficiencyOpportunityModal"))window.closeEfficiencyOpportunity()});
       if(new URLSearchParams(location.search).get("open")==="request")setTimeout(openRequest,0);

@@ -1,4 +1,4 @@
-MaxDock v48-DB27 — Customer Destination and Company Identity Build
+MaxDock v49-DB28 — Customer Privacy and Location Access Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -27,6 +27,7 @@ Database prerequisites
 19. MaxDock_DB_v17a_VIP_Appointment_Type.sql
 20. MaxDock_DB_v18_Dual_Site_Dock_Routing.sql
 21. MaxDock_DB_v19_Customer_Identity_Booking.sql
+22. MaxDock_DB_v20_Customer_Location_Access.sql
 
 Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
@@ -116,8 +117,8 @@ Integrated database operations
 - Morning Shift Brief cards are taller, color-coded, and easier to scan from a distance
 - Each signed-in user can customize visible briefing cards and Queue metrics or restore the default view
 - Full-screen schedule cards cap typography to their actual appointment width, use a compact time range, and wrap shipment details without horizontal clipping
-- Customer accounts automatically receive every active MaxDock location and choose the booking location inside the appointment workflow
-- New and edited Customer accounts no longer require individual permitted-location selections
+- System Admins assign one or more permitted booking locations to each Customer or Vendor account
+- Customer destination choices are limited to the locations assigned to that account
 - MaxDock password forms and temporary-password creation use Supabase's supported 6-character minimum
 - Operations Queue provides a separate live full-screen window while the original Queue remains available on the working monitor
 - Full-screen Operations Queue follows the selected location, date, and view and refreshes appointment data every five seconds
@@ -147,8 +148,10 @@ Integrated database operations
 - Staff can choose Inbound or Outbound while Outbound remains the default
 - Customer accounts see an Outbound-to-Max-Solutions flow while MaxDock records the receiving site appointment as inbound
 - Customer and vendor identity is assigned in User Management and reused without exposing other external companies
-- Customer accounts can choose any active Max Solutions destination from the booking flow
-- Staff external-company choices use a standardized customer/vendor directory for consistent reporting
+- Customer accounts can choose any assigned Max Solutions destination from the booking flow
+- Staff type a Customer or Vendor name into a blank field without exposing a saved company directory
+- Signed-in external users reuse the company identity assigned in User Management without displaying a company list
+- Booking step numbers and labels are enlarged and vertically centered in their tabs
 - Customer booking controls use the fixed Mississauga/Max brand palette instead of location-specific colors
 - Dashboard schedules contain configured dock lanes only; cross-site loads render on their assigned receiving dock
 - WIP remains active and VIP is removed from new appointment choices

@@ -925,8 +925,8 @@ body.customerAccount .greenBtn{background:var(--theme-gradient);box-shadow:0 8px
 .bookingTemplateCompact .utilityBtn{padding:0 10px}
 .requestModalCompact .modalBody{padding:9px 14px 13px;overflow:auto}
 .requestModalCompact .steps{gap:7px;margin-bottom:10px}
-.requestModalCompact .stepPill{grid-template-columns:auto 1fr;grid-template-rows:1fr;gap:6px;min-height:43px;padding:6px 8px;border-radius:12px;font-size:11px;text-align:left;justify-items:start}
-.requestModalCompact .stepNum{width:24px;height:24px;font-size:10px}
+.requestModalCompact .stepPill{grid-template-columns:auto auto;grid-template-rows:1fr;gap:8px;min-height:50px;padding:8px 10px;border-radius:12px;font-size:13px;line-height:1.2;text-align:center;align-items:center;align-content:center;justify-content:center;justify-items:center}
+.requestModalCompact .stepNum{width:28px;height:28px;font-size:12px;line-height:1}
 .requestModalCompact .stepTitle{margin-bottom:2px;font-size:18px}.requestModalCompact .stepIntro{margin-bottom:9px;font-size:11px}
 .requestModalCompact .formGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .requestModalCompact .bookingRouteFields{grid-template-columns:1.05fr 1.45fr .72fr 1.15fr .58fr}
@@ -973,7 +973,7 @@ body.customerAccount .greenBtn{background:var(--theme-gradient);box-shadow:0 8px
 @media(max-width:620px){
   .bookingRouteSummary,.bookingRequesterSummary{grid-template-columns:1fr}.bookingRouteSummary strong,.bookingRequesterSummary strong{grid-row:auto;justify-self:start}
   .requestModalCompact .modalHead{display:grid;grid-template-columns:1fr auto;gap:7px;padding:9px 10px}.requestModalCompact .closeBtn{grid-column:2;grid-row:1}.bookingTemplateCompact{grid-column:1/-1;grid-row:2;width:100%;max-width:none;margin:0;grid-template-columns:minmax(0,1fr) auto auto}.bookingTemplateCompact .bookingTemplateField{grid-column:auto}.bookingTemplateCompact .utilityBtn{width:auto}
-  .requestModalCompact .modalBody{padding:7px 10px 10px}.requestModalCompact .steps{gap:4px}.requestModalCompact .stepPill{display:grid;grid-template-columns:1fr;justify-items:center;min-width:0;min-height:44px;padding:4px 2px;font-size:9px;text-align:center}.requestModalCompact .stepNum{width:21px;height:21px}
+  .requestModalCompact .modalBody{padding:7px 10px 10px}.requestModalCompact .steps{gap:4px}.requestModalCompact .stepPill{display:grid;grid-template-columns:1fr;justify-items:center;align-content:center;min-width:0;min-height:54px;padding:5px 3px;font-size:10.5px;line-height:1.15;text-align:center}.requestModalCompact .stepNum{width:24px;height:24px;font-size:11px}
   .requestModalCompact .formGrid,.requestModalCompact .bookingRouteFields{grid-template-columns:1fr 1fr;gap:6px}.requestModalCompact .bookingSummaryRow{grid-template-columns:1fr}.requestModalCompact .bookingRouteSummary,.requestModalCompact .bookingRequesterSummary{grid-template-columns:auto 1fr}.requestModalCompact .bookingRouteSummary strong,.requestModalCompact .bookingRequesterSummary strong{grid-row:1/3}
   .requestModalCompact .reviewRows{grid-template-columns:1fr 1fr}.requestModalCompact .slots{max-height:205px;grid-template-columns:1fr 1fr}
   .efficiencyOpportunityModal{padding:25px 20px;border-radius:0}

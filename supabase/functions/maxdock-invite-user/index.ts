@@ -1,4 +1,4 @@
-// MaxDock DB19 Supabase Edge Function: maxdock-invite-user
+// MaxDock DB28 Supabase Edge Function: maxdock-invite-user
 // Deploy this file as the function's index.ts. Keep "Verify JWT with legacy secret" OFF.
 
 import { createClient } from "npm:@supabase/supabase-js@2.110.3";
@@ -358,17 +358,6 @@ Deno.serve(async (request: Request) => {
       .eq("is_active", true)
       .maybeSingle();
     if (roleError || !role) return response(request, 400, {error: "The selected role is invalid."});
-    if (roleCode === "customer") {
-      const {data: customerLocations, error: customerLocationError} = await serviceClient
-        .from("locations")
-        .select("id")
-        .eq("is_active", true)
-        .order("name");
-      if (customerLocationError) {
-        return response(request, 400, {error: "Active MaxDock locations could not be loaded."});
-      }
-      locationIds = (customerLocations ?? []).map(location => location.id);
-    }
     if (roleCode !== "system_admin" && locationIds.length === 0) {
       return response(request, 400, {error: "At least one active MaxDock location is required."});
     }

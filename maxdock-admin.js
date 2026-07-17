@@ -82,7 +82,7 @@
       return !term||haystack.includes(term);
     });
     $("userTableBody").innerHTML=users.map(user=>{
-      const locations=["system_admin","customer"].includes(user.role_code)
+      const locations=user.role_code==="system_admin"
         ? '<span class="adminAllLocations">All locations</span>'
         : (user.location_names||[]).map(name=>`<span class="adminLocationTag">${escapeHtml(name)}</span>`).join("")||"—";
       const pending=user.must_change_password?'<span class="adminPendingBadge">Password change required</span>':"";
@@ -133,16 +133,15 @@
   function updateLocationMode(){
     const isSystemAdmin=$("userRole").value==="system_admin";
     const isCustomer=$("userRole").value==="customer";
-    const automaticAccess=isSystemAdmin||isCustomer;
+    const automaticAccess=isSystemAdmin;
     $("userLocationsField").classList.toggle("systemAdminLocations",automaticAccess);
     $("userLocations").querySelectorAll("input").forEach(input=>{
-      if(isCustomer)input.checked=true;
       input.disabled=automaticAccess;
     });
     $("locationHelp").textContent=isSystemAdmin
       ? "System Admins automatically have access to every MaxDock location."
       : isCustomer
-        ? "Customers automatically can book appointments at every active MaxDock location."
+        ? "Select each Max Solutions location this customer or vendor may book."
         : "Select every MaxDock location this user may access.";
     $("userExternalIdentityField").hidden=!isCustomer;
     $("userExternalPartyType").required=isCustomer;
@@ -410,7 +409,7 @@
     const organizationName=roleCode==="customer"?$("userOrganizationName").value.trim():null;
     const isActive=$("userActive").checked;
     const selectedLocationIds=[...$("userLocations").querySelectorAll("input:checked")].map(input=>input.value);
-    const locationIds=roleCode==="customer"?db.getLocations().map(location=>location.id):selectedLocationIds;
+    const locationIds=selectedLocationIds;
     const deliveryMethod=selectedDeliveryMethod();
     const temporaryPassword=$("userTemporaryPassword").value;
     if(!fullName)return setFormError("Full name is required.");

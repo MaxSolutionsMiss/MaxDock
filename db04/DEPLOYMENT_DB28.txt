@@ -1,0 +1,28 @@
+MaxDock v49-DB28 Deployment
+
+Changes
+- Vertically centers and enlarges the number and label inside every booking-wizard step tab.
+- Gives staff a blank Customer or Vendor name field instead of exposing a saved company directory.
+- Continues to fill a signed-in external user's company from the identity assigned in User Management.
+- Lets System Admins select one or more Max Solutions booking locations for each Customer or Vendor account.
+- Limits external destination choices to the locations assigned to that account.
+
+Database
+- Apply MaxDock_DB_v20_Customer_Location_Access.sql using migration name maxdock_db28_customer_location_access.
+- The migration updates both user-management RPC overloads so Customer and Vendor accounts keep the exact permitted locations selected by a System Admin.
+- Existing Customer accounts retain their current access until they are edited in User Management.
+
+Edge Function
+- Deploy supabase/functions/maxdock-invite-user/index.ts as maxdock-invite-user.
+- Keep legacy JWT verification disabled because username_login is intentionally public and every management action performs its own session and System Admin checks.
+
+Frontend
+- Publish all changed root files and their mirrored db04 copies.
+- Hard-refresh after GitHub Pages finishes deploying v49-db28 assets.
+
+Verification
+1. Open Place Appointment as staff and confirm each step tab has a centered, readable number and label.
+2. Choose Customer or Vendor and confirm a blank name field appears with no company-name dropdown.
+3. Create or edit a Customer access account, assign its company identity, and select only the permitted Max locations.
+4. Sign in as that customer and confirm the assigned company is used automatically without displaying any company list.
+5. Confirm the booking destination list contains only that account's permitted Max locations.
