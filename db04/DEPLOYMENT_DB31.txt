@@ -1,0 +1,29 @@
+MaxDock v52-DB31 Deployment
+
+Changes
+- Uses lighter, accessible step-card colors and reduces the step row height so booking information remains dominant.
+- Keeps the large plain step numbers centered horizontally and vertically with their labels.
+- Enlarges Route, Requester, and dock-assignment guidance text by approximately ten to twenty percent.
+- Fixes the Customer Direction control so it consistently displays Outbound to Max Solutions instead of appearing blank.
+- Hides Sister Plant Transfer, Vendor Delivery, and VIP appointment types from Customer accounts while retaining them for staff roles.
+- Compacts the User Management table so Action remains visible beside Last activity on normal desktop widths.
+- Enlarges Usage and Last activity details and stacks row actions where needed to conserve horizontal space.
+
+Database
+- No database migration is required for DB31.
+
+Edge Functions
+- No Edge Function deployment is required for DB31.
+
+Frontend
+- Publish all changed root files and their mirrored db04 copies.
+- Hard-refresh after GitHub Pages finishes deploying v52-db31 assets.
+
+Verification
+1. Confirm the five step cards are lighter, shorter, and visually secondary to the booking form.
+2. Confirm every step number is centered with its label on desktop and mobile.
+3. Confirm Route, Requester, and dock-assignment guidance are easier to read.
+4. Sign in as a Customer and confirm Direction reads Outbound to Max Solutions.
+5. Confirm the Customer appointment-type list excludes Sister Plant Transfer, Vendor Delivery, and VIP.
+6. Sign in as staff and confirm the complete location appointment-type list remains available.
+7. Open User Management at a normal desktop width and confirm Action is visible without horizontal scrolling.

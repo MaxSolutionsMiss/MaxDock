@@ -134,8 +134,12 @@
     ].forEach(([id,items])=>{
       const select=$(id);if(!select||!items?.length)return;
       const previous=select.value;
-      select.innerHTML=items.map(item=>`<option value="${esc(item.name)}">${esc(item.name)}</option>`).join("");
-      if(items.some(item=>item.name===previous))select.value=previous;
+      const visibleItems=id==="reqType"&&isExternalAccount()
+        ?items.filter(item=>!["vip","vendor delivery","sister plant transfer"].includes(String(item.name||"").trim().toLowerCase()))
+        :items;
+      select.innerHTML=visibleItems.map(item=>`<option value="${esc(item.name)}">${esc(item.name)}</option>`).join("");
+      if(visibleItems.some(item=>item.name===previous))select.value=previous;
+      else if(select.options[0])select.value=select.options[0].value;
     });
   }
 
@@ -230,10 +234,13 @@
   function configureBookingDirection(){
     const direction=$("reqDirection");if(!direction)return;
     const customer=isExternalAccount();
+    const outboundOption=[...direction.options].find(option=>option.value==="Outbound"||option.textContent.startsWith("Outbound"));
+    if(outboundOption){
+      outboundOption.value="Outbound";
+      outboundOption.textContent=customer?"Outbound to Max Solutions":"Outbound";
+    }
     if(customer)direction.value="Outbound";
     direction.disabled=customer;
-    const outboundOption=[...direction.options].find(option=>option.value==="Outbound");
-    if(outboundOption)outboundOption.textContent=customer?"Outbound to Max Solutions":"Outbound";
     if($("reqRequesterType")){
       if(customer)$("reqRequesterType").value="Max Solutions";
       $("reqRequesterType").disabled=customer;
@@ -486,7 +493,9 @@
       $("reqCompany").value=template.company_name||template.requester_type||"";
     }
     const templateType=nameForCode(data.appointmentTypeByCode,template.appointment_type_code);
-    $("reqType").value=templateType&&templateType!=="VIP"?templateType:($("reqType").options[0]?.value||"");
+    $("reqType").value=templateType&&[...$("reqType").options].some(option=>option.value===templateType)
+      ?templateType
+      :($("reqType").options[0]?.value||"");
     $("reqTruck").value=nameForCode(data.truckTypeByCode,template.truck_type_code);
     $("reqHandling").value=nameForCode(data.handlingTypeByCode,template.handling_type_code);
     $("reqSkids").value=String(template.skid_count??0);
@@ -1095,7 +1104,7 @@
     const date=$("adminDate")?.value||todayISO();
     const locationName=db.getCurrentLocation()?.name||currentLocation;
     const url=new URL("./dashboard.html",location.href);
-    url.searchParams.set("v","51-db30");
+    url.searchParams.set("v","52-db31");
     url.searchParams.set("display","1");
     url.searchParams.set("date",date);
     url.searchParams.set("location",locationName);
@@ -1164,7 +1173,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=51-db30");
+      location.replace("./index.html?v=52-db31");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");

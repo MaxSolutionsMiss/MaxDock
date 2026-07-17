@@ -1,4 +1,4 @@
-MaxDock v51-DB30 — Booking Typography and Menu Behaviour
+MaxDock v52-DB31 — Customer Booking and Admin Table Refinement
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -157,6 +157,10 @@ Integrated database operations
 - Booking step cards use solid colors, oversized plain numbers, and no circular badges or top ribbons
 - Shared interface typography is approximately ten percent larger for improved readability
 - Gear menus close when the user clicks outside them or presses Escape
+- Booking steps are lighter and shorter while Route, Requester, and dock guidance text are larger
+- Customer Direction consistently displays Outbound to Max Solutions
+- Customer appointment types exclude Sister Plant Transfer, Vendor Delivery, and VIP
+- User Management fits its primary columns on normal desktop widths with larger Usage and Last activity text
 - Customer booking controls use the fixed Mississauga/Max brand palette instead of location-specific colors
 - Dashboard schedules contain configured dock lanes only; cross-site loads render on their assigned receiving dock
 - WIP remains active and VIP is removed from new appointment choices
