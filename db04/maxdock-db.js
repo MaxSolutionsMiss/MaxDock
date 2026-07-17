@@ -41,9 +41,9 @@
   }
   function isOperationalRole(roleCode=state.profile?.role_code){return OPERATIONAL_ROLES.has(roleCode)}
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=46-db25";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=46-db25";
-    return "index.html?v=46-db25";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=47-db26";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=47-db26";
+    return "index.html?v=47-db26";
   }
   function applyRoleNavigation(){
     const operational=isOperationalRole();
@@ -290,7 +290,8 @@
     const data=state.locationData||{};
     const start=localDateTime(row.start_at,state.currentLocation.timezone);
     const end=localDateTime(row.end_at,state.currentLocation.timezone);
-    const dock=data.dockById?.get(row.dock_id);
+    const displayDockId=row.display_dock_id||row.dock_id;
+    const dock=data.dockById?.get(displayDockId);
     const requesterLocation=state.locationDirectory.find(x=>x.id===row.requester_location_id);
     const linkedMovement=Boolean(row.is_linked_movement);
     const isBlock=row.entry_kind==="block";
@@ -302,8 +303,8 @@
       start:start.time,
       end:end.time,
       endDate:end.date,
-      dock:linkedMovement?"Linked movement":(dock?.name||"Unassigned"),
-      dockId:row.dock_id,
+      dock:dock?.name||(linkedMovement?"Linked movement":"Unassigned"),
+      dockId:displayDockId,
       direction:titleCase(row.display_direction||row.direction||"Inbound"),
       company:isBlock?`Blocked: ${row.block_reason}`:(row.display_counterpart_location_name||row.company_name||requesterLocation?.name||row.requester_type||"TBD"),
       type:isBlock?"Dock Block":(data.appointmentTypeByCode?.get(row.appointment_type_code)?.name||row.appointment_type_code||""),
@@ -427,8 +428,10 @@
   }
   async function availableSlots(input){
     const data=state.locationData;
-    const result=await client.rpc("list_capacity_aware_appointment_slots",{
+    const requesterLocation=internalRequesterLocation(input.requesterType,input.company);
+    const result=await client.rpc("list_routed_appointment_slots",{
       p_location_id:state.currentLocation.id,
+      p_requester_location_id:requesterLocation?.id||null,
       p_date:input.date,
       p_direction:normalize(input.direction||"inbound"),
       p_appointment_type_code:codeFor(data.appointmentNameToCode,input.type,"Appointment type"),
@@ -442,12 +445,15 @@
     });
     throwIf(result.error,"Unable to calculate available times");
     return (result.data||[]).map(row=>{
-      const start=localDateTime(row.slot_start,state.currentLocation.timezone);
-      const end=localDateTime(row.slot_end,state.currentLocation.timezone);
+      const receivingTimezone=requesterLocation&&normalize(input.direction)==="outbound"
+        ?requesterLocation.timezone:state.currentLocation.timezone;
+      const start=localDateTime(row.slot_start,receivingTimezone);
+      const end=localDateTime(row.slot_end,receivingTimezone);
       return {
         date:start.date,start:start.time,end:end.time,startAt:row.slot_start,endAt:row.slot_end,
         open:Number(row.available_docks),rank:Number(row.recommendation_rank),score:Number(row.recommendation_score),
         recommendedDockId:row.recommended_dock_id||null,recommendedDockName:row.recommended_dock_name||null,
+        counterpartDockId:row.counterpart_dock_id||null,counterpartDockName:row.counterpart_dock_name||null,
         reason:row.recommendation_reason||"Compatible appointment time",
         capacityEnabled:Boolean(row.capacity_enabled),capacityWarning:Boolean(row.capacity_warning),
         projectedOccupied:Number(row.projected_occupied_skids||0),availableCapacity:Number(row.available_skid_capacity||0),
@@ -500,7 +506,7 @@
   async function bookAppointment(input){
     const data=state.locationData;
     const requesterLocation=internalRequesterLocation(input.requesterType,input.company);
-    const result=await client.rpc("book_appointment",{
+    const result=await client.rpc("book_routed_appointment",{
       p_location_id:state.currentLocation.id,
       p_date:input.date,
       p_start_time:input.start,
@@ -526,8 +532,10 @@
   }
   async function previewStaffAppointmentTime(input){
     const data=state.locationData;
-    const result=await client.rpc("preview_staff_appointment_time",{
+    const requesterLocation=internalRequesterLocation(input.requesterType,input.company);
+    const result=await client.rpc("preview_routed_appointment_time",{
       p_location_id:state.currentLocation.id,
+      p_requester_location_id:requesterLocation?.id||null,
       p_date:input.date,
       p_start_time:input.start,
       p_direction:normalize(input.direction),
@@ -539,14 +547,18 @@
     });
     throwIf(result.error,"Unable to preview the staff appointment time");
     const row=result.data||{};
-    const start=localDateTime(row.start_at,state.currentLocation.timezone);
-    const end=localDateTime(row.end_at,state.currentLocation.timezone);
+    const receivingTimezone=requesterLocation&&normalize(input.direction)==="outbound"
+      ?requesterLocation.timezone:state.currentLocation.timezone;
+    const start=localDateTime(row.start_at,receivingTimezone);
+    const end=localDateTime(row.end_at,receivingTimezone);
     return {
       date:start.date,start:start.time,end:end.time,startAt:row.start_at,endAt:row.end_at,
       duration:Number(row.duration_minutes||0),isAfterHours:Boolean(row.is_after_hours),
-      isOpenDay:Boolean(row.is_open_day),openTime:String(row.operating_open_time||"").slice(0,5),
-      closeTime:String(row.operating_close_time||"").slice(0,5),recommendedDockId:row.recommended_dock_id||null,
-      recommendedDockName:row.recommended_dock_name||null,capacityEnabled:Boolean(row.capacity_enabled),
+      isOpenDay:Boolean(row.primary_inside_hours),openTime:String(row.primary_open_time||"").slice(0,5),
+      closeTime:String(row.primary_close_time||"").slice(0,5),recommendedDockId:row.primary_dock_id||null,
+      recommendedDockName:row.primary_dock_name||null,counterpartDockId:row.counterpart_dock_id||null,
+      counterpartDockName:row.counterpart_dock_name||null,primaryInsideHours:Boolean(row.primary_inside_hours),
+      counterpartInsideHours:Boolean(row.counterpart_inside_hours),capacityEnabled:Boolean(row.capacity_enabled),
       projectedOccupied:Number(row.projected_occupied_skids||0),availableCapacity:Number(row.available_skid_capacity||0),
       capacityMessage:row.capacity_message||""
     };
@@ -682,7 +694,7 @@
     if(!actions||document.getElementById("maxdockAccount"))return;
     const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
     const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
-    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=46-db25";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=47-db26";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
     bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
     const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
     wrap.append(label,bell,button);actions.prepend(wrap);

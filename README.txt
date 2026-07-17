@@ -1,4 +1,4 @@
-MaxDock v46-DB23 — Staff Scheduling and Return-Load Intelligence Build
+MaxDock v47-DB26 — Dual-Site Dock Routing Build
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -21,6 +21,11 @@ Database prerequisites
 13. MaxDock_DB_v13_User_Preferences_Usage.sql
 14. MaxDock_DB_v14_Live_Capacity_MIS.sql
 15. MaxDock_DB_v15_After_Hours_Return_Loads.sql
+16. MaxDock_DB_v16_Linked_Site_Movements.sql
+17. MaxDock_DB_v16a_Remove_Duplicate_Route_Index.sql
+18. MaxDock_DB_v17_WIP_Appointment_Type.sql
+19. MaxDock_DB_v17a_VIP_Appointment_Type.sql
+20. MaxDock_DB_v18_Dual_Site_Dock_Routing.sql
 
 Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
@@ -135,6 +140,11 @@ Integrated database operations
 - Internal MaxDock-to-MaxDock routes are checked for reverse movements within an 18-hour consolidation window
 - Booking, Dashboard, and Operations Queue show potential return-load recommendations to staff
 - Return-load recommendations never merge appointments automatically and require confirmation with both sites and the carrier
+- Internal transfers atomically reserve a real dock at both the sending and receiving Max Solutions locations
+- The same window appears outbound on the sending dock and inbound on the receiving dock
+- Linked movements use the receiving location's configured dock lane instead of a generic schedule lane
+- Staff can choose Inbound or Outbound while Outbound remains the default; customer bookings remain inbound
+- WIP remains active and VIP is removed from new appointment choices
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.
