@@ -1,0 +1,46 @@
+MaxDock v56-DB35 — Visual Clarity and Professional Interface Refinement
+
+Purpose
+- Improve readability and visual polish without making MaxDock busier.
+- Use a universal Arial/Helvetica font stack that works consistently across browsers and operating systems.
+- Preserve DB33 operational density and DB34 spacing/alignment improvements.
+
+Typography
+- Arial is the primary interface font with Helvetica and generic sans-serif fallbacks.
+- Heavy 750-style weights are replaced with standard 400, 500, 600, and 700 weights.
+- Page headings, panel headings, form labels, table text, wizard labels, and supporting text use a consistent hierarchy.
+- Filter labels use title case rather than small all-uppercase lettering.
+
+Dashboard
+- Today’s Queue, Place Appointment, and Block Time are equal 152 x 42 pixel actions on desktop.
+- Primary action text is larger and centered horizontally and vertically.
+- Schedule Date, Appointment Status, Date Range, Customize, and saved-view status sit inside a compact professional control shelf.
+- Dashboard KPI labels increase to 12 pixels and use normal title case.
+- Dashboard KPI values increase to 25 pixels.
+- Export CSV and Print use matching 108-pixel widths.
+
+Operations Queue
+- Controls align at the top of the page header.
+- Operating Date and Queue View remain first, followed by Today, Tomorrow, Refresh, Full screen, Customize, Export CSV, and Print.
+- Frequent actions remain visually prominent while document actions remain secondary.
+- Export CSV and Print use matching 108-pixel widths.
+- Queue KPI labels and values are easier to scan.
+
+Place Appointment
+- Use and Delete buttons use matching 78-pixel widths.
+- Step 1–5 labels use clearer Arial typography and a moderate semibold weight.
+- Step headings, introductions, form labels, inputs, slot text, and navigation actions are easier to read.
+- Staff scheduling override and Use custom time use lighter, clearer weights.
+- DB34 white perimeter and interior breathing room remain unchanged.
+
+Other Pages
+- Reports, Settings, User Management, Data Integration, menus, tables, and supporting pages inherit the same font hierarchy and equal document-action sizing.
+- Shadows are restrained and focus outlines remain visible.
+
+Deployment
+- Frontend only.
+- No database migration.
+- No Supabase Edge Function deployment.
+- No appointment-processing or scheduling logic changes.
+- Publish root and db04 copies of maxdock-config.js and maxdock-db35.css.
+- DB35 uses the unique v56-db35 asset marker.

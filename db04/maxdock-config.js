@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v55-DB34",
+  version: "MaxDock-v56-DB35",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -7,18 +7,17 @@ window.MAXDOCK_CONFIG = Object.freeze({
 (function(){
   const current=document.currentScript;
   const base=current?.src?new URL(".",current.src):new URL(".",location.href);
+  const loadCss=(file,version,release)=>{
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=new URL(`${file}?v=${version}`,base).href;
+    link.dataset.maxdockRelease=release;
+    document.head.appendChild(link);
+  };
 
-  const densityCss=document.createElement("link");
-  densityCss.rel="stylesheet";
-  densityCss.href=new URL("maxdock-db33.css?v=54-db33",base).href;
-  densityCss.dataset.maxdockRelease="db33";
-  document.head.appendChild(densityCss);
-
-  const disciplineCss=document.createElement("link");
-  disciplineCss.rel="stylesheet";
-  disciplineCss.href=new URL("maxdock-db34.css?v=55-db34",base).href;
-  disciplineCss.dataset.maxdockRelease="db34";
-  document.head.appendChild(disciplineCss);
+  loadCss("maxdock-db33.css","54-db33","db33");
+  loadCss("maxdock-db34.css","55-db34","db34");
+  loadCss("maxdock-db35.css","56-db35","db35");
 
   window.addEventListener("load",()=>{
     if(document.querySelector('script[data-maxdock-release="db33"]'))return;
