@@ -32,9 +32,9 @@
 .pageHead p{font-size:13px;line-height:1.45}
 .headerActions{flex-wrap:wrap}
 .headerActions .accountControl,.headerActions .locationPill,.headerActions .ghostBtn,.headerActions .iconBtn{min-height:46px;border-radius:16px;box-shadow:0 8px 18px rgba(6,26,45,.065)}
-.headerActions .locationPill{gap:8px;padding:5px 6px 5px 12px;border-color:var(--location-accent);background:linear-gradient(135deg,var(--location-accent-soft),#fff);box-shadow:0 8px 18px var(--location-accent-shadow)}
-.headerActions .locationPill label{font-size:11px;color:var(--location-accent-dark);text-transform:uppercase;letter-spacing:.05em}
-.headerActions .locationPill select{min-width:150px;height:34px;padding-top:0;padding-bottom:0;border-color:var(--location-accent);border-radius:11px;color:var(--location-accent-dark)}
+.headerActions .locationPill{gap:8px;padding:5px 6px 5px 12px}
+.headerActions .locationPill label{font-size:11px;color:#526070;text-transform:uppercase;letter-spacing:.05em}
+.headerActions .locationPill select{min-width:150px;height:34px;padding-top:0;padding-bottom:0;border-radius:11px}
 .headerActions .accountControl{padding-top:5px;padding-bottom:5px}
 .headerActions .ghostBtn{height:46px}
 @media(max-width:1120px){.topbarInner{align-items:start}.headerActions{max-width:760px}}
@@ -907,8 +907,40 @@ body.queueDisplayMode .queueAction strong{font-size:14px}
 .linkedMovementBadge,.linkedReadOnlyLabel{display:inline-flex;padding:3px 6px;border-radius:99px;background:#eeeafd;color:#59499a;font-size:8px;font-weight:850;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}.linkedReadOnlyLabel{font-size:9px;text-transform:none;letter-spacing:0}
 .queueCard.linkedMovement{border-color:#c9c0ed;background:#fbfaff}.queueCard.linkedMovement .queueTag{background:#eeeafd;color:#59499a}.queueCard.linkedMovement .queueCardTime{background:#f0edfb}.queueCard.linkedMovement .queueState{color:#59499a}.queueCard.linkedMovement .queueState::before{background:#7b68b8}
 
-/* DB25 unified program theme, route-first booking, and prominent efficiency suggestions */
-.bookingLocationField input[readonly]{background:#f1f5f9;color:#334155;font-weight:800;cursor:not-allowed}
+/* DB25 compact destination-first booking and prominent efficiency suggestions */
+.requestModalCompact{display:flex;flex-direction:column;max-height:calc(100vh - 24px);overflow:hidden}
+.requestModalCompact .modalHead{align-items:center;padding:11px 14px;gap:12px}
+.requestModalTitle{flex:0 0 auto}.requestModalCompact .modalHead h2{font-size:20px}.requestModalCompact .modalHead p{margin-top:3px;font-size:11px}
+.bookingTemplateCompact{flex:1 1 430px;grid-template-columns:minmax(150px,1fr) auto auto;align-items:end;max-width:520px;margin:0 0 0 auto;padding:0;border:0;background:transparent}
+.bookingTemplateCompact .bookingTemplateField{gap:3px}.bookingTemplateCompact .bookingTemplateField label{font-size:9px;text-transform:uppercase;letter-spacing:.05em}
+.bookingTemplateCompact .bookingTemplateField select,.bookingTemplateCompact .utilityBtn{height:32px;min-height:32px;border-radius:9px;font-size:11px}
+.bookingTemplateCompact .utilityBtn{padding:0 10px}
+.requestModalCompact .modalBody{padding:9px 14px 13px;overflow:auto}
+.requestModalCompact .steps{gap:7px;margin-bottom:10px}
+.requestModalCompact .stepPill{grid-template-columns:auto 1fr;grid-template-rows:1fr;gap:6px;min-height:43px;padding:6px 8px;border-radius:12px;font-size:11px;text-align:left;justify-items:start}
+.requestModalCompact .stepNum{width:24px;height:24px;font-size:10px}
+.requestModalCompact .stepTitle{margin-bottom:2px;font-size:18px}.requestModalCompact .stepIntro{margin-bottom:9px;font-size:11px}
+.requestModalCompact .formGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.requestModalCompact .bookingRouteFields{grid-template-columns:1.05fr 1.45fr .72fr 1.15fr .58fr}
+.requestModalCompact .field{gap:3px}.requestModalCompact .field label{font-size:10px}.requestModalCompact .field small{font-size:9px}
+.requestModalCompact input,.requestModalCompact select{min-height:36px;padding:7px 9px;border-radius:10px;font-size:12px}
+.requestModalCompact textarea{min-height:54px;padding:8px 9px;border-radius:10px;font-size:12px}
+.compactDirection input{background:#edf5f7;color:var(--theme-2);font-weight:850;cursor:not-allowed}
+.bookingSummaryRow{display:grid;grid-column:1/-1;grid-template-columns:1.35fr 1fr;gap:8px}
+.requestModalCompact .bookingRouteSummary,.requestModalCompact .bookingRequesterSummary{min-height:54px;padding:8px 10px;border-radius:10px}
+.requestModalCompact .bookingRouteSummary strong,.requestModalCompact .bookingRequesterSummary strong{padding:3px 6px;font-size:8px}
+.requestModalCompact .bookingRouteSummary span,.requestModalCompact .bookingRequesterSummary span{font-size:11px}
+.requestModalCompact .bookingRouteSummary small,.requestModalCompact .bookingRequesterSummary small{font-size:9px}
+.requestModalCompact .wizardNav{margin-top:10px}.requestModalCompact .wizardNav button{min-height:36px;padding:8px 14px;border-radius:11px;font-size:11px}
+.requestModalCompact .notice{margin-top:8px!important;padding:8px 10px;border-radius:10px;font-size:10px}
+.requestModalCompact .slotTools{margin:6px 0;gap:7px}.requestModalCompact .slotTools button{padding:7px 10px;border-radius:10px;font-size:10px}
+.requestModalCompact #step3 .formGrid{grid-template-columns:1fr 1fr;margin-bottom:7px!important}
+.requestModalCompact .slots{max-height:225px;overflow:auto;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px;padding:2px}
+.requestModalCompact .smartSlot{min-height:98px;padding:11px 10px 9px;border-radius:12px}
+.requestModalCompact .staffTimeOverride{margin:3px 0 7px;padding:9px;border-radius:11px}
+.requestModalCompact .staffTimeOverrideHead small{margin-top:2px;font-size:9px}.requestModalCompact .staffTimeControls{margin-top:7px;padding-top:7px}
+.requestModalCompact .reviewCard{padding:10px;border-radius:12px}.requestModalCompact .reviewRows{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.requestModalCompact .reviewItem{font-size:11px}.requestModalCompact .reviewItem b{font-size:9px}
+.requestModalCompact .templateSavePanel{margin-top:8px;padding:8px}.requestModalCompact .confirmBox{padding-top:8px}
 .bookingRequesterSummary{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;padding:12px 14px;border:1px solid #d7e1e8;border-radius:13px;background:#f8fafc;color:#334155}
 .bookingRequesterSummary strong{grid-row:1/3;align-self:center;padding:5px 8px;border-radius:8px;background:#e8eef3;color:#334155;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
 .bookingRequesterSummary span{font-size:13px;font-weight:800}.bookingRequesterSummary small{color:#64748b;font-size:10px;line-height:1.4}
@@ -932,6 +964,10 @@ body.queueDisplayMode .queueAction strong{font-size:14px}
 }
 @media(max-width:620px){
   .bookingRouteSummary,.bookingRequesterSummary{grid-template-columns:1fr}.bookingRouteSummary strong,.bookingRequesterSummary strong{grid-row:auto;justify-self:start}
+  .requestModalCompact .modalHead{display:grid;grid-template-columns:1fr auto;gap:7px;padding:9px 10px}.requestModalCompact .closeBtn{grid-column:2;grid-row:1}.bookingTemplateCompact{grid-column:1/-1;grid-row:2;width:100%;max-width:none;margin:0;grid-template-columns:minmax(0,1fr) auto auto}.bookingTemplateCompact .bookingTemplateField{grid-column:auto}.bookingTemplateCompact .utilityBtn{width:auto}
+  .requestModalCompact .modalBody{padding:7px 10px 10px}.requestModalCompact .steps{gap:4px}.requestModalCompact .stepPill{display:grid;grid-template-columns:1fr;justify-items:center;min-width:0;min-height:44px;padding:4px 2px;font-size:9px;text-align:center}.requestModalCompact .stepNum{width:21px;height:21px}
+  .requestModalCompact .formGrid,.requestModalCompact .bookingRouteFields{grid-template-columns:1fr 1fr;gap:6px}.requestModalCompact .bookingSummaryRow{grid-template-columns:1fr}.requestModalCompact .bookingRouteSummary,.requestModalCompact .bookingRequesterSummary{grid-template-columns:auto 1fr}.requestModalCompact .bookingRouteSummary strong,.requestModalCompact .bookingRequesterSummary strong{grid-row:1/3}
+  .requestModalCompact .reviewRows{grid-template-columns:1fr 1fr}.requestModalCompact .slots{max-height:205px;grid-template-columns:1fr 1fr}
   .efficiencyOpportunityModal{padding:25px 20px;border-radius:0}
   .queueFilterActions{grid-template-columns:1fr 1fr}
   body.queueDisplayMode .screen{padding:10px}

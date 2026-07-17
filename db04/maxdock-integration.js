@@ -163,7 +163,7 @@
   }
 
   function populateRequesterLocations(){
-    const select=$("reqRequesterType");
+    const select=$("reqDestination");
     if(!select)return;
     const previous=select.value;
     const locationOptions=db.getLocationDirectory()
@@ -185,13 +185,16 @@
     updateBookingRouteSummary();
   }
 
-  function requesterUsesCompany(value=$("reqRequesterType")?.value){
-    return false;
+  function bookingCounterparty(){
+    const type=$("reqRequesterType")?.value||"Max Solutions";
+    if(type==="Max Solutions")return {requesterType:$("reqDestination")?.value||"",company:null,internal:true};
+    return {requesterType:type,company:$("reqCompany")?.value.trim()||"",internal:false};
   }
 
   function bookingRoute(){
     const site=currentLocation||$("reqLocation")?.value||"Origin";
-    const destination=$("reqRequesterType")?.value||"Choose destination";
+    const counterparty=bookingCounterparty();
+    const destination=counterparty.internal?counterparty.requesterType:(counterparty.company||counterparty.requesterType);
     return {origin:site,destination,site,direction:"Outbound"};
   }
 
@@ -205,8 +208,12 @@
     const site=currentLocation||$("reqLocation")?.value||"this site";
     if($("reqDirection"))$("reqDirection").value="Outbound";
     if(!summary)return;
-    const destination=$("reqRequesterType")?.value||"the destination";
-    summary.innerHTML=`<strong>Outbound route</strong><span>${esc(window.getBookingRouteText())}</span><small>The appointment is outbound at ${esc(site)} and appears automatically as inbound at ${esc(destination)}.</small>`;
+    const counterparty=bookingCounterparty();
+    const destination=counterparty.internal?counterparty.requesterType:(counterparty.company||counterparty.requesterType);
+    const linkedText=counterparty.internal
+      ?`It appears automatically as inbound at ${esc(destination)}.`
+      :`External destination: ${esc(destination)}.`;
+    summary.innerHTML=`<strong>Route</strong><span>${esc(site)} → ${esc(destination||"Choose destination")}</span><small>Outbound from ${esc(site)}. ${linkedText}</small>`;
     renderBookingRequesterSummary();
   }
   window.updateBookingRouteSummary=updateBookingRouteSummary;
@@ -243,7 +250,7 @@
   }
 
   function customBookingSignature(){
-    return [$("reqDate")?.value,$("reqCustomTime")?.value,$("reqDirection")?.value,$("reqRequesterType")?.value,
+    return [$("reqDate")?.value,$("reqCustomTime")?.value,$("reqDirection")?.value,$("reqRequesterType")?.value,$("reqDestination")?.value,$("reqCompany")?.value,
       $("reqType")?.value,$("reqTruck")?.value,$("reqSkids")?.value,$("reqHandling")?.value,$("reqPriority")?.value].join("|");
   }
 
@@ -316,9 +323,10 @@
     clearBookingReturnLoads();
     if(!isStaffScheduler()||!selectedSlot?.startAt||!selectedSlot?.endAt)return;
     try{
+      const counterparty=bookingCounterparty();
       bookingReturnLoads=await db.findReturnLoadMatches({
-        direction:$("reqDirection").value,requesterType:$("reqRequesterType").value,
-        company:null,
+        direction:"Outbound",requesterType:counterparty.requesterType,
+        company:counterparty.company,
         startAt:selectedSlot.startAt,endAt:selectedSlot.endAt
       });
       renderBookingReturnLoads();
@@ -385,7 +393,7 @@
   function renderBookingTemplates(selectedId=""){
     const select=$("reqTemplateSelect");
     if(!select)return;
-    select.innerHTML=`<option value="">Start without a template</option>${bookingTemplates.map(template=>`<option value="${esc(template.id)}">${esc(template.name)}</option>`).join("")}`;
+    select.innerHTML=`<option value="">No template</option>${bookingTemplates.map(template=>`<option value="${esc(template.id)}">${esc(template.name)}</option>`).join("")}`;
     select.value=selectedId&&bookingTemplates.some(template=>template.id===selectedId)?selectedId:"";
     const selected=Boolean(select.value);
     $("reqTemplateApply").disabled=!selected;
@@ -408,10 +416,17 @@
     const templateDestination=db.getLocationDirectory().find(location=>
       location.name!==currentLocation&&(location.name===template.requester_type||location.name===template.company_name)
     );
-    if(templateDestination&&[...$("reqRequesterType").options].some(option=>option.value===templateDestination.name)){
-      $("reqRequesterType").value=templateDestination.name;
+    if(templateDestination&&[...$("reqDestination").options].some(option=>option.value===templateDestination.name)){
+      $("reqRequesterType").value="Max Solutions";
+      $("reqDestination").value=templateDestination.name;
+      $("reqCompany").value="";
+    }else if(["Customer","Vendor"].includes(template.requester_type)){
+      $("reqRequesterType").value=template.requester_type;
+      $("reqCompany").value=template.company_name||"";
+    }else{
+      $("reqRequesterType").value="Customer";
+      $("reqCompany").value=template.company_name||template.requester_type||"";
     }
-    $("reqCompany").value="";
     $("reqType").value=nameForCode(data.appointmentTypeByCode,template.appointment_type_code);
     $("reqTruck").value=nameForCode(data.truckTypeByCode,template.truck_type_code);
     $("reqHandling").value=nameForCode(data.handlingTypeByCode,template.handling_type_code);
@@ -432,10 +447,10 @@
     try{
       validate1();validate2();
       const windowPreference=preferredWindow();
-      const requesterType=$("reqRequesterType").value;
+      const counterparty=bookingCounterparty();
       const saved=await db.saveBookingTemplate({
-        name,direction:"Outbound",requesterType,
-        company:null,
+        name,direction:"Outbound",requesterType:counterparty.requesterType,
+        company:counterparty.company,
         type:$("reqType").value,truck:$("reqTruck").value,skids:Number($("reqSkids").value||0),
         handling:$("reqHandling").value,priority:$("reqPriority").value==="Yes",
         carrier:$("reqCarrier").value.trim(),preferredStart:windowPreference.start,preferredEnd:windowPreference.end
@@ -491,8 +506,9 @@
     populateBookingLocations();
     populateRequesterLocations();
     populateBookingLoadOptions();
+    if(!["Max Solutions","Customer","Vendor"].includes($("reqRequesterType")?.value))$("reqRequesterType").value="Max Solutions";
     if($("reqDirection"))$("reqDirection").value="Outbound";
-    if($("reqCompany"))$("reqCompany").value="";
+    if($("reqRequesterType")?.value==="Max Solutions"&&$("reqCompany"))$("reqCompany").value="";
     configureStaffTimeOverride(true);
     clearBookingReturnLoads();
     bookingReturnLoadPopupSignature="";
@@ -586,14 +602,14 @@
     try{
       validate1();validate2();validate3();validate4();clearError(5);
       if(button){button.disabled=true;button.textContent="Booking…";}
-      const requesterType=$("reqRequesterType").value;
+      const counterparty=bookingCounterparty();
       const result=await db.bookAppointment({
         date:selectedSlot.date,start:selectedSlot.start,direction:"Outbound",
-        requesterType,type:$("reqType").value,truck:$("reqTruck").value,
+        requesterType:counterparty.requesterType,type:$("reqType").value,truck:$("reqTruck").value,
         skids:Number($("reqSkids").value||0),handling:$("reqHandling").value,
         priority:$("reqPriority").value==="Yes",name:$("reqName").value.trim(),
         email:$("reqEmail").value.trim(),reference:$("reqRef").value.trim(),
-        company:null,
+        company:counterparty.company,
         carrier:$("reqCarrier").value.trim(),notes:$("reqNotes").value.trim(),
         afterHoursConfirmed:Boolean(selectedSlot.afterHoursConfirmed)
       });
@@ -1128,6 +1144,10 @@
         $("reqDirection").value="Outbound";
         toggleCompany();updateBookingRouteSummary();clearSelectedBookingTime();renderSlots();
       });
+      $("reqDestination")?.addEventListener("change",()=>{
+        updateBookingRouteSummary();clearSelectedBookingTime();renderSlots();
+      });
+      $("reqCompany")?.addEventListener("input",updateBookingRouteSummary);
       ["reqType","reqPriority","reqCustomTime"].forEach(id=>$(id)?.addEventListener("change",()=>renderSlots()));
       $("efficiencyOpportunityModal")?.addEventListener("click",event=>{if(event.target===$("efficiencyOpportunityModal"))window.closeEfficiencyOpportunity()});
       if(new URLSearchParams(location.search).get("open")==="request")setTimeout(openRequest,0);

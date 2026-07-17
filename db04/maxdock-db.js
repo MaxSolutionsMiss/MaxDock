@@ -27,15 +27,6 @@
   };
   const OPERATIONAL_ROLES=new Set(["system_admin","site_admin","shipping_manager","coordinator"]);
   const LIVE_REFRESH_MS=5000;
-  const LOCATION_ACCENTS={
-    "Mississauga":{dark:"#0f2742",accent:"#155e8f",secondary:"#0f766e",soft:"#eef7fb",shadow:"rgba(21,94,143,.28)"},
-    "Guelph":{dark:"#3b1d5a",accent:"#6d28d9",secondary:"#4338ca",soft:"#f5f0ff",shadow:"rgba(109,40,217,.27)"},
-    "Pickering":{dark:"#0c4a6e",accent:"#0284c7",secondary:"#0891b2",soft:"#ecfeff",shadow:"rgba(2,132,199,.26)"},
-    "Bristol":{dark:"#173c2e",accent:"#047857",secondary:"#15803d",soft:"#effcf4",shadow:"rgba(4,120,87,.25)"},
-    "Owen Sound":{dark:"#334155",accent:"#0e7490",secondary:"#0369a1",soft:"#f1f5f9",shadow:"rgba(14,116,144,.25)"},
-    "Concord":{dark:"#5f1830",accent:"#9f1239",secondary:"#c2410c",soft:"#fff3f2",shadow:"rgba(159,18,57,.25)"},
-    "Markham":{dark:"#312e81",accent:"#4f46e5",secondary:"#0f766e",soft:"#f3f4ff",shadow:"rgba(79,70,229,.25)"}
-  };
   const preferenceSaveTimers=new Map();
   let usageTimer=null;
   let usageStarted=false;
@@ -684,7 +675,6 @@
     if(!select)return;
     select.innerHTML=state.locations.map(l=>`<option>${String(l.name).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</option>`).join("");
     select.value=state.currentLocation?.name||state.locations[0]?.name||"";
-    applyLocationAccent(select.value);
   }
   function addAccountControls(){
     applyRoleNavigation();
@@ -715,16 +705,6 @@
   }
   function hasPermission(code){return state.permissions.has(code)}
 
-  function applyLocationAccent(locationName=state.currentLocation?.name){
-    const accent=LOCATION_ACCENTS[locationName]||LOCATION_ACCENTS.Mississauga;
-    const style=document.documentElement.style;
-    style.setProperty("--location-accent-dark",accent.dark);
-    style.setProperty("--location-accent",accent.accent);
-    style.setProperty("--location-accent-secondary",accent.secondary);
-    style.setProperty("--location-accent-soft",accent.soft);
-    style.setProperty("--location-accent-shadow",accent.shadow);
-  }
-
   client.auth.onAuthStateChange((event)=>{
     if(event==="SIGNED_OUT"&&!location.pathname.endsWith("login.html"))location.replace("./login.html");
   });
@@ -734,7 +714,7 @@
     fetchAppointments,availableSlots,bookAppointment,previewStaffAppointmentTime,findReturnLoadMatches,listReturnLoadOpportunities,blockDockTime,changeStatus,updateAppointment,saveLocationSettings,
     listBookingTemplates,saveBookingTemplate,deleteBookingTemplate,appointmentHistory,
     loadPreference,savePreference,queuePreferenceSave,recordUsage,startUsageTracking,startLiveRefresh,LIVE_REFRESH_MS,
-    populateLocationSelect,applyLocationAccent,addAccountControls,refreshNotificationBadge,hasPermission,isOperationalRole,getLandingPage,applyRoleNavigation,
+    populateLocationSelect,addAccountControls,refreshNotificationBadge,hasPermission,isOperationalRole,getLandingPage,applyRoleNavigation,
     getProfile:()=>state.profile,getLocations:()=>state.locations,getLocationDirectory:()=>state.locationDirectory,getCurrentLocation:()=>state.currentLocation,
     getSettings:()=>state.locationData?.legacySettings||null,getAppointments:()=>state.appointments,
     getLocationData:()=>state.locationData||null,

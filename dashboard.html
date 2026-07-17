@@ -149,9 +149,14 @@
   </section>
 </main>
 <div class="modalOverlay" id="requestModal">
-  <div class="modal">
+  <div class="modal requestModalCompact">
     <div class="modalHead">
-      <div><h2>Place Outbound Appointment</h2><p id="modalFacility">Max Solutions – Mississauga</p></div>
+      <div class="requestModalTitle"><h2>Place Appointment</h2><p id="modalFacility">Max Solutions – Mississauga</p></div>
+      <div class="bookingTemplateBar bookingTemplateCompact" id="bookingTemplateBar">
+        <div class="bookingTemplateField"><label for="reqTemplateSelect">Template</label><select id="reqTemplateSelect"><option value="">No template</option></select></div>
+        <button class="secondaryBtn utilityBtn" id="reqTemplateApply" type="button" onclick="applySelectedBookingTemplate()" disabled>Use</button>
+        <button class="secondaryBtn utilityBtn" id="reqTemplateDelete" type="button" onclick="deleteSelectedBookingTemplate()" disabled>Delete</button>
+      </div>
       <button class="closeBtn" onclick="closeRequest()">×</button>
     </div>
     <div class="modalBody">
@@ -163,25 +168,23 @@
         <div class="stepPill" id="pill5"><span class="stepNum">5</span><span>Review</span></div>
       </div>
 
-      <div class="bookingTemplateBar" id="bookingTemplateBar">
-        <div class="bookingTemplateField"><label for="reqTemplateSelect">Booking template</label><select id="reqTemplateSelect"><option value="">Start without a template</option></select></div>
-        <button class="secondaryBtn utilityBtn" id="reqTemplateApply" type="button" onclick="applySelectedBookingTemplate()" disabled>Use template</button>
-        <button class="secondaryBtn utilityBtn" id="reqTemplateDelete" type="button" onclick="deleteSelectedBookingTemplate()" disabled>Delete</button>
-      </div>
       <div class="templateNotice" id="bookingTemplateNotice" role="status" aria-live="polite" hidden></div>
 
       <section class="stepPanel active" id="step1">
-        <h3 class="stepTitle">Where are you sending this load?</h3>
-        <p class="stepIntro">Your selected MaxDock location is the origin. Choose the destination and MaxDock will create the reciprocal inbound view there.</p>
-        <div class="formGrid">
-          <div class="field bookingLocationField"><label for="reqLocation">Sending from *</label><input id="reqLocation" readonly required><small>Change the top Location selector before opening this form to use another origin.</small></div>
-          <div class="field"><label for="reqRequesterType">Sending to *</label><select id="reqRequesterType"><option>Guelph</option><option>Pickering</option><option>Bristol</option></select><small>Active MaxDock destinations only.</small></div>
-          <input id="reqDirection" type="hidden" value="Outbound">
-          <div class="field full hidden" id="companyWrap"><label>Company / Location Name *</label><input id="reqCompany"></div>
-          <div class="bookingRouteSummary field full" id="bookingRouteSummary" role="status" aria-live="polite"></div>
-          <div class="bookingRequesterSummary field full" id="bookingRequesterSummary"></div>
-          <div class="field"><label>Appointment Type</label><select id="reqType"><option>Raw Material</option><option>Finished Goods</option><option>WIP</option><option>Sister Plant Transfer</option><option>Vendor Delivery</option><option>Customer Pickup</option><option>Return / Rework</option><option>Other</option></select></div>
+        <h3 class="stepTitle">What are you sending?</h3>
+        <p class="stepIntro">This is automatically outbound from your selected location.</p>
+        <input id="reqLocation" type="hidden" required>
+        <div class="formGrid bookingRouteFields">
+          <div class="field"><label for="reqRequesterType">Destination type</label><select id="reqRequesterType"><option>Max Solutions</option><option>Customer</option><option>Vendor</option></select></div>
+          <div class="field" id="internalDestinationWrap"><label for="reqDestination">Destination</label><select id="reqDestination"><option>Guelph</option><option>Pickering</option><option>Bristol</option></select></div>
+          <div class="field hidden" id="companyWrap"><label id="reqCompanyLabel" for="reqCompany">Customer name *</label><input id="reqCompany" placeholder="Enter destination name"></div>
+          <div class="field compactDirection"><label for="reqDirection">Direction</label><input id="reqDirection" value="Outbound" readonly></div>
+          <div class="field"><label for="reqType">Appointment type</label><select id="reqType"><option>Raw Material</option><option>Finished Goods</option><option>WIP</option><option>VIP</option><option>Sister Plant Transfer</option><option>Vendor Delivery</option><option>Customer Pickup</option><option>Return / Rework</option><option>Other</option></select></div>
           <div class="field"><label>Priority</label><select id="reqPriority"><option>No</option><option>Yes</option></select></div>
+          <div class="bookingSummaryRow full">
+            <div class="bookingRouteSummary" id="bookingRouteSummary" role="status" aria-live="polite"></div>
+            <div class="bookingRequesterSummary" id="bookingRequesterSummary"></div>
+          </div>
         </div>
         <div class="error" id="err1"></div>
         <div class="wizardNav"><button class="secondaryBtn" onclick="closeRequest()">Cancel</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(2)">Next</button></div></div>
