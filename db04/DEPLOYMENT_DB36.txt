@@ -1,0 +1,49 @@
+MaxDock v57-DB36 — Header, Toolbar, and Workspace Consistency
+
+Purpose
+- Correct the top-heavy Dashboard and Operations Queue layouts shown in the DB35 screenshots.
+- Create consistent page-header, operational-control, view-setting, and document-action groupings.
+- Preserve the approved Arial/Helvetica typography and Place Appointment spacing.
+
+Dashboard
+- Keeps Today’s Queue, Place Appointment, and Block Time as the only actions in the page header.
+- Uses identical 152 × 42 primary operational actions with moderate 600-weight text.
+- Moves Export CSV and Print out of the page header.
+- Places Schedule Date, Appointment Status, and Date Range together in one operational-control group.
+- Renames Customize to View settings and places it beside Export CSV and Print in a quiet utility group.
+- Keeps the saved-view message below the control groups.
+- Places the KPI cards in a separate full-width row below the control shelf.
+
+Operations Queue
+- Adds more breathing room below the global MaxDock header.
+- Keeps the page title and live status separate from the control toolbar.
+- Uses one restrained workspace toolbar below the title.
+- Groups controls as:
+  1. Operating Date and Queue View
+  2. Today, Tomorrow, and Refresh
+  3. Full screen and View settings
+  4. Export CSV and Print
+- Keeps Export CSV and Print horizontal and equal width.
+- Uses subtle separators instead of disconnected controls or stacked document buttons.
+
+Shared consistency
+- Standardizes document-action pairs at 104 × 40 pixels.
+- Keeps Arial/Helvetica typography from DB35.
+- Uses the same restrained toolbar surface and spacing language on Dashboard and Queue.
+- Preserves responsive stacking for tablets and phones.
+
+Release structure
+- DB36 loads after DB33, DB34, and DB35.
+- New files:
+  maxdock-db36.css
+  maxdock-layout-discipline.js
+  db04/maxdock-db36.css
+  db04/maxdock-layout-discipline.js
+- Both configuration loaders identify MaxDock-v57-DB36.
+- DB36 assets use the unique v57-db36 cache marker.
+
+Deployment impact
+- Frontend only.
+- No database migration.
+- No Supabase Edge Function deployment.
+- No appointment-processing, queue-processing, or scheduling-logic changes.
