@@ -24,7 +24,7 @@ const defaultSettings={
   capacityEnabled:false,capacityTotal:0,capacityReserve:0,capacityMode:"warn",capacityOccupied:0,capacityAsOf:null,
   docks:["Dock 1","Dock 2"],
   truckSetup:{"53 ft Trailer":20,"48 ft Trailer":18,"26 ft Straight Truck":12,"Cube Van":8,"Courier Van":5},
-  typeAdj:{"Raw Material":15,"Finished Goods":0,"WIP":0,"VIP":0,"Sister Plant Transfer":0,"Vendor Delivery":5,"Customer Pickup":5,"Return / Rework":15,"Other":0},
+  typeAdj:{"Raw Material":15,"Finished Goods":0,"WIP":0,"Sister Plant Transfer":0,"Vendor Delivery":5,"Customer Pickup":5,"Return / Rework":15,"Other":0},
   handlingAdj:{"Standard":0,"Mixed SKUs":10,"Requires Counting":10,"Paperwork / Samples":10,"Special Handling":15}
 };
 
@@ -114,8 +114,9 @@ function nextStep(n){
 function validate1(){
   clearError(1);
   required("reqLocation","Assigned location");
-  required("reqRequesterType","Destination type");
-  if($("reqRequesterType").value==="Max Solutions")required("reqDestination","Destination");
+  const routeLabel=$("reqDirection").value==="Inbound"?"Origin":"Destination";
+  required("reqRequesterType",`${routeLabel} type`);
+  if($("reqRequesterType").value==="Max Solutions")required("reqDestination",routeLabel);
   else required("reqCompany",`${$("reqRequesterType").value} name`);
 }
 function validate2(){clearError(2);if(Number($("reqSkids").value||0)<0)throw new Error("Skids cannot be negative.")}
@@ -181,7 +182,7 @@ function renderReview(){
       <div class="reviewItem"><b>Date / Time</b>${esc(selectedSlot?.date||"")} | ${selectedSlot?displayTime(selectedSlot.start)+" – "+displayTime(selectedSlot.end):""}</div>
       <div class="reviewItem"><b>Direction</b>${esc($("reqDirection").value)}</div>
       <div class="reviewItem"><b>Appointment Type</b>${esc($("reqType").value)}</div>
-      <div class="reviewItem"><b>Destination</b>${esc(requesterCompany())}</div>
+      <div class="reviewItem"><b>Route counterpart</b>${esc(requesterCompany())}</div>
       <div class="reviewItem"><b>Truck / Skids</b>${esc($("reqTruck").value)} / ${esc($("reqSkids").value)} skids</div>
       <div class="reviewItem"><b>Handling</b>${esc($("reqHandling").value)}</div>
       <div class="reviewItem"><b>Contact</b>${esc($("reqName").value)} | ${esc($("reqEmail").value)}</div>

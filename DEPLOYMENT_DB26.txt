@@ -1,0 +1,35 @@
+MaxDock v47-DB26 Deployment
+
+Changes
+- Restores a staff-selectable Direction field with Outbound selected by default.
+- Changes the route question and labels automatically when staff select Inbound.
+- Keeps customer-role bookings inbound from an external customer or vendor origin.
+- Reserves a real compatible dock at both Max Solutions sites for every internal transfer.
+- Shows the same appointment window as Outbound at the sending site and Inbound at the receiving site.
+- Places linked movements in the receiving site's actual dock lane instead of the generic Linked movement lane.
+- Checks both dock schedules atomically so neither end can be double-booked.
+- Uses the receiving site's hours, booking window, dock capacity, and skid-capacity rules when suggesting times.
+- Preserves staff after-hours confirmation while validating dock availability at both internal sites.
+- Backfills conflict-free counterpart docks for existing active internal transfers.
+- Keeps WIP active and removes the accidental VIP appointment type from new bookings.
+
+Database
+- Apply MaxDock_DB_v18_Dual_Site_Dock_Routing.sql using migration name maxdock_db26_dual_site_dock_routing.
+- The migration adds counterpart_dock_id, routed slot/preview/booking RPCs, cross-dock conflict enforcement, linked capacity projections, schedule dock projection, and VIP deactivation.
+- No Edge Function deployment is required.
+
+Frontend
+- Publish all changed root files and their mirrored db04 copies.
+- Hard-refresh the browser after GitHub Pages finishes deploying v47-db26 assets.
+
+Verification
+1. As a coordinator, open Place Appointment and confirm Direction defaults to Outbound but also offers Inbound.
+2. Choose Max Solutions and confirm changing Direction switches the wording between destination and origin.
+3. Book an internal transfer and confirm the shared window names a dock at both locations.
+4. Open the sending location schedule and confirm the transfer is Outbound on its assigned dock.
+5. Open the receiving location schedule and confirm the same transfer is Inbound on its own assigned dock.
+6. Confirm the receiving dock is one of that location's configured docks and not a generic Linked movement lane.
+7. Confirm a conflicting booking or dock block cannot reserve either assigned dock during the same window.
+8. Confirm a Customer or Vendor external inbound booking reserves only the receiving Max Solutions dock.
+9. Confirm WIP is available and VIP no longer appears in Appointment Type.
+10. Confirm staff can intentionally approve an outside-hours time and customers remain limited to ordinary hours.
