@@ -1,0 +1,367 @@
+/* MaxDock DB36 — consistent page headers, grouped toolbars, and balanced workspace rhythm */
+
+body.layoutDisciplineDB36[data-page="dashboard"] .pageWrap,
+body.layoutDisciplineDB36[data-page="queue"] .pageWrap{
+  padding-top:22px!important
+}
+
+/* One document-action pattern across MaxDock */
+body.layoutDisciplineDB36 .standardDocumentActions,
+body.layoutDisciplineDB36 .pageUtilityActions,
+body.layoutDisciplineDB36 .dashboardUtilityActions{
+  display:grid!important;
+  grid-template-columns:repeat(2,104px)!important;
+  align-items:center!important;
+  justify-content:end!important;
+  gap:8px!important;
+  width:auto!important;
+  margin:0!important
+}
+body.layoutDisciplineDB36 .standardDocumentButton,
+body.layoutDisciplineDB36 .pageUtilityActions .utilityBtn,
+body.layoutDisciplineDB36 .dashboardUtilityActions .utilityBtn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:104px!important;
+  min-width:104px!important;
+  height:40px!important;
+  min-height:40px!important;
+  padding:0 12px!important;
+  border-radius:10px!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  line-height:1.2!important;
+  white-space:nowrap!important
+}
+
+/* Dashboard title row and primary operational actions */
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardTitleRow{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:24px!important;
+  margin-bottom:17px!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardPrimaryOnly{
+  display:block!important;
+  justify-self:end!important;
+  align-self:center!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardPrimaryActions{
+  display:grid!important;
+  grid-template-columns:repeat(3,152px)!important;
+  gap:9px!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .standardPrimaryAction,
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardPrimaryActions .dashboardActionPrimary{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:152px!important;
+  min-width:152px!important;
+  height:42px!important;
+  min-height:42px!important;
+  padding:0 14px!important;
+  border-radius:11px!important;
+  font-size:13.5px!important;
+  font-weight:600!important;
+  line-height:1.2!important;
+  letter-spacing:0!important;
+  text-align:center!important
+}
+
+/* Dashboard workspace: full-width controls first, uniform KPIs second */
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceStack{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:10px!important;
+  align-items:start!important;
+  margin:0 0 11px!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceToolbar{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-rows:auto auto!important;
+  align-items:end!important;
+  gap:7px 14px!important;
+  width:100%!important;
+  margin:0!important;
+  padding:10px 12px 9px!important;
+  border:1px solid rgba(203,213,225,.88)!important;
+  border-radius:14px!important;
+  background:rgba(255,255,255,.58)!important;
+  box-shadow:0 3px 10px rgba(15,23,42,.035)!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls{
+  display:grid!important;
+  grid-template-columns:145px 145px 136px!important;
+  align-items:end!important;
+  gap:9px!important;
+  min-width:0!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls .filterField,
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls .dashboardRangeHost{
+  width:100%!important;
+  min-width:0!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls input,
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls select{
+  width:100%!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceUtilities{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  min-width:0!important;
+  padding-left:14px!important;
+  border-left:1px solid rgba(203,213,225,.92)!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceUtilities .dashboardCustomize{
+  flex:0 0 auto!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceUtilities .dashboardCustomize summary{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:112px!important;
+  min-width:112px!important;
+  height:40px!important;
+  min-height:40px!important;
+  padding:0 11px!important;
+  border-radius:10px!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  line-height:1.2!important;
+  white-space:nowrap!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceToolbar .viewPreferenceNote{
+  grid-column:1/-1!important;
+  margin:0!important;
+  padding:1px 0 0 1px!important;
+  font-size:10.5px!important;
+  line-height:1.25!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceMetrics{
+  width:100%!important;
+  gap:9px!important;
+  margin:0!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceMetrics .metric{
+  min-height:76px!important;
+  padding:11px 13px!important;
+  border-radius:14px!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceMetrics .metric small{
+  font-size:12px!important;
+  font-weight:600!important;
+  line-height:1.2!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceMetrics .metric strong{
+  margin-top:5px!important;
+  font-size:25px!important;
+  font-weight:700!important;
+  line-height:1!important
+}
+
+/* Queue title breathes independently from the controls */
+body.layoutDisciplineDB36[data-page="queue"] .queueTitleRow{
+  display:block!important;
+  width:100%!important;
+  margin-bottom:10px!important
+}
+body.layoutDisciplineDB36[data-page="queue"] .queueTitleRow>div:first-child{
+  max-width:760px!important
+}
+body.layoutDisciplineDB36[data-page="queue"] .queueTitleRow p{
+  white-space:normal!important
+}
+
+/* Queue workspace toolbar: four disciplined functional groups */
+body.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar{
+  display:grid!important;
+  grid-template-columns:auto auto auto auto!important;
+  align-items:end!important;
+  justify-content:start!important;
+  gap:0!important;
+  width:100%!important;
+  margin:0 0 13px!important;
+  padding:10px 12px!important;
+  border:1px solid rgba(203,213,225,.88)!important;
+  border-radius:14px!important;
+  background:rgba(255,255,255,.52)!important;
+  box-shadow:0 3px 10px rgba(15,23,42,.03)!important
+}
+body.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters{
+  display:grid!important;
+  grid-template-columns:140px 140px!important;
+  align-items:end!important;
+  gap:8px!important
+}
+body.layoutDisciplineDB36[data-page="queue"] .queueToolbarQuickActions,
+body.layoutDisciplineDB36[data-page="queue"] .queueToolbarViewActions,
+body.layoutDisciplineDB36[data-page="queue"] .queueToolbarDocuments{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:flex-start!important;
+  gap:7px!important;
+  min-width:0!important;
+  margin-left:12px!important;
+  padding-left:12px!important;
+  border-left:1px solid rgba(203,213,225,.92)!important
+}
+body.layoutDisciplineDB36[data-page="queue"] .queueToolbarDocuments{
+  display:grid!important;
+  grid-template-columns:repeat(2,104px)!important
+}
+body.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar .filterField{
+  width:140px!important;
+  min-width:140px!important
+}
+body.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar .filterField input,
+body.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar .filterField select{
+  width:100%!important
+}
+body.layoutDisciplineDB36[data-page="queue"] #queueToday,
+body.layoutDisciplineDB36[data-page="queue"] #queueTomorrow{
+  width:78px!important;
+  min-width:78px!important
+}
+body.layoutDisciplineDB36[data-page="queue"] #refreshQueue{
+  width:92px!important;
+  min-width:92px!important
+}
+body.layoutDisciplineDB36[data-page="queue"] #openQueueDisplay{
+  width:104px!important;
+  min-width:104px!important
+}
+body.layoutDisciplineDB36[data-page="queue"] .queueToolbarViewActions .queueCustomize summary{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:108px!important;
+  min-width:108px!important;
+  height:40px!important;
+  min-height:40px!important;
+  padding:0 10px!important;
+  border-radius:10px!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  line-height:1.2!important;
+  white-space:nowrap!important
+}
+body.layoutDisciplineDB36[data-page="queue"] .morningBrief{
+  margin-top:0!important
+}
+
+/* Keep shared typography and surfaces quiet and consistent */
+body.layoutDisciplineDB36 .pageHead h2,
+body.layoutDisciplineDB36 .panelHeader h3,
+body.layoutDisciplineDB36 .metric,
+body.layoutDisciplineDB36 button,
+body.layoutDisciplineDB36 input,
+body.layoutDisciplineDB36 select,
+body.layoutDisciplineDB36 textarea{
+  font-family:Arial,Helvetica,sans-serif!important
+}
+body.layoutDisciplineDB36 .pageHead h2{font-weight:700!important}
+body.layoutDisciplineDB36 button{letter-spacing:0!important}
+
+@media(max-width:1320px){
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceToolbar{
+    grid-template-columns:1fr!important
+  }
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceUtilities{
+    justify-content:flex-start!important;
+    padding:9px 0 0!important;
+    border-left:0!important;
+    border-top:1px solid rgba(203,213,225,.88)!important
+  }
+  body.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar{
+    grid-template-columns:auto auto!important;
+    row-gap:10px!important
+  }
+  body.layoutDisciplineDB36[data-page="queue"] .queueToolbarViewActions{
+    margin-left:0!important;
+    padding-left:0!important;
+    border-left:0!important
+  }
+}
+
+@media(max-width:980px){
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardTitleRow{
+    grid-template-columns:1fr!important;
+    align-items:start!important
+  }
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardPrimaryOnly{
+    justify-self:start!important
+  }
+  body.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar{
+    grid-template-columns:1fr!important;
+    align-items:stretch!important
+  }
+  body.layoutDisciplineDB36[data-page="queue"] .queueToolbarQuickActions,
+  body.layoutDisciplineDB36[data-page="queue"] .queueToolbarViewActions,
+  body.layoutDisciplineDB36[data-page="queue"] .queueToolbarDocuments{
+    margin:0!important;
+    padding:9px 0 0!important;
+    border-left:0!important;
+    border-top:1px solid rgba(203,213,225,.88)!important
+  }
+}
+
+@media(max-width:760px){
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardPrimaryActions{
+    grid-template-columns:1fr!important;
+    width:100%!important
+  }
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardPrimaryActions .dashboardActionPrimary{
+    width:100%!important;
+    min-width:0!important
+  }
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls{
+    grid-template-columns:1fr 1fr!important
+  }
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceUtilities{
+    flex-wrap:wrap!important
+  }
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceUtilities .dashboardCustomize{
+    flex:1 1 100%!important
+  }
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceUtilities .dashboardCustomize summary{
+    width:100%!important;
+    min-width:0!important
+  }
+  body.layoutDisciplineDB36 .standardDocumentActions,
+  body.layoutDisciplineDB36 .pageUtilityActions,
+  body.layoutDisciplineDB36 .dashboardUtilityActions,
+  body.layoutDisciplineDB36[data-page="queue"] .queueToolbarDocuments{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:100%!important
+  }
+  body.layoutDisciplineDB36 .standardDocumentButton,
+  body.layoutDisciplineDB36 .pageUtilityActions .utilityBtn,
+  body.layoutDisciplineDB36 .dashboardUtilityActions .utilityBtn{
+    width:100%!important;
+    min-width:0!important
+  }
+  body.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters{
+    grid-template-columns:1fr 1fr!important
+  }
+  body.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar .filterField{
+    width:100%!important;
+    min-width:0!important
+  }
+  body.layoutDisciplineDB36[data-page="queue"] .queueToolbarQuickActions,
+  body.layoutDisciplineDB36[data-page="queue"] .queueToolbarViewActions{
+    flex-wrap:wrap!important
+  }
+}
+
+@media(max-width:520px){
+  body.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls,
+  body.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters{
+    grid-template-columns:1fr!important
+  }
+}
