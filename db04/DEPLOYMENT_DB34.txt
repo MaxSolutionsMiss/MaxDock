@@ -1,0 +1,41 @@
+MaxDock v55-DB34 — Design Discipline and Alignment
+
+Purpose
+- Correct the DB33 visual inconsistencies while preserving its operational-density improvements.
+- Standardize alignment, typography, control sizing, spacing, and component rhythm across MaxDock.
+
+Dashboard
+- Aligns the Dashboard heading and action area to the page edges.
+- Makes Today’s Queue, Place Appointment, and Block Time identical in size, color treatment, height, typography, and spacing.
+- Adds deliberate space between the live-status line and the operational overview.
+- Standardizes Schedule Date, Appointment Status, Date Range, and Customize labels and controls.
+- Removes unnecessary container styling from the compact Dashboard controls.
+- Uses smaller, evenly spaced KPI cards with more efficient width and height.
+- Improves the Customize menu’s spacing, readability, and option alignment.
+
+Operations Queue
+- Removes the large white toolbar container.
+- Places Operating Date, Queue View, Today, Tomorrow, Refresh, Full Screen, Customize, Export, and Print directly on the workspace background.
+- Aligns the toolbar to the right edge on wide screens.
+- Keeps the Queue heading and description readable without unnecessary wrapping.
+- Adds deliberate space before the Morning Shift Brief.
+- Further reduces Queue metric-card height while preserving readability.
+
+Typography and component audit
+- Uses a consistent system interface font stack led by Segoe UI.
+- Standardizes filter labels, field text, buttons, headings, table headings, table text, and panel headings.
+- Uses a shared 38-pixel compact control height and 10-pixel control radius.
+- Improves horizontal and vertical alignment across Reports, Settings, User Management, Data Integration, and supporting pages.
+
+Place Appointment window
+- Adds a six-pixel white perimeter around the desktop modal.
+- Increases header, body, side, and bottom white space.
+- Moves Cancel, Back, Next, and booking actions farther from the modal edge.
+- Preserves full-width mobile behaviour.
+
+Deployment
+- Frontend-only release.
+- No database migration.
+- No Supabase Edge Function deployment.
+- Publish the root and db04 DB34 stylesheet and configuration files.
+- DB34 loads after DB33 and preserves the existing Dashboard and Queue preference logic.
