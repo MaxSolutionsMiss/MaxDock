@@ -1,6 +1,7 @@
-@import url("./maxdock-db31-base.css?v=52-db31");
+@import url("./maxdock-db31-base.css?v=53-db32");
 
 /* DB32 narrower booking window and quieter booking steps */
+/* Main Pages cache refresh: 2026-07-17 */
 .requestModalCompact{
   width:min(880px,100%);
   max-height:calc(100vh - 12px)
