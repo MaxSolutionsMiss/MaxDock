@@ -1,0 +1,47 @@
+MaxDock v54-DB33 — Operational Density and Workspace Cleanup
+
+Purpose
+- Prioritize the live Dashboard, Operations Queue, schedules, and shipping execution information.
+- Reduce oversized controls, empty banner space, and unnecessary vertical scrolling.
+
+Dashboard
+- Combines Schedule Date, Appointment Status, Date Range, Customize, and saved-view status into a compact control rail.
+- Places the compact controls beside the operational KPI cards on wider screens.
+- Shows five primary metrics by default: Appointments, Scheduled, Completed, Priority, and Open Slots.
+- Allows each signed-in user to select one to six Dashboard metrics.
+- Saves Dashboard metric visibility under the signed-in user's MaxDock preference.
+- Moves Date Range out of the KPI card row and into the compact control rail.
+- Reduces page-header, action-button, metric-card, and schedule-header height.
+
+Operations Queue
+- Moves Operating Date, Queue View, Today, Tomorrow, Refresh, Full screen, Customize, Export CSV, and Print into one compact header toolbar.
+- Shortens Refresh queue to Refresh and Open full-screen view to Full screen.
+- Uses five Queue metrics by default when the user has not already customized the view.
+- Keeps the existing saved Queue customization and limits the operational metric row to six selected cards.
+- Reduces the Morning Shift Brief, metric row, focus panel, and panel spacing.
+
+Other MaxDock pages
+- Reduces excess page padding, panel spacing, utility-button width, filter-field width, and table spacing.
+- Keeps forms, settings controls, administration tables, and mobile layouts usable and readable.
+
+Database
+- No database migration is required for DB33.
+
+Edge Functions
+- No Edge Function deployment is required for DB33.
+
+Frontend
+- Publish the changed root files and their mirrored db04 copies.
+- DB33 loads through maxdock-config.js and uses new maxdock-db33.css and maxdock-ops-density.js assets.
+- Hard-refresh after GitHub Pages completes deployment.
+
+Verification
+1. Dashboard controls and five default KPI cards share one compact operational band on a wide desktop.
+2. Dashboard Customize allows one to six selected metrics and preserves the selection after refresh.
+3. Date Range appears with Schedule Date and Appointment Status rather than as an eighth KPI card.
+4. Operations Queue controls appear beside the page title in one compact toolbar.
+5. Queue defaults to five metrics only when no prior custom metric selection exists.
+6. Existing Queue Customize preferences continue to save to the login.
+7. Dashboard and Queue show more schedule and execution content above the fold.
+8. Reports, Settings, User Management, Data Integration, and supporting pages use shorter controls and reduced spacing.
+9. Mobile layouts stack cleanly without hiding operational controls.
