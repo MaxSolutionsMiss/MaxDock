@@ -2,7 +2,7 @@
   "use strict";
 
   const db=window.MaxDockDB;
-  const state={roles:[],users:[],editingUser:null,currentUserId:null,accessPackage:null,usernameEdited:false};
+  const state={roles:[],users:[],externalCompanies:[],editingUser:null,currentUserId:null,accessPackage:null,usernameEdited:false};
   const $=id=>document.getElementById(id);
 
   function escapeHtml(value){
@@ -78,7 +78,7 @@
   function renderUsers(){
     const term=$("userSearch").value.trim().toLowerCase();
     const users=state.users.filter(user=>{
-      const haystack=[user.full_name,user.username,user.email,user.role_name,...(user.location_names||[])].join(" ").toLowerCase();
+      const haystack=[user.full_name,user.username,user.email,user.role_name,user.organization_name,user.external_party_type,...(user.location_names||[])].join(" ").toLowerCase();
       return !term||haystack.includes(term);
     });
     $("userTableBody").innerHTML=users.map(user=>{
@@ -95,7 +95,7 @@
         ? `<div class="adminLastActivity"><strong>${escapeHtml(formatDateTime(user.last_activity_at))}</strong><span>Last sign-in: ${escapeHtml(formatDate(user.last_sign_in_at))}</span></div>`
         : `<div class="adminLastActivity empty"><strong>No tracked activity</strong><span>Last sign-in: ${escapeHtml(formatDate(user.last_sign_in_at))}</span></div>`;
       return `<tr>
-        <td><div class="adminUserIdentity"><strong>${escapeHtml(user.full_name||user.username||"Unnamed user")}</strong><span>${escapeHtml(displayEmail(user))}</span></div></td>
+        <td><div class="adminUserIdentity"><strong>${escapeHtml(user.full_name||user.username||"Unnamed user")}</strong><span>${escapeHtml(displayEmail(user))}</span>${user.organization_name?`<small>${escapeHtml(user.external_party_type||"External")} · ${escapeHtml(user.organization_name)}</small>`:""}</div></td>
         <td><span class="adminRole role-${escapeHtml(user.role_code)}">${escapeHtml(user.role_name||roleByCode(user.role_code)?.name||user.role_code)}</span></td>
         <td><div class="adminLocationTags">${locations}</div></td>
         <td><div class="adminStatusStack"><span class="adminUserStatus ${user.is_active?"active":"inactive"}"><i></i>${user.is_active?"Active":"Inactive"}</span>${pending}</div></td>
@@ -111,6 +111,15 @@
 
   function renderRoleOptions(){
     $("userRole").innerHTML=state.roles.map(role=>`<option value="${escapeHtml(role.code)}">${escapeHtml(role.name)}</option>`).join("");
+  }
+
+  function renderExternalOrganizationOptions(){
+    const type=$("userExternalPartyType")?.value||"Customer";
+    const names=[...new Set(state.externalCompanies
+      .filter(item=>item.party_type===type)
+      .map(item=>item.company_name)
+      .filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+    if($("externalOrganizationNames"))$("externalOrganizationNames").innerHTML=names.map(name=>`<option value="${escapeHtml(name)}"></option>`).join("");
   }
 
   function renderLocationOptions(selectedIds=[]){
@@ -135,6 +144,10 @@
       : isCustomer
         ? "Customers automatically can book appointments at every active MaxDock location."
         : "Select every MaxDock location this user may access.";
+    $("userExternalIdentityField").hidden=!isCustomer;
+    $("userExternalPartyType").required=isCustomer;
+    $("userOrganizationName").required=isCustomer;
+    renderExternalOrganizationOptions();
   }
 
   function selectedDeliveryMethod(){return document.querySelector('input[name="deliveryMethod"]:checked')?.value||"invite_link"}
@@ -185,6 +198,8 @@
     $("userEmailField").hidden=editing;
     $("userPasswordField").hidden=true;
     $("userRole").value=user?.role_code||"coordinator";
+    $("userExternalPartyType").value=user?.external_party_type||"Customer";
+    $("userOrganizationName").value=user?.organization_name||"";
     $("userActive").checked=user?.is_active??true;
     const isSelf=user?.user_id===state.currentUserId;
     $("userRole").disabled=isSelf;
@@ -214,6 +229,7 @@
     $("deleteUserButton").hidden=true;
     $("userDeliveryField").hidden=false;
     $("userEmailField").hidden=false;
+    $("userExternalIdentityField").hidden=true;
     setFormError();
   }
 
@@ -300,12 +316,15 @@
   }
 
   async function loadUsers(){
-    const [usersResult,usageResult]=await Promise.all([
-      db.client.rpc("admin_list_users"),
-      db.client.rpc("admin_list_user_usage")
+    const [usersResult,usageResult,companies]=await Promise.all([
+      db.client.rpc("admin_list_users_with_identity"),
+      db.client.rpc("admin_list_user_usage"),
+      db.listExternalCompanies()
     ]);
     if(usersResult.error)throw usersResult.error;
     if(usageResult.error)throw usageResult.error;
+    state.externalCompanies=companies||[];
+    renderExternalOrganizationOptions();
     const usageByUser=new Map((usageResult.data||[]).map(item=>[item.user_id,item]));
     state.users=(usersResult.data||[]).map(user=>({...user,...(usageByUser.get(user.user_id)||{})}));
     renderUsers();
@@ -387,6 +406,8 @@
     const username=$("userUsername").value.trim().toLowerCase();
     const email=$("userEmail").value.trim().toLowerCase();
     const roleCode=$("userRole").value;
+    const externalPartyType=roleCode==="customer"?$("userExternalPartyType").value:null;
+    const organizationName=roleCode==="customer"?$("userOrganizationName").value.trim():null;
     const isActive=$("userActive").checked;
     const selectedLocationIds=[...$("userLocations").querySelectorAll("input:checked")].map(input=>input.value);
     const locationIds=roleCode==="customer"?db.getLocations().map(location=>location.id):selectedLocationIds;
@@ -397,6 +418,8 @@
     if(!editing&&deliveryMethod==="invite_link"&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setFormError("Enter a valid email address for the invitation link.");
     if(!editing&&deliveryMethod==="temporary_password"&&email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setFormError("Enter a valid contact email or leave it blank.");
     if(!editing&&deliveryMethod==="temporary_password"&&temporaryPassword.length<6)return setFormError("The temporary password must contain at least 6 characters.");
+    if(roleCode==="customer"&&!organizationName)return setFormError("Company name is required for a Customer access account.");
+    if(roleCode==="customer"&&!['Customer','Vendor'].includes(externalPartyType))return setFormError("Choose Customer or Vendor as the external account type.");
     if(roleCode!=="system_admin"&&!locationIds.length)return setFormError("Select at least one location for this user.");
 
     button.disabled=true;
@@ -408,7 +431,8 @@
         }
         const result=await db.client.rpc("admin_update_user",{
           p_user_id:editingUser.user_id,p_full_name:fullName,p_role_code:roleCode,
-          p_is_active:isActive,p_location_ids:roleCode==="system_admin"?[]:locationIds
+          p_is_active:isActive,p_location_ids:roleCode==="system_admin"?[]:locationIds,
+          p_external_party_type:externalPartyType,p_organization_name:organizationName
         });
         if(result.error)throw result.error;
         closeUserModal();
@@ -416,6 +440,7 @@
         const action=deliveryMethod==="temporary_password"?"create_temporary_password":"create_invite_link";
         const data=await invokeAccountService({
           action,username,email,fullName,roleCode,
+          externalPartyType,organizationName,
           password:deliveryMethod==="temporary_password"?temporaryPassword:undefined,
           locationIds:roleCode==="system_admin"?[]:locationIds
         });
@@ -456,6 +481,7 @@
     $("resetPasswordButton").addEventListener("click",resetCurrentUserPassword);
     $("deleteUserButton").addEventListener("click",deleteCurrentUser);
     $("userRole").addEventListener("change",updateLocationMode);
+    $("userExternalPartyType").addEventListener("change",renderExternalOrganizationOptions);
     $("userSearch").addEventListener("input",renderUsers);
     $("userForm").addEventListener("submit",saveUser);
     $("userFullName").addEventListener("input",()=>{if(!state.editingUser&&!state.usernameEdited)$("userUsername").value=usernameFromName($("userFullName").value)});

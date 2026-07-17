@@ -315,6 +315,8 @@ Deno.serve(async (request: Request) => {
     const email = String(input.email ?? "").trim().toLowerCase();
     const fullName = String(input.fullName ?? "").trim();
     const roleCode = String(input.roleCode ?? "").trim();
+    const externalPartyType = roleCode === "customer" ? String(input.externalPartyType ?? "").trim() : "";
+    const organizationName = roleCode === "customer" ? String(input.organizationName ?? "").trim() : "";
     const password = String(input.password ?? "");
     let locationIds = [...new Set(
       (Array.isArray(input.locationIds) ? input.locationIds : [])
@@ -326,6 +328,12 @@ Deno.serve(async (request: Request) => {
       return response(request, 400, {error: "Use a username with 3–50 letters, numbers, dots, dashes, or underscores."});
     }
     if (!fullName) return response(request, 400, {error: "Full name is required."});
+    if (roleCode === "customer" && !["Customer", "Vendor"].includes(externalPartyType)) {
+      return response(request, 400, {error: "Choose Customer or Vendor as the external account type."});
+    }
+    if (roleCode === "customer" && !organizationName) {
+      return response(request, 400, {error: "Company name is required for a Customer access account."});
+    }
     if (action === "create_invite_link" && !validEmail(email)) {
       return response(request, 400, {error: "Enter a valid email address for the invitation link."});
     }
@@ -419,6 +427,8 @@ Deno.serve(async (request: Request) => {
           full_name: fullName,
           contact_email: email || null,
           role_code: roleCode,
+          external_party_type: externalPartyType || null,
+          organization_name: organizationName || null,
           is_active: true,
           must_change_password: true
         })
@@ -449,7 +459,7 @@ Deno.serve(async (request: Request) => {
     }
 
     return response(request, 201, {
-      user: {id: createdUserId, username, email, fullName, roleCode, locationIds},
+      user: {id: createdUserId, username, email, fullName, roleCode, externalPartyType, organizationName, locationIds},
       invitationLink: invitationLink || undefined,
       method: action === "create_temporary_password" ? "temporary_password" : "invite_link",
       message: action === "create_temporary_password"

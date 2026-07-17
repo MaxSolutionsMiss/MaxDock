@@ -51,7 +51,8 @@ function migrateOldData(){
   }
 }
 function applyTheme(location){
-  const t=locationThemes[location]||locationThemes.Mississauga;
+  const customerAccount=window.MaxDockDB?.getProfile?.()?.role_code==="customer";
+  const t=locationThemes[customerAccount?"Mississauga":location]||locationThemes.Mississauga;
   const r=document.documentElement.style;
   r.setProperty("--theme-1",t.a);r.setProperty("--theme-2",t.b);r.setProperty("--theme-3",t.c);
   r.setProperty("--theme-soft",t.soft);r.setProperty("--theme-soft-2",t.soft2);
@@ -131,7 +132,7 @@ function toggleCompany(){
   window.updateBookingRouteSummary?.();
 }
 function requesterCompany(){
-  return $("reqRequesterType").value==="Max Solutions"?$("reqDestination").value:$("reqCompany").value.trim();
+  return window.getBookingCounterpartyName?.()||($("reqRequesterType").value==="Max Solutions"?$("reqDestination").value:$("reqCompany").value.trim());
 }
 function calculateDuration(){
   const skids=Number($("reqSkids").value||0);
@@ -180,7 +181,7 @@ function renderReview(){
       <div class="reviewItem"><b>Appointment site</b>Max Solutions – ${esc(currentLocation)}</div>
       <div class="reviewItem"><b>Route</b>${esc(window.getBookingRouteText?.()||requesterCompany())}</div>
       <div class="reviewItem"><b>Date / Time</b>${esc(selectedSlot?.date||"")} | ${selectedSlot?displayTime(selectedSlot.start)+" – "+displayTime(selectedSlot.end):""}</div>
-      <div class="reviewItem"><b>Direction</b>${esc($("reqDirection").value)}</div>
+      <div class="reviewItem"><b>Direction</b>${esc(window.getBookingDisplayDirection?.()||$("reqDirection").value)}</div>
       <div class="reviewItem"><b>Appointment Type</b>${esc($("reqType").value)}</div>
       <div class="reviewItem"><b>Route counterpart</b>${esc(requesterCompany())}</div>
       <div class="reviewItem"><b>Truck / Skids</b>${esc($("reqTruck").value)} / ${esc($("reqSkids").value)} skids</div>
@@ -377,11 +378,10 @@ function renderDashboard(){
   const scheduleItems=filteredDayAppointments();
   const range=dashboardDateRange();
   const rangeItems=filteredRangeAppointments();
-  const physicalRange=rangeItems.filter(a=>!a.linkedMovement);
-  const linkedMovements=rangeItems.filter(a=>a.linkedMovement);
+  const appointmentRange=rangeItems.filter(a=>a.type!=="Dock Block");
   const activeRange=rangeItems.filter(a=>a.status!=="Cancelled");
-  const completed=physicalRange.filter(a=>a.status==="Completed").length;
-  const scheduled=physicalRange.filter(a=>a.status==="Scheduled").length;
+  const completed=appointmentRange.filter(a=>a.status==="Completed").length;
+  const scheduled=appointmentRange.filter(a=>a.status==="Scheduled").length;
   const priority=activeRange.filter(a=>a.priority).length;
   const inboundSkids=activeRange
     .filter(a=>a.direction==="Inbound"&&a.type!=="Dock Block")
@@ -391,8 +391,7 @@ function renderDashboard(){
     .reduce((sum,a)=>sum+Number(a.skids||0),0);
 
   $("metrics").innerHTML=[
-    ["Appointments",physicalRange.length],
-    ["Linked Movements",linkedMovements.length],
+    ["Appointments",appointmentRange.length],
     ["Scheduled",scheduled],
     ["Completed",completed],
     ["Priority",priority],
@@ -524,7 +523,6 @@ function renderSchedule(items){
   $("timeRuler").innerHTML=regularTickHTML+endLabelHTML;
 
   const scheduleLanes=[...settings.docks];
-  if(items.some(item=>item.linkedMovement))scheduleLanes.push("Linked movement");
   $("timelineBody").innerHTML=scheduleLanes.map(dock=>{
     const dockItems=items
       .filter(a=>a.dock===dock)
@@ -565,17 +563,17 @@ function renderSchedule(items){
       return `<div class="scheduleEvent ${cls} ${a.priority?"priority":""} ${a.afterHours?"afterHours":""} ${canOpenEditor?"appointmentEditable":""}"
         ${canOpenEditor?`data-appointment-id="${esc(a.id)}" ondblclick="openAppointmentEditor('${esc(a.id)}')"`:""}
         style="left:${left}px;width:${width}px${displayStyle}"
-        title="${esc(a.routeOriginName&&a.routeDestinationName?`${a.routeOriginName} → ${a.routeDestinationName}`:a.company)} • ${displayTime(a.start)}–${displayTime(a.end)}${a.linkedMovement?" • Linked schedule view":""}${a.afterHours?" • After-hours staff override":""}">
+        title="${esc(a.routeOriginName&&a.routeDestinationName?`${a.routeOriginName} → ${a.routeDestinationName}`:a.company)} • ${displayTime(a.start)}–${displayTime(a.end)}${a.afterHours?" • After-hours staff override":""}">
         <div class="eventTime">${esc(timeLabel)}</div>
         <div class="eventCompany">${esc(a.company)}</div>
-        <div class="eventMeta">${a.linkedMovement?"Linked movement • ":""}${esc(a.type)} • ${esc(a.truck||"")} ${a.skids?`• ${esc(a.skids)} skids`:""}</div>
+        <div class="eventMeta">${esc(a.type)} • ${esc(a.truck||"")} ${a.skids?`• ${esc(a.skids)} skids`:""}</div>
       </div>`;
     }).join("");
 
     return `<div class="timelineLane">
       <div class="dockLaneLabel">
         <strong>${esc(dock)}</strong>
-        <small>${dockItems.length} ${dock==="Linked movement"?"movement":"appointment"}${dockItems.length===1?"":"s"}</small>
+        <small>${dockItems.length} appointment${dockItems.length===1?"":"s"}</small>
       </div>
       <div class="dockTrack" style="width:${trackWidth}px;background-size:${scale*pxPerMinute}px 100%">
         ${events}

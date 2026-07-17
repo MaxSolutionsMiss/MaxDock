@@ -41,9 +41,9 @@
   }
   function isOperationalRole(roleCode=state.profile?.role_code){return OPERATIONAL_ROLES.has(roleCode)}
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=47-db26";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=47-db26";
-    return "index.html?v=47-db26";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=48-db27";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=48-db27";
+    return "index.html?v=48-db27";
   }
   function applyRoleNavigation(){
     const operational=isOperationalRole();
@@ -243,7 +243,7 @@
     if(!user)throw new Error("No signed-in MaxDock user was found.");
 
     const profileResult=await client.from("profiles")
-      .select("id,username,full_name,contact_email,role_code,is_active,must_change_password")
+      .select("id,username,full_name,contact_email,role_code,is_active,must_change_password,external_party_type,organization_name")
       .eq("id",user.id).single();
     throwIf(profileResult.error,"Unable to load the MaxDock user profile");
     if(!profileResult.data?.is_active)throw new Error("This MaxDock account is inactive.");
@@ -303,7 +303,7 @@
       start:start.time,
       end:end.time,
       endDate:end.date,
-      dock:dock?.name||(linkedMovement?"Linked movement":"Unassigned"),
+      dock:dock?.name||"Unassigned",
       dockId:displayDockId,
       direction:titleCase(row.display_direction||row.direction||"Inbound"),
       company:isBlock?`Blocked: ${row.block_reason}`:(row.display_counterpart_location_name||row.company_name||requesterLocation?.name||row.requester_type||"TBD"),
@@ -467,6 +467,12 @@
     const result=await client.from("booking_templates").select("*")
       .eq("location_id",state.currentLocation.id).order("updated_at",{ascending:false});
     throwIf(result.error,"Unable to load booking templates");
+    return result.data||[];
+  }
+
+  async function listExternalCompanies(){
+    const result=await client.rpc("list_external_company_directory");
+    throwIf(result.error,"Unable to load the customer and vendor directory");
     return result.data||[];
   }
 
@@ -694,7 +700,7 @@
     if(!actions||document.getElementById("maxdockAccount"))return;
     const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
     const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
-    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=47-db26";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=48-db27";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
     bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
     const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
     wrap.append(label,bell,button);actions.prepend(wrap);
@@ -724,7 +730,7 @@
   window.MaxDockDB={
     client,state,getSession,requireAuth,signIn,signOut,loadContext,selectLocation,loadLocation,
     fetchAppointments,availableSlots,bookAppointment,previewStaffAppointmentTime,findReturnLoadMatches,listReturnLoadOpportunities,blockDockTime,changeStatus,updateAppointment,saveLocationSettings,
-    listBookingTemplates,saveBookingTemplate,deleteBookingTemplate,appointmentHistory,
+    listBookingTemplates,saveBookingTemplate,deleteBookingTemplate,appointmentHistory,listExternalCompanies,
     loadPreference,savePreference,queuePreferenceSave,recordUsage,startUsageTracking,startLiveRefresh,LIVE_REFRESH_MS,
     populateLocationSelect,addAccountControls,refreshNotificationBadge,hasPermission,isOperationalRole,getLandingPage,applyRoleNavigation,
     getProfile:()=>state.profile,getLocations:()=>state.locations,getLocationDirectory:()=>state.locationDirectory,getCurrentLocation:()=>state.currentLocation,
