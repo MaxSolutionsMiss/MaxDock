@@ -1,0 +1,20 @@
+MaxDock v54-DB33 release summary
+
+Dashboard
+- Compact operational band combines date, status, range, customization, and saved-view status.
+- Five primary KPI cards show by default; users may select one to six.
+- More vertical room is available for dock schedules, including sites with six or seven doors.
+
+Operations Queue
+- Date, view, Today, Tomorrow, Refresh, Full screen, Customize, Export CSV, and Print share one compact header toolbar.
+- Untouched eight-card metric defaults become five operational metrics; existing user customizations are preserved.
+- Morning brief and execution sections use less vertical space.
+
+Across MaxDock
+- Shorter utility buttons, narrower filters, tighter page headers, reduced panel padding, and more compact tables.
+- Responsive mobile layouts remain stacked and usable.
+
+Deployment
+- Frontend only.
+- No database migration.
+- No Edge Function deployment.
