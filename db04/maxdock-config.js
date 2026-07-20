@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v58-DB37",
+  version: "MaxDock-v59-DB38",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -26,20 +26,21 @@ window.MAXDOCK_CONFIG = Object.freeze({
     document.body.appendChild(script);
   });
 
-  loadCss("maxdock-db33.css","58-db37","db33");
-  loadCss("maxdock-db34.css","58-db37","db34");
-  loadCss("maxdock-db35.css","58-db37","db35");
-  loadCss("maxdock-db36.css","58-db37","db36");
+  loadCss("maxdock-db33.css","59-db38","db33");
+  loadCss("maxdock-db34.css","59-db38","db34");
+  loadCss("maxdock-db35.css","59-db38","db35");
+  loadCss("maxdock-db36.css","59-db38","db36");
+  loadCss("maxdock-db38.css","59-db38","db38");
 
   const initialize=async()=>{
-    await loadScript("maxdock-ops-density.js","58-db37","db33");
-    await loadScript("maxdock-layout-discipline.js","58-db37","db36");
-    document.documentElement.dataset.maxdockRelease="db37";
+    await loadScript("maxdock-ops-density.js","59-db38","db33");
+    await loadScript("maxdock-layout-discipline.js","59-db38","db36");
+    document.documentElement.dataset.maxdockRelease="db38";
     document.querySelectorAll(".menu").forEach(menu=>{
       if(menu.querySelector(".maxdockReleaseStamp"))return;
       const stamp=document.createElement("small");
       stamp.className="maxdockReleaseStamp";
-      stamp.textContent="DB37 · DB36 interface active";
+      stamp.textContent="DB38 · visual refinement active";
       menu.appendChild(stamp);
     });
   };

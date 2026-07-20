@@ -1,0 +1,37 @@
+MaxDock v59-DB38 — Visual Feedback and Reliable Delivery
+
+Purpose
+- Correct the isolated button-style edit that was merged only into db04 on main and never reached the live gh-pages release.
+- Add visible but restrained interaction feedback while preserving the approved DB31–DB37 interface.
+- Carry the working GitHub Pages not-found redirect into the reviewed source tree.
+
+Interface refinement
+- Primary actions lift two pixels and receive a clearer shadow on hover-capable devices.
+- Secondary, utility, menu, and icon actions receive lighter lift, border, and shadow feedback.
+- Touch and pointer presses receive a short, visible pressed state.
+- Keyboard focus uses a clear accessible outline and focus halo.
+- Reduced-motion preferences disable the new transitions.
+- No button dimensions, page spacing, typography, brand colours, or scheduling workflows change.
+
+Release structure
+- Adds maxdock-db38.css after the existing DB36 layout layer.
+- Restores maxdock-db36.css to matching root and db04 copies.
+- Adds matching root and db04 404.html files that redirect unknown Pages paths to /MaxDock/db04/.
+- Replaces v58-db37 browser references with the unique v59-db38 cache marker.
+- The gear menu displays “DB38 · visual refinement active”.
+
+Deployment impact
+- Frontend only.
+- No Supabase migration.
+- No Edge Function deployment.
+- No appointment, capacity, routing, authentication, or reporting logic change.
+
+Verification
+1. Confirm every JavaScript file passes node --check.
+2. Confirm git diff --check passes.
+3. Confirm every shared root/db04 release pair is byte-identical.
+4. Open MaxDock with a v59-db38 query value and confirm the DB38 marker in the gear menu.
+5. On desktop, hover primary and secondary actions and confirm a restrained lift and shadow.
+6. Press an action on desktop or touch and confirm the short pressed state.
+7. Navigate with Tab and confirm a clear focus outline.
+8. Open an unknown path such as /MaxDock/xyz and confirm it redirects to /MaxDock/db04/.
