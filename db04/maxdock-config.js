@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v57-DB36",
+  version: "MaxDock-v58-DB37",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -14,21 +14,35 @@ window.MAXDOCK_CONFIG = Object.freeze({
     link.dataset.maxdockRelease=release;
     document.head.appendChild(link);
   };
-  const loadScript=(file,version,release)=>{
-    if(document.querySelector(`script[data-maxdock-release="${release}"]`))return;
+  const loadScript=(file,version,release)=>new Promise(resolve=>{
+    const existing=document.querySelector(`script[data-maxdock-release="${release}"]`);
+    if(existing){resolve();return}
     const script=document.createElement("script");
     script.src=new URL(`${file}?v=${version}`,base).href;
     script.dataset.maxdockRelease=release;
+    script.async=false;
+    script.addEventListener("load",resolve,{once:true});
+    script.addEventListener("error",()=>{console.warn(`MaxDock ${release} asset did not load.`);resolve()},{once:true});
     document.body.appendChild(script);
+  });
+
+  loadCss("maxdock-db33.css","58-db37","db33");
+  loadCss("maxdock-db34.css","58-db37","db34");
+  loadCss("maxdock-db35.css","58-db37","db35");
+  loadCss("maxdock-db36.css","58-db37","db36");
+
+  const initialize=async()=>{
+    await loadScript("maxdock-ops-density.js","58-db37","db33");
+    await loadScript("maxdock-layout-discipline.js","58-db37","db36");
+    document.documentElement.dataset.maxdockRelease="db37";
+    document.querySelectorAll(".menu").forEach(menu=>{
+      if(menu.querySelector(".maxdockReleaseStamp"))return;
+      const stamp=document.createElement("small");
+      stamp.className="maxdockReleaseStamp";
+      stamp.textContent="DB37 · DB36 interface active";
+      menu.appendChild(stamp);
+    });
   };
-
-  loadCss("maxdock-db33.css","54-db33","db33");
-  loadCss("maxdock-db34.css","55-db34","db34");
-  loadCss("maxdock-db35.css","56-db35","db35");
-  loadCss("maxdock-db36.css","57-db36","db36");
-
-  window.addEventListener("load",()=>{
-    loadScript("maxdock-ops-density.js","54-db33","db33");
-    loadScript("maxdock-layout-discipline.js","57-db36","db36");
-  },{once:true});
+  if(document.readyState==="complete")initialize();
+  else window.addEventListener("load",initialize,{once:true});
 })();

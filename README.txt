@@ -161,6 +161,8 @@ Integrated database operations
 - Customer Direction consistently displays Outbound to Max Solutions
 - Customer appointment types exclude Sister Plant Transfer, Vendor Delivery, and VIP
 - User Management fits its primary columns on normal desktop widths with larger Usage and Last activity text
+- DB37 forces fresh DB31–DB36 assets with a new cache marker and guaranteed DB33-before-DB36 initialization
+- The gear menu displays the active DB37 delivery marker so deployed interface loading can be confirmed visually
 - Customer booking controls use the fixed Mississauga/Max brand palette instead of location-specific colors
 - Dashboard schedules contain configured dock lanes only; cross-site loads render on their assigned receiving dock
 - WIP remains active and VIP is removed from new appointment choices
