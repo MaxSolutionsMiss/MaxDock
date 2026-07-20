@@ -5,7 +5,7 @@
 ```bash
 find . -type f -name '*.js' -not -path './.git/*' -print0 | xargs -0 -n1 node --check
 git diff --check
-./scripts/verify-root-db04-parity.sh
+bash ./scripts/verify-root-db04-parity.sh
 ```
 
 For TypeScript Edge Functions, inspect imports and run the available Deno/type check when the execution environment provides it. A missing local CLI does not justify deploying unreviewed source.
