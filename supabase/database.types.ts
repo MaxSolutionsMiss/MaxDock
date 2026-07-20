@@ -629,12 +629,14 @@ export type Database = {
           capacity_reserve_skids: number
           created_at: string
           current_occupied_skids: number
+          dock_assignment_strategy: string
           full_truck_minimum_minutes: number
           full_truck_skid_threshold: number
           inventory_as_of: string | null
           is_active: boolean
           location_id: string
           maximum_advance_days: number
+          max_concurrent_appointments: number | null
           minimum_notice_minutes: number
           minutes_per_skid: number
           priority_minimum_minutes: number
@@ -652,12 +654,14 @@ export type Database = {
           capacity_reserve_skids?: number
           created_at?: string
           current_occupied_skids?: number
+          dock_assignment_strategy?: string
           full_truck_minimum_minutes?: number
           full_truck_skid_threshold?: number
           inventory_as_of?: string | null
           is_active?: boolean
           location_id: string
           maximum_advance_days?: number
+          max_concurrent_appointments?: number | null
           minimum_notice_minutes?: number
           minutes_per_skid?: number
           priority_minimum_minutes?: number
@@ -675,12 +679,14 @@ export type Database = {
           capacity_reserve_skids?: number
           created_at?: string
           current_occupied_skids?: number
+          dock_assignment_strategy?: string
           full_truck_minimum_minutes?: number
           full_truck_skid_threshold?: number
           inventory_as_of?: string | null
           is_active?: boolean
           location_id?: string
           maximum_advance_days?: number
+          max_concurrent_appointments?: number | null
           minimum_notice_minutes?: number
           minutes_per_skid?: number
           priority_minimum_minutes?: number

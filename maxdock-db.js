@@ -41,9 +41,9 @@
   }
   function isOperationalRole(roleCode=state.profile?.role_code){return OPERATIONAL_ROLES.has(roleCode)}
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=59-db38";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=59-db38";
-    return "index.html?v=59-db38";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=60-db39";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=60-db39";
+    return "index.html?v=60-db39";
   }
   function applyRoleNavigation(){
     const operational=isOperationalRole();
@@ -389,6 +389,8 @@
       capacityOccupied:Number(s.current_occupied_skids||0),
       capacityAsOf:s.inventory_as_of||null,
       capacitySource:s.capacity_last_source||"manual",
+      dockAssignmentStrategy:s.dock_assignment_strategy||"balanced",
+      maxConcurrentAppointments:s.max_concurrent_appointments==null?null:Number(s.max_concurrent_appointments),
       docks:dockRows.map(x=>x.name),
       truckSetup:{},typeAdj:{},handlingAdj:{}
     };
@@ -654,7 +656,9 @@
       skid_capacity:Number(input.capacityTotal)>0?Number(input.capacityTotal):null,
       capacity_reserve_skids:Number(input.capacityReserve||0),capacity_enforcement_mode:input.capacityMode||"warn",
       current_occupied_skids:Number(input.capacityOccupied||0),
-      inventory_as_of:input.capacityAsOf||new Date().toISOString(),capacity_last_source:"manual"
+      inventory_as_of:input.capacityAsOf||new Date().toISOString(),capacity_last_source:"manual",
+      dock_assignment_strategy:input.dockAssignmentStrategy==="fill_first"?"fill_first":"balanced",
+      max_concurrent_appointments:input.maxConcurrentAppointments==null?null:Number(input.maxConcurrentAppointments)
     }).eq("location_id",locationId);
     throwIf(settingsUpdate.error,"Unable to save location settings");
 
@@ -709,7 +713,7 @@
     if(!actions||document.getElementById("maxdockAccount"))return;
     const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
     const label=document.createElement("span");label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
-    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=59-db38";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=60-db39";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
     bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
     const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
     wrap.append(label,bell,button);actions.prepend(wrap);

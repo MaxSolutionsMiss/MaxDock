@@ -9,19 +9,12 @@ const LS_CUSTOM_RANGE_START="maxdock_custom_range_start";
 const LS_CUSTOM_RANGE_END="maxdock_custom_range_end";
 const todayISO=()=>new Date().toISOString().slice(0,10);
 
-const locationThemes={
-  "Mississauga":{a:"#0f2742",b:"#155e8f",c:"#0f766e",soft:"#eef7fb",soft2:"#edf5f7",ga:"rgba(103,232,249,.28)",gb:"rgba(20,184,166,.22)",gc:"rgba(21,94,143,.18)",shadow:"rgba(21,94,143,.28)"},
-  "Guelph":{a:"#3b1d5a",b:"#6d28d9",c:"#4338ca",soft:"#f5f0ff",soft2:"#f3effb",ga:"rgba(196,181,253,.32)",gb:"rgba(139,92,246,.22)",gc:"rgba(67,56,202,.16)",shadow:"rgba(109,40,217,.27)"},
-  "Pickering":{a:"#0c4a6e",b:"#0284c7",c:"#0891b2",soft:"#ecfeff",soft2:"#eef8fb",ga:"rgba(103,232,249,.34)",gb:"rgba(34,211,238,.20)",gc:"rgba(2,132,199,.16)",shadow:"rgba(2,132,199,.26)"},
-  "Bristol":{a:"#173c2e",b:"#047857",c:"#15803d",soft:"#effcf4",soft2:"#edf8f1",ga:"rgba(134,239,172,.30)",gb:"rgba(34,197,94,.20)",gc:"rgba(4,120,87,.16)",shadow:"rgba(4,120,87,.25)"},
-  "Owen Sound":{a:"#334155",b:"#0e7490",c:"#0369a1",soft:"#f1f5f9",soft2:"#edf4f7",ga:"rgba(125,211,252,.28)",gb:"rgba(56,189,248,.18)",gc:"rgba(71,85,105,.16)",shadow:"rgba(14,116,144,.25)"},
-  "Concord":{a:"#5f1830",b:"#9f1239",c:"#c2410c",soft:"#fff3f2",soft2:"#fdf1ed",ga:"rgba(253,186,116,.30)",gb:"rgba(249,115,22,.18)",gc:"rgba(159,18,57,.15)",shadow:"rgba(159,18,57,.25)"},
-  "Markham":{a:"#312e81",b:"#4f46e5",c:"#0f766e",soft:"#f3f4ff",soft2:"#eef5f5",ga:"rgba(165,180,252,.30)",gb:"rgba(45,212,191,.18)",gc:"rgba(79,70,229,.15)",shadow:"rgba(79,70,229,.25)"}
-};
+const maxDockTheme={a:"#0f2742",b:"#155e8f",c:"#0f766e",soft:"#eef7fb",soft2:"#edf5f7",ga:"rgba(103,232,249,.28)",gb:"rgba(20,184,166,.22)",gc:"rgba(21,94,143,.18)",shadow:"rgba(21,94,143,.28)"};
 
 const defaultSettings={
   open:"07:00",close:"16:30",interval:15,buffer:10,base:10,perSkid:2,fullTruck:75,priorityMin:75,
   capacityEnabled:false,capacityTotal:0,capacityReserve:0,capacityMode:"warn",capacityOccupied:0,capacityAsOf:null,
+  dockAssignmentStrategy:"balanced",maxConcurrentAppointments:null,
   docks:["Dock 1","Dock 2"],
   truckSetup:{"53 ft Trailer":20,"48 ft Trailer":18,"26 ft Straight Truck":12,"Cube Van":8,"Courier Van":5},
   typeAdj:{"Raw Material":15,"Finished Goods":0,"WIP":0,"Sister Plant Transfer":0,"Vendor Delivery":5,"Customer Pickup":5,"Return / Rework":15,"Other":0},
@@ -51,8 +44,7 @@ function migrateOldData(){
   }
 }
 function applyTheme(location){
-  const customerAccount=window.MaxDockDB?.getProfile?.()?.role_code==="customer";
-  const t=locationThemes[customerAccount?"Mississauga":location]||locationThemes.Mississauga;
+  const t=maxDockTheme;
   const r=document.documentElement.style;
   r.setProperty("--theme-1",t.a);r.setProperty("--theme-2",t.b);r.setProperty("--theme-3",t.c);
   r.setProperty("--theme-soft",t.soft);r.setProperty("--theme-soft-2",t.soft2);

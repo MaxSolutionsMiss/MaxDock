@@ -60,7 +60,11 @@
 
     if(customize){
       const summary=customize.querySelector("summary");
-      if(summary)summary.textContent="View settings";
+      if(summary){
+        summary.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg><span class="maxdockSrOnly">Customize dashboard</span>';
+        summary.title="Customize dashboard";
+        summary.setAttribute("aria-label","Customize dashboard");
+      }
       utilities.appendChild(customize);
     }
     if(utility)utilities.appendChild(utility);
@@ -102,7 +106,11 @@
     if(fullScreen)view.appendChild(fullScreen);
     if(customize){
       const summary=customize.querySelector("summary");
-      if(summary)summary.textContent="View settings";
+      if(summary){
+        summary.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg><span class="maxdockSrOnly">Customize operations queue</span>';
+        summary.title="Customize operations queue";
+        summary.setAttribute("aria-label","Customize operations queue");
+      }
       view.appendChild(customize);
     }
 

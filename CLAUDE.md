@@ -1,6 +1,6 @@
 # MaxDock repository memory
 
-MaxDock is a static GitHub Pages dock-appointment application backed by Supabase Auth, Postgres/RLS/RPCs, and two Supabase Edge Functions. The current production release is DB37, built on the DB31 through DB36 interface refinements.
+MaxDock is a static GitHub Pages dock-appointment application backed by Supabase Auth, Postgres/RLS/RPCs, and two Supabase Edge Functions. The current production release is DB38, built on the DB31 through DB38 interface refinements; DB39 is the active reviewed release branch.
 
 Before changing anything, read every file in `docs/claude-handoff/`, beginning with `START_HERE.md`. Treat those files, the current source, and the connected production schema as a single handoff.
 
@@ -23,8 +23,8 @@ Before changing anything, read every file in `docs/claude-handoff/`, beginning w
 - Core UI: `maxdock.js`, `maxdock.css`.
 - Supabase integration: `maxdock-config.js`, `maxdock-db.js`, `maxdock-integration.js`, `maxdock-auth.js`.
 - Page controllers: `maxdock-admin.js`, `maxdock-queue.js`, `maxdock-reports.js`, `maxdock-mis.js`, `maxdock-my-appointments.js`, `maxdock-password.js`.
-- Current UI refinement layers: `maxdock-db31-base.css`, `maxdock-db33.css`, `maxdock-db34.css`, `maxdock-db35.css`, `maxdock-db36.css`, `maxdock-ops-density.js`, `maxdock-layout-discipline.js`.
-- Supabase SQL history available in this repository: `MaxDock_DB_v11_*.sql` through `MaxDock_DB_v20_*.sql`, mirrored in `db04/`.
+- Current UI refinement layers: `maxdock-db31-base.css`, `maxdock-db33.css`, `maxdock-db34.css`, `maxdock-db35.css`, `maxdock-db36.css`, `maxdock-db38.css`, `maxdock-db39.css`, `maxdock-ops-density.js`, `maxdock-layout-discipline.js`.
+- Supabase SQL history available in this repository: `MaxDock_DB_v11_*.sql` through `MaxDock_DB_v21_*.sql`, mirrored in `db04/`.
 - Edge Functions: `supabase/functions/maxdock-invite-user/index.ts` and `supabase/functions/maxdock-ai-brief/index.ts`.
 - Live schema snapshot: `supabase/database.types.ts`. Regenerate it after every schema migration.
 
