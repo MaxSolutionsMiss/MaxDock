@@ -1,0 +1,63 @@
+/* MaxDock DB38 - restrained, visible interaction feedback. */
+
+:where(.primaryBtn,.secondaryBtn,.ghostBtn,.greenBtn,.dangerBtn,.actionBtn,.iconBtn,.utilityBtn,.filterActionBtn,.tiny,.accountSignOut){
+  transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease,filter .16s ease,transform .09s ease;
+  -webkit-tap-highlight-color:transparent
+}
+
+@media(hover:hover) and (pointer:fine){
+  :where(.primaryBtn,.greenBtn):not(:disabled):not([aria-disabled="true"]):hover{
+    transform:translateY(-2px);
+    filter:brightness(1.045) saturate(1.04);
+    box-shadow:0 11px 24px var(--theme-shadow,rgba(15,105,140,.22)),0 3px 8px rgba(15,23,42,.14)
+  }
+  :where(.secondaryBtn,.utilityBtn,.filterActionBtn,.tiny):not(:disabled):not([aria-disabled="true"]):hover{
+    transform:translateY(-1px);
+    background:#f7fafc;
+    border-color:#93a9bb;
+    box-shadow:0 5px 14px rgba(15,23,42,.11)
+  }
+  :where(.ghostBtn,.iconBtn,.accountSignOut):not(:disabled):not([aria-disabled="true"]):hover{
+    transform:translateY(-1px);
+    border-color:#a9bac8;
+    box-shadow:0 5px 13px rgba(15,23,42,.09)
+  }
+  .dangerBtn:not(:disabled):not([aria-disabled="true"]):hover{
+    transform:translateY(-1px);
+    filter:brightness(1.035);
+    box-shadow:0 6px 15px rgba(153,27,27,.16)
+  }
+  .iconBtn:not(:disabled):not([aria-disabled="true"]):hover svg{
+    transform:scale(1.06)
+  }
+}
+
+:where(.primaryBtn,.secondaryBtn,.ghostBtn,.greenBtn,.dangerBtn,.actionBtn,.iconBtn,.utilityBtn,.filterActionBtn,.tiny,.accountSignOut):not(:disabled):not([aria-disabled="true"]):active{
+  transform:translateY(1px) scale(.985);
+  box-shadow:0 2px 6px rgba(15,23,42,.1);
+  transition-duration:.045s
+}
+
+:where(.primaryBtn,.secondaryBtn,.ghostBtn,.greenBtn,.dangerBtn,.actionBtn,.iconBtn,.utilityBtn,.filterActionBtn,.tiny,.accountSignOut,a,input,select,textarea):focus-visible{
+  outline:3px solid rgba(37,99,235,.72)!important;
+  outline-offset:3px!important;
+  box-shadow:0 0 0 4px rgba(219,234,254,.92)!important
+}
+
+.iconBtn svg{
+  transition:transform .16s ease
+}
+
+:where(.primaryBtn,.secondaryBtn,.ghostBtn,.greenBtn,.dangerBtn,.actionBtn,.iconBtn,.utilityBtn,.filterActionBtn,.tiny,.accountSignOut):disabled,
+:where(.primaryBtn,.secondaryBtn,.ghostBtn,.greenBtn,.dangerBtn,.actionBtn,.iconBtn,.utilityBtn,.filterActionBtn,.tiny,.accountSignOut)[aria-disabled="true"]{
+  transform:none!important;
+  box-shadow:none!important;
+  filter:none!important
+}
+
+@media(prefers-reduced-motion:reduce){
+  :where(.primaryBtn,.secondaryBtn,.ghostBtn,.greenBtn,.dangerBtn,.actionBtn,.iconBtn,.utilityBtn,.filterActionBtn,.tiny,.accountSignOut),
+  .iconBtn svg{
+    transition:none!important
+  }
+}

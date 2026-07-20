@@ -35,7 +35,7 @@ Run before every commit and again before handoff:
 ```bash
 find . -type f -name '*.js' -not -path './.git/*' -print0 | xargs -0 -n1 node --check
 git diff --check
-./scripts/verify-root-db04-parity.sh
+bash ./scripts/verify-root-db04-parity.sh
 ```
 
 Also manually test the affected roles and workflows described in `docs/claude-handoff/TESTING.md`.

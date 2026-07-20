@@ -1,4 +1,4 @@
-MaxDock v52-DB31 — Customer Booking and Admin Table Refinement
+MaxDock v59-DB38 — Visual Feedback and Reliable Delivery
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -166,6 +166,9 @@ Integrated database operations
 - Customer booking controls use the fixed Mississauga/Max brand palette instead of location-specific colors
 - Dashboard schedules contain configured dock lanes only; cross-site loads render on their assigned receiving dock
 - WIP remains active and VIP is removed from new appointment choices
+- DB38 adds clearer pointer, touch, and keyboard feedback without changing the approved layout or colour system
+- DB38 restores root/db04 parity after the isolated button-style edit and delivers every frontend asset with a fresh cache marker
+- Unknown GitHub Pages paths redirect safely to the active MaxDock application
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.
