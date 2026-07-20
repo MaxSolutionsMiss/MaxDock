@@ -58,16 +58,16 @@
 
   function saveDashboardSelection(selected){
     try{localStorage.setItem(profileKey("dashboard_metrics"),JSON.stringify(selected))}catch(_ignored){}
-    const status=$("dashboardPreferenceStatus");
+    const statuses=[$("dashboardPreferenceStatus"),$("dashboardCustomizeStatus")].filter(Boolean);
+    const updateStatus=(message,state)=>statuses.forEach(status=>{
+      status.textContent=message;
+      status.dataset.status=state||"saved";
+    });
     if(db?.queuePreferenceSave){
       db.queuePreferenceSave("dashboard-density",{metrics:selected},(message,state)=>{
-        if(!status)return;
-        status.textContent=message||"This view is saved to your login.";
-        status.dataset.status=state||"saved";
+        updateStatus(message||"Saved to your login",state);
       });
-    }else if(status){
-      status.textContent="This view is saved on this device.";
-    }
+    }else updateStatus("Saved on this device","local");
   }
 
   async function initializeDashboardDensity(){
@@ -103,7 +103,7 @@
     if(!customize){
       customize=document.createElement("details");
       customize.className="dashboardCustomize";
-      customize.innerHTML=`<summary>Customize</summary><div class="dashboardCustomizeMenu"><strong>Dashboard metrics</strong><div class="dashboardCustomizeOptions">${DASHBOARD_METRICS.map(item=>`<label><input type="checkbox" value="${item.key}">${item.label}</label>`).join("")}</div><small>Choose one to six metrics. The operational default shows five.</small></div>`;
+      customize.innerHTML=`<summary>Customize</summary><div class="dashboardCustomizeMenu"><fieldset><legend>Dashboard metrics</legend><div class="dashboardCustomizeOptions">${DASHBOARD_METRICS.map(item=>`<label><input type="checkbox" value="${item.key}">${item.label}</label>`).join("")}</div></fieldset><button class="secondaryBtn utilityBtn" id="resetDashboardPreferences" type="button">Reset default view</button><small class="preferenceSyncStatus" id="dashboardCustomizeStatus" data-status="saved">Saved to your login</small></div>`;
       const note=filters.querySelector(".viewPreferenceNote");
       filters.insertBefore(customize,note||null);
     }
@@ -151,6 +151,12 @@
         next.delete(input.value);
       }
       selected=[...next];
+      saveDashboardSelection(selected);
+      applyMetrics();
+    });
+
+    $("resetDashboardPreferences")?.addEventListener("click",()=>{
+      selected=[...DASHBOARD_DEFAULT];
       saveDashboardSelection(selected);
       applyMetrics();
     });
