@@ -1,0 +1,34 @@
+{
+  "package": "MaxDock Claude Handoff",
+  "canonical_project": "MaxDock",
+  "repository": "MaxSolutionsMiss/MaxDock",
+  "prepared_from_main_commit": "53b9a73",
+  "handoff_branch": "codex/claude-handoff-package",
+  "production_release": "DB37",
+  "production_cache_marker": "v58-db37",
+  "production_pages_commit": "36eef0c",
+  "application_url": "https://maxsolutionsmiss.github.io/MaxDock/db04/",
+  "supabase_project_url": "https://rywzqepzramurbrpmept.supabase.co",
+  "contents": {
+    "all_tracked_application_files": true,
+    "root_and_db04_release_trees": true,
+    "release_sql_available_in_repository": true,
+    "generated_live_database_types": "supabase/database.types.ts",
+    "edge_functions": [
+      "supabase/functions/maxdock-invite-user/index.ts",
+      "supabase/functions/maxdock-ai-brief/index.ts"
+    ],
+    "claude_repository_memory": "CLAUDE.md",
+    "handoff_documentation": "docs/claude-handoff/"
+  },
+  "intentionally_excluded": [
+    "Git history from the portable ZIP",
+    "secret and service-role values",
+    "environment files",
+    "Supabase production row data",
+    "user passwords and temporary credentials",
+    "MIS database credentials"
+  ],
+  "important_limit": "The repository is not a complete clean-room migration chain for a new Supabase project. The connected production migration ledger and schema are authoritative.",
+  "owner_merge_required": true
+}

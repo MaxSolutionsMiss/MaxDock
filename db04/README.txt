@@ -1,4 +1,4 @@
-MaxDock v59-DB38 — Visual Feedback and Reliable Delivery
+MaxDock v60-DB39 — Operational Workflow and Dock Scheduling Policy
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -28,6 +28,7 @@ Database prerequisites
 20. MaxDock_DB_v18_Dual_Site_Dock_Routing.sql
 21. MaxDock_DB_v19_Customer_Identity_Booking.sql
 22. MaxDock_DB_v20_Customer_Location_Access.sql
+23. MaxDock_DB_v21_Dock_Scheduling_Policy.sql
 
 Secure account-service prerequisite
 - Deploy the Supabase Edge Function named maxdock-invite-user.
@@ -169,6 +170,14 @@ Integrated database operations
 - DB38 adds clearer pointer, touch, and keyboard feedback without changing the approved layout or colour system
 - DB38 restores root/db04 parity after the isolated button-style edit and delivers every frontend asset with a fresh cache marker
 - Unknown GitHub Pages paths redirect safely to the active MaxDock application
+- Customer booking hides the fixed Direction and Destination Type controls and uses a shorter, non-redundant route summary
+- Route and Requester summaries use the same Arial-first typography and readable sizing as the rest of MaxDock
+- Dashboard and Operations Queue customization uses a compact, centered gear control
+- Operational Reports uses a compact Update control in the filter row
+- Every location uses the professional Mississauga/Max brand palette without location-specific theme changes
+- Each location can balance work across docks or fill compatible docks in configured order
+- Each location can optionally limit simultaneous truck appointments across the entire site, including linked movements
+- A one-truck limit removes overlapping times even when several compatible docks are otherwise available
 
 Notes
 - Passwords remain in Supabase Auth and are never stored in MaxDock tables.

@@ -1,0 +1,46 @@
+MaxDock v60-DB39 — Operational Workflow and Dock Scheduling Policy
+
+Purpose
+- Remove fixed, redundant customer route controls and shorten the route summary.
+- Standardize booking summary typography and reduce oversized utility controls.
+- Add location-level dock assignment and staffing-capacity rules.
+- Use the Mississauga/Max professional palette everywhere for a consistent product identity.
+
+Customer booking
+- Customer accounts continue to book outbound to a permitted Max Solutions location.
+- Direction and Destination Type are hidden because both are fixed for an external account.
+- The route summary shows company to destination once and explains receiving-dock assignment without repeating the direction.
+- Route and Requester text uses the same Arial-first family and readable weights as the rest of MaxDock.
+
+Operational controls
+- Dashboard and Operations Queue customization is represented by a compact, centered gear icon with an accessible label and tooltip.
+- Operational Reports changes “Update report” to a compact “Update” control.
+- Location changes no longer alter the application palette.
+
+Dock scheduling policy
+- Settings includes a Dock Scheduling Policy section for every location.
+- Balance work across docks preserves the existing workload-balancing behavior.
+- Fill docks in listed order prioritizes the configured dock sort order.
+- Maximum simultaneous trucks is optional. Blank uses every compatible dock; 1 prevents all overlapping truck appointments at that location.
+- The simultaneous-truck rule counts both primary and counterpart docks, so linked Max Solutions movements respect each site's policy.
+- Slot search, staff time preview, and atomic routed booking use the same policy-aware dock selector.
+
+Database
+- Apply MaxDock_DB_v21_Dock_Scheduling_Policy.sql once using migration name maxdock_db39_dock_scheduling_policy.
+- Existing locations default to balanced assignment with no additional site-wide concurrency limit.
+- No Edge Function deployment is required.
+
+Release delivery
+- Publish matching root and db04 copies.
+- Browser assets use the unique v60-db39 cache marker.
+- The gear menu displays “DB39 · dock policy and workflow refinement active”.
+
+Verification
+1. Run node --check for every JavaScript file.
+2. Run git diff --check.
+3. Run scripts/verify-root-db04-parity.sh.
+4. Confirm the DB39 marker in the gear menu.
+5. As a Customer, open Place Appointment and confirm only the permitted Max Solutions destination, appointment type, and priority controls remain in Step 1.
+6. In Settings, choose Fill docks in listed order and confirm the earliest compatible dock is recommended.
+7. Set Maximum simultaneous trucks to 1 and confirm overlapping site-wide appointment times are not offered.
+8. Clear Maximum simultaneous trucks and confirm independent compatible docks can be offered concurrently.

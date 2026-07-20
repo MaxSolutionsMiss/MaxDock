@@ -1,7 +1,0 @@
-MaxDock v57-DB36 published to GitHub Pages
-
-Source merge commit: 56b2b545ed2f152b0d2f83a5023a202cc84416c4
-Release: DB36 header and toolbar consistency
-Published: 2026-07-17
-
-This marker creates a fresh GitHub Pages build after aligning gh-pages with the approved DB36 merge.
