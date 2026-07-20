@@ -1,0 +1,43 @@
+MaxDock v61-DB40 — Corporate Operational Layout Consistency
+
+Purpose
+- Give Dashboard and Operations Queue one predictable corporate layout system.
+- Keep operational work prominent while grouping filters, quick actions, display tools, and document actions consistently.
+- Replace decorative shadows with flat surfaces, clear borders, and visible focus outlines.
+
+Dashboard and Operations Queue
+- Both operational toolbars use labeled functional groups.
+- Dashboard groups Schedule filters, Display customization, and Documents actions.
+- Operations Queue groups Schedule filters, Day controls, Display tools, and Documents actions.
+- Export CSV and Print use the same dimensions and right-side document group on wide screens.
+- Responsive layouts retain the group labels and stack cleanly when space is limited.
+
+Customization and KPIs
+- Dashboard customization now matches the established Operations Queue pattern.
+- Both menus use equal-size two-column option cards, a full-width reset control, and saved-view status feedback.
+- Dashboard can restore the five-metric operational default with one action.
+- Dashboard and Queue KPI cards share an equal 80-pixel height, padding, radius, and type hierarchy.
+
+Flat corporate identity
+- Decorative box and text shadows are removed across MaxDock, including the logo, cards, menus, controls, and modal surfaces.
+- Selected slots and priority or linked schedule events retain visible border/outline states without shadows.
+- Existing Max Solutions color identity, role permissions, booking logic, live refresh, and scheduling behavior are unchanged.
+
+Database and Edge Functions
+- No Supabase migration is required.
+- No Edge Function deployment is required.
+
+Release delivery
+- Publish matching root and db04 copies.
+- Browser assets use the unique v61-db40 cache marker.
+- The gear menu displays “DB40 · corporate operational layout active”.
+
+Verification
+1. Run node --check for every JavaScript file.
+2. Run git diff --check.
+3. Run scripts/verify-root-db04-parity.sh.
+4. On Dashboard, confirm the toolbar groups and equal-size KPI cards align with Operations Queue.
+5. Open both gear menus and confirm equal-size option cards, reset controls, and saved-view feedback.
+6. Confirm Export CSV and Print occupy the Documents group on both pages.
+7. Resize to tablet and mobile widths and confirm toolbar groups stack without clipping.
+8. Confirm controls, menus, cards, and the MaxDock logo render without decorative shadows.

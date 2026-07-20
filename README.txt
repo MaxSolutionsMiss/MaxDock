@@ -1,4 +1,4 @@
-MaxDock v60-DB39 — Operational Workflow and Dock Scheduling Policy
+MaxDock v61-DB40 — Corporate Operational Layout Consistency
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -122,6 +122,11 @@ Integrated database operations
 - Customer destination choices are limited to the locations assigned to that account
 - MaxDock password forms and temporary-password creation use Supabase's supported 6-character minimum
 - Operations Queue provides a separate live full-screen window while the original Queue remains available on the working monitor
+- Dashboard and Operations Queue use the same categorized Schedule, Display, and Documents toolbar system
+- Queue day controls are grouped separately so date filters, fast actions, display tools, and document actions remain predictable
+- Dashboard and Queue customization menus use matching equal-size option cards, reset controls, and saved-view feedback
+- Dashboard and Queue KPI cards share an equal-height operational grid
+- Decorative shadows are removed platform-wide in favor of clean borders, flat surfaces, and visible focus outlines
 - Full-screen Operations Queue follows the selected location, date, and view and refreshes appointment data every five seconds
 - Subtle self-service password recovery from the sign-in page using Supabase's secure email reset flow
 - A forgotten username no longer blocks access because the connected email address can also be used to sign in
