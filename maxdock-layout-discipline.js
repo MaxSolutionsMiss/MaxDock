@@ -21,6 +21,12 @@
     return group;
   }
 
+  function identifyGroup(group,label){
+    if(!group)return;
+    group.classList.add("operationsToolbarGroup");
+    group.dataset.groupLabel=label;
+  }
+
   async function refineDashboard(){
     const ready=await waitFor(()=>document.querySelector(".dashboardOverviewBand .dashboardControlRail")&&document.querySelector(".dashboardOverviewBand #metrics")&&document.querySelector(".dashboardPrimaryActions"));
     if(!ready)return;
@@ -52,11 +58,15 @@
     }
     [dateField,statusField,rangeHost].forEach(item=>{if(item)operational.appendChild(item)});
 
-    let utilities=controls.querySelector(".dashboardWorkspaceUtilities");
-    if(!utilities){
-      utilities=makeGroup("dashboardWorkspaceUtilities","Dashboard view and document actions");
-      operational.after(utilities);
-    }
+    identifyGroup(operational,"Schedule");
+
+    let viewActions=controls.querySelector(".dashboardToolbarViewActions");
+    if(!viewActions)viewActions=makeGroup("dashboardToolbarViewActions","Dashboard display controls");
+    identifyGroup(viewActions,"Display");
+
+    let documents=controls.querySelector(".dashboardToolbarDocuments");
+    if(!documents)documents=makeGroup("dashboardToolbarDocuments","Dashboard document actions");
+    identifyGroup(documents,"Documents");
 
     if(customize){
       const summary=customize.querySelector("summary");
@@ -65,9 +75,13 @@
         summary.title="Customize dashboard";
         summary.setAttribute("aria-label","Customize dashboard");
       }
-      utilities.appendChild(customize);
+      viewActions.appendChild(customize);
     }
-    if(utility)utilities.appendChild(utility);
+    if(utility){
+      utility.classList.add("dashboardToolbarDocumentButtons");
+      documents.appendChild(utility);
+    }
+    controls.replaceChildren(operational,viewActions,documents);
     if(note)controls.appendChild(note);
 
     primary?.querySelectorAll(".dashboardActionPrimary").forEach(button=>button.classList.add("standardPrimaryAction"));
@@ -96,13 +110,16 @@
     let filters=toolbar.querySelector(".queueToolbarFilters");
     if(!filters)filters=makeGroup("queueToolbarFilters","Queue date and view filters");
     [dateField,viewField].forEach(item=>{if(item)filters.appendChild(item)});
+    identifyGroup(filters,"Schedule");
 
     let quick=toolbar.querySelector(".queueToolbarQuickActions");
     if(!quick)quick=makeGroup("queueToolbarQuickActions","Queue day and refresh actions");
     [today,tomorrow,refresh].forEach(item=>{if(item)quick.appendChild(item)});
+    identifyGroup(quick,"Day controls");
 
     let view=toolbar.querySelector(".queueToolbarViewActions");
     if(!view)view=makeGroup("queueToolbarViewActions","Queue display and view settings");
+    identifyGroup(view,"Display");
     if(fullScreen)view.appendChild(fullScreen);
     if(customize){
       const summary=customize.querySelector("summary");
@@ -114,7 +131,10 @@
       view.appendChild(customize);
     }
 
-    if(utility)utility.classList.add("queueToolbarDocuments");
+    if(utility){
+      utility.classList.add("queueToolbarDocuments","operationsToolbarGroup");
+      utility.dataset.groupLabel="Documents";
+    }
 
     toolbar.replaceChildren(filters,quick,view);
     if(utility)toolbar.appendChild(utility);
