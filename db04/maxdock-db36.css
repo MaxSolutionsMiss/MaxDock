@@ -1,5 +1,17 @@
 /* MaxDock DB36 — consistent page headers, grouped toolbars, and balanced workspace rhythm */
 
+.maxdockReleaseStamp{
+  display:block;
+  margin:6px 8px 4px;
+  padding:9px 10px 3px;
+  border-top:1px solid #e2e8f0;
+  color:#7b8c9b;
+  font-size:10px;
+  font-weight:600;
+  line-height:1.3;
+  text-align:center
+}
+
 body.layoutDisciplineDB36[data-page="dashboard"] .pageWrap,
 body.layoutDisciplineDB36[data-page="queue"] .pageWrap{
   padding-top:22px!important

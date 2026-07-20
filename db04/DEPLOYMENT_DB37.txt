@@ -1,0 +1,32 @@
+MaxDock v58-DB37 — Forced DB36 Interface Delivery
+
+Purpose
+- Ensure browsers receive the complete DB31 through DB36 interface instead of reusing DB31-era cached assets.
+- Make the active interface release easy to verify from the MaxDock menu.
+
+Delivery correction
+- Replaces the stale v52-db31 cache marker in every root and db04 HTML and JavaScript entry point with v58-db37.
+- Refreshes the nested DB31 base stylesheet import with the same v58-db37 marker.
+- Refreshes the DB33, DB34, DB35, and DB36 stylesheet and script URLs with the v58-db37 marker.
+- Loads the DB33 operational-density script before the DB36 layout-discipline script so the Queue and Dashboard toolbars initialize in a guaranteed order.
+- Handles pages that finish loading before the release initializer executes.
+
+Visible verification
+- The gear menu displays “DB37 · DB36 interface active” after the current interface assets initialize.
+- Operations Queue uses the DB36 grouped toolbar.
+- Dashboard uses the DB36 grouped workspace controls and document actions.
+- Place Appointment retains the DB31 and DB32 booking refinements.
+
+Deployment impact
+- Frontend only.
+- No database migration.
+- No Supabase Edge Function deployment.
+- Publish root and db04 copies together.
+
+Verification
+1. Open MaxDock using a v58-db37 query parameter.
+2. Open the gear menu and confirm “DB37 · DB36 interface active” appears at the bottom.
+3. Confirm Operations Queue shows the four DB36 control groups.
+4. Confirm Dashboard shows primary actions separately from view and document controls.
+5. Confirm Place Appointment retains the narrower DB32 layout.
+6. Confirm root and db04 pages behave identically.
