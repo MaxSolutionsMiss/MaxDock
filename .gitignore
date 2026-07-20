@@ -1,0 +1,11 @@
+# Local credentials and environment overrides
+.env
+.env.*
+!.env.example
+
+# Local tooling and generated handoff archives
+node_modules/
+supabase/.temp/
+.claude/settings.local.json
+.DS_Store
+*.zip
