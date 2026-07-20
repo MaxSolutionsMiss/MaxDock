@@ -268,11 +268,12 @@
     if($("reqCounterpartyLabel"))$("reqCounterpartyLabel").textContent=outbound?"Destination":"Origin";
     if($("reqCompanyLabel"))$("reqCompanyLabel").textContent=`${counterparty.requesterType} ${outbound?"destination":"origin"} name *`;
     const linkedText=isExternalAccount()
-      ?`MaxDock records this as inbound at ${esc(site)} and assigns a receiving dock.`
+      ?`A receiving dock and time will be assigned at ${esc(site)}.`
       :counterparty.internal
       ?`The same window is reserved on a real ${outbound?"inbound":"outbound"} dock at ${esc(other)}.`
       :`External ${outbound?"destination":"origin"}: ${esc(other)}.`;
-    summary.innerHTML=`<strong>Route</strong><span>${esc(route.origin||"Choose origin")} → ${esc(route.destination||"Choose destination")}</span><small>${esc(route.direction)} to ${esc(site)}. ${linkedText}</small>`;
+    const routeDetail=isExternalAccount()?linkedText:`${esc(route.direction)} at ${esc(site)}. ${linkedText}`;
+    summary.innerHTML=`<strong>Route</strong><span>${esc(route.origin||"Choose origin")} → ${esc(route.destination||"Choose destination")}</span><small>${routeDetail}</small>`;
     renderBookingRequesterSummary();
   }
   window.updateBookingRouteSummary=updateBookingRouteSummary;
@@ -919,7 +920,10 @@
     $("setCapacityReserve").value=Number(settings.capacityReserve||0);
     $("setCapacityMode").value=settings.capacityMode==="enforce"?"enforce":"warn";
     $("setCapacityAsOf").value=capacityDateTimeValue(settings.capacityAsOf);
+    $("setDockAssignmentStrategy").value=settings.dockAssignmentStrategy==="fill_first"?"fill_first":"balanced";
+    $("setMaxConcurrentAppointments").value=settings.maxConcurrentAppointments||"";
     updateCapacityControls();
+    updateDockPolicySummary();
     const truckTypes=db.getLocationData()?.truckTypes||[];
     $("docksList").innerHTML=`<div class="dockMatrixScroll"><table class="dockCompatibilityMatrix">
       <thead><tr><th>Dock Door</th>${truckTypes.map(truck=>`<th title="${esc(truck.name)}">${esc(truck.name)}</th>`).join("")}<th class="dockMatrixActionCell">Action</th></tr></thead>
@@ -952,6 +956,13 @@
       ?`${available.toLocaleString()} working skid spaces available now · ${$("setCapacityMode").value==="enforce"?"over-capacity inbound times will be blocked":"over-capacity inbound times will show a warning"}.`
       :"Capacity planning is off for this location. Appointment booking continues to use dock and operating-hour availability only.";
     summary.dataset.state=enabled?(occupied>Math.max(total-reserve,0)?"over":"active"):"off";
+  }
+
+  function updateDockPolicySummary(){
+    const summary=$("dockPolicySummary");if(!summary)return;
+    const strategy=$("setDockAssignmentStrategy")?.value==="fill_first"?"Fill docks in listed order":"Balance work across docks";
+    const maximum=Number($("setMaxConcurrentAppointments")?.value||0);
+    summary.textContent=`${strategy} · ${maximum>0?`no more than ${maximum} simultaneous truck${maximum===1?"":"s"} across this site`:"simultaneous appointments may use every compatible dock"}.`;
   }
 
   function captureDockDraft(){
@@ -994,6 +1005,9 @@
       settings.capacityMode=$("setCapacityMode")?.value==="enforce"?"enforce":"warn";
       const capacityAsOf=$("setCapacityAsOf")?.value;
       settings.capacityAsOf=capacityAsOf?new Date(capacityAsOf).toISOString():new Date().toISOString();
+      settings.dockAssignmentStrategy=$("setDockAssignmentStrategy")?.value==="fill_first"?"fill_first":"balanced";
+      const maximumConcurrent=String($("setMaxConcurrentAppointments")?.value||"").trim();
+      settings.maxConcurrentAppointments=maximumConcurrent===""?null:Number(maximumConcurrent);
       if(minutes(settings.open)>=minutes(settings.close))throw new Error("Close time must be later than open time.");
       for(const [label,value] of [["Buffer",settings.buffer],["Base minutes",settings.base],["Minutes per skid",settings.perSkid],["Full truck minimum",settings.fullTruck],["Priority minimum",settings.priorityMin]]){
         if(!Number.isFinite(value)||value<0)throw new Error(`${label} must be zero or greater.`);
@@ -1004,6 +1018,9 @@
         if(!Number.isInteger(settings.capacityReserve)||settings.capacityReserve<0)throw new Error("Reserved safety space must be a whole number of zero or greater.");
         if(settings.capacityReserve>=settings.capacityTotal)throw new Error("Reserved safety space must be lower than total skid capacity.");
       }
+      if(settings.maxConcurrentAppointments!==null&&(!Number.isInteger(settings.maxConcurrentAppointments)||settings.maxConcurrentAppointments<1)){
+        throw new Error("Maximum simultaneous trucks must be a whole number of one or greater, or left blank for no site-wide limit.");
+      }
       if(button){button.disabled=true;button.textContent="Saving…";}
       await db.saveLocationSettings(settings,docks);
       syncDatabaseState();renderSettings();alert("Settings saved to MaxDock.");
@@ -1013,6 +1030,9 @@
       if(button){button.disabled=false;button.textContent="Save Settings";}
     }
   };
+
+  $("setDockAssignmentStrategy")?.addEventListener("change",updateDockPolicySummary);
+  $("setMaxConcurrentAppointments")?.addEventListener("input",updateDockPolicySummary);
 
   resetSettings=function(){
     if(!confirm("Load the MaxDock default timing and dock names into this form? Nothing is saved until you select Save Settings."))return;
@@ -1104,7 +1124,7 @@
     const date=$("adminDate")?.value||todayISO();
     const locationName=db.getCurrentLocation()?.name||currentLocation;
     const url=new URL("./dashboard.html",location.href);
-    url.searchParams.set("v","59-db38");
+    url.searchParams.set("v","60-db39");
     url.searchParams.set("display","1");
     url.searchParams.set("date",date);
     url.searchParams.set("location",locationName);
@@ -1173,7 +1193,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=59-db38");
+      location.replace("./index.html?v=60-db39");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");

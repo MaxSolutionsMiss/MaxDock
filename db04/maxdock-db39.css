@@ -1,0 +1,95 @@
+/* MaxDock DB39 — operational controls, booking clarity, and dock policy. */
+
+.maxdockSrOnly{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important
+}
+
+/* Customer accounts already have a fixed outbound-to-Max-Solutions route. */
+body.customerAccount .requestModalCompact .customerRouteField{display:none!important}
+body.customerAccount .requestModalCompact .bookingRouteFields{
+  grid-template-columns:minmax(240px,2fr) minmax(150px,1fr)!important
+}
+body.customerAccount .requestModalCompact .bookingRouteFields>.field:nth-child(5){grid-column:auto!important}
+
+/* Standardize the route and requester summaries with the platform type system. */
+.requestModalCompact .bookingRouteSummary,
+.requestModalCompact .bookingRequesterSummary{
+  font-family:var(--maxdock-font,Arial,Helvetica,sans-serif)!important
+}
+.requestModalCompact .bookingRouteSummary strong,
+.requestModalCompact .bookingRequesterSummary strong{
+  font-size:10.5px!important;
+  font-weight:700!important;
+  letter-spacing:.045em!important
+}
+.requestModalCompact .bookingRouteSummary span,
+.requestModalCompact .bookingRequesterSummary span{
+  font-size:14px!important;
+  font-weight:700!important;
+  line-height:1.3!important
+}
+.requestModalCompact .bookingRouteSummary small,
+.requestModalCompact .bookingRequesterSummary small{
+  color:#5f6b7a!important;
+  font-size:12.5px!important;
+  font-weight:400!important;
+  line-height:1.45!important;
+  overflow-wrap:anywhere
+}
+
+/* Dashboard and queue customization are compact icon controls. */
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceUtilities .dashboardCustomize summary,
+body.layoutDisciplineDB36[data-page="queue"] .queueToolbarViewActions .queueCustomize summary{
+  width:40px!important;
+  min-width:40px!important;
+  height:40px!important;
+  min-height:40px!important;
+  padding:0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-color:#c5d0da!important;
+  background:#fff!important
+}
+body.layoutDisciplineDB36[data-page="dashboard"] .dashboardCustomize summary::after,
+body.layoutDisciplineDB36[data-page="queue"] .queueCustomize summary::after{content:none!important}
+body.layoutDisciplineDB36 .dashboardCustomize summary svg,
+body.layoutDisciplineDB36 .queueCustomize summary svg{
+  width:19px;
+  height:19px;
+  fill:#315467
+}
+
+/* The report refresh belongs with filters, not among primary page actions. */
+body[data-page="reports"].opsDensityDB33 .reportFilters .reportUpdateButton{
+  width:82px!important;
+  min-width:82px!important;
+  padding:0 12px!important
+}
+
+.dockPolicySettings .formGrid{grid-template-columns:1.25fr .9fr}
+.dockPolicySettings .field small{display:block;margin-top:6px;color:#64748b;font-size:11.5px;line-height:1.4}
+.dockPolicySummary{
+  margin-top:12px;
+  padding:10px 12px;
+  border:1px solid #cfe2e8;
+  border-radius:11px;
+  background:#f2f8fa;
+  color:#315467;
+  font-size:12.5px;
+  font-weight:600;
+  line-height:1.4
+}
+
+@media(max-width:620px){
+  body.customerAccount .requestModalCompact .bookingRouteFields,
+  .dockPolicySettings .formGrid{grid-template-columns:1fr!important}
+}
