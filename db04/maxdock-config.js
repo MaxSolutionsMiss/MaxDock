@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v63-DB42",
+  version: "MaxDock-v64-DB43",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -26,26 +26,28 @@ window.MAXDOCK_CONFIG = Object.freeze({
     document.body.appendChild(script);
   });
 
-  loadCss("maxdock-db33.css","63-db42","db33");
-  loadCss("maxdock-db34.css","63-db42","db34");
-  loadCss("maxdock-db35.css","63-db42","db35");
-  loadCss("maxdock-db36.css","63-db42","db36");
-  loadCss("maxdock-db38.css","63-db42","db38");
-  loadCss("maxdock-db39.css","63-db42","db39");
-  loadCss("maxdock-db40.css","63-db42","db40");
-  loadCss("maxdock-db41.css","63-db42","db41");
-  loadCss("maxdock-db42.css","63-db42","db42");
+  loadCss("maxdock-db33.css","64-db43","db33");
+  loadCss("maxdock-db34.css","64-db43","db34");
+  loadCss("maxdock-db35.css","64-db43","db35");
+  loadCss("maxdock-db36.css","64-db43","db36");
+  loadCss("maxdock-db38.css","64-db43","db38");
+  loadCss("maxdock-db39.css","64-db43","db39");
+  loadCss("maxdock-db40.css","64-db43","db40");
+  loadCss("maxdock-db41.css","64-db43","db41");
+  loadCss("maxdock-db42.css","64-db43","db42");
+  loadCss("maxdock-db43.css","64-db43","db43");
 
   const initialize=async()=>{
-    await loadScript("maxdock-ops-density.js","63-db42","db33");
-    await loadScript("maxdock-layout-discipline.js","63-db42","db36");
-    await loadScript("maxdock-db42.js","63-db42","db42");
-    document.documentElement.dataset.maxdockRelease="db42";
+    await loadScript("maxdock-ops-density.js","64-db43","db33");
+    await loadScript("maxdock-layout-discipline.js","64-db43","db36");
+    await loadScript("maxdock-db42.js","64-db43","db42");
+    await loadScript("maxdock-db43.js","64-db43","db43");
+    document.documentElement.dataset.maxdockRelease="db43";
     document.querySelectorAll(".menu").forEach(menu=>{
       if(menu.querySelector(".maxdockReleaseStamp"))return;
       const stamp=document.createElement("small");
       stamp.className="maxdockReleaseStamp";
-      stamp.textContent="DB42 · compact navigation workspaces active";
+      stamp.textContent="DB43 · operational console density active";
       menu.appendChild(stamp);
     });
   };

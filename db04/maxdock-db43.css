@@ -1,0 +1,363 @@
+/* MaxDock DB43 — operational console density, persistent navigation, and flatter hierarchy. */
+
+:root{
+  --maxdock-console-bg:#f3f6f8;
+  --maxdock-console-border:#ced9e2;
+  --maxdock-console-border-soft:#e2e8ee;
+  --maxdock-console-surface:#fff;
+  --maxdock-console-soft:#f7f9fb;
+  --maxdock-console-navy:#0f2742;
+  --maxdock-console-blue:#155e8f;
+  --maxdock-console-teal:#0f766e
+}
+
+body.operationalConsoleDB43{
+  background:var(--maxdock-console-bg)!important
+}
+body.operationalConsoleDB43 :is(.panel,.metric,.settingsGroup,.adminSummaryCard,.morningBrief,.queueCard,.queueAction,.queueFocus,.nextAppointmentSpotlight,.misImportCard){
+  border-color:var(--maxdock-console-border)!important;
+  border-radius:10px!important;
+  background:var(--maxdock-console-surface)!important;
+  box-shadow:none!important
+}
+body.operationalConsoleDB43 :is(.primaryBtn,.greenBtn){
+  border-radius:8px!important;
+  background:var(--maxdock-console-blue)!important;
+  box-shadow:none!important;
+  text-shadow:none!important
+}
+body.operationalConsoleDB43 .greenBtn{background:var(--maxdock-console-teal)!important}
+body.operationalConsoleDB43 :is(.secondaryBtn,.ghostBtn,.utilityBtn,.filterActionBtn,.tiny,.dangerBtn){
+  border-radius:8px!important;
+  box-shadow:none!important
+}
+body.operationalConsoleDB43 :is(.scheduleEvent.inbound,.trendInboundBar){background:#087daa!important}
+body.operationalConsoleDB43 .scheduleEvent.outbound{background:#0f766e!important}
+body.operationalConsoleDB43 .scheduleEvent.blocked{background:#526173!important}
+body.operationalConsoleDB43 .scheduleEvent.completed{background:#27814b!important}
+body.operationalConsoleDB43 .scheduleEvent.cancelled{background:#b84242!important}
+body.operationalConsoleDB43 :is(.timelineCorner,.timeRuler){background:var(--maxdock-console-navy)!important}
+body.operationalConsoleDB43 .dockLaneLabel{background:#f5f8fa!important}
+
+/* A visible, role-filtered desktop navigation lowers the cost of every page switch. */
+body.operationalConsoleDB43 .topbar{
+  background:#fff!important;
+  backdrop-filter:none!important;
+  border-bottom-color:var(--maxdock-console-border)!important
+}
+body.operationalConsoleDB43 .topbarInner{
+  grid-template-columns:auto minmax(0,1fr) auto!important;
+  gap:18px!important;
+  padding:9px 18px!important
+}
+body.operationalConsoleDB43 .brand{gap:9px!important}
+body.operationalConsoleDB43 .logo{
+  width:38px!important;
+  height:38px!important;
+  border-radius:9px!important;
+  background:var(--maxdock-console-navy)!important;
+  box-shadow:none!important
+}
+body.operationalConsoleDB43 .appTitle{font-size:25px!important;letter-spacing:-.65px!important}
+.maxdockPrimaryNav{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  min-width:0
+}
+.maxdockPrimaryNavLink{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:34px;
+  padding:0 9px;
+  border:1px solid transparent;
+  border-radius:7px;
+  color:#4b5c6d;
+  font-size:12px;
+  font-weight:650;
+  line-height:1.2;
+  text-decoration:none;
+  white-space:nowrap
+}
+.maxdockPrimaryNavLink:hover{background:#f2f6f8;color:#173f53}
+.maxdockPrimaryNavLink[aria-current="page"]{
+  border-color:#c9dce4;
+  background:#eaf4f7;
+  color:#0f6075
+}
+.maxdockPrimaryNavLink:focus-visible{outline:2px solid #16819a;outline-offset:2px}
+body.operationalConsoleDB43 .headerActions{gap:7px!important;flex-wrap:nowrap!important}
+body.operationalConsoleDB43 .headerActions>.ghostBtn{display:none!important}
+body.operationalConsoleDB43 .headerActions :is(.locationPill,.accountControl){
+  min-height:38px!important;
+  border-radius:9px!important;
+  box-shadow:none!important
+}
+body.operationalConsoleDB43 .headerActions .locationPill{padding:3px 4px 3px 9px!important}
+body.operationalConsoleDB43 .headerActions .locationPill select{
+  min-width:128px!important;
+  height:30px!important;
+  border-radius:7px!important
+}
+body.operationalConsoleDB43 .headerActions .menuDetails,
+body.operationalConsoleDB43 .headerActions .menuDetails>summary.iconBtn{
+  width:38px!important;
+  min-width:38px!important;
+  max-width:38px!important;
+  height:38px!important;
+  min-height:38px!important;
+  max-height:38px!important;
+  border-radius:9px!important;
+  box-shadow:none!important
+}
+body.operationalConsoleDB43 .menu{border-radius:10px!important;box-shadow:0 12px 30px rgba(15,39,66,.16)!important}
+body.operationalConsoleDB43 .menu a{padding:9px 10px!important;border-radius:7px!important;font-size:12px!important}
+
+/* Settings and other true subviews use a visibly separate section header. */
+body.operationalConsoleDB43 .sectionWorkspaceRail{
+  overflow:hidden;
+  padding:0 8px 8px!important;
+  border-color:var(--maxdock-console-border)!important;
+  border-radius:10px!important;
+  background:#fff!important
+}
+body.operationalConsoleDB43 .sectionWorkspaceRailHead{
+  margin:0 -8px 7px;
+  padding:11px 13px 10px!important;
+  border-bottom:1px solid #d6e1e8;
+  background:#eaf0f4
+}
+body.operationalConsoleDB43 .sectionWorkspaceRailHead strong{color:#17384c;font-size:12.5px}
+body.operationalConsoleDB43 .sectionWorkspaceRailHead small{color:#617485;font-size:10.5px}
+body.operationalConsoleDB43 .sectionWorkspaceTabs>button{border-radius:7px!important}
+
+/* Dashboard and Queue controls read label → field in one compact desktop row. */
+body.operationalConsoleDB43.layoutDisciplineDB36 .operationsToolbarGroup{
+  padding-top:0!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36 .operationsToolbarGroup::before{content:none!important;display:none!important}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceToolbar,
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar{
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  gap:8px!important;
+  padding:7px 9px!important;
+  border-radius:9px!important;
+  background:#fff!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls,
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters{
+  display:flex!important;
+  align-items:center!important;
+  flex:1 1 auto!important;
+  gap:12px!important;
+  min-width:0!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls .filterField,
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters>.filterField{
+  display:grid!important;
+  grid-template-columns:auto minmax(118px,145px)!important;
+  align-items:center!important;
+  gap:6px!important;
+  width:auto!important;
+  min-width:0!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls .filterField label,
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters>.filterField label{
+  margin:0!important;
+  color:#4f6172!important;
+  font-size:11px!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  white-space:nowrap!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardRangeCompact{
+  display:grid!important;
+  grid-template-columns:auto 118px!important;
+  align-items:center!important;
+  gap:6px!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardRangeHost{
+  width:auto!important;
+  min-width:0!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardRangeCompact small{
+  display:block!important;
+  margin:0!important;
+  color:#4f6172!important;
+  font-size:11px!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  white-space:nowrap!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardRangeCompact select{width:118px!important}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardToolbarViewActions,
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardToolbarDocuments,
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarQuickActions,
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarViewActions,
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarDocuments{
+  align-self:center!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarQuickActions{display:flex!important;gap:5px!important}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardToolbarDocuments,
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarDocuments{
+  margin-left:auto!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardToolbarDocumentButtons,
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarDocuments{
+  display:flex!important;
+  grid-template-columns:none!important;
+  gap:5px!important
+}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceToolbar :is(input,select),
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar :is(input,select){height:34px!important;min-height:34px!important}
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceToolbar :is(button,summary),
+body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar :is(button,summary){height:34px!important;min-height:34px!important}
+
+/* Dense operational tables: one bounded surface, flat rows, functional status color. */
+body.operationalConsoleDB43 .tableScroll{
+  overflow:auto;
+  border:1px solid var(--maxdock-console-border)!important;
+  border-radius:9px!important;
+  background:#fff
+}
+body.operationalConsoleDB43 .tableScroll table{
+  width:100%;
+  min-width:760px;
+  border-collapse:collapse!important;
+  border-spacing:0!important
+}
+body.operationalConsoleDB43 .tableScroll th{
+  padding:8px 9px!important;
+  border-bottom:1px solid #cfd9e2!important;
+  background:#edf2f5!important;
+  color:#526578!important;
+  font-size:10.5px!important;
+  font-weight:700!important;
+  letter-spacing:.025em!important;
+  text-transform:none!important;
+  white-space:nowrap
+}
+body.operationalConsoleDB43 .tableScroll td{
+  padding:8px 9px!important;
+  border:0!important;
+  border-bottom:1px solid #e1e7ec!important;
+  border-radius:0!important;
+  background:#fff!important;
+  font-size:12px!important;
+  line-height:1.3!important
+}
+body.operationalConsoleDB43 .tableScroll tbody tr:nth-child(even) td{background:#f8fafb!important}
+body.operationalConsoleDB43 .tableScroll tbody tr:hover td{background:#edf6f8!important}
+body.operationalConsoleDB43 .tableScroll tbody tr:last-child td{border-bottom:0!important}
+body.operationalConsoleDB43[data-page="dashboard"] .tableScroll table{min-width:860px}
+body.operationalConsoleDB43 .adminUsersTable{min-width:1040px!important}
+body.operationalConsoleDB43 .adminUsageCell,
+body.operationalConsoleDB43 .adminLastActivity{min-width:125px!important}
+body.operationalConsoleDB43 :is(.status,.adminRole,.adminPendingBadge,.queueTag,.linkedMovementBadge,.linkedReadOnlyLabel){
+  border-radius:5px!important;
+  box-shadow:none!important
+}
+
+/* The customer entry action is again unmistakably a primary action. */
+body.operationalConsoleDB43 .homeScreen{padding:34px 18px 44px!important}
+body.operationalConsoleDB43 .heroCard{
+  width:min(610px,100%)!important;
+  padding:30px 26px!important;
+  border-radius:16px!important;
+  border-color:#cbd8e1!important;
+  background:#fff!important
+}
+body.operationalConsoleDB43 .facilityBadge{
+  border-radius:8px!important;
+  background:var(--maxdock-console-navy)!important;
+  box-shadow:none!important
+}
+body.operationalConsoleDB43 .requestMega{
+  width:min(430px,100%)!important;
+  min-height:70px!important;
+  margin-top:18px!important;
+  padding:0 28px!important;
+  border:1px solid #0d586f!important;
+  border-radius:14px!important;
+  background:linear-gradient(135deg,#0f2742,#155e8f 58%,#0f766e)!important;
+  color:#fff!important;
+  font-size:22px!important;
+  font-weight:750!important;
+  box-shadow:0 8px 18px rgba(15,39,66,.18)!important
+}
+body.operationalConsoleDB43 .requestMega:hover{filter:brightness(1.06)!important;transform:translateY(-1px)!important}
+
+/* Compact MaxDock product branding with the company attribution secondary. */
+.loginBrand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px
+}
+body.operationalConsoleDB43 .loginBrand .loginLogo{
+  width:48px!important;
+  height:48px!important;
+  margin:0!important;
+  border-radius:10px!important;
+  background:var(--maxdock-console-navy)!important
+}
+body.operationalConsoleDB43 .loginBrand .loginProduct{margin:0!important;color:var(--maxdock-console-navy)!important;font-size:29px!important;font-weight:760!important;line-height:1!important;letter-spacing:-.7px!important}
+.loginCompany{margin:4px 0 0;color:#64748b;font-size:11px;font-weight:550;line-height:1.25}
+body.operationalConsoleDB43 .loginCard{
+  padding:30px!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:0 14px 38px rgba(15,39,66,.13)!important;
+  backdrop-filter:none!important
+}
+
+.appointmentsSectionWorkspace{margin-top:10px}
+.appointmentsSectionWorkspace .panel{margin:0!important}
+.appointmentsSectionWorkspace .panelHeader{margin-bottom:8px!important}
+
+@media(max-width:1240px){
+  .maxdockPrimaryNavLink[data-route="settings"],
+  .maxdockPrimaryNavLink[data-route="admin"],
+  .maxdockPrimaryNavLink[data-route="data"]{display:none!important}
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceToolbar,
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar{flex-wrap:wrap!important}
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardToolbarDocuments,
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarDocuments{margin-left:0!important}
+}
+
+@media(max-width:980px){
+  .maxdockPrimaryNav{display:none}
+  body.operationalConsoleDB43 .topbarInner{grid-template-columns:minmax(0,1fr) auto!important}
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardWorkspaceToolbar,
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar{align-items:stretch!important}
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls,
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters{flex-wrap:wrap!important}
+}
+
+@media(max-width:820px){
+  body.operationalConsoleDB43 .sectionWorkspaceRailHead{display:grid!important}
+  body.operationalConsoleDB43 .sectionWorkspaceRail{padding:0 6px 6px!important}
+  body.operationalConsoleDB43 .sectionWorkspaceRailHead{margin:0 -6px 6px}
+}
+
+@media(max-width:620px){
+  body.operationalConsoleDB43 .topbarInner{padding:8px 12px!important;gap:8px!important}
+  body.operationalConsoleDB43 .appTitle{font-size:22px!important}
+  body.operationalConsoleDB43 .headerActions .locationPill{flex:1 1 210px!important}
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls,
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters{display:grid!important;grid-template-columns:1fr!important;width:100%!important}
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardOperationalControls .filterField,
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters>.filterField{grid-template-columns:112px minmax(0,1fr)!important;width:100%!important}
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardRangeCompact{grid-template-columns:112px minmax(0,1fr)!important}
+  body.operationalConsoleDB43.layoutDisciplineDB36[data-page="dashboard"] .dashboardRangeCompact select{width:100%!important}
+  body.operationalConsoleDB43 .heroCard{padding:24px 18px!important}
+  body.operationalConsoleDB43 .requestMega{min-height:62px!important;font-size:20px!important}
+  body.operationalConsoleDB43 .loginCard{padding:24px 20px!important}
+}
