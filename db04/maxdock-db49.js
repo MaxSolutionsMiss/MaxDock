@@ -42,7 +42,7 @@
   }
 
   function simplifySectionMenus(){
-    document.querySelectorAll(".sectionWorkspaceRailHead small,.sectionWorkspaceTabs>button small").forEach(item=>item.remove());
+    document.querySelectorAll(".sectionWorkspaceRailHead small,.sectionWorkspaceTabs>button small").forEach(item=>item.setAttribute("aria-hidden","true"));
   }
 
   function markAlignedControls(){
