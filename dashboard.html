@@ -54,8 +54,8 @@
     </div>
     <div class="dashboardActions">
       <div class="dashboardPrimaryActions">
-        <button class="primaryBtn dashboardActionPrimary appointmentActionBtn" onclick="openRequest()"><span class="buttonIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM12 12v5M9.5 14.5h5"/></svg></span><span>Place appointment</span></button>
-        <button class="secondaryBtn dashboardActionPrimary blockActionBtn" onclick="openBlockModal()"><span class="buttonIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM9 14h6"/></svg></span><span>Block time</span></button>
+        <button class="primaryBtn dashboardActionPrimary appointmentActionBtn" onclick="openRequest()"><span class="buttonIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM12 12v5M9.5 14.5h5"/></svg></span><span>Place Appointment</span></button>
+        <button class="primaryBtn dashboardActionPrimary blockActionBtn" onclick="openBlockModal()"><span class="buttonIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM9 14h6"/></svg></span><span>Block Time</span></button>
       </div>
       <div class="dashboardUtilityActions" role="group" aria-label="Document actions">
         <button class="secondaryBtn utilityBtn" onclick="exportCSV()">Export CSV</button>
@@ -90,7 +90,7 @@
   <section class="panel dockSchedulePanel" id="dockSchedulePanel">
     <div class="tvScheduleBar" id="tvScheduleBar" hidden>
       <div><span class="liveDot"></span><span id="tvRefreshStatus">Live schedule display · updates every 5 seconds</span></div>
-      <div class="scheduleDisplayActions"><button class="primaryBtn utilityBtn" id="scheduleFullscreenButton" type="button" onclick="enterScheduleFullscreen()">Enter full screen</button><button class="secondaryBtn utilityBtn" id="exitTvMode" type="button" onclick="closeTvSchedule()">Close display</button></div>
+      <div class="scheduleDisplayActions"><button class="secondaryBtn utilityBtn" id="exitTvMode" type="button" onclick="closeTvSchedule()">Close Display</button></div>
     </div>
     <div class="schedulePanelHeader">
       <div class="scheduleCompactBar">
@@ -121,7 +121,7 @@
             <option value="120">2-hour</option>
           </select>
         </div>
-        <button class="secondaryBtn utilityBtn tvModeButton" id="tvModeButton" type="button" onclick="openScheduleDisplay()">Open full-screen view</button>
+        <button class="secondaryBtn utilityBtn tvModeButton" id="tvModeButton" type="button" onclick="openScheduleDisplay()">Open Full-Screen View</button>
       </div>
     </div>
 
