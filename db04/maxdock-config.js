@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v66-DB45",
+  version: "MaxDock-v67-DB46",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -26,32 +26,34 @@ window.MAXDOCK_CONFIG = Object.freeze({
     document.body.appendChild(script);
   });
 
-  loadCss("maxdock-db33.css","66-db45","db33");
-  loadCss("maxdock-db34.css","66-db45","db34");
-  loadCss("maxdock-db35.css","66-db45","db35");
-  loadCss("maxdock-db36.css","66-db45","db36");
-  loadCss("maxdock-db38.css","66-db45","db38");
-  loadCss("maxdock-db39.css","66-db45","db39");
-  loadCss("maxdock-db40.css","66-db45","db40");
-  loadCss("maxdock-db41.css","66-db45","db41");
-  loadCss("maxdock-db42.css","66-db45","db42");
-  loadCss("maxdock-db43.css","66-db45","db43");
-  loadCss("maxdock-db44.css","66-db45","db44");
-  loadCss("maxdock-db45.css","66-db45","db45");
+  loadCss("maxdock-db33.css","67-db46","db33");
+  loadCss("maxdock-db34.css","67-db46","db34");
+  loadCss("maxdock-db35.css","67-db46","db35");
+  loadCss("maxdock-db36.css","67-db46","db36");
+  loadCss("maxdock-db38.css","67-db46","db38");
+  loadCss("maxdock-db39.css","67-db46","db39");
+  loadCss("maxdock-db40.css","67-db46","db40");
+  loadCss("maxdock-db41.css","67-db46","db41");
+  loadCss("maxdock-db42.css","67-db46","db42");
+  loadCss("maxdock-db43.css","67-db46","db43");
+  loadCss("maxdock-db44.css","67-db46","db44");
+  loadCss("maxdock-db45.css","67-db46","db45");
+  loadCss("maxdock-db46.css","67-db46","db46");
 
   const initialize=async()=>{
-    await loadScript("maxdock-ops-density.js","66-db45","db33");
-    await loadScript("maxdock-layout-discipline.js","66-db45","db36");
-    await loadScript("maxdock-db42.js","66-db45","db42");
-    await loadScript("maxdock-db43.js","66-db45","db43");
-    await loadScript("maxdock-db44.js","66-db45","db44");
-    await loadScript("maxdock-db45.js","66-db45","db45");
-    document.documentElement.dataset.maxdockRelease="db45";
+    await loadScript("maxdock-ops-density.js","67-db46","db33");
+    await loadScript("maxdock-layout-discipline.js","67-db46","db36");
+    await loadScript("maxdock-db42.js","67-db46","db42");
+    await loadScript("maxdock-db43.js","67-db46","db43");
+    await loadScript("maxdock-db44.js","67-db46","db44");
+    await loadScript("maxdock-db45.js","67-db46","db45");
+    await loadScript("maxdock-db46.js","67-db46","db46");
+    document.documentElement.dataset.maxdockRelease="db46";
     document.querySelectorAll(".menu").forEach(menu=>{
       if(menu.querySelector(".maxdockReleaseStamp"))return;
       const stamp=document.createElement("small");
       stamp.className="maxdockReleaseStamp";
-      stamp.textContent="DB45 · navigation, alignment, and integration refinement active";
+      stamp.textContent="DB46 · stable navigation, centred controls, and functional colour active";
       menu.appendChild(stamp);
     });
   };

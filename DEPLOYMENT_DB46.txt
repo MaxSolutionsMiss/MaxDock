@@ -1,0 +1,22 @@
+MaxDock DB46 — Stable navigation, centred controls, and functional colour
+
+User-visible changes
+- Uses one canonical top-navigation order on every authenticated page so links no longer move when the user changes pages.
+- Reserves one consistent account/action lane so role- and page-specific controls do not shift the navigation.
+- Renames the visible Operations Queue wording to Operation Queue throughout the application.
+- Centres Place appointment and Block time vertically and horizontally, gives both controls equal dimensions, and removes decorative shadows.
+- Adds restrained calendar icons to the two primary Dashboard scheduling actions.
+- Vertically centres Dashboard and Operation Queue filters, view controls, and document actions inside their toolbar surfaces.
+- Gives Dashboard and Operation Queue KPI cards functional status colours with flat borders and quiet background tints.
+- Moves the Sign In card slightly lower so it sits at the visual centre of the page.
+- Keeps the approved Arial/Helvetica typography, coloured MaxDock identity, compact tables, permissions, scheduling logic, and five-second live refresh unchanged.
+
+Release marker
+- MaxDock-v67-DB46
+- DB46 · stable navigation, centred controls, and functional colour active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration required.
+- No Edge Function deployment required.
+- Root and db04 browser files must remain byte-for-byte identical.
