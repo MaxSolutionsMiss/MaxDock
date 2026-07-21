@@ -56,7 +56,7 @@ window.MAXDOCK_CONFIG = Object.freeze({
       if(menu.querySelector(".maxdockReleaseStamp"))return;
       const stamp=document.createElement("small");
       stamp.className="maxdockReleaseStamp";
-      stamp.textContent="DB47 · compact left navigation and graphical KPI preview active";
+      stamp.textContent="DB47 · compact left navigation and graphical KPI alignment active";
       menu.appendChild(stamp);
     });
   };
