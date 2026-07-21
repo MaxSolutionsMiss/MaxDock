@@ -33,7 +33,7 @@
       <details class="menuDetails">
         <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=68-db47">My Appointments</a>
+          <a href="./my-appointments.html?v=73-db52">My Appointments</a>
           <a href="./queue.html?v=68-db47">Operation Queue</a>
           <a href="./reports.html?v=68-db47">Reports</a>
           <a href="./dashboard.html?v=68-db47">Dashboard</a>
@@ -58,7 +58,7 @@
 <div class="modalOverlay" id="requestModal">
   <div class="modal requestModalCompact">
     <div class="modalHead">
-      <div class="requestModalTitle"><h2>Place Appointment</h2><p id="modalFacility">Max Solutions – Mississauga</p></div>
+      <div class="requestModalTitle"><h2>Book an Appointment</h2><p id="modalFacility">Max Solutions – Mississauga</p></div>
       <div class="bookingTemplateBar bookingTemplateCompact" id="bookingTemplateBar">
         <div class="bookingTemplateField"><label for="reqTemplateSelect">Template</label><select id="reqTemplateSelect"><option value="">No template</option></select></div>
         <button class="secondaryBtn utilityBtn" id="reqTemplateApply" type="button" onclick="applySelectedBookingTemplate()" disabled>Use</button>
@@ -68,9 +68,9 @@
     </div>
     <div class="modalBody">
       <div class="steps">
-        <div class="stepPill active" id="pill1"><span class="stepNum">1</span><span>Route &amp; Load</span></div>
-        <div class="stepPill" id="pill2"><span class="stepNum">2</span><span>Truck &amp; Skids</span></div>
-        <div class="stepPill" id="pill3"><span class="stepNum">3</span><span>Date &amp; Time</span></div>
+        <div class="stepPill active" id="pill1"><span class="stepNum">1</span><span>Load</span></div>
+        <div class="stepPill" id="pill2"><span class="stepNum">2</span><span>Truck</span></div>
+        <div class="stepPill" id="pill3"><span class="stepNum">3</span><span>Time</span></div>
         <div class="stepPill" id="pill4"><span class="stepNum">4</span><span>Contact</span></div>
         <div class="stepPill" id="pill5"><span class="stepNum">5</span><span>Review</span></div>
       </div>
@@ -98,7 +98,7 @@
       </section>
 
       <section class="stepPanel" id="step2">
-        <h3 class="stepTitle">Truck and handling details</h3>
+        <h3 class="stepTitle">Truck &amp; Skids</h3>
         <p class="stepIntro">These details calculate the appointment length in the background.</p>
         <div class="formGrid">
           <div class="field"><label>Truck Type</label><select id="reqTruck" onchange="renderSlots()"><option>53 ft Trailer</option><option>48 ft Trailer</option><option>26 ft Straight Truck</option><option>Cube Van</option><option>Courier Van</option></select></div>
@@ -112,7 +112,7 @@
       </section>
 
       <section class="stepPanel" id="step3">
-        <h3 class="stepTitle">Pick an available time</h3>
+        <h3 class="stepTitle">Choose a Time</h3>
         <p class="stepIntro">Choose an available time. MaxDock highlights the strongest options for this load.</p>
         <div class="slotTools">
           <button class="secondaryBtn" onclick="moveRequestDate(-1)">‹ Previous Day</button>
@@ -141,7 +141,7 @@
       </section>
 
       <section class="stepPanel" id="step4">
-        <h3 class="stepTitle">Requester and reference</h3>
+        <h3 class="stepTitle">Contact &amp; Reference</h3>
         <p class="stepIntro">Your MaxDock account details are filled automatically. Add the carrier and shipment reference.</p>
         <div class="formGrid">
           <div class="field"><label>Requester Name *</label><input id="reqName"></div>
@@ -169,7 +169,7 @@
           <div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">
             <button class="secondaryBtn" onclick="copyConfirmation()">Copy Confirmation</button>
             <button class="secondaryBtn" onclick="openEmailDraft()">Open Email Draft</button>
-            <a class="secondaryBtn" href="./my-appointments.html?v=68-db47">View My Appointments</a>
+            <a class="secondaryBtn" href="./my-appointments.html?v=73-db52">View My Appointments</a>
           </div>
         </div>
         <div class="error" id="err5"></div>
