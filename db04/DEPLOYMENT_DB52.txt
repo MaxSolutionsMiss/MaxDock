@@ -1,0 +1,20 @@
+MaxDock DB52 — Reliable booking placement and simplified five-step flow
+
+User-visible changes
+- Replaces the unreliable My Appointments booking link with a role-aware Book an Appointment button.
+- Waits for the authenticated booking context before opening the booking modal.
+- Returns direct bookings to My Appointments when the modal is closed.
+- Moves Dashboard Book Appointment and Block Time into the first control banner.
+- Applies the Save settings teal treatment to Dashboard actions and Queue Refresh.
+- Simplifies the booking modal to five short steps with less explanatory text.
+- Restores a clear outline and light shadow around the active booking step.
+- Improves vertical spacing and phone/iPad layout.
+
+Release marker
+- MaxDock-v73-DB52
+- DB52 · reliable booking actions and simplified five-step scheduling active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
