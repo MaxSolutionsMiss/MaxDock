@@ -1,0 +1,53 @@
+MaxDock v65-DB44 — Coloured Identity and Stable Navigation
+
+Purpose
+- Restore the approved coloured Max mark while retaining DB43's flat operational-console discipline.
+- Keep the authenticated header in the same position and proportions on every page.
+- Improve booking-step scan speed and reduce permanent density in User Management.
+
+Brand and Page Canvas
+- The Max mark again uses the earlier blue-to-green Max gradient with the white symbol.
+- The old logo shadow is not restored.
+- MaxDock is slightly larger and Max Solutions Packaging Inc. appears directly below it in authenticated headers.
+- Sign-in and password setup use the same coloured mark, larger MaxDock wordmark, and company attribution.
+- Operational pages use a subtle Max blue/green background wash with flat bordered content surfaces.
+
+Navigation and Operations Controls
+- Desktop headers use stable brand, navigation, and account-control lanes so menu positions do not jump between pages.
+- Persistent navigation remains role-aware and the gear menu remains available for secondary and narrow-screen navigation.
+- Dashboard and Operations Queue toolbars retain their shared compact layout and explicitly protect gear menus from clipping.
+- Tablet and mobile breakpoints collapse navigation before controls can overlap.
+
+Customer Booking
+- Step numbers 1 through 5 are larger.
+- Step labels are shifted left and aligned beside their number for faster scanning.
+- Mobile steps retain a compact centered stack for readability.
+- Booking logic, appointment fields, permissions, and slot selection are unchanged.
+
+User Management
+- A left-side user-group navigator separates All Users, Internal Team, Customers, Vendors, and Setup Required.
+- The primary table no longer displays a permanent Locations column.
+- Details expands the selected user in place and reveals location access, customer/vendor identity, and username.
+- Search still includes hidden location and company values.
+- Add, edit, setup-link, reset-password, deletion, privilege, and location-assignment behavior is unchanged.
+
+Database and Edge Functions
+- No Supabase migration is required.
+- No Edge Function deployment is required.
+- Scheduling, live refresh, role security, RLS, MIS, capacity, and customer-confidentiality behavior is unchanged.
+
+Release Delivery
+- Publish matching root and db04 copies.
+- Browser assets use the unique v65-db44 cache marker.
+- The gear menu displays “DB44 · coloured identity and stable navigation active”.
+
+Verification
+1. Run node --check for every JavaScript file.
+2. Run git diff --check.
+3. Run scripts/verify-root-db04-parity.sh.
+4. Confirm every authenticated page uses the coloured mark and stable desktop header lanes.
+5. Confirm Sign In and Set Password use the coloured mark and MaxDock-first branding.
+6. Confirm all five booking steps show larger numbers and left-aligned desktop labels.
+7. Confirm Dashboard and Operations Queue controls do not overlap and customization menus open inward.
+8. Confirm User Management filters each group and Details is the only table view that exposes locations.
+9. Confirm mobile headers, booking steps, and User Management details remain readable without clipping.
