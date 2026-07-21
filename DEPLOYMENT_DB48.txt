@@ -1,0 +1,19 @@
+MaxDock DB48 — Full-width workspace and operator fullscreen
+
+User-visible changes
+- Removes the fixed 1480px workspace cap and uses nearly the full monitor width.
+- Keeps a consistent 12px gutter between the left rail and the working area.
+- Removes the MD/Menu and DB47 footer blocks so the sidebar begins directly with navigation.
+- Locks graphical KPI cards to a fully visible 116px height so icons, labels, and numbers are not cropped.
+- Changes Dashboard and Operation Queue full-screen actions to use the current page rather than opening a popup.
+- Hides both the top bar and left sidebar in operator display mode.
+- Escape or the display close control returns the operator to the normal page.
+
+Release marker
+- MaxDock-v69-DB48
+- DB48 · full-width workspace and operator fullscreen active
+
+Data and deployment impact
+- Frontend only.
+- No Supabase migration.
+- No Edge Function deployment.
