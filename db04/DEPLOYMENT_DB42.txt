@@ -1,0 +1,56 @@
+MaxDock v63-DB42 — Compact Navigation Workspaces
+
+Purpose
+- Reduce scrolling and unnecessary field width while keeping live operational data prominent.
+- Give configuration-heavy pages a consistent, modern workspace pattern.
+- Make primary tasks obvious and document actions appropriately compact.
+
+Settings
+- Operating Hours, Timing Rules, Dock Doors, Scheduling Policy, and Warehouse Capacity appear in a left-side section menu.
+- Selecting a section shows one focused configuration panel on the right.
+- The selected section is remembered on the same browser.
+- Arrow keys, Home, and End navigate the section menu for keyboard users.
+
+Data Integration
+- Connection Settings and Inventory Imports are separated into two focused workspace sections.
+- Existing integration form fields, CSV controls, import history, and Supabase behavior are unchanged.
+
+Reports
+- Overview, Truck Flow, Skid Movement, and Dock Utilization are selected from a left-side report menu.
+- The existing saved report preference and report rendering logic remain the source of truth.
+- Date-range, Update, Export CSV, and Print controls are more compact.
+
+Dashboard and Operations Queue
+- Live schedule, queue, and KPI content remains the primary workspace rather than being hidden behind navigation.
+- Today’s Queue, Place Appointment, Block Time, Print, Export CSV, full-screen display, day, and refresh actions use a smaller consistent control scale on desktop.
+- Mobile controls retain larger touch targets.
+
+Customer Entry and Booking
+- The landing-page Place Appointment control is a clear, restrained button inside a smaller customer entry card.
+- On desktop, booking Step 1 places route, destination, appointment type, and priority fields on one line where account permissions allow.
+- Tablet and mobile layouts reflow to two columns and then one column.
+- Existing customer confidentiality, account-derived routing, role behavior, and booking logic are unchanged.
+
+Responsive and Accessibility
+- Workspace navigation becomes a horizontally scrollable tab row on narrow screens.
+- Selected state, tab semantics, keyboard navigation, and visible focus treatments are included.
+
+Database and Edge Functions
+- No Supabase migration is required.
+- No Edge Function deployment is required.
+- Existing database roles, RLS policies, appointments, and integration behavior are unchanged.
+
+Release Delivery
+- Publish matching root and db04 copies.
+- Browser assets use the unique v63-db42 cache marker.
+- The menu displays “DB42 · compact navigation workspaces active”.
+
+Verification
+1. Run node --check for every JavaScript file.
+2. Run git diff --check.
+3. Run scripts/verify-root-db04-parity.sh.
+4. Confirm Settings sections switch without a page reload and retain unsaved values while switching.
+5. Confirm Data Integration switches between connection settings and inventory imports.
+6. Confirm each Reports view updates the existing report output and saved preference.
+7. Confirm Dashboard and Queue controls remain fully visible at desktop, tablet, and mobile widths.
+8. Confirm customer and staff booking Step 1 reflows correctly and completes a booking without route changes.
