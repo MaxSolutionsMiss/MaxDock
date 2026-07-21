@@ -1,6 +1,6 @@
 # MaxDock repository memory
 
-MaxDock is a static GitHub Pages dock-appointment application backed by Supabase Auth, Postgres/RLS/RPCs, and two Supabase Edge Functions. The current production release is DB43, built on the DB31 through DB43 interface and scheduling refinements; DB44 is the active reviewed release branch.
+MaxDock is a static GitHub Pages dock-appointment application backed by Supabase Auth, Postgres/RLS/RPCs, and two Supabase Edge Functions. The current production release is DB44, built on the DB31 through DB44 interface and scheduling refinements; DB45 is the active reviewed release branch.
 
 Before changing anything, read every file in `docs/claude-handoff/`, beginning with `START_HERE.md`. Treat those files, the current source, and the connected production schema as a single handoff.
 
@@ -23,7 +23,7 @@ Before changing anything, read every file in `docs/claude-handoff/`, beginning w
 - Core UI: `maxdock.js`, `maxdock.css`.
 - Supabase integration: `maxdock-config.js`, `maxdock-db.js`, `maxdock-integration.js`, `maxdock-auth.js`.
 - Page controllers: `maxdock-admin.js`, `maxdock-queue.js`, `maxdock-reports.js`, `maxdock-mis.js`, `maxdock-my-appointments.js`, `maxdock-password.js`.
-- Current UI refinement layers: `maxdock-db31-base.css`, `maxdock-db33.css`, `maxdock-db34.css`, `maxdock-db35.css`, `maxdock-db36.css`, `maxdock-db38.css`, `maxdock-db39.css`, `maxdock-db40.css`, `maxdock-db41.css`, `maxdock-db42.css`, `maxdock-db43.css`, `maxdock-db44.css`, `maxdock-ops-density.js`, `maxdock-layout-discipline.js`, `maxdock-db42.js`, `maxdock-db43.js`, `maxdock-db44.js`.
+- Current UI refinement layers: `maxdock-db31-base.css`, `maxdock-db33.css`, `maxdock-db34.css`, `maxdock-db35.css`, `maxdock-db36.css`, `maxdock-db38.css`, `maxdock-db39.css`, `maxdock-db40.css`, `maxdock-db41.css`, `maxdock-db42.css`, `maxdock-db43.css`, `maxdock-db44.css`, `maxdock-db45.css`, `maxdock-ops-density.js`, `maxdock-layout-discipline.js`, `maxdock-db42.js`, `maxdock-db43.js`, `maxdock-db44.js`, `maxdock-db45.js`.
 - Supabase SQL history available in this repository: `MaxDock_DB_v11_*.sql` through `MaxDock_DB_v21_*.sql`, mirrored in `db04/`.
 - Edge Functions: `supabase/functions/maxdock-invite-user/index.ts` and `supabase/functions/maxdock-ai-brief/index.ts`.
 - Live schema snapshot: `supabase/database.types.ts`. Regenerate it after every schema migration.

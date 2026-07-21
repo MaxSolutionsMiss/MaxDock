@@ -1,0 +1,23 @@
+MaxDock DB45 — Navigation, alignment, and integration refinement
+
+User-visible changes
+- Keeps the persistent role-aware navigation aligned to the right of the brand and removes the redundant Dashboard Queue shortcut.
+- Shows the location selector only to System Admin accounts.
+- Separates the signed-in identity, notification bell, and Sign Out action in the top-right account area.
+- Aligns page headings and first-content surfaces across Dashboard, Operations Queue, Reports, Settings, User Management, Data Integration, and My Appointments.
+- Prevents Dashboard and Queue controls from overlapping at intermediate screen widths.
+- Centres the Today, appointment, booking, and timeline controls consistently.
+- Closes open menus and modal windows when the user clicks outside; Escape closes the top open layer.
+- Shortens Settings and Data Integration fields while retaining full-width white work panels.
+- Adds clear available/configurable/planned data integration pathways for CSV, secure database bridge, SFTP, REST API, and SharePoint/OneDrive.
+- Uses a wider, quieter top banner and a neutral light-grey page canvas while preserving functional status colours.
+
+Release marker
+- MaxDock-v66-DB45
+- DB45 · navigation, alignment, and integration refinement active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration required.
+- No Edge Function deployment required.
+- Root and db04 browser files must remain byte-for-byte identical.
