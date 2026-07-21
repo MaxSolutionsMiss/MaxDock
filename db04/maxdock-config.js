@@ -40,6 +40,7 @@ window.MAXDOCK_CONFIG = Object.freeze({
   loadCss("maxdock-db45.css","68-db47","db45");
   loadCss("maxdock-db46.css","68-db47","db46");
   loadCss("maxdock-db47.css","68-db47","db47");
+  loadCss("maxdock-db47-polish.css","68-db47","db47-polish");
 
   const initialize=async()=>{
     await loadScript("maxdock-ops-density.js","68-db47","db33");

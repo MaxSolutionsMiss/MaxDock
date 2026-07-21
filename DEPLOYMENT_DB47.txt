@@ -5,6 +5,8 @@ User-visible preview changes
 - Keeps the top banner open for MaxDock branding, location selection, notifications, signed-in identity, and sign-out.
 - Prevents page-specific location controls from moving the navigation because navigation no longer shares the top action lane.
 - Adds restrained line icons and stronger functional colour to Dashboard, Operation Queue, My Appointments, and Reports KPI cards.
+- Centres every KPI icon, label, and number as a single balanced visual group with consistent label height and number alignment.
+- Restores the approved blue-to-green Max Solutions mark; internal pages show only the mark and MaxDock, while the requester and sign-in screens retain the company attribution.
 - Vertically centres Schedule Date, Appointment Status, range, queue, report, and appointment-view controls inside their cards.
 - Reduces operational field widths and heights so controls are proportional instead of stretching across the toolbar.
 - Centres the sign-in and password cards both vertically and horizontally.
