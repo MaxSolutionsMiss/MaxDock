@@ -42,29 +42,33 @@
 
   async function loadDashboardSelection(){
     let selected=[];
+    let showMetrics=true;
     try{
       const local=JSON.parse(localStorage.getItem(profileKey("dashboard_metrics"))||"[]");
       if(Array.isArray(local))selected=local;
+      showMetrics=localStorage.getItem(profileKey("dashboard_metrics_visible"))!=="false";
     }catch(_ignored){}
     if(db?.loadPreference){
       try{
-        const saved=await db.loadPreference("dashboard-density",{metrics:selected.length?selected:DASHBOARD_DEFAULT});
+        const saved=await db.loadPreference("dashboard-density",{metrics:selected.length?selected:DASHBOARD_DEFAULT,showMetrics});
         if(Array.isArray(saved?.metrics))selected=saved.metrics;
+        showMetrics=saved?.showMetrics!==false;
       }catch(_ignored){}
     }
     selected=selected.filter(key=>DASHBOARD_METRICS.some(item=>item.key===key)).slice(0,DASHBOARD_MAX);
-    return selected.length?selected:[...DASHBOARD_DEFAULT];
+    return {metrics:selected.length?selected:[...DASHBOARD_DEFAULT],showMetrics};
   }
 
-  function saveDashboardSelection(selected){
+  function saveDashboardSelection(selected,showMetrics){
     try{localStorage.setItem(profileKey("dashboard_metrics"),JSON.stringify(selected))}catch(_ignored){}
+    try{localStorage.setItem(profileKey("dashboard_metrics_visible"),String(showMetrics))}catch(_ignored){}
     const statuses=[$("dashboardPreferenceStatus"),$("dashboardCustomizeStatus")].filter(Boolean);
     const updateStatus=(message,state)=>statuses.forEach(status=>{
       status.textContent=message;
       status.dataset.status=state||"saved";
     });
     if(db?.queuePreferenceSave){
-      db.queuePreferenceSave("dashboard-density",{metrics:selected},(message,state)=>{
+      db.queuePreferenceSave("dashboard-density",{metrics:selected,showMetrics},(message,state)=>{
         updateStatus(message||"Saved to your login",state);
       });
     }else updateStatus("Saved on this device","local");
@@ -77,7 +81,9 @@
     const metrics=$("metrics");
     const filters=document.querySelector(".dashboardFilters");
     const parent=metrics.parentElement;
-    let selected=await loadDashboardSelection();
+    const savedSelection=await loadDashboardSelection();
+    let selected=savedSelection.metrics;
+    let showMetrics=savedSelection.showMetrics;
     let applying=false;
 
     let band=document.querySelector(".dashboardOverviewBand");
@@ -103,16 +109,17 @@
     if(!customize){
       customize=document.createElement("details");
       customize.className="dashboardCustomize";
-      customize.innerHTML=`<summary>Customize</summary><div class="dashboardCustomizeMenu"><fieldset><legend>Dashboard metrics</legend><div class="dashboardCustomizeOptions">${DASHBOARD_METRICS.map(item=>`<label><input type="checkbox" value="${item.key}">${item.label}</label>`).join("")}</div></fieldset><button class="secondaryBtn utilityBtn" id="resetDashboardPreferences" type="button">Reset default view</button><small class="preferenceSyncStatus" id="dashboardCustomizeStatus" data-status="saved">Saved to your login</small></div>`;
+      customize.innerHTML=`<summary>Customize</summary><div class="dashboardCustomizeMenu"><fieldset><legend>Dashboard metrics</legend><div class="dashboardCustomizeOptions">${DASHBOARD_METRICS.map(item=>`<label><input type="checkbox" value="${item.key}">${item.label}</label>`).join("")}</div></fieldset><fieldset class="dashboardDisplayPreferences"><legend>Dashboard display</legend><label class="preferenceWide"><input id="dashboardShowMetrics" type="checkbox" ${showMetrics?"checked":""}>Show metrics dashboard</label></fieldset><button class="secondaryBtn utilityBtn" id="resetDashboardPreferences" type="button">Reset default view</button><small class="preferenceSyncStatus" id="dashboardCustomizeStatus" data-status="saved">Saved to your login</small></div>`;
       const note=filters.querySelector(".viewPreferenceNote");
       filters.insertBefore(customize,note||null);
     }
 
     const syncControls=()=>{
-      customize.querySelectorAll('input[type="checkbox"]').forEach(input=>{
+      customize.querySelectorAll('.dashboardCustomizeOptions input[type="checkbox"]').forEach(input=>{
         input.checked=selected.includes(input.value);
         input.disabled=!input.checked&&selected.length>=DASHBOARD_MAX;
       });
+      if($("dashboardShowMetrics"))$("dashboardShowMetrics").checked=showMetrics;
     };
 
     const applyMetrics=()=>{
@@ -133,6 +140,8 @@
           if(show)visible++;
         });
         metrics.style.setProperty("--visible-dashboard-metrics",String(Math.max(1,visible)));
+        metrics.classList.toggle("metricsDashboardHidden",!showMetrics);
+        metrics.hidden=!showMetrics;
         syncControls();
       }finally{
         applying=false;
@@ -142,6 +151,12 @@
     customize.addEventListener("change",event=>{
       const input=event.target.closest('input[type="checkbox"]');
       if(!input)return;
+      if(input.id==="dashboardShowMetrics"){
+        showMetrics=input.checked;
+        saveDashboardSelection(selected,showMetrics);
+        applyMetrics();
+        return;
+      }
       const next=new Set(selected);
       if(input.checked){
         if(next.size>=DASHBOARD_MAX){input.checked=false;return}
@@ -151,13 +166,14 @@
         next.delete(input.value);
       }
       selected=[...next];
-      saveDashboardSelection(selected);
+      saveDashboardSelection(selected,showMetrics);
       applyMetrics();
     });
 
     $("resetDashboardPreferences")?.addEventListener("click",()=>{
       selected=[...DASHBOARD_DEFAULT];
-      saveDashboardSelection(selected);
+      showMetrics=true;
+      saveDashboardSelection(selected,showMetrics);
       applyMetrics();
     });
 

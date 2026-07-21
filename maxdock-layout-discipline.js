@@ -115,7 +115,9 @@
     let quick=toolbar.querySelector(".queueToolbarQuickActions");
     if(!quick)quick=makeGroup("queueToolbarQuickActions","Queue day and refresh actions");
     [today,tomorrow,refresh].forEach(item=>{if(item)quick.appendChild(item)});
-    identifyGroup(quick,"Day controls");
+    quick.classList.remove("operationsToolbarGroup");
+    delete quick.dataset.groupLabel;
+    filters.appendChild(quick);
 
     let view=toolbar.querySelector(".queueToolbarViewActions");
     if(!view)view=makeGroup("queueToolbarViewActions","Queue display and view settings");
@@ -136,7 +138,7 @@
       utility.dataset.groupLabel="Documents";
     }
 
-    toolbar.replaceChildren(filters,quick,view);
+    toolbar.replaceChildren(filters,view);
     if(utility)toolbar.appendChild(utility);
   }
 
