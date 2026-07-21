@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v71-DB50",
+  version: "MaxDock-v72-DB51",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -26,43 +26,45 @@ window.MAXDOCK_CONFIG = Object.freeze({
     document.body.appendChild(script);
   });
 
-  loadCss("maxdock-db33.css","71-db50","db33");
-  loadCss("maxdock-db34.css","71-db50","db34");
-  loadCss("maxdock-db35.css","71-db50","db35");
-  loadCss("maxdock-db36.css","71-db50","db36");
-  loadCss("maxdock-db38.css","71-db50","db38");
-  loadCss("maxdock-db39.css","71-db50","db39");
-  loadCss("maxdock-db40.css","71-db50","db40");
-  loadCss("maxdock-db41.css","71-db50","db41");
-  loadCss("maxdock-db42.css","71-db50","db42");
-  loadCss("maxdock-db43.css","71-db50","db43");
-  loadCss("maxdock-db44.css","71-db50","db44");
-  loadCss("maxdock-db45.css","71-db50","db45");
-  loadCss("maxdock-db46.css","71-db50","db46");
-  loadCss("maxdock-db47.css","71-db50","db47");
-  loadCss("maxdock-db47-polish.css","71-db50","db47-polish");
-  loadCss("maxdock-db48.css","71-db50","db48");
-  loadCss("maxdock-db49.css","71-db50","db49");
-  loadCss("maxdock-db50.css","71-db50","db50");
+  loadCss("maxdock-db33.css","72-db51","db33");
+  loadCss("maxdock-db34.css","72-db51","db34");
+  loadCss("maxdock-db35.css","72-db51","db35");
+  loadCss("maxdock-db36.css","72-db51","db36");
+  loadCss("maxdock-db38.css","72-db51","db38");
+  loadCss("maxdock-db39.css","72-db51","db39");
+  loadCss("maxdock-db40.css","72-db51","db40");
+  loadCss("maxdock-db41.css","72-db51","db41");
+  loadCss("maxdock-db42.css","72-db51","db42");
+  loadCss("maxdock-db43.css","72-db51","db43");
+  loadCss("maxdock-db44.css","72-db51","db44");
+  loadCss("maxdock-db45.css","72-db51","db45");
+  loadCss("maxdock-db46.css","72-db51","db46");
+  loadCss("maxdock-db47.css","72-db51","db47");
+  loadCss("maxdock-db47-polish.css","72-db51","db47-polish");
+  loadCss("maxdock-db48.css","72-db51","db48");
+  loadCss("maxdock-db49.css","72-db51","db49");
+  loadCss("maxdock-db50.css","72-db51","db50");
+  loadCss("maxdock-db51.css","72-db51","db51");
 
   const initialize=async()=>{
-    await loadScript("maxdock-ops-density.js","71-db50","db33");
-    await loadScript("maxdock-layout-discipline.js","71-db50","db36");
-    await loadScript("maxdock-db42.js","71-db50","db42");
-    await loadScript("maxdock-db43.js","71-db50","db43");
-    await loadScript("maxdock-db44.js","71-db50","db44");
-    await loadScript("maxdock-db45.js","71-db50","db45");
-    await loadScript("maxdock-db46.js","71-db50","db46");
-    await loadScript("maxdock-db47.js","71-db50","db47");
-    await loadScript("maxdock-db48.js","71-db50","db48");
-    await loadScript("maxdock-db49.js","71-db50","db49");
-    await loadScript("maxdock-db50.js","71-db50","db50");
-    document.documentElement.dataset.maxdockRelease="db50";
+    await loadScript("maxdock-ops-density.js","72-db51","db33");
+    await loadScript("maxdock-layout-discipline.js","72-db51","db36");
+    await loadScript("maxdock-db42.js","72-db51","db42");
+    await loadScript("maxdock-db43.js","72-db51","db43");
+    await loadScript("maxdock-db44.js","72-db51","db44");
+    await loadScript("maxdock-db45.js","72-db51","db45");
+    await loadScript("maxdock-db46.js","72-db51","db46");
+    await loadScript("maxdock-db47.js","72-db51","db47");
+    await loadScript("maxdock-db48.js","72-db51","db48");
+    await loadScript("maxdock-db49.js","72-db51","db49");
+    await loadScript("maxdock-db50.js","72-db51","db50");
+    await loadScript("maxdock-db51.js","72-db51","db51");
+    document.documentElement.dataset.maxdockRelease="db51";
     document.querySelectorAll(".menu").forEach(menu=>{
       if(menu.querySelector(".maxdockReleaseStamp"))return;
       const stamp=document.createElement("small");
       stamp.className="maxdockReleaseStamp";
-      stamp.textContent="DB50 · direct vendor booking and unified interface actions active";
+      stamp.textContent="DB51 · audited controls, consistent actions, and unified full-screen views active";
       menu.appendChild(stamp);
     });
   };

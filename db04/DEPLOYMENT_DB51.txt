@@ -1,0 +1,21 @@
+MaxDock DB51 — Audited controls, consistent actions, and unified full-screen views
+
+User-visible changes
+- Uses the Save settings teal treatment as the single reference for primary actions across Dashboard, Queue, Reports, Settings, Data Integration, User Management, booking, and requester flows.
+- Places Book an Appointment directly beside My Appointments for Vendor accounts and keeps the direct booking workflow.
+- Makes Dashboard and Operation Queue use the same Open Full-Screen View terminology and monitor-filling operator layout.
+- Removes the redundant Enter Full Screen control from both operator displays; Close Display remains available and Escape continues to exit.
+- Prevents the Queue full-screen button from also launching the older popup workflow.
+- Rebuilds Dashboard Date Range as a normal filter aligned with Schedule Date and Appointment Status.
+- Widens the top location selector so Mississauga, Owen Sound, and other long names are fully visible.
+- Moves warehouse-capacity activation beneath the capacity description and identifies the current location.
+- Shows the locations where warehouse-capacity planning is enabled when access permits.
+
+Release marker
+- MaxDock-v72-DB51
+- DB51 · audited controls, consistent actions, and unified full-screen views active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
