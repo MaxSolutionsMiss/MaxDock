@@ -33,7 +33,7 @@
   function compactNavigationLabels(){
     const labels={
       "my-appointments":"Appointments",
-      queue:"Queue",
+      queue:"Operation Queue",
       reports:"Reports",
       dashboard:"Dashboard",
       settings:"Settings",
