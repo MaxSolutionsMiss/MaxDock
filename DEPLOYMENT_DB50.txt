@@ -1,0 +1,20 @@
+MaxDock DB50 — Direct vendor booking and unified interface actions
+
+User-visible changes
+- Keeps Vendor accounts on My Appointments after login.
+- Replaces the unstable Book Appointment link with a large, consistent Book an Appointment action.
+- Opens the booking wizard immediately from My Appointments and returns there when the direct flow is closed.
+- Restores Dashboard Date Range as a normal filter instead of a graphical KPI card.
+- Applies one flat teal primary-button treatment across Dashboard, Settings, Data Integration, Reports, User Management, and booking actions.
+- Increases the desktop gutter beside the left navigation rail from 18px to 24px.
+- Preserves hidden User Group count nodes so User Management no longer fails with a null textContent error.
+- Adds null-safe User Management summary rendering as an additional safeguard.
+
+Release marker
+- MaxDock-v71-DB50
+- DB50 · direct vendor booking and unified interface actions active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
