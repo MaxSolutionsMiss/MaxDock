@@ -1,6 +1,23 @@
 (function(){
   "use strict";
 
+  function loadDB46Assets(){
+    if(!document.querySelector('link[data-maxdock-db46]')){
+      const link=document.createElement('link');
+      link.rel='stylesheet';
+      link.href='./maxdock-db46.css?v=67-db46';
+      link.dataset.maxdockDb46='true';
+      document.head.appendChild(link);
+    }
+    if(!document.querySelector('script[data-maxdock-db46]')){
+      const script=document.createElement('script');
+      script.src='./maxdock-db46.js?v=67-db46';
+      script.defer=true;
+      script.dataset.maxdockDb46='true';
+      document.head.appendChild(script);
+    }
+  }
+
   function closeOpenDetails(event){
     document.querySelectorAll("details[open]").forEach(details=>{
       if(event?.type==="click"&&details.contains(event.target))return;
@@ -33,7 +50,7 @@
   function compactNavigationLabels(){
     const labels={
       "my-appointments":"Appointments",
-      queue:"Queue",
+      queue:"Operation Queue",
       reports:"Reports",
       dashboard:"Dashboard",
       settings:"Settings",
@@ -61,6 +78,7 @@
     document.addEventListener("click",closeOpenDetails);
     document.addEventListener("click",handleBackdropClick);
     document.addEventListener("keydown",handleEscape);
+    loadDB46Assets();
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initialize,{once:true});
