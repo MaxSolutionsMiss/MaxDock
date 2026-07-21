@@ -52,7 +52,7 @@ new = '''  function updateSummary(){
 write('maxdock-admin.js', replace_once(text, old, new, 'maxdock-admin updateSummary'))
 
 text = read('my-appointments.html')
-old = '<a class="primaryBtn" href="./index.html?v=67-db46">Book Appointment</a>'
+old = '<a class="primaryBtn" href="./index.html?v=68-db47">Book Appointment</a>'
 new = '<a class="primaryBtn bookAppointmentBtnDB50" href="./index.html?book=1&amp;return=my-appointments&amp;v=71-db50">Book an Appointment</a>'
 write('my-appointments.html', replace_once(text, old, new, 'my-appointments booking link'))
 
