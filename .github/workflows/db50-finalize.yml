@@ -1,0 +1,51 @@
+name: Finalize DB50
+
+on:
+  push:
+    branches:
+      - codex/db50-vendor-booking-button-consistency
+    paths:
+      - '.github/workflows/db50-finalize.yml'
+      - 'scripts/db50_patch.py'
+      - 'maxdock-db50.css'
+      - 'maxdock-db50.js'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/db50-vendor-booking-button-consistency
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Apply DB50 patch
+        run: python scripts/db50_patch.py
+      - name: Validate DB50 runtime
+        run: |
+          node --check maxdock-db49.js
+          node --check maxdock-db50.js
+          node --check maxdock-admin.js
+          cmp maxdock-db49.js db04/maxdock-db49.js
+          cmp maxdock-db50.js db04/maxdock-db50.js
+          cmp maxdock-db50.css db04/maxdock-db50.css
+          cmp maxdock-admin.js db04/maxdock-admin.js
+          cmp maxdock-config.js db04/maxdock-config.js
+          cmp my-appointments.html db04/my-appointments.html
+          grep -q 'MaxDock-v71-DB50' maxdock-config.js
+          grep -q 'maxdock-db50.css' maxdock-config.js
+          grep -q 'maxdock-db50.js' maxdock-config.js
+          grep -q 'Book an Appointment' my-appointments.html
+      - name: Commit finalized DB50
+        run: |
+          rm -f .github/workflows/db50-finalize.yml scripts/db50_patch.py
+          git config user.name 'MaxSolutionsMiss'
+          git config user.email 'javadresa@maxpkgsolutions.com'
+          git add -A
+          git commit -m '[db50-finalized] Direct vendor booking and unified interface actions'
+          git push origin HEAD:codex/db50-vendor-booking-button-consistency
