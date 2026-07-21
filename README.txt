@@ -1,4 +1,4 @@
-MaxDock v61-DB40 — Corporate Operational Layout Consistency
+MaxDock v62-DB41 — Dashboard, Queue, and User Setup Refinement
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -43,6 +43,14 @@ Deployment
 - Public sign-up must remain disabled in Supabase Authentication settings.
 
 Integrated database operations
+- Dashboard and Operations Queue share the same Schedule, Display, and Documents toolbar order
+- Dashboard Date Range uses the same control color and height as Schedule Date and Appointment Status
+- Dashboard filters no longer show the redundant automatic-save note beneath the toolbar
+- Each user can save whether the Dashboard and Operations Queue KPI dashboard is visible or hidden
+- Compact gear controls remain fully visible and open their customization menus inward
+- Operations Queue Refresh remains visible and legible on hover, focus, and while refreshing
+- User Management lists System Admin, Site Admin, Shipping Manager / Supervisor, Coordinator, Customer, and Vendor privileges
+- Vendor accounts reuse MaxDock's secure booking-only external role with Vendor identity, assigned locations, and existing RLS protection
 - Authentication and session persistence
 - RLS-filtered locations, roles, and permissions
 - Live slot availability through list_available_appointment_slots

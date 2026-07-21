@@ -4,10 +4,10 @@
   const $=id=>document.getElementById(id);
   const query=new URLSearchParams(location.search);
   const queueDisplayMode=query.get("display")==="1";
-  const DEFAULT_PREFERENCES={brief:["first","peak","docks","priority","review"],metrics:["pending","completed","inbound","outbound","skids","blocks","priority","soon"]};
+  const DEFAULT_PREFERENCES={brief:["first","peak","docks","priority","review"],metrics:["pending","completed","inbound","outbound","skids","blocks","priority","soon"],showMetrics:true};
   const VALID_PREFERENCES={brief:new Set(DEFAULT_PREFERENCES.brief),metrics:new Set(DEFAULT_PREFERENCES.metrics)};
   const state={rows:[],pendingRows:[],completedRows:[],blocks:[],returnLoads:[],busyId:null,
-    preferences:{brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics]},
+    preferences:{brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics],showMetrics:DEFAULT_PREFERENCES.showMetrics},
     view:{status:"pending",dateMode:"today",customDate:"",locationName:""}};
 
   function esc(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]))}
@@ -61,7 +61,7 @@
   }
   window.openQueueDisplay=function(){
     const url=new URL("./queue.html",location.href);
-    url.searchParams.set("v","61-db40");
+    url.searchParams.set("v","62-db41");
     url.searchParams.set("display","1");
     url.searchParams.set("date",$("queueDate").value||today());
     url.searchParams.set("status",$("queueStatus").value||"pending");
@@ -100,7 +100,8 @@
       const saved=JSON.parse(localStorage.getItem(preferenceStorageKey())||"{}");
       return {
         brief:Array.isArray(saved.brief)?saved.brief.filter(key=>VALID_PREFERENCES.brief.has(key)):[],
-        metrics:Array.isArray(saved.metrics)?saved.metrics.filter(key=>VALID_PREFERENCES.metrics.has(key)):[]
+        metrics:Array.isArray(saved.metrics)?saved.metrics.filter(key=>VALID_PREFERENCES.metrics.has(key)):[],
+        showMetrics:saved.showMetrics!==false
       };
     }catch{return {}}
   }
@@ -109,11 +110,13 @@
     const saved=await db.loadPreference("queue",{
       brief:legacy.brief?.length?legacy.brief:[...DEFAULT_PREFERENCES.brief],
       metrics:legacy.metrics?.length?legacy.metrics:[...DEFAULT_PREFERENCES.metrics],
+      showMetrics:legacy.showMetrics!==false,
       status:"pending",dateMode:"today",customDate:"",locationName:""
     });
     state.preferences={
       brief:Array.isArray(saved.brief)?saved.brief.filter(key=>VALID_PREFERENCES.brief.has(key)):[],
-      metrics:Array.isArray(saved.metrics)?saved.metrics.filter(key=>VALID_PREFERENCES.metrics.has(key)):[]
+      metrics:Array.isArray(saved.metrics)?saved.metrics.filter(key=>VALID_PREFERENCES.metrics.has(key)):[],
+      showMetrics:saved.showMetrics!==false
     };
     if(!state.preferences.brief.length)state.preferences.brief=[...DEFAULT_PREFERENCES.brief];
     if(!state.preferences.metrics.length)state.preferences.metrics=[...DEFAULT_PREFERENCES.metrics];
@@ -141,10 +144,11 @@
     const datePreference=currentDatePreference();
     state.view={status:$("queueStatus").value||"pending",locationName:db.getCurrentLocation()?.name||"",...datePreference};
     try{localStorage.setItem(preferenceStorageKey(),JSON.stringify(state.preferences))}catch(_ignored){}
-    db.queuePreferenceSave("queue",{...state.view,brief:state.preferences.brief,metrics:state.preferences.metrics},preferenceStatus);
+    db.queuePreferenceSave("queue",{...state.view,brief:state.preferences.brief,metrics:state.preferences.metrics,showMetrics:state.preferences.showMetrics},preferenceStatus);
   }
   function syncPreferenceControls(){
     document.querySelectorAll("[data-pref-section]").forEach(input=>{input.checked=state.preferences[input.dataset.prefSection]?.includes(input.value)||false});
+    if($("queueShowMetrics"))$("queueShowMetrics").checked=state.preferences.showMetrics;
   }
   function updateQueuePreference(input){
     const section=input.dataset.prefSection,current=new Set(state.preferences[section]||[]);
@@ -154,7 +158,7 @@
     state.preferences[section]=[...current];saveQueuePreferences();render();
   }
   function resetQueuePreferences(){
-    state.preferences={brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics]};
+    state.preferences={brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics],showMetrics:DEFAULT_PREFERENCES.showMetrics};
     saveQueuePreferences();syncPreferenceControls();render();
   }
 
@@ -183,7 +187,7 @@
     const completed=item.status==="Completed";
     const tag=item.linkedMovement?"Cross-site":completed?"Completed":level==="overdue"?"Time passed":level==="soon"?"Due within 60 min":item.priority?"Priority":"Planned";
     const canChange=!item.linkedMovement&&(completed?db.hasPermission("appointment.update"):db.hasPermission("appointment.complete"));
-    const historyLink=!item.linkedMovement&&db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=61-db40&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
+    const historyLink=!item.linkedMovement&&db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=62-db41&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
     return `<article class="queueCard ${level} ${item.linkedMovement?"linkedMovement":""}">
       <div class="queueCardTime"><strong>${esc(displayTime(item.start))}</strong><small>${esc(displayTime(item.end))}</small></div>
       <div class="queueCardBody">
@@ -252,7 +256,7 @@
   function renderFocus(rows){
     const next=rows.find(item=>$("queueDate").value!==today()||minuteValue(item.end)>=currentMinutes())||rows[0];
     if(!next){$("queueFocus").innerHTML=`<div><small>${esc(displayDate($("queueDate").value))}</small><h3>No active appointments scheduled</h3><p>The location has no inbound or outbound work in the execution queue for this date.</p></div>`;return}
-    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=61-db40&date=${esc($("queueDate").value)}">Open schedule</a>`;
+    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=62-db41&date=${esc($("queueDate").value)}">Open schedule</a>`;
   }
 
   function renderLane(direction,elementId,summaryId){
@@ -296,6 +300,8 @@
       {key:"soon",label:"Due soon",value:state.pendingRows.filter(item=>urgency(item)==="soon").length}
     ].filter(item=>state.preferences.metrics.includes(item.key));
     $("queueMetrics").innerHTML=metricItems.map(item=>`<div class="metric queueMetric ${item.key}"><small>${esc(item.label)}</small><strong>${item.value}</strong></div>`).join("");
+    $("queueMetrics").classList.toggle("metricsDashboardHidden",!state.preferences.showMetrics);
+    $("queueMetrics").hidden=!state.preferences.showMetrics;
     renderMorningBrief(state.pendingRows,actions);renderFocus(state.pendingRows);renderReturnLoads();renderActions(actions);renderLane("inbound","inboundQueue","inboundSummary");renderLane("outbound","outboundQueue","outboundSummary");renderBlocks();
   }
 
@@ -356,7 +362,13 @@
       $("openQueueDisplay").addEventListener("click",window.openQueueDisplay);
       $("printQueue").addEventListener("click",()=>window.print());
       $("exportQueue").addEventListener("click",csv);
-      $("queueCustomizeMenu").addEventListener("change",event=>{if(event.target.matches("[data-pref-section]"))updateQueuePreference(event.target)});
+      $("queueCustomizeMenu").addEventListener("change",event=>{
+        if(event.target.matches("[data-pref-section]"))updateQueuePreference(event.target);
+        if(event.target.matches('[data-pref-toggle="showMetrics"]')){
+          state.preferences.showMetrics=event.target.checked;
+          saveQueuePreferences();render();
+        }
+      });
       $("resetQueuePreferences").addEventListener("click",resetQueuePreferences);
       document.querySelectorAll(".queueCards").forEach(container=>container.addEventListener("click",event=>{
         const button=event.target.closest("[data-queue-id]");

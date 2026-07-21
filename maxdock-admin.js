@@ -65,6 +65,14 @@
   }
 
   function roleByCode(code){return state.roles.find(role=>role.code===code)}
+  function selectedPrivilegeCode(user){
+    return user?.role_code==="customer"&&user?.external_party_type==="Vendor"?"vendor":user?.role_code;
+  }
+  function roleDisplayName(user){
+    if(selectedPrivilegeCode(user)==="vendor")return "Vendor";
+    if(user?.role_code==="shipping_manager")return "Shipping Manager / Supervisor";
+    return user?.role_name||roleByCode(user?.role_code)?.name||user?.role_code;
+  }
   function isSyntheticEmail(email){return String(email||"").toLowerCase().endsWith("@maxdock.internal")}
   function displayEmail(user){return !user.email||isSyntheticEmail(user.email)?`Username: ${user.username}`:user.email}
 
@@ -78,7 +86,7 @@
   function renderUsers(){
     const term=$("userSearch").value.trim().toLowerCase();
     const users=state.users.filter(user=>{
-      const haystack=[user.full_name,user.username,user.email,user.role_name,user.organization_name,user.external_party_type,...(user.location_names||[])].join(" ").toLowerCase();
+      const haystack=[user.full_name,user.username,user.email,user.role_name,roleDisplayName(user),user.organization_name,user.external_party_type,...(user.location_names||[])].join(" ").toLowerCase();
       return !term||haystack.includes(term);
     });
     $("userTableBody").innerHTML=users.map(user=>{
@@ -96,7 +104,7 @@
         : `<div class="adminLastActivity empty"><strong>No tracked activity</strong><span>Last sign-in: ${escapeHtml(formatDate(user.last_sign_in_at))}</span></div>`;
       return `<tr>
         <td><div class="adminUserIdentity"><strong>${escapeHtml(user.full_name||user.username||"Unnamed user")}</strong><span>${escapeHtml(displayEmail(user))}</span>${user.organization_name?`<small>${escapeHtml(user.external_party_type||"External")} · ${escapeHtml(user.organization_name)}</small>`:""}</div></td>
-        <td><span class="adminRole role-${escapeHtml(user.role_code)}">${escapeHtml(user.role_name||roleByCode(user.role_code)?.name||user.role_code)}</span></td>
+        <td><span class="adminRole role-${escapeHtml(selectedPrivilegeCode(user))}">${escapeHtml(roleDisplayName(user))}</span></td>
         <td><div class="adminLocationTags">${locations}</div></td>
         <td><div class="adminStatusStack"><span class="adminUserStatus ${user.is_active?"active":"inactive"}"><i></i>${user.is_active?"Active":"Inactive"}</span>${pending}</div></td>
         <td>${usage}</td>
@@ -110,7 +118,20 @@
   }
 
   function renderRoleOptions(){
-    $("userRole").innerHTML=state.roles.map(role=>`<option value="${escapeHtml(role.code)}">${escapeHtml(role.name)}</option>`).join("");
+    const labels={
+      system_admin:"System Admin",
+      site_admin:"Site Admin",
+      shipping_manager:"Shipping Manager / Supervisor",
+      coordinator:"Coordinator",
+      customer:"Customer"
+    };
+    const orderedCodes=["system_admin","site_admin","shipping_manager","coordinator","customer"];
+    const options=orderedCodes
+      .filter(code=>roleByCode(code))
+      .map(code=>({code,name:labels[code]||roleByCode(code).name}));
+    options.push({code:"vendor",name:"Vendor"});
+    state.roles.filter(role=>!orderedCodes.includes(role.code)).forEach(role=>options.push(role));
+    $("userRole").innerHTML=options.map(role=>`<option value="${escapeHtml(role.code)}">${escapeHtml(role.name)}</option>`).join("");
   }
 
   function renderExternalOrganizationOptions(){
@@ -131,8 +152,10 @@
   }
 
   function updateLocationMode(){
-    const isSystemAdmin=$("userRole").value==="system_admin";
-    const isCustomer=$("userRole").value==="customer";
+    const selectedRole=$("userRole").value;
+    const isSystemAdmin=selectedRole==="system_admin";
+    const isExternal=selectedRole==="customer"||selectedRole==="vendor";
+    const externalPartyType=selectedRole==="vendor"?"Vendor":"Customer";
     const automaticAccess=isSystemAdmin;
     $("userLocationsField").classList.toggle("systemAdminLocations",automaticAccess);
     $("userLocations").querySelectorAll("input").forEach(input=>{
@@ -140,12 +163,15 @@
     });
     $("locationHelp").textContent=isSystemAdmin
       ? "System Admins automatically have access to every MaxDock location."
-      : isCustomer
-        ? "Select each Max Solutions location this customer or vendor may book."
+      : isExternal
+        ? `Select each Max Solutions location this ${externalPartyType.toLowerCase()} may book.`
         : "Select every MaxDock location this user may access.";
-    $("userExternalIdentityField").hidden=!isCustomer;
-    $("userExternalPartyType").required=isCustomer;
-    $("userOrganizationName").required=isCustomer;
+    $("userExternalIdentityField").hidden=!isExternal;
+    $("userExternalIdentityField").querySelector("legend").textContent=`${externalPartyType} identity *`;
+    $("userExternalPartyType").value=externalPartyType;
+    $("userExternalPartyType").required=false;
+    $("userExternalPartyType").closest(".field").hidden=isExternal;
+    $("userOrganizationName").required=isExternal;
     renderExternalOrganizationOptions();
   }
 
@@ -196,8 +222,8 @@
     $("userDeliveryField").hidden=editing;
     $("userEmailField").hidden=editing;
     $("userPasswordField").hidden=true;
-    $("userRole").value=user?.role_code||"coordinator";
     $("userExternalPartyType").value=user?.external_party_type||"Customer";
+    $("userRole").value=selectedPrivilegeCode(user)||"coordinator";
     $("userOrganizationName").value=user?.organization_name||"";
     $("userActive").checked=user?.is_active??true;
     const isSelf=user?.user_id===state.currentUserId;
@@ -404,9 +430,11 @@
     const fullName=$("userFullName").value.trim();
     const username=$("userUsername").value.trim().toLowerCase();
     const email=$("userEmail").value.trim().toLowerCase();
-    const roleCode=$("userRole").value;
-    const externalPartyType=roleCode==="customer"?$("userExternalPartyType").value:null;
-    const organizationName=roleCode==="customer"?$("userOrganizationName").value.trim():null;
+    const selectedRoleCode=$("userRole").value;
+    const isExternal=selectedRoleCode==="customer"||selectedRoleCode==="vendor";
+    const roleCode=isExternal?"customer":selectedRoleCode;
+    const externalPartyType=selectedRoleCode==="vendor"?"Vendor":selectedRoleCode==="customer"?"Customer":null;
+    const organizationName=isExternal?$("userOrganizationName").value.trim():null;
     const isActive=$("userActive").checked;
     const selectedLocationIds=[...$("userLocations").querySelectorAll("input:checked")].map(input=>input.value);
     const locationIds=selectedLocationIds;
@@ -417,8 +445,7 @@
     if(!editing&&deliveryMethod==="invite_link"&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setFormError("Enter a valid email address for the invitation link.");
     if(!editing&&deliveryMethod==="temporary_password"&&email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setFormError("Enter a valid contact email or leave it blank.");
     if(!editing&&deliveryMethod==="temporary_password"&&temporaryPassword.length<6)return setFormError("The temporary password must contain at least 6 characters.");
-    if(roleCode==="customer"&&!organizationName)return setFormError("Company name is required for a Customer access account.");
-    if(roleCode==="customer"&&!['Customer','Vendor'].includes(externalPartyType))return setFormError("Choose Customer or Vendor as the external account type.");
+    if(isExternal&&!organizationName)return setFormError(`Company name is required for a ${externalPartyType} access account.`);
     if(roleCode!=="system_admin"&&!locationIds.length)return setFormError("Select at least one location for this user.");
 
     button.disabled=true;

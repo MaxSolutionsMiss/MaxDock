@@ -1,0 +1,51 @@
+MaxDock v62-DB41 — Dashboard, Queue, and User Setup Refinement
+
+Purpose
+- Standardize the main operational controls without making Dashboard or Operations Queue busier.
+- Correct the clipped customization gear and disappearing Queue refresh state.
+- Make external Customer and Vendor account setup clear while preserving the existing security model.
+
+Dashboard
+- Date Range now uses the same white control surface, border, height, and text treatment as Schedule Date and Appointment Status.
+- The redundant “This view saves automatically to your login” row beneath the filters is removed.
+- Dashboard customization includes a saved Show metrics dashboard option.
+- The metrics visibility setting follows the signed-in user and Reset default view turns the metrics dashboard back on.
+
+Operations Queue
+- Schedule filters and day/refresh controls form one Schedule group.
+- Display and Documents remain in the same predictable order and placement used on Dashboard.
+- The unnecessary separate Day controls heading is removed.
+- Queue customization includes a saved Show metrics dashboard option.
+- Refresh remains visible and legible on hover, keyboard focus, and during its loading state.
+
+Customization controls
+- Dashboard and Queue gear controls are locked to a compact 40-by-40-pixel frame.
+- Icon, border, and focus area remain fully visible at toolbar edges.
+- Customization menus open inward, stay above nearby content, and remain within the viewport.
+
+User Management
+- Privilege choices are ordered and labeled as System Admin, Site Admin, Shipping Manager / Supervisor, Coordinator, Customer, and Vendor.
+- Vendor is presented as its own privilege choice in the administration interface.
+- Under the database security model, both Customer and Vendor remain booking-only external accounts using role_code customer; Vendor is distinguished by external_party_type Vendor.
+- This preserves the existing RLS, RPC permissions, assigned-location booking access, and external-account confidentiality boundaries.
+- Shipping Manager / Supervisor is a clearer display label for the existing shipping_manager role.
+
+Database and Edge Functions
+- No Supabase migration is required.
+- No Edge Function deployment is required.
+- Existing database role codes and security policies are unchanged.
+
+Release delivery
+- Publish matching root and db04 copies.
+- Browser assets use the unique v62-db41 cache marker.
+- The menu displays “DB41 · operational controls and account setup active”.
+
+Verification
+1. Run node --check for every JavaScript file.
+2. Run git diff --check.
+3. Run scripts/verify-root-db04-parity.sh.
+4. Confirm Date Range matches the other Dashboard filters and no saved-view note appears beneath them.
+5. Toggle the KPI dashboard off and on from both customization menus, refresh, and confirm the setting persists.
+6. Confirm both gear controls remain complete at wide, tablet, and mobile widths and their menus remain in the viewport.
+7. Hover and focus Queue Refresh and confirm the button remains visible.
+8. In User Management, confirm the six privilege choices and verify new Customer and Vendor accounts preserve the correct external identity and location access.
