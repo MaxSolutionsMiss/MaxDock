@@ -1,0 +1,274 @@
+/* MaxDock DB42 — compact navigation workspaces and operational action hierarchy. */
+
+.sectionWorkspace{
+  display:grid;
+  grid-template-columns:212px minmax(0,1fr);
+  gap:16px;
+  align-items:start;
+  width:100%
+}
+.sectionWorkspaceRail{
+  position:sticky;
+  top:88px;
+  z-index:10;
+  padding:8px;
+  border:1px solid #d7e0e7;
+  border-radius:14px;
+  background:#fff
+}
+.sectionWorkspaceRailHead{
+  display:grid;
+  gap:2px;
+  padding:8px 9px 10px
+}
+.sectionWorkspaceRailHead strong{
+  color:#102a43;
+  font-size:13px;
+  line-height:1.2
+}
+.sectionWorkspaceRailHead small{
+  color:#718096;
+  font-size:11px;
+  line-height:1.35
+}
+.sectionWorkspaceTabs{
+  display:grid;
+  gap:3px
+}
+.sectionWorkspaceTabs>button{
+  position:relative;
+  display:grid;
+  gap:2px;
+  width:100%;
+  min-height:52px;
+  padding:8px 10px 8px 13px;
+  border:1px solid transparent;
+  border-radius:9px;
+  background:transparent;
+  color:#425466;
+  font:inherit;
+  line-height:1.2;
+  text-align:left;
+  cursor:pointer
+}
+.sectionWorkspaceTabs>button::before{
+  content:"";
+  position:absolute;
+  top:9px;
+  bottom:9px;
+  left:4px;
+  width:3px;
+  border-radius:3px;
+  background:transparent
+}
+.sectionWorkspaceTabs>button:hover{
+  border-color:#d7e6eb;
+  background:#f7fafb;
+  color:#173f53
+}
+.sectionWorkspaceTabs>button.isActive,
+.sectionWorkspaceTabs>button[aria-selected="true"]{
+  border-color:#c9e0e7;
+  background:#edf7f9;
+  color:#0f6075
+}
+.sectionWorkspaceTabs>button.isActive::before,
+.sectionWorkspaceTabs>button[aria-selected="true"]::before{background:#16819a}
+.sectionWorkspaceTabs>button span{font-size:12.5px;font-weight:700}
+.sectionWorkspaceTabs>button small{color:#718096;font-size:10.5px;font-weight:500;line-height:1.3}
+.sectionWorkspaceTabs>button:focus-visible{outline:2px solid #16819a;outline-offset:2px}
+.sectionWorkspaceContent{min-width:0}
+.sectionWorkspacePanel[hidden]{display:none!important}
+
+/* Settings become one focused form at a time. */
+.settingsWorkspace .settingsGrid{display:block!important}
+.settingsWorkspace .settingsGroup{
+  grid-column:auto!important;
+  width:100%!important;
+  min-height:310px;
+  margin:0!important;
+  padding:20px!important
+}
+.settingsWorkspace .settingsGroup h3{margin-top:0!important}
+.settingsWorkspace .dockCompatibilitySettings .docksList{max-width:none!important}
+.compactPageHead{align-items:center!important;margin-bottom:15px!important}
+.compactPageActions{display:flex;align-items:center;justify-content:flex-end;gap:7px}
+.compactPageActions button{height:36px!important;min-height:36px!important;padding:0 12px!important;border-radius:9px!important;font-size:12.5px!important}
+
+/* Data Integration separates connection work from recurring imports. */
+.dataWorkspace .misIntegrationPanel,
+.dataWorkspace .misImportsWorkspace{margin:0!important}
+.dataWorkspace .misImportsWorkspace{padding:18px!important}
+.dataWorkspace .misImportGrid{margin-top:12px!important}
+
+/* Reports use a stable report-view rail; the original select remains the data source. */
+.workspaceSourceControl{display:none!important}
+.reportWorkspaceContent .reportFilters{
+  grid-template-columns:minmax(150px,210px) minmax(0,1fr) auto!important;
+  gap:8px!important;
+  padding:10px 12px!important;
+  margin-bottom:10px!important
+}
+.reportWorkspaceContent .reportCustomDates{grid-column:2;grid-row:1;align-self:end}
+.reportWorkspaceContent .reportUpdateButton{height:38px!important;min-height:38px!important}
+
+/* Document and page actions stay secondary and compact. */
+body.compactWorkspacesDB42.layoutDisciplineDB36 .standardDocumentActions,
+body.compactWorkspacesDB42.layoutDisciplineDB36 .pageUtilityActions,
+body.compactWorkspacesDB42.layoutDisciplineDB36 .dashboardUtilityActions,
+body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="queue"] .queueToolbarDocuments{
+  grid-template-columns:repeat(2,auto)!important;
+  gap:6px!important
+}
+body.compactWorkspacesDB42.layoutDisciplineDB36 .standardDocumentButton,
+body.compactWorkspacesDB42.layoutDisciplineDB36 .pageUtilityActions .utilityBtn,
+body.compactWorkspacesDB42.layoutDisciplineDB36 .dashboardUtilityActions .utilityBtn{
+  width:auto!important;
+  min-width:0!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:0 10px!important;
+  border-radius:8px!important;
+  font-size:12px!important
+}
+body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="dashboard"] .dashboardPrimaryActions{
+  grid-template-columns:repeat(3,auto)!important;
+  gap:7px!important
+}
+body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="dashboard"] .standardPrimaryAction,
+body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="dashboard"] .dashboardPrimaryActions .dashboardActionPrimary{
+  width:auto!important;
+  min-width:0!important;
+  height:38px!important;
+  min-height:38px!important;
+  padding:0 12px!important;
+  border-radius:9px!important;
+  font-size:12.5px!important
+}
+body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar{
+  padding:8px 10px!important;
+  margin-bottom:10px!important
+}
+body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters{
+  grid-template-columns:132px 132px auto!important;
+  gap:7px!important
+}
+body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar .filterField{
+  width:132px!important;
+  min-width:132px!important
+}
+body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="queue"] :is(#queueToday,#queueTomorrow,#refreshQueue,#openQueueDisplay){
+  width:auto!important;
+  min-width:0!important;
+  height:36px!important;
+  min-height:36px!important;
+  padding:0 10px!important;
+  border-radius:8px!important;
+  font-size:12px!important
+}
+body.compactWorkspacesDB42.layoutDisciplineDB36 :is(.dashboardCustomize,.queueCustomize),
+body.compactWorkspacesDB42.layoutDisciplineDB36 :is(.dashboardCustomize,.queueCustomize)>summary{
+  width:36px!important;
+  min-width:36px!important;
+  max-width:36px!important;
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  flex-basis:36px!important;
+  border-radius:8px!important
+}
+
+/* A clear, lighter customer entry action with less empty space. */
+body.compactWorkspacesDB42 .homeScreen{padding:28px 18px 36px!important}
+body.compactWorkspacesDB42 .heroCard{
+  width:min(520px,100%)!important;
+  padding:24px!important;
+  border:1px solid #d6e0e7!important;
+  border-radius:20px!important;
+  background:#fff!important;
+  box-shadow:none!important
+}
+body.compactWorkspacesDB42 .heroCard::before{display:none!important}
+body.compactWorkspacesDB42 .requestMega{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:min(340px,100%)!important;
+  min-height:56px!important;
+  margin-top:16px!important;
+  padding:0 22px!important;
+  border:1px solid #0c657c!important;
+  border-radius:12px!important;
+  background:#0f7188!important;
+  color:#fff!important;
+  font-size:18px!important;
+  font-weight:700!important;
+  letter-spacing:0!important;
+  box-shadow:none!important
+}
+body.compactWorkspacesDB42 .requestMega:hover{background:#0c6277!important}
+body.compactWorkspacesDB42 .heroHint{margin-top:9px!important;font-size:12.5px!important}
+
+/* Step 1 keeps route, destination, load type, and priority on one desktop line. */
+body.compactWorkspacesDB42 .requestModalCompact .bookingRouteFields{
+  grid-template-columns:minmax(92px,.72fr) minmax(122px,.95fr) minmax(210px,1.8fr) minmax(145px,1.05fr) minmax(82px,.56fr)!important;
+  gap:8px!important;
+  align-items:end!important
+}
+body.compactWorkspacesDB42 .requestModalCompact .bookingRouteFields>.field:nth-child(5){grid-column:auto!important}
+body.compactWorkspacesDB42.customerAccount .requestModalCompact .bookingRouteFields{
+  grid-template-columns:minmax(230px,2.2fr) minmax(150px,1fr) minmax(82px,.55fr)!important
+}
+body.compactWorkspacesDB42 .requestModalCompact .bookingSummaryRow{grid-column:1/-1!important}
+
+@media(max-width:1050px){
+  .sectionWorkspace{grid-template-columns:188px minmax(0,1fr);gap:12px}
+  .sectionWorkspaceTabs>button small{display:none}
+  .sectionWorkspaceTabs>button{min-height:44px}
+  body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters{grid-template-columns:128px 128px minmax(0,1fr)!important}
+}
+
+@media(max-width:820px){
+  .sectionWorkspace{grid-template-columns:1fr}
+  .sectionWorkspaceRail{position:static;padding:6px}
+  .sectionWorkspaceRailHead{display:none}
+  .sectionWorkspaceTabs{
+    display:grid;
+    grid-auto-flow:column;
+    grid-auto-columns:minmax(142px,1fr);
+    overflow-x:auto;
+    padding:1px
+  }
+  .sectionWorkspaceTabs>button{min-height:42px;padding:7px 9px;text-align:center}
+  .sectionWorkspaceTabs>button::before{top:auto;right:9px;bottom:3px;left:9px;width:auto;height:3px}
+  .settingsWorkspace .settingsGroup{min-height:0;padding:16px!important}
+  .reportWorkspaceContent .reportFilters{grid-template-columns:1fr auto!important}
+  .reportWorkspaceContent .reportCustomDates{grid-column:1/-1;grid-row:auto}
+  body.compactWorkspacesDB42 .requestModalCompact .bookingRouteFields,
+  body.compactWorkspacesDB42.customerAccount .requestModalCompact .bookingRouteFields{grid-template-columns:1fr 1fr!important}
+  body.compactWorkspacesDB42 .requestModalCompact #companyWrap,
+  body.compactWorkspacesDB42 .requestModalCompact #internalDestinationWrap{grid-column:1/-1!important}
+}
+
+@media(max-width:620px){
+  .compactPageHead{align-items:flex-start!important}
+  .compactPageActions{width:100%;justify-content:flex-start}
+  .compactPageActions button{min-height:44px!important}
+  .sectionWorkspaceTabs{grid-auto-columns:minmax(126px,1fr)}
+  .sectionWorkspaceTabs>button{min-height:44px}
+  .sectionWorkspaceTabs>button span{font-size:12px}
+  body.compactWorkspacesDB42.layoutDisciplineDB36 .standardDocumentButton,
+  body.compactWorkspacesDB42.layoutDisciplineDB36 .pageUtilityActions .utilityBtn,
+  body.compactWorkspacesDB42.layoutDisciplineDB36 .dashboardUtilityActions .utilityBtn{min-height:44px!important}
+  body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="dashboard"] .dashboardPrimaryActions{grid-template-columns:1fr!important;width:100%!important}
+  body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="dashboard"] .dashboardPrimaryActions .dashboardActionPrimary{width:100%!important;min-height:44px!important}
+  body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="queue"] .queueToolbarFilters{grid-template-columns:1fr!important}
+  body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="queue"] .queueWorkspaceToolbar .filterField{width:100%!important;min-width:0!important}
+  body.compactWorkspacesDB42.layoutDisciplineDB36[data-page="queue"] :is(#queueToday,#queueTomorrow,#refreshQueue,#openQueueDisplay){min-height:44px!important}
+  body.compactWorkspacesDB42 .heroCard{padding:20px 16px!important}
+  body.compactWorkspacesDB42 .requestMega{min-height:54px!important;font-size:17px!important}
+  body.compactWorkspacesDB42 .requestModalCompact .bookingRouteFields,
+  body.compactWorkspacesDB42.customerAccount .requestModalCompact .bookingRouteFields{grid-template-columns:1fr!important}
+  body.compactWorkspacesDB42 .requestModalCompact #companyWrap,
+  body.compactWorkspacesDB42 .requestModalCompact #internalDestinationWrap{grid-column:auto!important}
+}
