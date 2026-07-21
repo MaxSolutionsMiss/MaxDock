@@ -2,7 +2,7 @@
   "use strict";
 
   const db=window.MaxDockDB;
-  const state={roles:[],users:[],externalCompanies:[],editingUser:null,currentUserId:null,accessPackage:null,usernameEdited:false};
+  const state={roles:[],users:[],externalCompanies:[],editingUser:null,currentUserId:null,accessPackage:null,usernameEdited:false,userFilter:"all",expandedUsers:new Set()};
   const $=id=>document.getElementById(id);
 
   function escapeHtml(value){
@@ -81,13 +81,37 @@
     $("activeUsers").textContent=state.users.filter(user=>user.is_active).length;
     $("usedLast7").textContent=state.users.filter(user=>Number(user.active_days_7)>0).length;
     $("neverUsed").textContent=state.users.filter(user=>!user.last_activity_at).length;
+    $("adminFilterAllCount").textContent=state.users.length;
+    $("adminFilterInternalCount").textContent=state.users.filter(user=>user.role_code!=="customer").length;
+    $("adminFilterCustomerCount").textContent=state.users.filter(user=>selectedPrivilegeCode(user)==="customer").length;
+    $("adminFilterVendorCount").textContent=state.users.filter(user=>selectedPrivilegeCode(user)==="vendor").length;
+    $("adminFilterSetupCount").textContent=state.users.filter(user=>user.must_change_password).length;
+  }
+
+  function userMatchesFilter(user){
+    if(state.userFilter==="internal")return user.role_code!=="customer";
+    if(state.userFilter==="customer")return selectedPrivilegeCode(user)==="customer";
+    if(state.userFilter==="vendor")return selectedPrivilegeCode(user)==="vendor";
+    if(state.userFilter==="setup")return Boolean(user.must_change_password);
+    return true;
+  }
+
+  function updateUserFilterTabs(){
+    const labels={all:"All MaxDock Users",internal:"Internal Team",customer:"Customer Accounts",vendor:"Vendor Accounts",setup:"Accounts Requiring Setup"};
+    document.querySelectorAll("[data-admin-user-filter]").forEach(button=>{
+      const active=button.dataset.adminUserFilter===state.userFilter;
+      button.classList.toggle("isActive",active);
+      button.setAttribute("aria-selected",String(active));
+      button.tabIndex=active?0:-1;
+    });
+    $("adminUserListTitle").textContent=labels[state.userFilter]||labels.all;
   }
 
   function renderUsers(){
     const term=$("userSearch").value.trim().toLowerCase();
     const users=state.users.filter(user=>{
       const haystack=[user.full_name,user.username,user.email,user.role_name,roleDisplayName(user),user.organization_name,user.external_party_type,...(user.location_names||[])].join(" ").toLowerCase();
-      return !term||haystack.includes(term);
+      return userMatchesFilter(user)&&(!term||haystack.includes(term));
     });
     $("userTableBody").innerHTML=users.map(user=>{
       const locations=user.role_code==="system_admin"
@@ -102,18 +126,40 @@
       const lastActivity=user.last_activity_at
         ? `<div class="adminLastActivity"><strong>${escapeHtml(formatDateTime(user.last_activity_at))}</strong><span>Last sign-in: ${escapeHtml(formatDate(user.last_sign_in_at))}</span></div>`
         : `<div class="adminLastActivity empty"><strong>No tracked activity</strong><span>Last sign-in: ${escapeHtml(formatDate(user.last_sign_in_at))}</span></div>`;
-      return `<tr>
+      const expanded=state.expandedUsers.has(user.user_id);
+      const accountIdentity=user.organization_name
+        ? `${escapeHtml(user.external_party_type||"External")} · ${escapeHtml(user.organization_name)}`
+        : `${escapeHtml(roleDisplayName(user))} account`;
+      return `<tr class="adminUserSummaryRow" data-user-summary="${escapeHtml(user.user_id)}">
         <td><div class="adminUserIdentity"><strong>${escapeHtml(user.full_name||user.username||"Unnamed user")}</strong><span>${escapeHtml(displayEmail(user))}</span>${user.organization_name?`<small>${escapeHtml(user.external_party_type||"External")} · ${escapeHtml(user.organization_name)}</small>`:""}</div></td>
         <td><span class="adminRole role-${escapeHtml(selectedPrivilegeCode(user))}">${escapeHtml(roleDisplayName(user))}</span></td>
-        <td><div class="adminLocationTags">${locations}</div></td>
         <td><div class="adminStatusStack"><span class="adminUserStatus ${user.is_active?"active":"inactive"}"><i></i>${user.is_active?"Active":"Inactive"}</span>${pending}</div></td>
         <td>${usage}</td>
         <td>${lastActivity}</td>
-        <td><div class="adminRowActions">${accessButton}<button class="tiny adminEditUser" type="button" data-user-id="${escapeHtml(user.user_id)}">Edit</button></div></td>
+        <td><div class="adminRowActions">${accessButton}<button class="tiny adminViewUser" type="button" data-user-id="${escapeHtml(user.user_id)}" aria-expanded="${expanded}" aria-controls="user-details-${escapeHtml(user.user_id)}">${expanded?"Hide":"Details"}</button><button class="tiny adminEditUser" type="button" data-user-id="${escapeHtml(user.user_id)}">Edit</button></div></td>
+      </tr>
+      <tr class="adminUserDetailsRow" id="user-details-${escapeHtml(user.user_id)}" data-user-details="${escapeHtml(user.user_id)}" ${expanded?"":"hidden"}>
+        <td colspan="6"><div class="adminUserDetails">
+          <div><span>Location access</span><div class="adminLocationTags">${locations}</div></div>
+          <div><span>Account identity</span><strong>${accountIdentity}</strong></div>
+          <div><span>Username</span><strong>${escapeHtml(user.username||"—")}</strong></div>
+        </div></td>
       </tr>`;
-    }).join("")||'<tr><td colspan="7">No users match this search.</td></tr>';
+    }).join("")||'<tr><td colspan="6">No users match this view.</td></tr>';
     document.querySelectorAll(".adminEditUser").forEach(button=>button.addEventListener("click",()=>openUserModal(button.dataset.userId)));
     document.querySelectorAll(".adminCreateLink").forEach(button=>button.addEventListener("click",()=>createExistingSetupLink(button.dataset.userId)));
+    document.querySelectorAll(".adminViewUser").forEach(button=>button.addEventListener("click",()=>{
+      const userId=button.dataset.userId;
+      const details=button.closest("tr")?.nextElementSibling;
+      if(!details?.classList.contains("adminUserDetailsRow"))return;
+      const expanded=details.hidden;
+      details.hidden=!expanded;
+      button.setAttribute("aria-expanded",String(expanded));
+      button.textContent=expanded?"Hide":"Details";
+      if(expanded)state.expandedUsers.add(userId);
+      else state.expandedUsers.delete(userId);
+    }));
+    updateUserFilterTabs();
     updateSummary();
   }
 
@@ -509,6 +555,24 @@
     $("userRole").addEventListener("change",updateLocationMode);
     $("userExternalPartyType").addEventListener("change",renderExternalOrganizationOptions);
     $("userSearch").addEventListener("input",renderUsers);
+    document.querySelectorAll("[data-admin-user-filter]").forEach(button=>button.addEventListener("click",()=>{
+      state.userFilter=button.dataset.adminUserFilter||"all";
+      renderUsers();
+    }));
+    $("admin-user-list")?.closest(".adminSectionWorkspace")?.querySelector(".adminUserFilterTabs")?.addEventListener("keydown",event=>{
+      const buttons=[...document.querySelectorAll("[data-admin-user-filter]")];
+      const current=buttons.indexOf(document.activeElement);
+      if(current<0)return;
+      let next=current;
+      if(["ArrowDown","ArrowRight"].includes(event.key))next=(current+1)%buttons.length;
+      else if(["ArrowUp","ArrowLeft"].includes(event.key))next=(current-1+buttons.length)%buttons.length;
+      else if(event.key==="Home")next=0;
+      else if(event.key==="End")next=buttons.length-1;
+      else return;
+      event.preventDefault();
+      buttons[next].click();
+      buttons[next].focus();
+    });
     $("userForm").addEventListener("submit",saveUser);
     $("userFullName").addEventListener("input",()=>{if(!state.editingUser&&!state.usernameEdited)$("userUsername").value=usernameFromName($("userFullName").value)});
     $("userUsername").addEventListener("input",()=>state.usernameEdited=true);
