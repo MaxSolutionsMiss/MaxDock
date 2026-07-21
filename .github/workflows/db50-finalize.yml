@@ -9,12 +9,21 @@ on:
       - 'scripts/db50_patch.py'
       - 'maxdock-db50.css'
       - 'maxdock-db50.js'
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
 
 permissions:
   contents: write
 
 jobs:
   finalize:
+    if: github.head_ref == 'codex/db50-vendor-booking-button-consistency' || github.ref_name == 'codex/db50-vendor-booking-button-consistency'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
