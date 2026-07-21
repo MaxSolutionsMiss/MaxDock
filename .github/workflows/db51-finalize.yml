@@ -1,0 +1,39 @@
+name: Finalize DB51 review branch
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: write
+jobs:
+  finalize:
+    if: github.head_ref == 'codex/db51-interface-audit-fullscreen-consistency'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build DB51 release files
+        run: python scripts/db51_patch.py
+      - name: Validate DB51
+        run: |
+          node --check maxdock-config.js
+          node --check maxdock-db51.js
+          node --check db04/maxdock-config.js
+          node --check db04/maxdock-db51.js
+          grep -q 'MaxDock-v72-DB51' maxdock-config.js
+          grep -q 'Open Full-Screen View' queue.html
+          grep -q 'capacityEnabledLocationsDB51' settings.html
+      - name: Commit finalized review
+        run: |
+          rm -f .github/workflows/db51-finalize.yml scripts/db51_patch.py scripts/db51_assets.b64
+          git config user.name 'MaxSolutionsMiss'
+          git config user.email 'javadresa@maxpkgsolutions.com'
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m '[db51-finalized] Audit action consistency and unify operator displays'
+          git push origin HEAD:${{ github.head_ref }}
