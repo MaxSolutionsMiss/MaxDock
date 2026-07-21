@@ -1,0 +1,53 @@
+name: Finalize DB49 consistency and access
+
+on:
+  push:
+    branches:
+      - codex/db49-consistency-access
+    paths:
+      - maxdock-db49.css
+      - maxdock-db49.js
+      - DEPLOYMENT_DB49.txt
+      - scripts/db49_patch.py
+      - .github/workflows/db49-finalize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/db49-consistency-access
+          fetch-depth: 0
+      - name: Apply DB49 patches
+        run: |
+          set -euo pipefail
+          cp maxdock-db49.css db04/maxdock-db49.css
+          cp maxdock-db49.js db04/maxdock-db49.js
+          cp DEPLOYMENT_DB49.txt db04/DEPLOYMENT_DB49.txt
+          python scripts/db49_patch.py
+      - name: Validate DB49
+        run: |
+          set -euo pipefail
+          node --check maxdock-db.js
+          node --check maxdock-admin.js
+          node --check maxdock-config.js
+          node --check maxdock-db49.js
+          cmp maxdock-db.js db04/maxdock-db.js
+          cmp maxdock-admin.js db04/maxdock-admin.js
+          cmp maxdock-config.js db04/maxdock-config.js
+          cmp maxdock-db49.css db04/maxdock-db49.css
+          cmp maxdock-db49.js db04/maxdock-db49.js
+          grep -q 'MaxDock-v70-DB49' maxdock-config.js
+      - name: Commit finalized DB49
+        run: |
+          set -euo pipefail
+          rm -f scripts/db49_patch.py .github/workflows/db49-finalize.yml
+          git config user.name MaxSolutionsMiss
+          git config user.email javadresa@maxpkgsolutions.com
+          git add -A
+          git commit -m "[db49-finalized] Fix KPI cropping, alignment, and role-safe navigation"
+          git push origin HEAD:codex/db49-consistency-access
