@@ -1047,7 +1047,7 @@
     const roleCode=db.getProfile()?.role_code;
     const isCustomer=roleCode==="customer";
     const isOperational=db.isOperationalRole();
-    const canSelectHeaderLocation=["system_admin","site_admin"].includes(roleCode);
+    const canSelectHeaderLocation=roleCode==="system_admin";
     document.body.classList.toggle("customerAccount",isCustomer);
     document.querySelectorAll(".locationPill").forEach(element=>element.hidden=!canSelectHeaderLocation);
     document.querySelectorAll(".headerActions > .ghostBtn").forEach(element=>element.hidden=isCustomer||isOperational);
@@ -1124,7 +1124,7 @@
     const date=$("adminDate")?.value||todayISO();
     const locationName=db.getCurrentLocation()?.name||currentLocation;
     const url=new URL("./dashboard.html",location.href);
-    url.searchParams.set("v","65-db44");
+    url.searchParams.set("v","66-db45");
     url.searchParams.set("display","1");
     url.searchParams.set("date",date);
     url.searchParams.set("location",locationName);
@@ -1193,7 +1193,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=65-db44");
+      location.replace("./index.html?v=66-db45");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
