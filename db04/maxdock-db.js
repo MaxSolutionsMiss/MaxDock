@@ -40,19 +40,41 @@
     return String(value||"").replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
   }
   function isOperationalRole(roleCode=state.profile?.role_code){return OPERATIONAL_ROLES.has(roleCode)}
+  function isVendorProfile(profile=state.profile){
+    return profile?.role_code==="customer"&&normalize(profile?.external_party_type)==="vendor";
+  }
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=68-db47";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=68-db47";
-    return "index.html?v=68-db47";
+    if(isVendorProfile())return "my-appointments.html?v=70-db49";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=70-db49";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=70-db49";
+    return "index.html?v=70-db49";
+  }
+  function navigationRoute(link){
+    try{return (new URL(link.href,location.href).pathname.split("/").pop()||"").replace(/\.html$/i,"")}
+    catch{return ""}
   }
   function applyRoleNavigation(){
     const operational=isOperationalRole();
+    const vendor=isVendorProfile();
+    const systemAdmin=state.profile?.role_code==="system_admin";
     const landing=getLandingPage();
+    document.body.classList.toggle("vendorPortal",vendor);
+    document.body.classList.add("maxdockContextReady");
     document.querySelectorAll("a.logoLink").forEach(link=>{
       link.href=`./${landing}`;
-      link.setAttribute("aria-label",operational?"Go to MaxDock operations":"Go to MaxDock main page");
+      link.setAttribute("aria-label",vendor?"Go to My Appointments":operational?"Go to MaxDock operations":"Go to MaxDock main page");
     });
-    document.querySelectorAll('a[href*="index.html"]:not(.logoLink)').forEach(link=>link.hidden=operational);
+    document.querySelectorAll(".maxdockPrimaryNav a,.menu a").forEach(link=>{
+      const route=navigationRoute(link);
+      let allowed=true;
+      if(vendor)allowed=route==="my-appointments";
+      if(["admin","data"].includes(route)&&!systemAdmin)allowed=false;
+      if(route==="index"&&operational)allowed=false;
+      link.hidden=!allowed;
+      link.setAttribute("aria-hidden",String(!allowed));
+      if(!allowed)link.tabIndex=-1;
+      else link.removeAttribute("tabindex");
+    });
   }
   function closeGearMenus(event){
     if(event?.type==="keydown"&&event.key!=="Escape")return;
@@ -274,6 +296,7 @@
     state.locations=locationResult.data||[];
     state.locationDirectory=directoryResult.data||[];
     if(!state.locations.length)throw new Error("This user has no permitted MaxDock locations.");
+    applyRoleNavigation();
     startUsageTracking();
     return state;
   }
