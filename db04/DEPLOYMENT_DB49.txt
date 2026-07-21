@@ -1,0 +1,20 @@
+MaxDock DB49 — Consistent controls, complete KPI cards, and role-safe navigation
+
+User-visible changes
+- Prevents Dashboard, Operation Queue, My Appointments, and Reports KPI cards from being compressed or cropped by older density rules.
+- Aligns field labels, inputs, selects, and adjacent buttons to one consistent bottom baseline across operational toolbars.
+- Increases the desktop workspace gutter from 12px to 18px and adds balanced spacing between page-local navigation and its content.
+- Removes explanatory subtext and account-count lines from page-local navigation menus.
+- Removes all application navigation from Sign In and Set Password screens.
+- Restricts Vendor accounts to My Appointments and makes My Appointments their landing page.
+- Shows User Management and Data Integration only to System Admin accounts.
+- Verifies User Management access through the database is_system_admin function; unauthorized users return to their permitted landing page instead of seeing a fatal overlay.
+
+Release marker
+- MaxDock-v70-DB49
+- DB49 · consistent controls, complete KPI cards, and role-safe navigation active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.

@@ -539,7 +539,12 @@
     setLoading(true,"Loading MaxDock Admin…");
     if(!await db.requireAuth())return;
     await db.loadContext();
-    if(db.getProfile()?.role_code!=="system_admin")throw new Error("Only a MaxDock System Admin can open this page.");
+    const adminCheck=await db.client.rpc("is_system_admin");
+    if(adminCheck.error)throw new Error(`Unable to verify System Admin access: ${adminCheck.error.message||adminCheck.error}`);
+    if(adminCheck.data!==true){
+      location.replace(`./${db.getLandingPage()}`);
+      return;
+    }
     state.currentUserId=db.getProfile().id;
     db.addAccountControls();
     const roleResult=await db.client.from("roles").select("code,name,description,rank").eq("is_active",true).order("rank",{ascending:false});
