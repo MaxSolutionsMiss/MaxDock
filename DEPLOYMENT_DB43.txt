@@ -1,0 +1,65 @@
+MaxDock v64-DB43 — Operational Console Density
+
+Purpose
+- Move MaxDock from a decorative landing-page treatment toward a calm, compact shipping-and-receiving console.
+- Reduce toolbar and table height while preserving readable controls and mobile touch targets.
+- Make frequent navigation visible on desktop and keep role filtering intact.
+
+Dashboard and Operations Queue
+- Schedule Date, Appointment Status, and Date Range use inline label-to-field pairs on desktop.
+- Operating Date and Queue View use the same inline pattern in Operations Queue.
+- Schedule, Display, and Documents group captions are removed from the operational toolbars.
+- Display settings, Print, Export CSV, full-screen, date shortcuts, and Refresh share one compact toolbar row where the viewport allows.
+- Tablet and mobile layouts wrap cleanly and retain larger touch targets.
+
+Operational Design System
+- Page background effects are replaced by a quiet solid workspace background.
+- Panels, KPI cards, queue cards, and configuration surfaces use flat white surfaces, one-pixel borders, and consistent 8–10 pixel radii.
+- Decorative gradients and glow are removed from routine controls and schedule states.
+- Navy, blue, teal, and functional status colors remain the identity and operating signals.
+- Menus, login, and the primary Place Appointment action retain restrained elevation where it communicates layering or priority.
+
+Tables
+- Floating card rows are replaced with a single bordered table surface.
+- Row gaps, per-row corner radii, and decorative elevation are removed.
+- Headers, cells, dividers, zebra striping, and hover feedback are tightened for faster scanning.
+- General table minimum width is reduced while the nine-column Dashboard and User Management tables retain appropriate operational minimums.
+- Status tags use compact flat shapes.
+
+Navigation and Workspaces
+- Authenticated desktop pages gain persistent role-aware navigation for Appointments, Queue, Dashboard, Reports, Settings, User Management, and Data Integration.
+- Existing permission code remains the source of truth; links hidden by role are also hidden in persistent navigation.
+- The gear menu remains available for narrow screens, secondary destinations, account controls, and complete navigation.
+- Settings, Data Integration, Reports, and My Appointments use the left-navigation/right-workspace pattern where a real view choice exists.
+- Sidebar headings use a distinct shaded header band so they are visually separate from selectable menu items.
+
+Customer Entry and Login
+- Place Appointment returns to a visually prominent navy-blue-teal action and is approximately 25 percent larger than DB42.
+- The customer entry panel remains simpler than the earlier glass-and-glow treatment.
+- Login and password setup use a compact MaxDock product wordmark with “Max Solutions Packaging Inc.” as secondary company attribution.
+
+Architecture Reconciliation
+- DB33 through DB36 were not dropped in DB42. They are dynamically loaded by maxdock-config.js together with the later refinement layers.
+- DB43 preserves that layered no-build architecture and loads after DB42.
+- Repository memory now records DB42 as production and DB43 as the active reviewed release.
+
+Database and Edge Functions
+- No Supabase migration is required.
+- No Edge Function deployment is required.
+- Scheduling, appointment, role, RLS, live-refresh, capacity, MIS, and customer-confidentiality behavior is unchanged.
+
+Release Delivery
+- Publish matching root and db04 copies.
+- Browser assets use the unique v64-db43 cache marker.
+- The menu displays “DB43 · operational console density active”.
+
+Verification
+1. Run node --check for every JavaScript file.
+2. Run git diff --check.
+3. Run scripts/verify-root-db04-parity.sh.
+4. Confirm desktop Dashboard and Queue controls stay on one line at normal operational widths.
+5. Confirm toolbar controls wrap without clipping on tablet and stack into label-field rows on mobile.
+6. Confirm persistent navigation matches the signed-in role and highlights the current page.
+7. Confirm My Appointments sidebar changes the existing booking filter without changing its saved behavior.
+8. Confirm dense tables retain every column, status, and action and remain horizontally scrollable when needed.
+9. Confirm login and password setup display MaxDock first and Max Solutions Packaging Inc. second.
