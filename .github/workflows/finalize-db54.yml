@@ -1,0 +1,73 @@
+name: Finalize DB54 compact appointment and dashboard layout
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.head_ref == 'codex/db54-compact-appointments-dashboard-actions'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out DB54 branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/db54-compact-appointments-dashboard-actions
+          fetch-depth: 0
+
+      - name: Build mirrored DB54 release
+        shell: bash
+        run: |
+          cp maxdock-db54.js db04/maxdock-db54.js
+          cp maxdock-db54.css db04/maxdock-db54.css
+          cp DEPLOYMENT_DB54.txt db04/DEPLOYMENT_DB54.txt
+          python - <<'PY'
+          from pathlib import Path
+          path=Path('maxdock-config.js')
+          text=path.read_text()
+          text=text.replace('MaxDock-v74-DB53','MaxDock-v75-DB54')
+          text=text.replace('74-db53','75-db54')
+          css='  loadCss("maxdock-db54.css","75-db54","db54");\n'
+          if 'maxdock-db54.css' not in text:
+              text=text.replace('  loadCss("maxdock-db53.css","75-db54","db53");\n', '  loadCss("maxdock-db53.css","75-db54","db53");\n'+css)
+          js='    await loadScript("maxdock-db54.js","75-db54","db54");\n'
+          if 'maxdock-db54.js' not in text:
+              text=text.replace('    await loadScript("maxdock-db53.js","75-db54","db53");\n', '    await loadScript("maxdock-db53.js","75-db54","db53");\n'+js)
+          text=text.replace('document.documentElement.dataset.maxdockRelease="db53"','document.documentElement.dataset.maxdockRelease="db54"')
+          text=text.replace('DB53 · role-safe navigation, booking readiness, and compact appointment workspace active','DB54 · compact appointment filtering and unified dashboard commands active')
+          path.write_text(text)
+          Path('db04/maxdock-config.js').write_text(text)
+          PY
+
+      - name: Validate DB54 runtime
+        shell: bash
+        run: |
+          grep -q 'MaxDock-v75-DB54' maxdock-config.js
+          grep -q 'maxdock-db54.css' maxdock-config.js
+          grep -q 'maxdock-db54.js' maxdock-config.js
+          grep -q 'DB54 · compact appointment filtering and unified dashboard commands active' maxdock-config.js
+          grep -q 'compactAppointmentWorkspace' maxdock-db54.js
+          grep -q 'dashboardCommandStripDB54' maxdock-db54.js
+          grep -q 'appointmentShowInlineDB54' maxdock-db54.css
+          grep -q 'dashboardUnifiedToolbarDB54' maxdock-db54.css
+          node --check maxdock-config.js
+          node --check maxdock-db54.js
+          cmp -s maxdock-config.js db04/maxdock-config.js
+          cmp -s maxdock-db54.js db04/maxdock-db54.js
+          cmp -s maxdock-db54.css db04/maxdock-db54.css
+          cmp -s DEPLOYMENT_DB54.txt db04/DEPLOYMENT_DB54.txt
+
+      - name: Commit finalized DB54 release
+        shell: bash
+        run: |
+          rm -f .github/workflows/finalize-db54.yml
+          git config user.name 'MaxSolutionsMiss'
+          git config user.email 'javadresa@maxpkgsolutions.com'
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m '[db54-finalized] Compact appointment filtering and unify dashboard commands'
+          git push origin HEAD:codex/db54-compact-appointments-dashboard-actions

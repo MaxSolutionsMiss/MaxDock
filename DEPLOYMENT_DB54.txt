@@ -1,0 +1,19 @@
+MaxDock DB54 — Compact appointment filtering and unified dashboard commands
+
+User-visible changes
+- Removes the duplicate Appointment Views sidebar from My Appointments.
+- Keeps one Show dropdown for Upcoming, All, Past, and Cancelled appointments.
+- Places Show directly before the dropdown to reduce vertical space.
+- Restores the appointment list to the full available page width.
+- Places Book Appointment, Block Time, the dashboard gear, Export CSV, and Print on one aligned toolbar row.
+- Removes the empty second-row document group from the Dashboard toolbar.
+- Keeps responsive wrapping for narrower tablets and phones.
+
+Release marker
+- MaxDock-v75-DB54
+- DB54 · compact appointment filtering and unified dashboard commands active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
