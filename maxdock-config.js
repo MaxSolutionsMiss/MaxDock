@@ -1,8 +1,36 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v82-DB61",
+  version: "MaxDock-v83-DB62",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
+
+/* DB62 refresh policy is installed before maxdock-db.js so all page timers use three minutes. */
+(function(){
+  const minimumInterval=180000;
+  let currentValue;
+  const wrap=value=>{
+    if(!value||typeof value!=="object")return value;
+    const originalStart=typeof value.startLiveRefresh==="function"?value.startLiveRefresh.bind(value):null;
+    return Object.freeze({
+      ...value,
+      LIVE_REFRESH_MS:minimumInterval,
+      startLiveRefresh:originalStart
+        ?(task,options={})=>originalStart(task,{...options,interval:Math.max(minimumInterval,Number(options.interval||0))})
+        :value.startLiveRefresh
+    });
+  };
+  const existing=window.MaxDockDB;
+  const descriptor=Object.getOwnPropertyDescriptor(window,"MaxDockDB");
+  if(descriptor&&!descriptor.configurable)return;
+  currentValue=existing?wrap(existing):undefined;
+  Object.defineProperty(window,"MaxDockDB",{
+    configurable:true,
+    enumerable:true,
+    get(){return currentValue},
+    set(value){currentValue=wrap(value)}
+  });
+})();
+
 
 (function(){
   const current=document.currentScript;
@@ -26,63 +54,65 @@ window.MAXDOCK_CONFIG = Object.freeze({
     document.body.appendChild(script);
   });
 
-  loadCss("maxdock-db33.css","82-db61","db33");
-  loadCss("maxdock-db34.css","82-db61","db34");
-  loadCss("maxdock-db35.css","82-db61","db35");
-  loadCss("maxdock-db36.css","82-db61","db36");
-  loadCss("maxdock-db38.css","82-db61","db38");
-  loadCss("maxdock-db39.css","82-db61","db39");
-  loadCss("maxdock-db40.css","82-db61","db40");
-  loadCss("maxdock-db41.css","82-db61","db41");
-  loadCss("maxdock-db42.css","82-db61","db42");
-  loadCss("maxdock-db43.css","82-db61","db43");
-  loadCss("maxdock-db44.css","82-db61","db44");
-  loadCss("maxdock-db45.css","82-db61","db45");
-  loadCss("maxdock-db46.css","82-db61","db46");
-  loadCss("maxdock-db47.css","82-db61","db47");
-  loadCss("maxdock-db47-polish.css","82-db61","db47-polish");
-  loadCss("maxdock-db48.css","82-db61","db48");
-  loadCss("maxdock-db49.css","82-db61","db49");
-  loadCss("maxdock-db50.css","82-db61","db50");
-  loadCss("maxdock-db51.css","82-db61","db51");
-  loadCss("maxdock-db52.css","82-db61","db52");
-  loadCss("maxdock-db53.css","82-db61","db53");
-  loadCss("maxdock-db54.css","82-db61","db54");
-  loadCss("maxdock-db55.css","82-db61","db55");
-  loadCss("maxdock-db56.css","82-db61","db56");
-  loadCss("maxdock-db57.css","82-db61","db57");
-  loadCss("maxdock-db58.css","82-db61","db58");
-  loadCss("maxdock-db59.css","82-db61","db59");
-  loadCss("maxdock-db60.css","82-db61","db60");
-  loadCss("maxdock-db61.css","82-db61","db61");
+  loadCss("maxdock-db33.css","83-db62","db33");
+  loadCss("maxdock-db34.css","83-db62","db34");
+  loadCss("maxdock-db35.css","83-db62","db35");
+  loadCss("maxdock-db36.css","83-db62","db36");
+  loadCss("maxdock-db38.css","83-db62","db38");
+  loadCss("maxdock-db39.css","83-db62","db39");
+  loadCss("maxdock-db40.css","83-db62","db40");
+  loadCss("maxdock-db41.css","83-db62","db41");
+  loadCss("maxdock-db42.css","83-db62","db42");
+  loadCss("maxdock-db43.css","83-db62","db43");
+  loadCss("maxdock-db44.css","83-db62","db44");
+  loadCss("maxdock-db45.css","83-db62","db45");
+  loadCss("maxdock-db46.css","83-db62","db46");
+  loadCss("maxdock-db47.css","83-db62","db47");
+  loadCss("maxdock-db47-polish.css","83-db62","db47-polish");
+  loadCss("maxdock-db48.css","83-db62","db48");
+  loadCss("maxdock-db49.css","83-db62","db49");
+  loadCss("maxdock-db50.css","83-db62","db50");
+  loadCss("maxdock-db51.css","83-db62","db51");
+  loadCss("maxdock-db52.css","83-db62","db52");
+  loadCss("maxdock-db53.css","83-db62","db53");
+  loadCss("maxdock-db54.css","83-db62","db54");
+  loadCss("maxdock-db55.css","83-db62","db55");
+  loadCss("maxdock-db56.css","83-db62","db56");
+  loadCss("maxdock-db57.css","83-db62","db57");
+  loadCss("maxdock-db58.css","83-db62","db58");
+  loadCss("maxdock-db59.css","83-db62","db59");
+  loadCss("maxdock-db60.css","83-db62","db60");
+  loadCss("maxdock-db61.css","83-db62","db61");
+  loadCss("maxdock-db62.css","83-db62","db62");
 
   const initialize=async()=>{
-    await loadScript("maxdock-ops-density.js","82-db61","db33");
-    await loadScript("maxdock-layout-discipline.js","82-db61","db36");
-    await loadScript("maxdock-db42.js","82-db61","db42");
-    await loadScript("maxdock-db43.js","82-db61","db43");
-    await loadScript("maxdock-db44.js","82-db61","db44");
-    await loadScript("maxdock-db45.js","82-db61","db45");
-    await loadScript("maxdock-db46.js","82-db61","db46");
-    await loadScript("maxdock-db47.js","82-db61","db47");
-    await loadScript("maxdock-db48.js","82-db61","db48");
-    await loadScript("maxdock-db49.js","82-db61","db49");
-    await loadScript("maxdock-db50.js","82-db61","db50");
-    await loadScript("maxdock-db51.js","82-db61","db51");
-    await loadScript("maxdock-db52.js","82-db61","db52");
-    await loadScript("maxdock-db53.js","82-db61","db53");
-    await loadScript("maxdock-db54.js","82-db61","db54");
-    await loadScript("maxdock-db55.js","82-db61","db55");
-    await loadScript("maxdock-db56.js","82-db61","db56");
-    await loadScript("maxdock-db58.js","82-db61","db58");
-    await loadScript("maxdock-db60.js","82-db61","db60");
-    await loadScript("maxdock-db61.js","82-db61","db61");
-    document.documentElement.dataset.maxdockRelease="db61";
+    await loadScript("maxdock-ops-density.js","83-db62","db33");
+    await loadScript("maxdock-layout-discipline.js","83-db62","db36");
+    await loadScript("maxdock-db42.js","83-db62","db42");
+    await loadScript("maxdock-db43.js","83-db62","db43");
+    await loadScript("maxdock-db44.js","83-db62","db44");
+    await loadScript("maxdock-db45.js","83-db62","db45");
+    await loadScript("maxdock-db46.js","83-db62","db46");
+    await loadScript("maxdock-db47.js","83-db62","db47");
+    await loadScript("maxdock-db48.js","83-db62","db48");
+    await loadScript("maxdock-db49.js","83-db62","db49");
+    await loadScript("maxdock-db50.js","83-db62","db50");
+    await loadScript("maxdock-db51.js","83-db62","db51");
+    await loadScript("maxdock-db52.js","83-db62","db52");
+    await loadScript("maxdock-db53.js","83-db62","db53");
+    await loadScript("maxdock-db54.js","83-db62","db54");
+    await loadScript("maxdock-db55.js","83-db62","db55");
+    await loadScript("maxdock-db56.js","83-db62","db56");
+    await loadScript("maxdock-db58.js","83-db62","db58");
+    await loadScript("maxdock-db60.js","83-db62","db60");
+    await loadScript("maxdock-db61.js","83-db62","db61");
+    await loadScript("maxdock-db62.js","83-db62","db62");
+    document.documentElement.dataset.maxdockRelease="db62";
     document.querySelectorAll(".menu").forEach(menu=>{
       if(menu.querySelector(".maxdockReleaseStamp"))return;
       const stamp=document.createElement("small");
       stamp.className="maxdockReleaseStamp";
-      stamp.textContent="DB61 · KPI consistency, compact controls, and persistent location context active";
+      stamp.textContent="DB62 · spacing, inline queue controls, seven KPIs, and three-minute refresh active";
       menu.appendChild(stamp);
     });
   };

@@ -1,0 +1,20 @@
+MaxDock DB62 — final spacing, inline controls, seven KPI support, and three-minute refresh
+
+User-visible changes
+- Moves the My Appointments KPI gear to the far-right end of the booking banner.
+- Keeps Book an Appointment directly beside Need a new dock time.
+- Makes the gap below the My Appointments KPI row match the gap above it.
+- Reduces vertical whitespace in the Bookings header after placing Show beside its dropdown.
+- Forces Operating Date and Queue View labels beside their fields and reduces the Queue control-banner height.
+- Allows all seven Dashboard KPIs to be selected.
+- Makes any selected Dashboard KPI count fill the entire available row width.
+- Changes automatic live refresh from five seconds to three minutes across Dashboard, Queue, Reports, My Appointments, and full-screen displays.
+
+Release marker
+- MaxDock-v83-DB62
+- DB62 · spacing, inline queue controls, seven KPIs, and three-minute refresh active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
