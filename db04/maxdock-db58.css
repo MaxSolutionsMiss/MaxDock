@@ -1,0 +1,295 @@
+/* MaxDock DB58 — balanced KPI spacing and inline operational filter labels. */
+
+/* Final KPI dimensions: approximately 10% taller than DB57, while remaining compact. */
+body.inlineControlsDB58[data-page="dashboard"] #metrics,
+body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics{
+  box-sizing:border-box!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  grid-auto-rows:66px!important;
+  align-items:stretch!important;
+  gap:8px!important;
+  margin-bottom:8px!important;
+  overflow:visible!important
+}
+
+body.inlineControlsDB58[data-page="dashboard"] #metrics>.metric,
+body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics>.metric{
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr)!important;
+  grid-template-rows:23px 15px!important;
+  column-gap:10px!important;
+  row-gap:2px!important;
+  align-content:center!important;
+  align-items:center!important;
+  width:100%!important;
+  height:66px!important;
+  min-height:66px!important;
+  max-height:66px!important;
+  padding:5px 10px 5px clamp(16px,8%,30px)!important;
+  overflow:hidden!important
+}
+
+body.inlineControlsDB58[data-page="dashboard"] #metrics>.metric>.metricIconDB47,
+body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics>.metric>.metricIconDB47{
+  position:static!important;
+  inset:auto!important;
+  grid-column:1!important;
+  grid-row:1/3!important;
+  align-self:center!important;
+  justify-self:start!important;
+  display:grid!important;
+  width:44px!important;
+  height:44px!important;
+  margin:0!important;
+  place-items:center!important;
+  border-radius:11px!important
+}
+body.inlineControlsDB58[data-page="dashboard"] #metrics>.metric>.metricIconDB47 svg,
+body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics>.metric>.metricIconDB47 svg{
+  width:23px!important;
+  height:23px!important
+}
+
+body.inlineControlsDB58[data-page="dashboard"] #metrics>.metric>strong,
+body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics>.metric>strong{
+  grid-column:2!important;
+  grid-row:1!important;
+  align-self:end!important;
+  justify-self:start!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  font-size:22px!important;
+  font-weight:780!important;
+  line-height:1!important;
+  letter-spacing:-.4px!important;
+  text-align:left!important
+}
+body.inlineControlsDB58[data-page="dashboard"] #metrics>.metric>small,
+body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics>.metric>small{
+  grid-column:2!important;
+  grid-row:2!important;
+  align-self:start!important;
+  justify-self:start!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  overflow:visible!important;
+  color:#40576a!important;
+  font-size:13px!important;
+  font-weight:700!important;
+  line-height:1.08!important;
+  letter-spacing:0!important;
+  text-align:left!important;
+  text-transform:none!important;
+  white-space:normal!important
+}
+
+/* Five appointment KPIs across the desktop workspace. */
+body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics{
+  grid-template-columns:repeat(5,minmax(0,1fr))!important
+}
+
+/* A distinct, calm history treatment for the new Past KPI. */
+body.interfacePreviewDB47 .metricVisualDB47[data-metric-tone="past"]{
+  --metric-accent:#66758a;
+  --metric-number:#4f6074;
+  --metric-bg:#f6f8fa
+}
+
+/* Dashboard, Queue, Reports, and Appointment View use one label-to-field pattern. */
+body.inlineControlsDB58 :is(
+  .dashboardWorkspaceToolbar,
+  .queueWorkspaceToolbar,
+  .dashboardOperationalControls,
+  .queueToolbarFilters,
+  .reportFilters,
+  .myAppointmentToolbar
+){
+  align-items:center!important
+}
+
+body.inlineControlsDB58 :is(
+  .dashboardOperationalControls,
+  .queueToolbarFilters,
+  .reportFilters
+){
+  display:flex!important;
+  flex-flow:row wrap!important;
+  align-content:center!important;
+  gap:10px 16px!important
+}
+
+body.inlineControlsDB58 :is(
+  .dashboardOperationalControls,
+  .queueToolbarFilters,
+  .reportFilters,
+  .myAppointmentToolbar
+) .inlineFilterFieldDB58{
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:7px!important;
+  width:auto!important;
+  min-width:0!important;
+  height:38px!important;
+  min-height:38px!important;
+  margin:0!important;
+  padding:0!important
+}
+
+body.inlineControlsDB58 :is(
+  .dashboardOperationalControls,
+  .queueToolbarFilters,
+  .reportFilters,
+  .myAppointmentToolbar
+) .inlineFilterFieldDB58>label{
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  margin:0!important;
+  color:#465d70!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  white-space:nowrap!important
+}
+
+body.inlineControlsDB58 :is(
+  .dashboardOperationalControls,
+  .queueToolbarFilters,
+  .reportFilters,
+  .myAppointmentToolbar
+) .inlineFilterFieldDB58>:is(input,select){
+  flex:0 0 auto!important;
+  height:36px!important;
+  min-height:36px!important;
+  margin:0!important
+}
+
+body.inlineControlsDB58 #adminDate{width:146px!important}
+body.inlineControlsDB58 #adminStatus{width:160px!important}
+body.inlineControlsDB58 #dashboardRange{width:148px!important}
+body.inlineControlsDB58 #queueDate{width:146px!important}
+body.inlineControlsDB58 #queueStatus{width:132px!important}
+body.inlineControlsDB58 #reportView{width:190px!important}
+body.inlineControlsDB58 #reportPreset{width:154px!important}
+body.inlineControlsDB58 #myAppointmentFilter{width:132px!important}
+
+/* Date Range starts life as a KPI card; flatten it into a normal inline control. */
+body.inlineControlsDB58 .dashboardRangeHost{
+  display:flex!important;
+  align-items:center!important;
+  width:auto!important;
+  min-width:0!important;
+  height:38px!important;
+  margin:0!important
+}
+body.inlineControlsDB58 .dashboardRangeHost>.dashboardRangeInlineDB58{
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important
+}
+body.inlineControlsDB58 .dashboardRangeHost>.dashboardRangeInlineDB58::before,
+body.inlineControlsDB58 .dashboardRangeHost>.dashboardRangeInlineDB58::after{
+  content:none!important;
+  display:none!important
+}
+
+body.inlineControlsDB58 .myAppointmentToolbar{
+  display:flex!important;
+  flex-flow:row wrap!important;
+  justify-content:flex-start!important;
+  gap:10px 16px!important
+}
+body.inlineControlsDB58 .myAppointmentToolbar>h3{
+  margin-right:auto!important
+}
+
+@media(max-width:1180px){
+  body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important
+  }
+}
+
+@media(max-width:760px){
+  body.inlineControlsDB58[data-page="dashboard"] #metrics,
+  body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics{
+    grid-auto-rows:64px!important
+  }
+  body.inlineControlsDB58[data-page="dashboard"] #metrics>.metric,
+  body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics>.metric{
+    grid-template-columns:42px minmax(0,1fr)!important;
+    height:64px!important;
+    min-height:64px!important;
+    max-height:64px!important;
+    padding:4px 8px 4px 12px!important
+  }
+  body.inlineControlsDB58[data-page="dashboard"] #metrics>.metric>.metricIconDB47,
+  body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics>.metric>.metricIconDB47{
+    width:42px!important;
+    height:42px!important
+  }
+  body.inlineControlsDB58[data-page="dashboard"] #metrics>.metric>.metricIconDB47 svg,
+  body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics>.metric>.metricIconDB47 svg{
+    width:22px!important;
+    height:22px!important
+  }
+  body.inlineControlsDB58[data-page="dashboard"] #metrics>.metric>small,
+  body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics>.metric>small{
+    font-size:12px!important
+  }
+  body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important
+  }
+  body.inlineControlsDB58 :is(
+    .dashboardOperationalControls,
+    .queueToolbarFilters,
+    .reportFilters
+  ){
+    gap:8px 12px!important
+  }
+}
+
+@media(max-width:560px){
+  body.inlineControlsDB58 :is(
+    .dashboardOperationalControls,
+    .queueToolbarFilters,
+    .reportFilters,
+    .myAppointmentToolbar
+  ) .inlineFilterFieldDB58{
+    width:100%!important
+  }
+  body.inlineControlsDB58 :is(
+    .dashboardOperationalControls,
+    .queueToolbarFilters,
+    .reportFilters,
+    .myAppointmentToolbar
+  ) .inlineFilterFieldDB58>label{
+    flex:0 0 112px!important
+  }
+  body.inlineControlsDB58 :is(
+    .dashboardOperationalControls,
+    .queueToolbarFilters,
+    .reportFilters,
+    .myAppointmentToolbar
+  ) .inlineFilterFieldDB58>:is(input,select){
+    flex:1 1 auto!important;
+    width:auto!important;
+    min-width:0!important
+  }
+  body.inlineControlsDB58[data-page="myappointments"] #myAppointmentMetrics{
+    grid-template-columns:1fr!important
+  }
+}
