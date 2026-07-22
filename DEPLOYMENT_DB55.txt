@@ -1,0 +1,18 @@
+MaxDock DB55 — Compact horizontal KPI card draft
+
+User-visible changes
+- Converts Dashboard KPI cards into shorter horizontal cards.
+- Converts My Appointments KPI cards into the same horizontal layout.
+- Places a larger colour-coded icon on the left of each card.
+- Vertically centres the number and KPI label beside the icon.
+- Reduces KPI-card height while preserving all current data and colour meaning.
+- Uses available horizontal space and wraps cleanly on tablets and phones.
+
+Release marker
+- MaxDock-v76-DB55
+- DB55 · compact horizontal KPI cards active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
