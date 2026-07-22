@@ -1,0 +1,17 @@
+MaxDock DB66 — Operational Reports reference harmonization
+
+- Uses Operational Reports as the visual reference across Dashboard, My Appointments, and Operation Queue.
+- Fixes overlapping Dashboard and Queue filter labels.
+- Places Book Appointment and Block Time before Date Range on Dashboard.
+- Keeps gear, Export CSV, and Print at the far right.
+- Reduces shared KPI card height to 78px.
+- Enlarges the icon glyphs without enlarging the icon background.
+- Enlarges KPI numbers and descriptions.
+- Applies rounded KPI outlines instead of detached bottom lines.
+- Makes selected KPI cards fill their available row.
+- Keeps My Appointments sections separated with a consistent 10px rhythm.
+- Moves Reports Export CSV and Print directly before its KPI gear.
+- Retains three-minute refresh and coordinator role restrictions.
+
+Release: MaxDock-v87-DB66
+Frontend only. No Supabase migration. No Edge Function.
