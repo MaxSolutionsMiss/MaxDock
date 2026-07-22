@@ -1,0 +1,28 @@
+MaxDock DB65 — coordinator navigation and final layout harmonization
+
+User-visible changes
+- Coordinator navigation is limited to Dashboard, Appointments, Queue, and Reports.
+- Settings is removed for coordinator accounts, even if a legacy permission is present.
+- Direct coordinator access to Settings redirects to Operation Queue.
+- My Appointments places Book an Appointment directly beside the banner message and keeps the KPI gear at the far right.
+- Five My Appointments KPI cards fill the full page width evenly.
+- Show is directly before the Appointment List dropdown.
+- Dashboard Schedule Date, Appointment Status, and Date Range labels sit directly before their fields.
+- Queue Operating Date and Queue View labels sit directly before their fields.
+- Reports Report View and Date Range labels sit directly before their fields.
+- Reports KPI settings use normal-sized checkboxes, cleaner spacing, and a compact readable menu.
+- Vertical spacing between banners, KPI rows, appointment sections, and report sections is standardized to 10px.
+- The DB60 KPI enforcement runtime is retired and replaced by one scoped appointment-metrics observer.
+
+Release marker
+- MaxDock-v86-DB65
+- DB65 · coordinator navigation and final layout harmonization active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
+
+Review validation
+- Root and db04 assets match.
+- JavaScript syntax and release-loader checks passed.
