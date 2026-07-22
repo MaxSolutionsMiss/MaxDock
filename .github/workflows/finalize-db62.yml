@@ -1,0 +1,58 @@
+name: Finalize DB62 review
+
+on:
+  push:
+    branches:
+      - codex/db62-spacing-queue-seven-kpis-refresh
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: ${{ github.actor != 'github-actions[bot]' && !contains(github.event.head_commit.message, '[db62-finalized]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/db62-spacing-queue-seven-kpis-refresh
+          fetch-depth: 0
+
+      - name: Apply DB62 files
+        shell: bash
+        run: |
+          echo 'H4sIAFP0YGoC/9077XbbuHL//RQIt43IXYqRnGySykfr+iu7voljb5Td2zbJ8YVEyGJCkVwCtK3I7ulD9F36v4/SJ+kMAH6AImUl69xz2j1nHREcDAbzPQNwmsZzklAxC4MxCeZJnApyBo9bWwej0bDz6HtyQq8P48kncrj/dJv8z3/8J5kGEQ0JT+gkiC5cEkRhEDHyR8YyRiZxJNI45C7h7JJF3Zdnx4RnCaJ1CY18MqHhnKUkZdOU8ZlHvn/0Pnof4TILsgdwQSTmLBKcjOP4E+AnYxpFLB2QT4wlhE5EEEdkzHjg42LJwiVJxmfkgtGUiJhM4Z80uJgJhXkc+wvPHz/dPggZjbLknU8F7Sb0gg2t+YJW1rM+EG++qFKwrwjYp+nh/o/by/cRAZquuzz4DKODcZz6LO3CyAPFNRqJHYTxA56EdDGYhqz+Coe6fpAyuYtBGl/VAGgYXETdQLA5H0yABpbWAD5mXATTRRfZDO/lIl0uaCpqgBc0GfS3kzoFc5peBBFQLUQ8H/R7KwDxJUunYXw1uAx4MA5Z+fp9dHsv/DwAoRUMlUwc9Bv4NOiRPqGZiBt3MOj9KcJQtyqk7Ul51Ijabiaq10TUVeCL2eBbUWuy8QBUIJ4HnxnYY69C7+M2ep/0WtRAvq3vR9KnDJKKyYyIGUNlInQMqiEteMxAP+Q4Gjco8VeY2nfGnk6YSIMJX1Y0VMRJlWsNyvvneMonKWORh6//msL2fmomifw7GQTc9iJ2LSpvR0ksQvQyLmCIWOjUSTctq+TpQTwHtykk97Q9cDJjFARIIslVKshoBr+Q0wG4wWnAQp/wGU0ZicHNfh2/JWC+4BmSLClOqO/DiCT5+QrFf0JL38ZxOKbpvTlN6ZJg68gkENeXus05iGXGUGCDx09XrEFzoUXfpJWsTpIOtvcNeAaqOHu8NNZHC0VTvf+1vGkQArteoJLdh7Au0sDvghzgvWAQpcJsHvFBBIp776EQBfB8RSztnhhUQL2si7ldMdarzapvb9OmbyEtUJOQjrUd5xIZh5CofTlHNgpca03lagaS6mJKyAZ1E/3y3Zuu+IXc9LLcS//xamJzf0IsnfVpwlIq881fjdx2oDjPpY+W/pkTyMEW4J+lY+d0zsgsToPPMAEyZUyP7/bZMn+Gzct4Ix/UxrmrnrQSFIOIRtJ1oMj6JebC+fvbcOGZv8YvK4A8mV1n5qT/ZJ1kW/R0NbAZb3Um8WWRryqn7+TDIfDJVT9HgoqMO+QH8v2abGbjNUohH8si6/+in1YAnIXTb+zH/27eeq10/h/55U00ffkNnO8mNJX0LHVQeGLg/yI0ai/LxuiyqS5UPLYqJ/nyDhv8RpazLqIdUj4bxzTFNkwKUYuGV3TBkUiodsaZYASbNuGC0Ekacy6j2TQLQ0IvaQBqHTKltndHMz9fSYbzSn3X7HlSljAq7Eua2t0uouwWCHIY95njgjrN6bXdc/vT1HG+QG2q5HjFQ1FKnyZSYiSIkky8E4sEpkxmbPIJnKr1YQD8wb0rzxtj30ssVpoWkyzlcTqQaUtVVJr7/zxnfkBtIF8bd7//HMqHPGJ/BSfv4CU6j+40EDnT+s9guVXGEXIrKVyh79nTjcj7ii5aaRW4gRob23ZliH6lZyF3cS+EGu0pTYyiYdB/1O3/6UXXt55qC67wRqtOr/eP97z71a6SScr2Cik6tQnZVJjOZgNq7i/XNd0ouDEmJrON9PvJk/vQ72qjQ2dLGGUH9VCbk9HZ+sto2LGnWSQFbysCrIxD2YCmLawd9BYEiw0uyNnez0dDP55kuJan6ATaOBOydXVzY1lSHCETqgHvD6c05EwjyZchBSU2CxnicpM0hvJGLNxLGmYsZ2YwtR9oCAdYmaXRTvFCj3tcLELmXTBxplH8jhjsHKEzHA4lzocPW2ecpQGUR2JhTLIKIi1zbRMNL9HY5ibcKoYdzXODDbqpfaQQ5jtq2PzNTb7oLPB9FmmCSM5cBNdDsC3s6kHw9EdIYIHV017uAWwNM2urSpISrz4FUfnHsc+H70p3/yq41ImJ5VqmsRqvpNiNEQgAwAVjSFy+qS6VTztUFOrBD3WtieJ0Dub1menJb9n1OqaZUlM7hKiYwqthzk4BKA5UvVcor0Ty6EfCGczx+aMAoLiw9VQnX6lUhAqSoYbyYNMhZLlVPBeBaz3GFBRkw7VGaOdUV4wsAbPKt/mKRhcZWJedr1wXkzeN0yM6mdmBP/ypkUmFyYJ2aG3bXxz7MMFxmlXzCrvtX0VAwR7Fcc2k4RoSdvIZjRqfOxh0iJqgvyJxpnhLabTBDy2RZswq4CN2RU4yITsqp2PO0kuW2rbTwsFcpxwvVrCF51pOZkEI5sHFABdweTYGt8/Uw2RGUzqBqAGlAZVDt+V21y6Uq0ezeOb0U7XKs2Xbp2oDasBgkRzyJiHlHKn1oEazraaasdDN0k3Lua6lXQjYK4aWdrjGnAlmSb/TOsss7tFzxFft0JVAC6CqIllDEU0ACsqTdhAZhwEIk7l2qKIcBsjeejBVaQIc1pprQGXmsh6dLqgNIGVfsrofKtmCE00XI9CgiYhT2xrwCcSjvAPQgFyOV6UqGwPtgHdwSENVOXQH5Lqda5imna8SVvYVpJZhutMScyeYU50Y8cuuGA5mOBgha3lWUyyBPKv0ajXWr606ahLEawNDQLa7GZK8IqhhgXJZxFEzntYkv4YDby20OmprTYZeSmZqAwVliCwlBcOt/mMFbq1tr0DXbiFo7OoeQvss5RHwUkI7jHHEi9A9E3pqo/AePgRgbxqkPGfYAYYEUCN86+DLIIKgIfYZBEom57iNUwzUSqIPH6ol8K8899XwI8gcQRtgEQW3uowad1smGkuh4NUuIDrUN4EvJXawCBb5cljOMFKYKu/kBi3ZB0amNditpq2A2V4Ds9ZLIB0lmsetEJXysN0tGaCpdt5q1aqZ6K7Hhpaij+4bltN4ihVFnLTssg5ZKGQJjCUXV6IdavDdBrHf3ERZGOblO4iS2XpWxWin+Zg3x8yJcfAhd1w5sBynJFfPrm2sZjw5sflSq7SW6lXlvlAl7oauVxfENUcnw+WG8lNVv+XsQuoUc6wErOrBZw2zZMZQ01idormkgeXTblMyZtyKKOCb870VPdHrbpCoFZDFqZnKt4gRPBtnbJh4FfCbpEIF8PpwX+IsfIK6DdGeOTWt3JgTyCy4KRVQ3aGmDACLtBfrVak4F9hUgS4DdrUJTl0k34m1rjkFzW0ABQEmXbOYCz58V0zfBY3GSldT5hbT6i9a7bTaaLOcO+DMFpzlfNCbtcFeUHo5se88z8PKbsSELUlGSF2d4nOlPsXH1nKo0tlrTA9w8kb5jALcqCBanVY3TsM0V8E3Tpuq4GXWdOeEooiSx99rAA2T760BrByM18qzdtgi+FXBW+rkLMKKpjhn0rG4ycrLcw3T0pvVci8M7fedLz66ed9xyl4JQlTUEWiRQ15+vOOYj8Nqs+/WNM67M5J6EjK1H+ixmxv9w+wt1pySbFQO0bpy6BV+lPWmhhlEsbC9lEYXTDHeqdit2fusV0RZJIYnVMw8eVTkamAvZNGFmBWeS1Oy2oi12k7tLHcEc6ILWy7hVNhxFUR+fKUSnhPZm7fs8ui733/eT66B/jwjaipxiiytxdr/po/C/mEpV7+tnR/+bW1LEJLvcFEortmDb3Bi+uigDC5NZW/1nQ5/eqjNbvLXzf3JPK1s7B022icHXvpZaMRddXBgqqE+TMAGWtHuhjEu9qJgLlt4L1I6Z7J/V0imdgKhBjUf17uNIApEIFtzBWHmvIL/wPCjS/iB3GcR6DVYOyq85eLRdc2+5ZAHZSmYZ5Faf4Ubcb8rZuDlXC0d17ynxiuvsEZ31TESKEevqzQV3VGpx3iaJ00ADOltMGdxBom8Fo/bK92yrvZuXRRGIXI1dZUboAOwHcstMC0T0NXgkpXN0Krlp+BPLmm1XWxmAzkR8iDK8Nq7Vn4abQ3qULVmDoI2VWgr81Tmt1tLVQowC43PUk8VT5LvwWnsMOeMKBvJOfz6TjIV+k4Erz0rsgbvLOW+MY6jO7A+FDHi3Y/gYeD/x/D/sx783oY/2/jnSa/XK/Mjn0EuM/xpVQ2k7rvytXlcALstBJUy6sujG4asC2Mq83hnjaUcnp7oY5NXAM18yy3tzl3G0YRVO+YMrNgwTBi9deCfztbh0dmr038ddjb8NKj2URBZ+ShIzIDtXXVSkx924IZ/A4F1dSwiys75+6hLTuJLpm6n1L8aQtT5t0Dy9gpNVWOBMFgnnspB89MiDzG+ZCzh8ko+EFRFSVR/PFzkHx29ZswnVJ5m+Lh3ATKTKE4gr+fF9xLlVxJNJGJuOW/4viIQEtUb0NgJIAP9FcEEOCr7rbLdCjxt/HqATkEpCZ6B4c7kJwSaYPyKwIdADToWSewv4hSR6+utAI3lkpSDuuf6O1QW+RVXjQNWDNL8ritCpppCJMW4HdtVTNV3wuR6kKvEV3jZKNTyL68hAS84imrM4BW6HOZXeEmjRTFsTlIZCxAEOJEEYCyIqXJNSSbv8qoSojtQqiOvjWD0mpAQPGKuaWSK38BNcUQfHSrtAZ3MTw/zC1EFEa7atQuiQjUG1a6JWSk2Xp7qqm9N8ksv3EPNfgPbomBfUFd/YqnasrSl7uXzx120JxyTdvXf/7XZt3aSme32JL+du2S4OJ6NSTifJWG8kGoeyA9TpHqk0kf43RhvgqWKUMnG1zEZZQkdS8KDC3U5On9z5F8w8iIP6CVmDy89nJ2+Oj4Ah6FuoeGucqqSOAwmCxJg6OUCdIThF0bYTwXeXKOFQQT1PnLCY6lBeO1B2lzKCd6aMMSk7qXVb1folB1c2TybH2PJdUnDYf85+OJecXtCnyPLuww75SwsANV1hiKzwFRejtzcYJ4APkU+YU0Tjz+CsuYFjRo3Eu0YfBG6yBG2yofV6Z7snuOhvU7k0KnnG7F2m2G8MYQOW93gGFT6jHr9U0mOB6AM/HeReEBNoe5L5AOvjn8/On9z9OLN0eiX85PRoMaqAq6+/MDYTpnX7NqC8k9urHKq4fIWkkQDVL1fAiEaxg30WoOiCKkT8TqbjyGI6QlePuHmpuc4t065+KCZVWb6WZEwu4b4iH1RHYa1HR7uV2B8BjYcJJAQDTVPIaE8vYry+ueweK/LGtcq0OiKACN3AfXw4YPywYM1psFFlqLjqmbhVZUc5mTuokba+ZMzyCKfQdRlvpyiqVNDRXW2SpO7LLSyWFqlOfrKTQQ5xMoobBpMSitXlbpbDQApjNbGpUG8pFm9ULVWkUugO+psHZy+fnH88/nR68NhJxfD3r8cnh68PFevyLBJmSE8cryVTqy687QkQVw7q9/SEGBmQiR88OhRurj6/AdLPkP9kqXjNJmzRHg5KAjDnHuWjcOAz5AVL9kC0PDxeVKOnV//26vu5z9+Pdv+g/768uff91/13/7s750/3T7+p7R/tmfhPndwj1vg0+SH1hjB3+En1raVe7g44V1IJXkgFuDqLMdVr/1x78mjNpgPgy1kOd6FGSJamQ+e46PtyDdx6EMNI/X3cG/0y/7p3pvDc2Dr8OmOtaUcGcKQKBYyqYCZMig0znm2Y1UB1drS1dAAvPBoATnm/Og6EPbU+i1i14kK2kW5gM4czRkRLJHcW0tRKUm/SiG9UbTjn+IyT4wN5RZyHGdrC/QcEUxm50qRbcTm3MUY+cZYp1PqzzbqT7/jduoq1WmdbMEkqPL6FsyyABrbAZYGBx5bzZGnhZ8wobSGZpAWth/EmZZmGE8wo1M8yRPEOuObN1Ou7ZY/f1Dh2+2rmRPOzzENGXYgdEIhccB5qcrICA8gsF2oWeFakjvKDPQeOxX4bYTvNO91lcJ8dTf/8UMLGdtNZKhzz06+lY/lTgihVzQQEtVIuubapj5+2Z4+br4lTYX7sdzQHdRsN1BT21qDohalYf7jqHaFS6+gk9Oh2uMOqPXXzNyGma2koJFhZqtyefBqWKNOFi48qC+ky+QWfVKCnh5BtHLLQyRMU9Fnyby24xr2Uf7X+QZJdKfdd4FXMjyS6ejVoPTfThOc4fEN4CJ8uPr8QIYRSUZtjUL1HfdgNHLcKoyBfx1gXdcc9y93omoEU62Ck6PXb89REJ64hvzYVaMNCO8A10GvznjNEmfrfwEEWHDrzkQAAA==' | base64 -d | gzip -d > /tmp/apply-db62.py
+          python /tmp/apply-db62.py
+
+      - name: Validate DB62
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmp maxdock-config.js db04/maxdock-config.js
+          cmp maxdock-ops-density.js db04/maxdock-ops-density.js
+          cmp maxdock-db62.css db04/maxdock-db62.css
+          cmp maxdock-db62.js db04/maxdock-db62.js
+          cmp DEPLOYMENT_DB62.txt db04/DEPLOYMENT_DB62.txt
+          grep -q 'MaxDock-v83-DB62' maxdock-config.js
+          grep -q 'minimumInterval=180000' maxdock-config.js
+          grep -q 'maxdock-db62.css' maxdock-config.js
+          grep -q 'maxdock-db62.js' maxdock-config.js
+          grep -q 'maxdockRelease="db62"' maxdock-config.js
+          grep -q 'const DASHBOARD_MAX=7;' maxdock-ops-density.js
+          grep -q 'margin:0 0 0 auto!important' maxdock-db62.css
+          grep -q 'db62QueueInlineField' maxdock-db62.css
+          grep -q -- '--db62-dashboard-columns' maxdock-db62.css
+          grep -q 'watchRefreshLanguage' maxdock-db62.js
+          node --check maxdock-config.js
+          node --check maxdock-ops-density.js
+          node --check maxdock-db62.js
+
+      - name: Finalize review commit
+        shell: bash
+        run: |
+          rm -f .github/workflows/finalize-db62.yml
+          git config user.name "MaxSolutionsMiss"
+          git config user.email "javadresa@maxpkgsolutions.com"
+          git add -A
+          git commit -m "[db62-finalized] Tighten controls, enable seven KPIs, and calm refresh"
+          git push origin codex/db62-spacing-queue-seven-kpis-refresh
