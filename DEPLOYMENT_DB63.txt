@@ -1,0 +1,21 @@
+MaxDock DB63 — screenshot-driven layout corrections
+
+User-visible changes
+- Fixes overlapping Operating Date and Queue View controls on Operation Queue.
+- Keeps Queue labels directly before their fields while preserving a compact toolbar.
+- Removes excess blank space below My Appointments KPI cards.
+- Keeps the same 10px spacing above and below the appointment KPI row.
+- Places Dashboard Schedule Date, Appointment Status, and Date Range labels directly before their fields.
+- Places Reports Report View and Date Range labels directly before their fields.
+- Widens Report View so Operations Overview is not truncated.
+- Removes the effective six-KPI restriction and keeps all seven Dashboard KPI choices available.
+- Makes the rendered Dashboard cards match the checked KPI options and fill the full width.
+
+Release marker
+- MaxDock-v84-DB63
+- DB63 · screenshot layout corrections active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
