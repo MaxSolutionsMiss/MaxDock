@@ -69,7 +69,6 @@ window.MAXDOCK_CONFIG = Object.freeze({
   loadCss("maxdock-db47.css","88-db67","db47");
   loadCss("maxdock-db47-polish.css","88-db67","db47-polish");
   loadCss("maxdock-db48.css","88-db67","db48");
-  loadCss("maxdock-db51.css","88-db67","db51");
   loadCss("maxdock-db52.css","88-db67","db52");
   loadCss("maxdock-db67.css","88-db67","db67");
 
@@ -83,7 +82,6 @@ window.MAXDOCK_CONFIG = Object.freeze({
     await loadScript("maxdock-db46.js","88-db67","db46");
     await loadScript("maxdock-db47.js","88-db67","db47");
     await loadScript("maxdock-db48.js","88-db67","db48");
-    await loadScript("maxdock-db51.js","88-db67","db51");
     await loadScript("maxdock-db67.js","88-db67","db67");
     document.documentElement.dataset.maxdockRelease="db67";
     document.querySelectorAll(".menu").forEach(menu=>{
