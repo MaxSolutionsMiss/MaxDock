@@ -1,0 +1,18 @@
+MaxDock DB57 — Enforced compact KPI height and balanced content
+
+User-visible changes
+- Forces Dashboard and My Appointments KPI cards to an actual 60px desktop height and 58px compact-screen height.
+- Applies the final height as inline important styles so earlier 116px and 124px rules cannot override it.
+- Enlarges the KPI icon to 42px on desktop and 40px on smaller screens.
+- Keeps the KPI number at 22px while increasing the description to 12px with stronger weight.
+- Balances the combined number and description block against the icon height.
+- Preserves all KPI values, labels, calculations, colours, and responsive card wrapping.
+
+Release marker
+- MaxDock-v78-DB57
+- DB57 · enforced compact KPI height and balanced content active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
