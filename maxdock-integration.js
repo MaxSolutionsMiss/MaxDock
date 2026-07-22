@@ -1106,7 +1106,7 @@
       syncDatabaseState();
       updateScheduleDisplayScale();
       renderDashboard();
-      updateTvStatus(`Live schedule · updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"})} · refreshes every 5 seconds`);
+      updateTvStatus(`Live schedule · updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"})} · refreshes every 3 minutes`);
     }catch(error){
       updateTvStatus(`Live refresh paused · ${error.message||"connection unavailable"}`);
     }finally{
