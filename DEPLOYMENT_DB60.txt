@@ -1,0 +1,20 @@
+MaxDock DB60 — KPI breathing room and My Appointments KPI preferences
+
+User-visible changes
+- Increases Dashboard KPI card height to 80px without enlarging the icon, KPI number, or description.
+- Adds vertical white space above and below the existing KPI content instead of scaling the content.
+- Applies the exact same card height, icon scale, typography, padding, and responsive behaviour to My Appointments.
+- Keeps the five My Appointments KPIs, including Past.
+- Adds a gear control at the far right of the Need a new dock time booking banner.
+- Lets each user show or hide the My Appointments KPI dashboard and choose which appointment KPIs appear.
+- Saves My Appointments KPI preferences to the signed-in user, with a local-device fallback.
+- Keeps the DB58 operational filter layout unchanged.
+
+Release marker
+- MaxDock-v81-DB60
+- DB60 · KPI breathing room and appointment dashboard preferences active
+
+Data and deployment impact
+- Frontend-only release using the existing user-preference service.
+- No Supabase migration.
+- No Edge Function deployment.
