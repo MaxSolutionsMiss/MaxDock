@@ -13,6 +13,7 @@
     return {date:`${parts.year}-${parts.month}-${parts.day}`,label:`${parts.month}/${parts.day}/${parts.year} ${parts.hour}:${parts.minute} ${parts.dayPeriod||""}`.trim()};
   }
   function isUpcoming(item){return new Date(item.start_at)>new Date()&&!['cancelled','completed','no_show'].includes(item.status)}
+  function isPast(item){const end=new Date(item.end_at||item.start_at);return Number.isFinite(end.getTime())&&end<=new Date()&&item.status!=="cancelled"}
   function showError(error){const box=$("myAppointmentsError");box.textContent=error?.message||String(error);box.style.display="block"}
   function applyNavigationPermissions(){
     if(!db.hasPermission("appointment.view"))document.querySelectorAll('a[href*="dashboard.html"]').forEach(link=>link.hidden=true);
@@ -24,9 +25,10 @@
   function renderMetrics(){
     const unread=state.notifications.filter(item=>!item.read_at).length;
     const upcoming=state.appointments.filter(isUpcoming).length;
+    const past=state.appointments.filter(isPast).length;
     const cancelled=state.appointments.filter(item=>item.status==="cancelled").length;
     $("myAppointmentMetrics").innerHTML=[
-      ["Upcoming",upcoming],["All Bookings",state.appointments.length],["Cancelled",cancelled],["Unread Notices",unread]
+      ["Upcoming",upcoming],["All Bookings",state.appointments.length],["Past",past],["Cancelled",cancelled],["Unread Notices",unread]
     ].map(([label,value])=>`<div class="metric"><small>${label}</small><strong>${value}</strong></div>`).join("");
     renderNextAppointment();
   }
@@ -54,7 +56,7 @@
   function filteredAppointments(){
     const filter=$("myAppointmentFilter").value;
     if(filter==="upcoming")return state.appointments.filter(isUpcoming);
-    if(filter==="past")return state.appointments.filter(item=>new Date(item.end_at)<=new Date()&&item.status!=="cancelled");
+    if(filter==="past")return state.appointments.filter(isPast);
     if(filter==="cancelled")return state.appointments.filter(item=>item.status==="cancelled");
     return state.appointments;
   }
