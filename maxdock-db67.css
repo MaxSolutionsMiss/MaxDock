@@ -1,0 +1,326 @@
+/* MaxDock DB67 — stable interface controller and shared operational visual standard. */
+
+html:not([data-db67-role-ready="true"]) :is(.maxdockPrimaryNav,.maxdockSideRailDB47,.menu){visibility:hidden}
+body.db67Stable .headerActions .locationPill{display:none!important}
+body.db67Stable.db67SystemAdmin .headerActions .locationPill{display:flex!important}
+
+body.db67Stable{
+  --db67-gap:10px;
+  --db67-card-height:78px;
+  --db67-card-radius:12px;
+  --db67-control-height:38px;
+  --db67-border:#cbd9e5;
+  --db67-navy:#0d2f4c;
+}
+
+/* Shared control bars. */
+body.db67Stable :is(.dashboardWorkspaceToolbar,.queueWorkspaceToolbar,.reportFilters){
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  gap:12px!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:56px!important;
+  margin:0 0 var(--db67-gap)!important;
+  padding:8px 12px!important;
+  overflow:visible!important;
+}
+body.db67Stable .db67FieldPair{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  flex:0 0 auto!important;
+  gap:8px!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:var(--db67-control-height)!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+body.db67Stable .db67FieldPair>label{
+  position:static!important;
+  inset:auto!important;
+  display:block!important;
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:max-content!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:12px!important;
+  font-weight:750!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  color:#405972!important;
+  transform:none!important;
+}
+body.db67Stable .db67FieldPair>:is(input,select){
+  box-sizing:border-box!important;
+  flex:0 0 auto!important;
+  height:var(--db67-control-height)!important;
+  min-height:var(--db67-control-height)!important;
+  margin:0!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  font-size:13px!important;
+}
+body.db67Stable[data-page="dashboard"] :is(#adminDate,#adminStatus,#dashboardRange){width:154px!important}
+body.db67Stable[data-page="queue"] :is(#queueDate,#queueStatus){width:154px!important}
+body.db67Stable[data-page="reports"] #reportView{width:195px!important}
+body.db67Stable[data-page="reports"] #reportPreset{width:154px!important}
+body.db67Stable[data-page="myappointments"] #myAppointmentFilter{width:150px!important}
+
+body.db67Stable .db67OperationalGroup,
+body.db67Stable .db67EndActions,
+body.db67Stable .db67QuickActions{
+  display:flex!important;
+  align-items:center!important;
+  flex:0 0 auto!important;
+  gap:8px!important;
+  min-width:0!important;
+  margin:0!important;
+}
+body.db67Stable .db67OperationalGroup{gap:12px!important}
+body.db67Stable .db67EndActions{margin-left:auto!important}
+body.db67Stable .db67EndActions :is(button,summary),
+body.db67Stable .db67QuickActions button{height:var(--db67-control-height)!important;min-height:var(--db67-control-height)!important}
+body.db67Stable .dashboardActions:empty,
+body.db67Stable .dashboardPrimaryOnly:empty,
+body.db67Stable .dashboardToolbarViewActions:empty,
+body.db67Stable .dashboardToolbarDocuments:empty,
+body.db67Stable .queueToolbarViewActions:empty,
+body.db67Stable .queueToolbarDocuments:empty,
+body.db67Stable .pageUtilityActions:empty{display:none!important}
+
+/* Gear controls and compact preference menus. */
+body.db67Stable :is(.dashboardCustomize,.queueCustomize,.db67AppointmentCustomize,.db67ReportCustomize){
+  position:relative!important;
+  flex:0 0 40px!important;
+  width:40px!important;
+  min-width:40px!important;
+  margin:0!important;
+  z-index:80!important;
+}
+body.db67Stable :is(.dashboardCustomize,.queueCustomize,.db67AppointmentCustomize,.db67ReportCustomize)>summary{
+  box-sizing:border-box!important;
+  display:grid!important;
+  place-items:center!important;
+  width:40px!important;
+  min-width:40px!important;
+  height:var(--db67-control-height)!important;
+  min-height:var(--db67-control-height)!important;
+  margin:0!important;
+  padding:0!important;
+  border:1px solid #c7d7e4!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#294d69!important;
+  list-style:none!important;
+  cursor:pointer!important;
+}
+body.db67Stable :is(.dashboardCustomize,.queueCustomize,.db67AppointmentCustomize,.db67ReportCustomize)>summary::-webkit-details-marker{display:none}
+body.db67Stable :is(.dashboardCustomize,.queueCustomize,.db67AppointmentCustomize,.db67ReportCustomize)>summary svg{width:19px!important;height:19px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important}
+body.db67Stable :is(.dashboardCustomizeMenu,.queueCustomizeMenu,.db67PreferenceMenu){
+  box-sizing:border-box!important;
+  position:absolute!important;
+  top:46px!important;
+  right:0!important;
+  left:auto!important;
+  width:290px!important;
+  max-height:430px!important;
+  overflow:auto!important;
+  padding:12px!important;
+  border:1px solid #c7d7e4!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:0 14px 34px rgba(15,35,55,.16)!important;
+  z-index:500!important;
+}
+body.db67Stable .db67PreferenceMenu fieldset{border:0!important;margin:0 0 10px!important;padding:0!important}
+body.db67Stable .db67PreferenceMenu legend{margin:0 0 7px!important;font-weight:800!important}
+body.db67Stable .db67PreferenceOptions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px 12px!important}
+body.db67Stable .db67PreferenceMenu label{display:flex!important;align-items:center!important;gap:7px!important;min-width:0!important;font-size:12px!important;line-height:1.2!important}
+body.db67Stable .db67PreferenceMenu input[type="checkbox"]{box-sizing:border-box!important;flex:0 0 16px!important;width:16px!important;height:16px!important;min-width:16px!important;min-height:16px!important;margin:0!important;padding:0!important}
+body.db67Stable .db67PreferenceWide{grid-column:1/-1!important}
+
+/* Shared operational KPI cards. */
+body.db67Stable :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics){
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:repeat(var(--db67-columns,1),minmax(0,1fr))!important;
+  grid-auto-rows:var(--db67-card-height)!important;
+  gap:8px!important;
+  width:100%!important;
+  max-width:none!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0 0 var(--db67-gap)!important;
+  padding:0!important;
+  overflow:visible!important;
+}
+body.db67Stable :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)[hidden]{display:none!important;margin-bottom:var(--db67-gap)!important}
+body.db67Stable :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.metric{
+  --db67-accent:#2670b9;
+  --db67-bg:#f5f9fe;
+  --db67-icon-bg:#eaf3fd;
+  box-sizing:border-box!important;
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  column-gap:10px!important;
+  row-gap:2px!important;
+  align-content:center!important;
+  align-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+  height:var(--db67-card-height)!important;
+  min-height:var(--db67-card-height)!important;
+  max-height:var(--db67-card-height)!important;
+  margin:0!important;
+  padding:12px!important;
+  overflow:hidden!important;
+  border:1px solid var(--db67-border)!important;
+  border-top:3px solid var(--db67-accent)!important;
+  border-radius:var(--db67-card-radius)!important;
+  background:var(--db67-bg)!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+body.db67Stable :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.metric::before,
+body.db67Stable :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.metric::after{display:none!important;content:none!important}
+body.db67Stable :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.metric>.metricIconDB47{
+  position:static!important;
+  inset:auto!important;
+  grid-column:1!important;
+  grid-row:1/3!important;
+  display:grid!important;
+  place-items:center!important;
+  align-self:center!important;
+  justify-self:start!important;
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  min-height:40px!important;
+  margin:0!important;
+  border:1px solid color-mix(in srgb,var(--db67-accent) 20%,#fff)!important;
+  border-radius:10px!important;
+  background:var(--db67-icon-bg)!important;
+  color:var(--db67-accent)!important;
+}
+body.db67Stable :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.metric>.metricIconDB47 svg{width:27px!important;height:27px!important;stroke:currentColor!important;stroke-width:1.7!important}
+body.db67Stable :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.metric>strong{
+  grid-column:2!important;
+  grid-row:1!important;
+  align-self:end!important;
+  justify-self:start!important;
+  margin:0!important;
+  font-size:24px!important;
+  font-weight:820!important;
+  line-height:.95!important;
+  text-align:left!important;
+  color:var(--db67-accent)!important;
+}
+body.db67Stable :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.metric>small{
+  grid-column:2!important;
+  grid-row:2!important;
+  align-self:start!important;
+  justify-self:start!important;
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  overflow:hidden!important;
+  font-size:13.5px!important;
+  font-weight:750!important;
+  line-height:1.05!important;
+  text-align:left!important;
+  white-space:normal!important;
+  color:#344e66!important;
+}
+body.db67Stable .metric[data-metric-tone="scheduled"],body.db67Stable .metric[data-metric-tone="inbound"]{--db67-accent:#0985a6;--db67-bg:#f1fbfd;--db67-icon-bg:#e6f7fb}
+body.db67Stable .metric[data-metric-tone="completed"],body.db67Stable .metric[data-metric-tone="capacity"]{--db67-accent:#17834b;--db67-bg:#f2fbf5;--db67-icon-bg:#e8f6ed}
+body.db67Stable .metric[data-metric-tone="priority"],body.db67Stable .metric[data-metric-tone="pending"],body.db67Stable .metric[data-metric-tone="unread"]{--db67-accent:#bd6700;--db67-bg:#fff9ef;--db67-icon-bg:#fff3df}
+body.db67Stable .metric[data-metric-tone="cancelled"],body.db67Stable .metric[data-metric-tone="soon"]{--db67-accent:#c33d43;--db67-bg:#fff5f6;--db67-icon-bg:#ffebed}
+body.db67Stable .metric[data-metric-tone="outbound"],body.db67Stable .metric[data-metric-tone="appointments"],body.db67Stable .metric[data-metric-tone="booked"]{--db67-accent:#2467b2;--db67-bg:#f4f8fe;--db67-icon-bg:#eaf2fd}
+body.db67Stable .metric[data-metric-tone="skids"]{--db67-accent:#7352bf;--db67-bg:#f8f5ff;--db67-icon-bg:#f0eaff}
+body.db67Stable .metric[data-metric-tone="blocks"]{--db67-accent:#62758a;--db67-bg:#f5f7f9;--db67-icon-bg:#edf1f4}
+body.db67Stable .metric[data-metric-tone="trucks"]{--db67-accent:#08796d;--db67-bg:#f0faf8;--db67-icon-bg:#e6f5f2}
+
+/* Dashboard. */
+body.db67Stable[data-page="dashboard"] .dashboardOverviewBand{display:flex!important;flex-direction:column!important;gap:0!important;margin:0 0 var(--db67-gap)!important}
+body.db67Stable[data-page="dashboard"] .dashboardWorkspaceToolbar{order:1!important}
+body.db67Stable[data-page="dashboard"] #metrics{order:2!important;margin-bottom:0!important}
+body.db67Stable[data-page="dashboard"] .dashboardOperationalControls{display:flex!important;align-items:center!important;gap:12px!important;min-width:0!important}
+body.db67Stable[data-page="dashboard"] .dashboardPrimaryActions{display:flex!important;align-items:center!important;gap:8px!important;margin:0!important}
+body.db67Stable[data-page="dashboard"] .dashboardRangeHost :is(.rangeMetric,.dashboardRangeCompact,.dashboardRangeControlDB50){display:flex!important}
+body.db67Stable[data-page="dashboard"] .dashboardRangeHost .rangeMetric{height:auto!important;min-height:0!important;max-height:none!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+body.db67Stable[data-page="dashboard"] .dashboardRangeHost .rangeMetric>.metricIconDB47{display:none!important}
+body.db67Stable[data-page="dashboard"] .dockSchedulePanel{margin-top:0!important}
+
+/* My Appointments. */
+body.db67Stable[data-page="myappointments"] .myAppointmentsBookingBarDB52{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  gap:14px!important;
+  width:100%!important;
+  min-height:68px!important;
+  margin:0 0 var(--db67-gap)!important;
+  padding:10px 14px!important;
+}
+body.db67Stable[data-page="myappointments"] .myAppointmentsBookingCopyDB52{flex:0 0 auto!important}
+body.db67Stable[data-page="myappointments"] .bookAppointmentActionDB52{flex:0 0 auto!important;margin:0 0 0 8px!important}
+body.db67Stable[data-page="myappointments"] .db67AppointmentCustomize{margin-left:auto!important}
+body.db67Stable[data-page="myappointments"] #myAppointmentMetrics{margin-bottom:var(--db67-gap)!important}
+body.db67Stable[data-page="myappointments"] .nextAppointmentSpotlight{margin:0 0 var(--db67-gap)!important}
+body.db67Stable[data-page="myappointments"] .db67AppointmentPanel{clear:both!important;margin:0 0 var(--db67-gap)!important;padding:10px 12px 12px!important}
+body.db67Stable[data-page="myappointments"] .db67NotificationPanel{margin:0!important}
+body.db67Stable[data-page="myappointments"] .myAppointmentToolbar{display:flex!important;align-items:center!important;min-height:40px!important;margin:0 0 6px!important;padding:0!important}
+body.db67Stable[data-page="myappointments"] .myAppointmentToolbar .db67FieldPair{margin-left:auto!important}
+
+/* Queue. */
+body.db67Stable[data-page="queue"] .queueToolbarFilters{display:flex!important;align-items:center!important;gap:12px!important;min-width:0!important}
+body.db67Stable[data-page="queue"] .queueToolbarQuickActions{display:flex!important;align-items:center!important;gap:8px!important;margin:0!important}
+body.db67Stable[data-page="queue"] :is(.morningBrief,.queueFocus,.queueActionPanel,.queueLanes,.queueBlocksPanel){margin-top:0!important;margin-bottom:var(--db67-gap)!important}
+
+/* Reports. */
+body.db67Stable[data-page="reports"] .reportSectionWorkspace{display:block!important;grid-template-columns:none!important;margin:0!important}
+body.db67Stable[data-page="reports"] .reportSectionWorkspace>.sectionWorkspaceRail{display:none!important}
+body.db67Stable[data-page="reports"] .reportWorkspaceContent{width:100%!important;max-width:none!important;margin:0!important}
+body.db67Stable[data-page="reports"] :is(.aiBriefPanel,.reportVisualPanel){margin-top:0!important;margin-bottom:var(--db67-gap)!important}
+
+/* User Management KPI and search harmonization. */
+body.db67Stable[data-page="admin"] .adminSummary{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;margin:0 0 var(--db67-gap)!important}
+body.db67Stable[data-page="admin"] .adminSummaryCard{
+  --db67-accent:#2467b2;--db67-bg:#f4f8fe;--db67-icon-bg:#eaf2fd;
+  box-sizing:border-box!important;display:grid!important;grid-template-columns:42px minmax(0,1fr) auto!important;align-items:center!important;gap:10px!important;
+  min-height:var(--db67-card-height)!important;height:var(--db67-card-height)!important;padding:12px!important;border:1px solid var(--db67-border)!important;border-top:3px solid var(--db67-accent)!important;border-radius:var(--db67-card-radius)!important;background:var(--db67-bg)!important;box-shadow:none!important
+}
+body.db67Stable[data-page="admin"] .adminSummaryCard.adoption{--db67-accent:#17834b;--db67-bg:#f2fbf5;--db67-icon-bg:#e8f6ed}
+body.db67Stable[data-page="admin"] .adminSummaryCard.attention{--db67-accent:#bd6700;--db67-bg:#fff9ef;--db67-icon-bg:#fff3df}
+body.db67Stable[data-page="admin"] .db67AdminIcon{display:grid;place-items:center;width:40px;height:40px;border:1px solid color-mix(in srgb,var(--db67-accent) 20%,#fff);border-radius:10px;background:var(--db67-icon-bg);color:var(--db67-accent)}
+body.db67Stable[data-page="admin"] .db67AdminIcon svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.7}
+body.db67Stable[data-page="admin"] .adminSummaryCard>span:not(.db67AdminIcon){font-size:13.5px!important;font-weight:750!important;color:#405972!important}
+body.db67Stable[data-page="admin"] .adminSummaryCard>strong{font-size:24px!important;line-height:1!important;color:var(--db67-accent)!important}
+body.db67Stable[data-page="admin"] .adminSearch{display:flex!important;align-items:center!important;gap:8px!important;min-width:0!important}
+body.db67Stable[data-page="admin"] .adminSearch>span{flex:0 0 auto!important;white-space:nowrap!important;font-size:12px!important;font-weight:750!important}
+body.db67Stable[data-page="admin"] .adminSearch>input{width:min(360px,34vw)!important;height:var(--db67-control-height)!important}
+
+@media(max-width:1300px){
+  body.db67Stable :is(.dashboardWorkspaceToolbar,.queueWorkspaceToolbar,.reportFilters){flex-wrap:wrap!important}
+  body.db67Stable .db67EndActions{margin-left:0!important}
+  body.db67Stable[data-page="admin"] .adminSummary{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:820px){
+  body.db67Stable .db67OperationalGroup,body.db67Stable .queueToolbarFilters{flex-wrap:wrap!important}
+  body.db67Stable :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics){grid-template-columns:repeat(auto-fit,minmax(190px,1fr))!important;grid-auto-rows:var(--db67-card-height)!important}
+  body.db67Stable[data-page="myappointments"] .myAppointmentsBookingBarDB52{flex-wrap:wrap!important}
+  body.db67Stable[data-page="myappointments"] .bookAppointmentActionDB52{margin-left:0!important}
+  body.db67Stable[data-page="admin"] .adminSummary{grid-template-columns:1fr!important}
+}
