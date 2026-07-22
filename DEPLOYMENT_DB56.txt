@@ -1,0 +1,18 @@
+MaxDock DB56 — Final compactness and login-position polish
+
+User-visible changes
+- Reduces Dashboard and My Appointments KPI cards from the prior tall minimum to 62px on desktop.
+- Moves the icon and number/label grouping approximately 10% toward the centre of each card.
+- Keeps the approved horizontal KPI layout, colours, labels, and calculations unchanged.
+- Uses 60px cards on smaller tablets and phones.
+- Moves the login panel lower by approximately 9% of the viewport on standard screens.
+- Reduces or removes the login offset on short screens to prevent clipping.
+
+Release marker
+- MaxDock-v77-DB56
+- DB56 · final compactness and login-position polish active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
