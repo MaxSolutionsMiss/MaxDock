@@ -1,0 +1,185 @@
+/* MaxDock DB53 — role-safe navigation, booking readiness, and compact appointment workspace. */
+:root{
+  --db53-primary:#0b6287;
+  --db53-primary-hover:#084f70;
+  --db53-primary-height:40px;
+  --db53-primary-radius:10px;
+}
+
+/* Coordinator and Site Admin navigation is limited to operational pages. */
+body.interfacePolishDB53 .maxdockSideRailDB47 a[hidden],
+body.interfacePolishDB53 .maxdockPrimaryNav a[hidden],
+body.interfacePolishDB53 .menu>a[hidden]{display:none!important}
+
+/* Queue Refresh uses the same primary treatment as Book an Appointment and Save settings. */
+body.interfacePolishDB53 #refreshQueue.queueRefreshDB53{
+  box-sizing:border-box!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  width:auto!important;
+  min-width:108px!important;
+  height:var(--db53-primary-height)!important;
+  min-height:var(--db53-primary-height)!important;
+  max-height:var(--db53-primary-height)!important;
+  padding:0 17px!important;
+  border:1px solid var(--db53-primary)!important;
+  border-radius:var(--db53-primary-radius)!important;
+  background:var(--db53-primary)!important;
+  background-image:none!important;
+  color:#fff!important;
+  box-shadow:none!important;
+  font-size:13px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  text-decoration:none!important;
+  transform:none!important
+}
+body.interfacePolishDB53 #refreshQueue.queueRefreshDB53:hover{
+  border-color:var(--db53-primary-hover)!important;
+  background:var(--db53-primary-hover)!important;
+  color:#fff!important;
+  box-shadow:none!important;
+  transform:none!important
+}
+body.interfacePolishDB53 #refreshQueue.queueRefreshDB53 svg{
+  width:16px!important;
+  height:16px!important;
+  flex:0 0 16px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.8!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important
+}
+
+/* Remove the extra outer capsule around Location; keep the select itself outlined. */
+body.interfacePolishDB53 .headerActions .locationPill.locationControlDB53{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  min-width:250px!important;
+  min-height:40px!important;
+  height:40px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important
+}
+body.interfacePolishDB53 .headerActions .locationPill.locationControlDB53 label{
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important
+}
+body.interfacePolishDB53 .headerActions .locationPill.locationControlDB53 select{
+  width:172px!important;
+  min-width:172px!important;
+  height:38px!important;
+  min-height:38px!important;
+  border:1px solid #c7d5e2!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  box-shadow:none!important
+}
+
+/* Appointment views sit directly below Next Appointment with the list on the right. */
+body.interfacePolishDB53[data-page="myappointments"] .appointmentsWorkspaceDB53{
+  display:grid!important;
+  grid-template-columns:190px minmax(0,1fr)!important;
+  align-items:start!important;
+  gap:18px!important;
+  margin:14px 0!important
+}
+body.interfacePolishDB53[data-page="myappointments"] .appointmentViewsRailDB53{
+  position:sticky!important;
+  top:calc(var(--db47-topbar-height,72px) + 14px)!important;
+  align-self:start!important;
+  width:190px!important;
+  min-width:190px!important;
+  border:1px solid #c9d8e3!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  overflow:hidden!important;
+  box-shadow:none!important
+}
+body.interfacePolishDB53[data-page="myappointments"] .appointmentViewsRailDB53 .sectionWorkspaceRailHead{
+  padding:12px 13px!important;
+  border-bottom:1px solid #d4e0e8!important;
+  background:#edf3f7!important
+}
+body.interfacePolishDB53[data-page="myappointments"] .appointmentViewsRailDB53 .sectionWorkspaceRailHead strong{
+  font-size:13px!important;
+  color:#173650!important
+}
+body.interfacePolishDB53[data-page="myappointments"] .appointmentViewsRailDB53 .appointmentViewTabs{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:4px!important;
+  padding:8px!important
+}
+body.interfacePolishDB53[data-page="myappointments"] .appointmentViewsRailDB53 .appointmentViewTabs>button{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  min-height:42px!important;
+  padding:0 12px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:transparent!important;
+  color:#173650!important;
+  font-size:13px!important;
+  font-weight:650!important;
+  text-align:left!important;
+  box-shadow:none!important
+}
+body.interfacePolishDB53[data-page="myappointments"] .appointmentViewsRailDB53 .appointmentViewTabs>button.isActive{
+  background:#eaf5f8!important;
+  color:#075a7d!important;
+  box-shadow:inset 3px 0 0 #0b89a8!important
+}
+body.interfacePolishDB53[data-page="myappointments"] .appointmentsWorkspaceDB53 .sectionWorkspaceContent,
+body.interfacePolishDB53[data-page="myappointments"] .appointmentsWorkspaceDB53 .sectionWorkspaceContent>.panel{
+  min-width:0!important;
+  margin:0!important
+}
+
+@media(max-width:900px){
+  body.interfacePolishDB53[data-page="myappointments"] .appointmentsWorkspaceDB53{
+    grid-template-columns:1fr!important;
+    gap:10px!important
+  }
+  body.interfacePolishDB53[data-page="myappointments"] .appointmentViewsRailDB53{
+    position:static!important;
+    width:100%!important;
+    min-width:0!important
+  }
+  body.interfacePolishDB53[data-page="myappointments"] .appointmentViewsRailDB53 .appointmentViewTabs{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important
+  }
+  body.interfacePolishDB53[data-page="myappointments"] .appointmentViewsRailDB53 .appointmentViewTabs>button{
+    justify-content:center!important;
+    padding:0 8px!important;
+    text-align:center!important
+  }
+}
+
+@media(max-width:560px){
+  body.interfacePolishDB53 .headerActions .locationPill.locationControlDB53{
+    min-width:0!important;
+    width:100%!important
+  }
+  body.interfacePolishDB53 .headerActions .locationPill.locationControlDB53 select{
+    width:auto!important;
+    min-width:0!important;
+    flex:1 1 auto!important
+  }
+  body.interfacePolishDB53[data-page="myappointments"] .appointmentViewsRailDB53 .appointmentViewTabs{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important
+  }
+}

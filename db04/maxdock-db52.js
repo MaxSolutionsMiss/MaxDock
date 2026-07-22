@@ -25,8 +25,44 @@
   function roleAwareBookingUrl(){
     const role=window.MaxDockDB?.getProfile?.()?.role_code;
     return role&&role!=="customer"
-      ?"./dashboard.html?book=1&return=my-appointments&v=73-db52"
-      :"./index.html?book=1&return=my-appointments&v=73-db52";
+      ?"./dashboard.html?book=1&return=my-appointments&v=74-db53"
+      :"./index.html?book=1&return=my-appointments&v=74-db53";
+  }
+
+  function bookingContextReady(){
+    const db=window.MaxDockDB;
+    return Boolean(document.body.classList.contains("maxdockContextReady")&&db?.getProfile?.());
+  }
+
+  function waitForBookingRoute(button){
+    let attempts=0;
+    const original=button.innerHTML;
+    button.disabled=true;
+    button.setAttribute("aria-busy","true");
+    const check=()=>{
+      attempts++;
+      const db=window.MaxDockDB;
+      if(bookingContextReady()&&db.hasPermission?.("appointment.create")){
+        location.assign(roleAwareBookingUrl());
+        return;
+      }
+      if(bookingContextReady()&&attempts>8){
+        button.disabled=false;
+        button.removeAttribute("aria-busy");
+        button.innerHTML=original;
+        alert("Your MaxDock account does not currently have permission to book an appointment.");
+        return;
+      }
+      if(attempts>=80){
+        button.disabled=false;
+        button.removeAttribute("aria-busy");
+        button.innerHTML=original;
+        alert("MaxDock is still loading your booking access. Please try again.");
+        return;
+      }
+      window.setTimeout(check,125);
+    };
+    check();
   }
 
   function bindMyAppointmentsBooking(){
@@ -35,7 +71,8 @@
     button.dataset.db52Bound="true";
     button.addEventListener("click",event=>{
       event.preventDefault();
-      location.assign(roleAwareBookingUrl());
+      if(button.disabled)return;
+      waitForBookingRoute(button);
     });
   }
 
@@ -89,7 +126,7 @@
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
       $("requestModal")?.classList.remove("show");
-      location.replace("./my-appointments.html?v=73-db52");
+      location.replace("./my-appointments.html?v=74-db53");
     };
   }
 
@@ -98,7 +135,7 @@
     bookingLaunchAttempts++;
     const db=window.MaxDockDB;
     const modal=$("requestModal");
-    if(db?.getProfile?.()&&modal&&typeof window.openRequest==="function"){
+    if(bookingContextReady()&&db?.hasPermission?.("appointment.create")&&modal&&typeof window.openRequest==="function"){
       window.clearInterval(bookingLaunchTimer);
       document.body.classList.add("directBookingDB52","bookingFlowDB52");
       wrapDirectBookingClose();

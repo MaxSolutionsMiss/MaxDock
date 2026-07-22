@@ -1,0 +1,21 @@
+MaxDock DB53 — Role-safe navigation, booking readiness, and compact appointment workspace
+
+User-visible changes
+- Limits Coordinator, Site Admin, and Shipping Manager navigation to Appointments, Queue, Reports, Dashboard, and Settings.
+- Keeps Customer and Vendor accounts limited to My Appointments.
+- Keeps User Management and Data Integration exclusive to System Admin accounts.
+- Prevents booking from opening before role permissions finish loading, removing the false permission alert for Site Admin and Vendor accounts.
+- Makes Operation Queue Refresh match the Book an Appointment and Save settings primary-button treatment.
+- Removes the extra outer border and background around the Location control while retaining the dropdown border.
+- Moves Appointment Views directly beneath Next Appointment, with filters on the left and the appointment list on the right.
+- Removes descriptive subtext from Appointment Views and retains a compact phone/tablet layout.
+
+Release marker
+- MaxDock-v74-DB53
+- DB53 · role-safe navigation, booking readiness, and compact appointment workspace active
+
+Data and deployment impact
+- Frontend-only release.
+- Existing live role permissions were verified for Site Admin, Coordinator, and Customer/Vendor booking.
+- No Supabase migration.
+- No Edge Function deployment.
