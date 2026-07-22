@@ -1,0 +1,192 @@
+/* MaxDock DB65 — coordinator navigation and final layout harmonization. */
+
+/* Coordinator navigation is deliberately limited to four operational pages. */
+body.coordinatorRoleDB65 :is(.maxdockPrimaryNav,.maxdockSideRailDB47,.menu) a[href*="settings.html"],
+body.coordinatorRoleDB65 :is(.maxdockPrimaryNav,.maxdockSideRailDB47,.menu) a[href*="admin.html"],
+body.coordinatorRoleDB65 :is(.maxdockPrimaryNav,.maxdockSideRailDB47,.menu) a[href*="data.html"],
+body.coordinatorRoleDB65 :is(.maxdockPrimaryNav,.maxdockSideRailDB47,.menu) a[href*="index.html"]{display:none!important}
+
+/* One field language everywhere: title directly before its control. */
+body.db65Harmonized .db65FieldPair{
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:8px!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:0!important
+}
+body.db65Harmonized .db65FieldPair>:is(label,small){
+  display:block!important;
+  position:static!important;
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:max-content!important;
+  margin:0!important;
+  padding:0!important;
+  white-space:nowrap!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  line-height:1!important
+}
+body.db65Harmonized .db65FieldPair>:is(input,select){
+  flex:0 0 auto!important;
+  height:36px!important;
+  min-height:36px!important;
+  margin:0!important
+}
+body.db65Harmonized :is(.dashboardFilters,.queueFilters,.reportFilters){
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  align-items:center!important;
+  gap:14px!important;
+  width:100%!important;
+  min-height:52px!important;
+  padding:7px 12px!important;
+  margin:0 0 10px!important;
+  overflow:visible!important
+}
+body.db65Harmonized[data-page="dashboard"] :is(#adminDate,#adminStatus,#dashboardRange){width:150px!important}
+body.db65Harmonized[data-page="queue"] :is(#queueDate,#queueStatus){width:150px!important}
+body.db65Harmonized[data-page="reports"] #reportView{width:190px!important;min-width:190px!important}
+body.db65Harmonized[data-page="reports"] #reportPreset{width:150px!important}
+body.db65Harmonized[data-page="myappointments"] #myAppointmentFilter{width:150px!important}
+
+/* Approved KPI card proportions, now CSS-only and stable. */
+body.db65Harmonized :is(#metrics,#myAppointmentMetrics){
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  gap:8px!important
+}
+body.db65Harmonized :is(#metrics,#myAppointmentMetrics)>.metric{
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  column-gap:10px!important;
+  row-gap:1px!important;
+  align-content:center!important;
+  align-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+  height:92px!important;
+  min-height:92px!important;
+  max-height:92px!important;
+  margin:0!important;
+  padding:18px 12px!important;
+  overflow:hidden!important
+}
+body.db65Harmonized :is(#metrics,#myAppointmentMetrics)>.metric>.metricIconDB47{
+  position:static!important;
+  inset:auto!important;
+  grid-column:1!important;
+  grid-row:1 / 3!important;
+  align-self:center!important;
+  justify-self:start!important;
+  display:grid!important;
+  place-items:center!important;
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  border-radius:11px!important
+}
+body.db65Harmonized :is(#metrics,#myAppointmentMetrics)>.metric>.metricIconDB47 svg{width:23px!important;height:23px!important}
+body.db65Harmonized :is(#metrics,#myAppointmentMetrics)>.metric>strong{
+  grid-column:2!important;
+  grid-row:1!important;
+  align-self:end!important;
+  justify-self:start!important;
+  margin:0!important;
+  font-size:22px!important;
+  font-weight:780!important;
+  line-height:1!important;
+  text-align:left!important
+}
+body.db65Harmonized :is(#metrics,#myAppointmentMetrics)>.metric>small{
+  grid-column:2!important;
+  grid-row:2!important;
+  align-self:start!important;
+  justify-self:start!important;
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  overflow:hidden!important;
+  font-size:13px!important;
+  font-weight:700!important;
+  line-height:1.08!important;
+  text-align:left!important;
+  white-space:normal!important
+}
+
+/* My Appointments: action beside copy, gear at far right, five cards fill the row. */
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsBookingBarDB52{
+  box-sizing:border-box!important;
+  display:flex!important;
+  grid-template-columns:none!important;
+  flex-flow:row nowrap!important;
+  align-items:center!important;
+  gap:12px!important;
+  min-height:68px!important;
+  margin:0 0 10px!important;
+  padding:10px 14px!important
+}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsBookingCopyDB52{order:1!important;flex:0 0 auto!important;min-width:0!important}
+body.db65Harmonized[data-page="myappointments"] .bookAppointmentActionDB52{order:2!important;flex:0 0 auto!important;margin:0 0 0 8px!important}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsCustomizeDB65{order:3!important;position:relative!important;flex:0 0 40px!important;margin:0 0 0 auto!important;z-index:30!important}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsCustomizeDB65>summary{box-sizing:border-box;display:grid;place-items:center;width:40px;height:40px;border:1px solid #c7d7e4;border-radius:10px;background:#fff;cursor:pointer;list-style:none}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsCustomizeDB65>summary::-webkit-details-marker{display:none}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsCustomizeDB65>summary svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsCustomizeMenuDB65{position:absolute;right:0;top:46px;width:270px;padding:12px;border:1px solid #c7d7e4;border-radius:14px;background:#fff;box-shadow:0 14px 34px rgba(15,35,55,.16);z-index:60}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsCustomizeMenuDB65 fieldset{border:0;padding:0;margin:0 0 10px}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsCustomizeMenuDB65 legend{font-weight:800;margin-bottom:7px}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsMetricOptionsDB65{display:grid;grid-template-columns:1fr;gap:6px}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsCustomizeMenuDB65 label{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.2}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentsCustomizeMenuDB65 input[type="checkbox"]{box-sizing:border-box!important;width:16px!important;height:16px!important;min-width:16px!important;min-height:16px!important;margin:0!important;padding:0!important}
+body.db65Harmonized[data-page="myappointments"] #myAppointmentMetrics:not([hidden]){display:grid!important;grid-template-columns:repeat(var(--db65-appointment-columns,5),minmax(0,1fr))!important;grid-auto-rows:92px!important;height:92px!important;min-height:92px!important;max-height:92px!important;margin:0 0 10px!important}
+body.db65Harmonized[data-page="myappointments"] #myAppointmentMetrics[hidden]{display:none!important;height:0!important;min-height:0!important;max-height:0!important;margin:0 0 10px!important}
+body.db65Harmonized[data-page="myappointments"] .nextAppointmentSpotlight{margin:0 0 10px!important}
+body.db65Harmonized[data-page="myappointments"] .db65AppointmentListPanel{margin:0 0 10px!important;padding:10px 12px 12px!important}
+body.db65Harmonized[data-page="myappointments"] .db65NotificationPanel{margin:0!important}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentToolbar{box-sizing:border-box!important;display:flex!important;align-items:center!important;min-height:40px!important;margin:0 0 6px!important;padding:0!important}
+body.db65Harmonized[data-page="myappointments"] .myAppointmentToolbar .db65FieldPair{margin-left:auto!important}
+
+/* Dashboard and Queue: compact horizontal filters with consistent vertical centring. */
+body.db65Harmonized[data-page="dashboard"] .dashboardOverviewBand{gap:10px!important;margin:0 0 10px!important}
+body.db65Harmonized[data-page="dashboard"] #metrics{margin:0!important}
+body.db65Harmonized[data-page="dashboard"] #dockSchedulePanel{margin-top:0!important}
+body.db65Harmonized[data-page="queue"] .queueFilterActions{display:flex!important;align-items:center!important;gap:8px!important;margin:0!important;white-space:nowrap!important}
+body.db65Harmonized[data-page="queue"] .queueFilterActions #openQueueDisplay{margin-left:auto!important}
+body.db65Harmonized[data-page="queue"] :is(.morningBrief,.queueFocus,.queueActionPanel,.queueLanes,.queueBlocksPanel){margin-top:10px!important}
+
+/* Reports: compact field row and a readable, restrained KPI menu. */
+body.db65Harmonized[data-page="reports"] .reportSectionWorkspace{display:block!important;grid-template-columns:none!important;margin:0!important}
+body.db65Harmonized[data-page="reports"] .reportSectionWorkspace>.sectionWorkspaceRail{display:none!important}
+body.db65Harmonized[data-page="reports"] .reportWorkspaceContent{width:100%!important;max-width:none!important;margin:0!important}
+body.db65Harmonized[data-page="reports"] .db64ReportCustomize{margin-left:auto!important;flex:0 0 40px!important}
+body.db65Harmonized[data-page="reports"] .db64ReportCustomizeMenu{box-sizing:border-box!important;width:300px!important;max-height:430px!important;overflow:auto!important;padding:12px!important}
+body.db65Harmonized[data-page="reports"] .db64ReportMetricOptions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px 12px!important}
+body.db65Harmonized[data-page="reports"] .db64ReportCustomizeMenu label{display:flex!important;align-items:center!important;gap:7px!important;min-width:0!important;font-size:12px!important;line-height:1.2!important}
+body.db65Harmonized[data-page="reports"] .db64ReportCustomizeMenu input[type="checkbox"]{box-sizing:border-box!important;flex:0 0 16px!important;width:16px!important;height:16px!important;min-width:16px!important;min-height:16px!important;margin:0!important;padding:0!important}
+body.db65Harmonized[data-page="reports"] .db64ReportWide{grid-column:1/-1!important;white-space:nowrap!important}
+body.db65Harmonized[data-page="reports"] #reportMetrics{margin:0 0 10px!important}
+body.db65Harmonized[data-page="reports"] :is(.aiBriefPanel,.reportVisualPanel){margin-top:0!important;margin-bottom:10px!important}
+
+@media(max-width:1180px){
+  body.db65Harmonized :is(.dashboardFilters,.queueFilters,.reportFilters){flex-wrap:wrap!important}
+  body.db65Harmonized[data-page="myappointments"] #myAppointmentMetrics:not([hidden]){grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;height:auto!important;min-height:0!important;max-height:none!important}
+}
+@media(max-width:760px){
+  body.db65Harmonized[data-page="myappointments"] .myAppointmentsBookingBarDB52{flex-wrap:wrap!important}
+  body.db65Harmonized[data-page="myappointments"] .bookAppointmentActionDB52{margin-left:0!important}
+  body.db65Harmonized :is(#metrics,#myAppointmentMetrics)>.metric{height:84px!important;min-height:84px!important;max-height:84px!important;padding:14px 10px!important}
+  body.db65Harmonized[data-page="reports"] .db64ReportCustomizeMenu{width:min(300px,calc(100vw - 32px))!important}
+}
