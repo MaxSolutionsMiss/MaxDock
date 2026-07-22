@@ -1,0 +1,19 @@
+MaxDock DB59 — Matched Dashboard and My Appointments KPI cards
+
+User-visible changes
+- Corrects the DB58 My Appointments KPI overlap.
+- Uses one identical card design for Dashboard and My Appointments.
+- Increases the Dashboard card height modestly to 72px, approximately 10% above DB58.
+- Applies the same 72px height, 46px icon, 23px number, and 13px description to My Appointments.
+- Keeps the fifth Past KPI.
+- Uses an automatic minimum-width grid that wraps before cards can overlap.
+- Keeps DB58 filter-field placement unchanged.
+
+Release marker
+- MaxDock-v80-DB59
+- DB59 · matched dashboard and appointment KPI cards active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
