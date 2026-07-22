@@ -33,7 +33,7 @@
     {key:"outbound-skids",label:"Outbound Skids"}
   ];
   const DASHBOARD_DEFAULT=["appointments","scheduled","completed","priority","open-slots"];
-  const DASHBOARD_MAX=6;
+  const DASHBOARD_MAX=7;
 
   function metricKeyFromLabel(label){
     const normalized=String(label||"").trim().toLowerCase().replace(/\s+/g,"-");
