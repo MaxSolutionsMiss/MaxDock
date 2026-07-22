@@ -1,0 +1,20 @@
+MaxDock DB58 — Balanced KPI spacing and inline operational filters
+
+User-visible changes
+- Increases Dashboard and My Appointments KPI cards by approximately 10%, from 60px to 66px on desktop.
+- Uses 64px KPI cards on compact screens.
+- Vertically centres the icon and the combined number/description block.
+- Increases KPI icons to 44px on desktop and 42px on smaller screens.
+- Adds a fifth My Appointments KPI: Past.
+- Shows five My Appointments KPI cards across the desktop workspace.
+- Places operational filter labels directly in front of their fields on Dashboard, Queue, Reports, and My Appointments.
+- Keeps horizontal label-to-field pairs while allowing responsive wrapping on small screens.
+
+Release marker
+- MaxDock-v79-DB58
+- DB58 · balanced KPI spacing and inline operational filters active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
