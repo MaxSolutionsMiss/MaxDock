@@ -1,0 +1,25 @@
+MaxDock DB61 — KPI consistency, compact controls, and persistent location context
+
+User-visible changes
+- Increases Dashboard KPI card height from 80px to 92px using white space only.
+- Keeps the KPI icon, number, and description sizes unchanged.
+- Applies the exact same KPI height, spacing, and content scale to My Appointments.
+- Makes the five visible My Appointments KPI cards fill the full row without empty seven-column gaps.
+- Keeps the existing My Appointments KPI show/hide and selection controls.
+- Places Book an Appointment immediately beside Need a new dock time, followed by the KPI gear.
+- Makes Need a new dock time approximately 20% larger without increasing the booking-banner height.
+- Matches the My Appointments KPI gear menu to the Dashboard customization menu style.
+- Places the My Appointments Show label directly before its dropdown and reduces the bookings header height.
+- Places Operation Date and Queue View labels directly before their fields and reduces the Queue control-banner height.
+- Corrects Dashboard Show metrics dashboard so the KPI cards actually disappear when disabled.
+- Keeps the selected location visible immediately before the signed-in account controls on authenticated pages.
+- Persists the selected location and restores it as the active location context across pages.
+
+Release marker
+- MaxDock-v82-DB61
+- DB61 · KPI consistency, compact controls, and persistent location context active
+
+Data and deployment impact
+- Frontend-only release using existing location and preference services.
+- No Supabase migration.
+- No Edge Function deployment.
