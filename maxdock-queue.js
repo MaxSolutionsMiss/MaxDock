@@ -40,7 +40,7 @@
       await Promise.all([db.fetchAppointments(),loadReturnLoads()]);
       render();
       const updated=new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"});
-      updateQueueDisplayStatus(`${displayDate($("queueDate").value)} · ${db.getCurrentLocation()?.name||"MaxDock"} · updated ${updated} · refreshes every 5 seconds`);
+      updateQueueDisplayStatus(`${displayDate($("queueDate").value)} · ${db.getCurrentLocation()?.name||"MaxDock"} · updated ${updated} · refreshes every 3 minutes`);
       if($("queueLiveStatus"))$("queueLiveStatus").innerHTML=`<span class="liveDot"></span>Live appointments · updated ${updated}`;
     }catch(error){
       updateQueueDisplayStatus(`Live refresh paused · ${error.message||"connection unavailable"}`);

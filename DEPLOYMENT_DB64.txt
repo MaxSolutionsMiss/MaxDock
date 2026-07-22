@@ -1,0 +1,23 @@
+MaxDock DB64 — stable harmonized interface
+
+User-visible changes
+- Removes continuous layout-enforcement loops that caused Dashboard, Queue, Reports, and other pages to flicker.
+- Restricts the header Location selector to system administrators only.
+- Harmonizes labels directly before their fields on Dashboard, Queue, Reports, and My Appointments.
+- Fixes the Dashboard Date Range label alignment.
+- Removes the redundant Reports left sidebar and expands report content to full width.
+- Adds a Reports KPI gear for showing/hiding the KPI dashboard and selecting report KPIs.
+- Standardizes 10px spacing between control banners, KPI cards, and following sections.
+- Removes the excess My Appointments gap below the KPI cards.
+- Keeps My Appointments and Dashboard KPI cards at the approved 92px height.
+- Restores the missing 3:00 PM label in the 2-hour Dashboard timeline before the 5:00 PM closing label.
+- Keeps the three-minute refresh policy.
+
+Release marker
+- MaxDock-v85-DB64
+- DB64 · stable harmonized interface active
+
+Data and deployment impact
+- Frontend-only release.
+- No Supabase migration.
+- No Edge Function deployment.
