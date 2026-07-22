@@ -1,0 +1,52 @@
+name: Finalize DB63 review
+
+on:
+  push:
+    branches:
+      - codex/db63-screenshot-layout-corrections
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: ${{ github.actor != 'github-actions[bot]' && !contains(github.event.head_commit.message, '[db63-finalized]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/db63-screenshot-layout-corrections
+          fetch-depth: 0
+
+      - name: Validate DB63
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmp maxdock-config.js db04/maxdock-config.js
+          cmp maxdock-db63.css db04/maxdock-db63.css
+          cmp maxdock-db63.js db04/maxdock-db63.js
+          cmp DEPLOYMENT_DB63.txt db04/DEPLOYMENT_DB63.txt
+          grep -q 'MaxDock-v84-DB63' maxdock-config.js
+          grep -q 'maxdock-db63.css' maxdock-config.js
+          grep -q 'maxdock-db63.js' maxdock-config.js
+          grep -q 'maxdockRelease="db63"' maxdock-config.js
+          grep -q 'DB63 · screenshot layout corrections active' maxdock-config.js
+          grep -q 'db63QueueFilters' maxdock-db63.css
+          grep -q '#queueDate{width:142px' maxdock-db63.css
+          grep -q '#reportView{width:220px' maxdock-db63.css
+          grep -q 'height:92px!important' maxdock-db63.css
+          grep -q -- '--db63-dashboard-columns' maxdock-db63.css
+          grep -q 'input.disabled=false' maxdock-db63.js
+          grep -q 'selected.has(key)' maxdock-db63.js
+          node --check maxdock-config.js
+          node --check maxdock-db63.js
+
+      - name: Finalize review commit
+        shell: bash
+        run: |
+          rm -f .github/workflows/finalize-db63.yml
+          git config user.name "MaxSolutionsMiss"
+          git config user.email "javadresa@maxpkgsolutions.com"
+          git add -A
+          git commit -m "[db63-finalized] Correct screenshot-confirmed layout issues"
+          git push origin codex/db63-screenshot-layout-corrections
