@@ -1,9 +1,9 @@
 MaxDock DB67 — stable controller and operational interface standard
 
 Core correction
-- Stops loading the DB49, DB50, DB52, DB53, DB54, DB55, DB56, DB64, DB65, and DB66 layout runtimes.
+- Stops loading the DB49, DB50, DB51, DB52, DB53, DB54, DB55, DB56, DB64, DB65, and DB66 layout runtimes.
 - Removes DB49's inline 124px KPI minimum-height enforcement.
-- Replaces the overlapping timed layout patches with one stable DB67 controller.
+- Replaces the overlapping timed and page-wide layout patches with one stable DB67 controller.
 - Uses only scoped metric observers for newly rendered KPI cards; no page-wide layout observer is used.
 
 Interface changes
