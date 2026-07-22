@@ -1,0 +1,64 @@
+name: Finalize DB58 KPI spacing and inline filters
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.head_ref == 'codex/db58-kpi-spacing-inline-filters'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out DB58 branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/db58-kpi-spacing-inline-filters
+          fetch-depth: 0
+
+      - name: Build mirrored DB58 release
+        shell: bash
+        run: |
+          mkdir -p db04
+          cp maxdock-config.js db04/maxdock-config.js
+          cp maxdock-my-appointments.js db04/maxdock-my-appointments.js
+          cp maxdock-db58.css db04/maxdock-db58.css
+          cp maxdock-db58.js db04/maxdock-db58.js
+          cp DEPLOYMENT_DB58.txt db04/DEPLOYMENT_DB58.txt
+
+      - name: Validate DB58 runtime
+        shell: bash
+        run: |
+          grep -q 'MaxDock-v79-DB58' maxdock-config.js
+          grep -q 'maxdock-db58.css' maxdock-config.js
+          grep -q 'maxdock-db58.js' maxdock-config.js
+          grep -q 'DB58 · balanced KPI spacing and inline operational filters active' maxdock-config.js
+          if grep -q 'maxdock-db57.js' maxdock-config.js; then exit 1; fi
+          grep -q 'height:66px' maxdock-db58.css
+          grep -q 'grid-template-columns:repeat(5' maxdock-db58.css
+          grep -q 'inlineFilterFieldDB58' maxdock-db58.css
+          grep -q 'const height=compact?"64px":"66px"' maxdock-db58.js
+          grep -q 'dashboardRangeInlineDB58' maxdock-db58.js
+          grep -q '\["Past",past\]' maxdock-my-appointments.js
+          node --check maxdock-config.js
+          node --check maxdock-db58.js
+          node --check maxdock-my-appointments.js
+          cmp -s maxdock-config.js db04/maxdock-config.js
+          cmp -s maxdock-my-appointments.js db04/maxdock-my-appointments.js
+          cmp -s maxdock-db58.css db04/maxdock-db58.css
+          cmp -s maxdock-db58.js db04/maxdock-db58.js
+          cmp -s DEPLOYMENT_DB58.txt db04/DEPLOYMENT_DB58.txt
+
+      - name: Commit finalized DB58 release
+        shell: bash
+        run: |
+          rm -f .github/workflows/finalize-db58.yml
+          git config user.name 'MaxSolutionsMiss'
+          git config user.email 'javadresa@maxpkgsolutions.com'
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m '[db58-finalized] Balance KPI spacing and align operational filters'
+          git push origin HEAD:codex/db58-kpi-spacing-inline-filters
