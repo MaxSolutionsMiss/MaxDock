@@ -22,3 +22,7 @@ Data and deployment impact
 - Frontend-only release.
 - No Supabase migration.
 - No Edge Function deployment.
+
+Review validation
+- Root and db04 assets match.
+- JavaScript syntax and release-loader checks passed.
