@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v98-DB76",
+  version: "MaxDock-v99-DB77",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -248,10 +248,11 @@ window.MAXDOCK_ICONS = Object.freeze({
 
   const initialize=async()=>{
     hydrateIcons();
-    await loadScript("maxdock-layout-discipline.js","98-db76","db73-layout");
+    await loadScript("maxdock-layout-discipline.js","99-db77","db73-layout");
+    await loadScript("maxdock-db77-controls.js","99-db77","db77-controls");
     hydrateIcons();
     window.MaxDockUI?.setupAccessibility?.();
-    document.documentElement.dataset.maxdockRelease="db76";
+    document.documentElement.dataset.maxdockRelease="db77";
     document.querySelectorAll(".menu").forEach(menu=>{
       let stamp=menu.querySelector(".maxdockReleaseStamp");
       if(!stamp){
@@ -259,7 +260,7 @@ window.MAXDOCK_ICONS = Object.freeze({
         stamp.className="maxdockReleaseStamp";
         menu.appendChild(stamp);
       }
-      stamp.textContent="DB76 · full functional audit";
+      stamp.textContent="DB77 · control functionality";
     });
   };
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initialize,{once:true});
