@@ -1,6 +1,5 @@
 import { execFileSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
-// Restore the intact live pages, then add the DB78 control layer explicitly.
 const pages=['dashboard.html','queue.html','index.html','my-appointments.html','reports.html','admin.html'];
 for(const name of pages){
   let html=execFileSync('git',['show',`origin/gh-pages:db04/${name}`],{encoding:'utf8'});
