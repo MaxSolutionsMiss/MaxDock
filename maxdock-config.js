@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v96-DB74",
+  version: "MaxDock-v97-DB75",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -249,9 +249,10 @@ window.MAXDOCK_ICONS = Object.freeze({
   const initialize=async()=>{
     hydrateIcons();
     await loadScript("maxdock-layout-discipline.js","96-db74","db73-layout");
+    await loadScript("maxdock-db75-recovery.js","97-db75","db75-recovery");
     hydrateIcons();
     window.MaxDockUI?.setupAccessibility?.();
-    document.documentElement.dataset.maxdockRelease="db73";
+    document.documentElement.dataset.maxdockRelease="db75";
     document.querySelectorAll(".menu").forEach(menu=>{
       let stamp=menu.querySelector(".maxdockReleaseStamp");
       if(!stamp){
@@ -259,7 +260,7 @@ window.MAXDOCK_ICONS = Object.freeze({
         stamp.className="maxdockReleaseStamp";
         menu.appendChild(stamp);
       }
-      stamp.textContent="DB73 · shared layout repair";
+      stamp.textContent="DB75 · functional recovery";
     });
   };
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initialize,{once:true});
