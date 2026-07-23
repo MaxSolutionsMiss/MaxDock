@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - .github/workflows/db71-regression-repair.yml
+      - db04/maxdock-db71-regression.css
+      - db04/maxdock-db71-regression.js
 
 permissions:
   contents: write
@@ -20,68 +22,26 @@ jobs:
           ref: gh-pages
           fetch-depth: 0
 
-      - name: Apply DB71 regression repair
+      - name: Fetch repair files from main
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-          css = r'''/* DB71 regression repair: spacing, KPI geometry, and metric controls. */
-body.db71Regression .maxdockDocumentUtilityRow{position:relative!important;z-index:70!important;width:100%!important;min-height:0!important;height:0!important;margin:0!important;padding:0 22px!important;overflow:visible!important;pointer-events:none!important}
-body.db71Regression .maxdockDocumentTools{position:absolute!important;top:6px!important;right:22px!important;display:flex!important;gap:7px!important;width:auto!important;min-width:0!important;pointer-events:auto!important}
-body.db71Regression .maxdockDocumentIcon{width:44px!important;min-width:44px!important;height:40px!important;min-height:40px!important;padding:0!important}
-body.db71Regression .pageWrap{padding-top:24px!important}
-body.db71Regression .pageHead{margin-top:0!important;padding-top:0!important}
-body.db71Regression .pageHead>div:first-child,body.db71Regression .pageHead h2{margin-top:0!important}
-body.db71Regression .db71MetricCustomize{position:relative!important;flex:0 0 auto!important;margin-left:auto!important;z-index:90!important}
-body.db71Regression .db71MetricCustomize>summary{box-sizing:border-box!important;display:grid!important;place-items:center!important;width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important;padding:0!important;border:1px solid #c7d7e4!important;border-radius:9px!important;background:#fff!important;color:#29475c!important;cursor:pointer!important;list-style:none!important}
-body.db71Regression .db71MetricCustomize>summary::-webkit-details-marker{display:none!important}
-body.db71Regression .db71MetricCustomize>summary svg{width:20px!important;height:20px!important;fill:currentColor!important}
-body.db71Regression .db71MetricCustomize>summary:hover{border-color:#8bb9cb!important;background:#f3fafc!important;color:#08769b!important}
-body.db71Regression .db71MetricMenu{position:absolute!important;top:calc(100% + 8px)!important;right:0!important;z-index:100!important;box-sizing:border-box!important;width:280px!important;max-height:min(430px,70vh)!important;overflow:auto!important;padding:14px!important;border:1px solid #c7d7e4!important;border-radius:12px!important;background:#fff!important;box-shadow:0 16px 38px rgba(15,35,55,.18)!important}
-body.db71Regression .db71MetricMenu fieldset{margin:0 0 12px!important;padding:0!important;border:0!important}
-body.db71Regression .db71MetricMenu legend{margin-bottom:8px!important;font-weight:800!important;color:#123a59!important}
-body.db71Regression .db71MetricMenu label{display:flex!important;align-items:center!important;gap:8px!important;padding:6px 2px!important;font-size:13px!important}
-body.db71Regression .db71MetricMenu button{width:100%!important}
-body.db71Regression[data-page="dashboard"] .dashboardFilters,body.db71Regression[data-page="reports"] .reportFilters,body.db71Regression[data-page="queue"] .queueFilters{position:relative!important;overflow:visible!important}
-body.db71Regression[data-page="dashboard"] .dashboardFilters .db71MetricCustomize,body.db71Regression[data-page="reports"] .reportFilters .db71MetricCustomize,body.db71Regression[data-page="queue"] .queueFilters .db71MetricCustomize{margin-left:auto!important}
-body.db71Regression[data-page="queue"] #queueMetrics{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;grid-auto-rows:minmax(86px,auto)!important;align-items:stretch!important;gap:10px!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0 0 16px!important;overflow:visible!important}
-body.db71Regression[data-page="queue"] #queueMetrics>.metric{box-sizing:border-box!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;width:auto!important;min-width:0!important;height:86px!important;min-height:86px!important;max-height:86px!important;margin:0!important;padding:13px 14px!important;overflow:hidden!important}
-body.db71Regression[data-page="queue"] #queueMetrics>.metric small{width:100%!important;margin:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
-body.db71Regression[data-page="queue"] #queueMetrics>.metric strong{margin-top:6px!important;line-height:1!important}
-body.db71Regression[data-page="reports"] #reportMetrics{height:auto!important;max-height:none!important;overflow:visible!important}
-@media(max-width:900px){body.db71Regression .pageWrap{padding-top:18px!important}body.db71Regression .maxdockDocumentTools{right:14px!important}body.db71Regression[data-page="queue"] #queueMetrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
-@media(max-width:560px){body.db71Regression[data-page="queue"] #queueMetrics{grid-template-columns:1fr!important}}
-'''
-          js = r'''(function(){
-  "use strict";
-  const PAGE=(document.body.dataset.page||"").toLowerCase();
-  const $=id=>document.getElementById(id);
-  const GEAR='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>';
-  const EXPORT='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 18v3h14v-3"/></svg>';
-  const PRINT='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/></svg>';
-  let applying=false;
-  function slug(value){return String(value||"metric").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}
-  function prefKey(page){const p=window.MaxDockDB?.getProfile?.();return `maxdock_db71_metrics_${page}_${p?.id||p?.username||"user"}`}
-  function exportVisibleTables(){const rows=[];document.querySelectorAll("main table").forEach((table,index)=>{if(table.hidden||getComputedStyle(table).display==="none")return;if(index&&rows.length)rows.push([]);table.querySelectorAll("tr").forEach(tr=>{const cells=[...tr.querySelectorAll("th,td")].map(cell=>`"${cell.innerText.replace(/"/g,'""').replace(/\s+/g," ").trim()}"`);if(cells.length)rows.push(cells.join(","))})});if(!rows.length)rows.push('"Page","'+(document.querySelector(".pageHead h2")?.textContent||PAGE)+'"');const blob=new Blob([rows.join("\r\n")],{type:"text/csv;charset=utf-8"});const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=`maxdock-${PAGE||"page"}-${new Date().toISOString().slice(0,10)}.csv`;document.body.appendChild(link);link.click();URL.revokeObjectURL(link.href);link.remove()}
-  function ensureDocumentTools(){if(["login","setpassword"].includes(PAGE)||!document.querySelector(".topbar"))return;let row=$("maxdockDocumentUtilityRow");if(!row){row=document.createElement("div");row.id="maxdockDocumentUtilityRow";row.className="maxdockDocumentUtilityRow";row.innerHTML=`<div class="maxdockDocumentTools" id="maxdockDocumentTools"><button type="button" class="maxdockDocumentIcon" id="maxdockGlobalExport" title="Export this page" aria-label="Export this page">${EXPORT}</button><button type="button" class="maxdockDocumentIcon" id="maxdockGlobalPrint" title="Print this page" aria-label="Print this page">${PRINT}</button></div>`;document.querySelector(".topbar").insertAdjacentElement("afterend",row)}$("maxdockGlobalExport")?.addEventListener("click",exportVisibleTables,{once:true});$("maxdockGlobalPrint")?.addEventListener("click",()=>window.print(),{once:true})}
-  function cardInfo(container){return [...container.children].filter(card=>card.classList.contains("metric")&&!card.classList.contains("rangeMetric")).map((card,index)=>{const label=card.querySelector("small")?.textContent?.trim()||`Metric ${index+1}`;const key=slug(label)||`metric-${index+1}`;card.dataset.db71MetricKey=key;return {card,key,label}})}
-  function loadSelection(page,items){try{const value=JSON.parse(localStorage.getItem(prefKey(page))||"null");if(value&&Array.isArray(value.selected))return {selected:value.selected,visible:value.visible!==false}}catch(_ignored){}return {selected:items.map(item=>item.key),visible:true}}
-  function saveSelection(page,state){localStorage.setItem(prefKey(page),JSON.stringify(state))}
-  function ensureMetricGear(page,container,host,title){if(!container||!host)return;const items=cardInfo(container);if(!items.length)return;const id=`db71-${page}-metric-customize`;let details=$(id);if(!details){details=document.createElement("details");details.id=id;details.className="db71MetricCustomize";details.innerHTML=`<summary title="Customize metric cards" aria-label="Customize metric cards">${GEAR}</summary><div class="db71MetricMenu"><fieldset><legend>${title}</legend><div data-db71-options></div></fieldset><label><input type="checkbox" data-db71-visible checked> Show metric cards</label><button class="secondaryBtn utilityBtn" type="button" data-db71-reset>Reset default metrics</button></div>`;host.appendChild(details);details.querySelector("summary").addEventListener("click",event=>{event.preventDefault();details.open=!details.open});document.addEventListener("click",event=>{if(details.open&&!details.contains(event.target))details.open=false})}const currentItems=cardInfo(container);let state=loadSelection(page,currentItems);state.selected=state.selected.filter(key=>currentItems.some(item=>item.key===key));if(!state.selected.length)state.selected=currentItems.map(item=>item.key);const options=details.querySelector("[data-db71-options]");const signature=currentItems.map(item=>`${item.key}:${item.label}`).join("|");if(options.dataset.signature!==signature){options.dataset.signature=signature;options.innerHTML=currentItems.map(item=>`<label><input type="checkbox" data-db71-key="${item.key}"> ${item.label}</label>`).join("")}const apply=()=>{currentItems.forEach(item=>{const show=state.selected.includes(item.key);item.card.hidden=!show;item.card.style.setProperty("display",show?"":"none",show?"":"important")});container.hidden=!state.visible;container.classList.toggle("metricsDashboardHidden",!state.visible);details.querySelectorAll("[data-db71-key]").forEach(input=>{input.checked=state.selected.includes(input.dataset.db71Key);input.disabled=input.checked&&state.selected.length<=1});details.querySelector("[data-db71-visible]").checked=state.visible};if(!details.dataset.bound){details.dataset.bound="true";details.addEventListener("change",event=>{const input=event.target;if(input.matches("[data-db71-visible]"))state.visible=input.checked;if(input.matches("[data-db71-key]")){const key=input.dataset.db71Key;if(input.checked&&!state.selected.includes(key))state.selected.push(key);if(!input.checked&&state.selected.length>1)state.selected=state.selected.filter(value=>value!==key)}saveSelection(page,state);apply()});details.querySelector("[data-db71-reset]").addEventListener("click",()=>{state={selected:cardInfo(container).map(item=>item.key),visible:true};saveSelection(page,state);apply()})}details._db71Apply=apply;details._db71State=state;apply()}
-  function repairQueueDetails(){const details=$("queueCustomize");if(!details)return;details.classList.add("db71MetricCustomize");const summary=details.querySelector(":scope>summary");if(summary&&!summary.dataset.db71Bound){summary.dataset.db71Bound="true";summary.innerHTML=GEAR;summary.title="Customize queue metrics";summary.setAttribute("aria-label","Customize queue metrics");summary.addEventListener("click",event=>{event.preventDefault();details.open=!details.open});document.addEventListener("click",event=>{if(details.open&&!details.contains(event.target))details.open=false})}const filters=document.querySelector(".queueFilters");if(filters&&details.parentElement!==filters)filters.appendChild(details)}
-  function apply(){if(applying)return;applying=true;document.body.classList.add("db71Regression");ensureDocumentTools();if(PAGE==="dashboard")ensureMetricGear("dashboard",$("metrics"),document.querySelector(".dashboardFilters"),"Dashboard metrics");if(PAGE==="reports")ensureMetricGear("reports",$("reportMetrics"),document.querySelector(".reportFilters"),"Report KPIs");if(PAGE==="myappointments")ensureMetricGear("myappointments",$("myAppointmentMetrics"),document.querySelector(".myAppointmentToolbar")||document.querySelector(".myAppointmentsBookingBarDB52"),"Appointment metrics");if(PAGE==="queue")repairQueueDetails();applying=false}
-  function init(){apply();[100,300,700,1400,2600].forEach(delay=>setTimeout(apply,delay));let timer;new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(apply,40)}).observe(document.body,{childList:true,subtree:true})}
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init()
-})();
-'''
-          css_path = Path('db04/maxdock.css')
-          js_path = Path('db04/maxdock-db.js')
-          if 'DB71 regression repair' not in css_path.read_text():
-              css_path.write_text(css_path.read_text() + '\n\n' + css)
-          if 'maxdock_db71_metrics_' not in js_path.read_text():
-              js_path.write_text(js_path.read_text() + '\n\n' + js)
-          PY
+          git fetch origin main
+          git show origin/main:db04/maxdock-db71-regression.css > /tmp/db71.css
+          git show origin/main:db04/maxdock-db71-regression.js > /tmp/db71.js
+
+      - name: Apply and validate repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! grep -q 'DB71 regression repair' db04/maxdock.css; then
+            printf '\n\n' >> db04/maxdock.css
+            cat /tmp/db71.css >> db04/maxdock.css
+          fi
+          if ! grep -q 'maxdock_db71_metrics_' db04/maxdock-db.js; then
+            printf '\n\n' >> db04/maxdock-db.js
+            cat /tmp/db71.js >> db04/maxdock-db.js
+          fi
           node --check db04/maxdock-db.js
 
       - name: Commit live repair
