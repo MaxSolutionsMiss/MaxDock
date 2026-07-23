@@ -1268,7 +1268,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=94-db72");
+      location.replace("./index.html?v=95-db73");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
@@ -1394,3 +1394,4 @@
 
   document.addEventListener("DOMContentLoaded",()=>initializeDatabaseApp().catch(showFatalError));
 })();
+

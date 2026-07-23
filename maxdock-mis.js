@@ -23,7 +23,18 @@
     const badge=$("misConnectionBadge");
     badge.textContent=bridge?(enabled?"Bridge configuration saved":"Bridge disabled"):(enabled?"CSV imports enabled":"CSV imports available");
     badge.dataset.state=enabled?"active":"inactive";
-    ["misServerName","misServerPort","misDatabaseName","misCredentialSecret"].forEach(id=>$(id).required=bridge&&enabled&&["misServerName","misDatabaseName"].includes(id));
+    const bridgeFields=["misDatabaseType","misServerName","misServerPort","misDatabaseName","misCredentialSecret"];
+    bridgeFields.forEach(id=>{
+      const control=$(id);
+      const field=control?.closest(".field");
+      if(!control||!field)return;
+      field.hidden=!bridge;
+      field.setAttribute("aria-hidden",String(!bridge));
+      control.disabled=!bridge;
+      control.required=bridge&&enabled&&["misServerName","misDatabaseName"].includes(id);
+    });
+    const enableLabel=$("misEnabled")?.closest("label")?.querySelector("span");
+    if(enableLabel)enableLabel.textContent=bridge?"Enable the secure database bridge":"Enable daily CSV imports";
   }
 
   function populateSettings(settings){
@@ -151,7 +162,7 @@
     if(!await db.requireAuth())return;
     await db.loadContext();
     if(db.getProfile()?.role_code!=="system_admin"){
-      location.replace("./index.html?v=94-db72");
+      location.replace("./index.html?v=95-db73");
       return;
     }
     db.addAccountControls();
