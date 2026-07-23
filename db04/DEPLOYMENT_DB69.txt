@@ -1,0 +1,19 @@
+MaxDock DB69 — Shared interface consistency
+
+Scope
+- Dashboard, Operation Queue, Operational Reports, and My Appointments now use one final UI contract.
+- Field labels remain directly before their controls and cannot overlap the input or select.
+- Dashboard action order is Date, Status, Book Appointment, Block Time, Date Range, then Export CSV, Print, Gear.
+- Queue action order is Date, View, Today, Tomorrow, Refresh, then Full-Screen, Export CSV, Print, Gear.
+- Reports keeps filters and Update on the left, with Export CSV, Print, Gear grouped at the far right.
+- Export CSV and Print are the same 104 x 40 secondary buttons everywhere they appear.
+- Gear controls are 40 x 40 and settings panels share the same menu treatment.
+- KPI cards use a compact 78px horizontal layout and fill the available row.
+- Turning off Show metrics/KPI dashboard collapses the entire KPI container, not just individual cards.
+- My Appointments keeps the appointment list ahead of Notifications with a stable 10px section rhythm.
+
+Safety
+- Frontend-only release.
+- No Supabase schema, policy, RPC, Edge Function, or data changes.
+- Existing roles and three-minute live refresh behavior remain unchanged.
+- Review only: do not merge or publish until approved.
