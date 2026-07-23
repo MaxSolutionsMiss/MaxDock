@@ -1049,7 +1049,14 @@
     const isOperational=db.isOperationalRole();
     const canSelectHeaderLocation=roleCode==="system_admin";
     document.body.classList.toggle("customerAccount",isCustomer);
-    document.querySelectorAll(".locationPill").forEach(element=>element.hidden=!canSelectHeaderLocation);
+    document.querySelectorAll(".locationPill").forEach(element=>{
+      element.hidden=!isOperational;
+      const select=element.querySelector("select");
+      if(select){
+        select.disabled=!canSelectHeaderLocation;
+        select.setAttribute("aria-disabled",String(!canSelectHeaderLocation));
+      }
+    });
     document.querySelectorAll(".headerActions > .ghostBtn").forEach(element=>element.hidden=isCustomer||isOperational);
     if($("facilityBadge"))$("facilityBadge").hidden=isCustomer;
     const heroHint=document.querySelector(".heroHint");
@@ -1186,14 +1193,14 @@
       locationName:"",status:"All",scheduleScale:"60",dateMode:"today",customDate:"",
       dashboardRangeMode:"Daily",customRangeStart:todayISO(),customRangeEnd:todayISO()
     }):null;
-    const preferredLocation=requestedLocation||savedDashboard?.locationName;
+    const preferredLocation=requestedLocation||localStorage.getItem(LS_LOCATION)||savedDashboard?.locationName;
     if(preferredLocation&&db.getLocations().some(item=>item.name===preferredLocation))currentLocation=preferredLocation;
     if(PAGE==="requester"&&db.isOperationalRole()){
       location.replace(`./${db.getLandingPage()}`);
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=68-db47");
+      location.replace("./index.html?v=91-db70");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");

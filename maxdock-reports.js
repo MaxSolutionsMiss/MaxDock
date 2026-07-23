@@ -281,8 +281,13 @@
       const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=`maxdock-${$("reportView").value}-${data.start}-to-${data.end}.csv`;link.click();URL.revokeObjectURL(link.href);
     }catch(error){showError(error)}
   }
+  window.maxdockExportReport=exportCsv;
 
-  async function changeLocation(){await db.loadLocation($("reportLocation").value);resetBrief();render();saveReportPreference()}
+  async function changeLocation(){
+    await db.loadLocation($("reportLocation").value);
+    localStorage.setItem("maxdock_location",db.getCurrentLocation()?.name||$("reportLocation").value);
+    resetBrief();render();saveReportPreference();
+  }
   function updateSelection(){try{resetBrief();render();saveReportPreference()}catch(error){showError(error)}}
 
   async function init(){
@@ -290,8 +295,11 @@
       if(!await db.requireAuth())return;await db.loadContext();
       if(!db.hasPermission("reports.view"))throw new Error("This account cannot view operational reports.");
       const saved=await db.loadPreference("reports",{locationName:"",view:"overview",preset:"30",customStart:"",customEnd:""});
-      db.selectLocation(saved.locationName);db.populateLocationSelect($("reportLocation"));db.addAccountControls();
-      $("reportLocation").parentElement.hidden=db.getProfile()?.role_code!=="system_admin";
+      db.selectLocation(localStorage.getItem("maxdock_location")||saved.locationName);db.populateLocationSelect($("reportLocation"));db.addAccountControls();
+      const role=db.getProfile()?.role_code;
+      $("reportLocation").parentElement.hidden=!db.isOperationalRole(role);
+      $("reportLocation").disabled=role!=="system_admin";
+      $("reportLocation").setAttribute("aria-disabled",String(role!=="system_admin"));
       if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"],a[href*="data.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("ai.insights"))$("generateAiBrief").hidden=true;
@@ -305,7 +313,7 @@
       $("reportView").addEventListener("change",updateSelection);
       $("reportPreset").addEventListener("change",event=>{setDatePreset(event.target.value);if(event.target.value!=="custom")updateSelection();else saveReportPreference()});
       $("reportStart").addEventListener("change",saveReportPreference);$("reportEnd").addEventListener("change",saveReportPreference);
-      $("runReport").addEventListener("click",updateSelection);$("exportReport").addEventListener("click",exportCsv);$("generateAiBrief").addEventListener("click",generateAiBrief);
+      $("runReport").addEventListener("click",updateSelection);$("exportReport")?.addEventListener("click",exportCsv);$("generateAiBrief").addEventListener("click",generateAiBrief);
       await db.loadLocation($("reportLocation").value);render();saveReportPreference();
       stopLiveRefresh=db.startLiveRefresh(async()=>{
         await db.fetchAppointments();render();

@@ -49,7 +49,8 @@
     return Boolean(
       document.body.classList.contains("maxdockContextReady")&&
       db?.getProfile?.()&&
-      db?.hasPermission?.("appointment.create")
+      db?.hasPermission?.("appointment.create")&&
+      db?.getLocationData?.()
     );
   }
 
@@ -59,12 +60,12 @@
       attempts++;
       const db=window.MaxDockDB;
       const contextReady=document.body.classList.contains("maxdockContextReady")&&db?.getProfile?.();
-      if(contextReady&&db.hasPermission?.("appointment.create")){
+      if(contextReady&&db.hasPermission?.("appointment.create")&&db.getLocationData?.()){
         bookingOpenQueued=false;
         onReady();
         return;
       }
-      if(contextReady&&attempts>8){
+      if(contextReady&&!db.hasPermission?.("appointment.create")&&attempts>8){
         bookingOpenQueued=false;
         onDenied?.();
         return;

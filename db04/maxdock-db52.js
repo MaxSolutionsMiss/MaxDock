@@ -25,8 +25,8 @@
   function roleAwareBookingUrl(){
     const role=window.MaxDockDB?.getProfile?.()?.role_code;
     return role&&role!=="customer"
-      ?"./dashboard.html?book=1&return=my-appointments&v=74-db53"
-      :"./index.html?book=1&return=my-appointments&v=74-db53";
+      ?"./dashboard.html?book=1&return=my-appointments&v=91-db70"
+      :"./index.html?book=1&return=my-appointments&v=91-db70";
   }
 
   function bookingContextReady(){
@@ -126,7 +126,7 @@
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
       $("requestModal")?.classList.remove("show");
-      location.replace("./my-appointments.html?v=74-db53");
+      location.replace("./my-appointments.html?v=91-db70");
     };
   }
 
@@ -135,7 +135,7 @@
     bookingLaunchAttempts++;
     const db=window.MaxDockDB;
     const modal=$("requestModal");
-    if(bookingContextReady()&&db?.hasPermission?.("appointment.create")&&modal&&typeof window.openRequest==="function"){
+    if(bookingContextReady()&&db?.hasPermission?.("appointment.create")&&db?.getLocationData?.()&&modal&&typeof window.openRequest==="function"){
       window.clearInterval(bookingLaunchTimer);
       document.body.classList.add("directBookingDB52","bookingFlowDB52");
       wrapDirectBookingClose();

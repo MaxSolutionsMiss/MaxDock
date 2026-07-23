@@ -1,0 +1,18 @@
+MaxDock DB70 — Shared location and document controls
+
+Scope
+- Export CSV and Print no longer participate in individual page toolbars.
+- Every signed-in page uses the same two compact icon controls directly below Sign Out.
+- The two document icons together match the Sign Out button width and retain page-specific export behavior.
+- System Admin can choose the active location; Site Admin, Shipping Manager, and Coordinator see their fixed assigned location.
+- The valid active location persists across Dashboard, Queue, Reports, Settings, Data, Users, and My Appointments.
+- Dashboard booking and block actions remain inside the filter bar without horizontal overflow.
+- Reports Update matches the adjacent field height and is vertically centered.
+- Report KPI icons, values, and labels use a non-overlapping horizontal card layout.
+- Direct booking waits for access context and routes operational users to the Dashboard booking workflow.
+
+Safety
+- Frontend-only release.
+- No Supabase schema, policy, RPC, Edge Function, or data changes.
+- Existing three-minute live refresh behavior remains unchanged.
+- Review only: do not merge or publish until approved.

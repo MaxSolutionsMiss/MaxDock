@@ -26,6 +26,7 @@
     appointments:[]
   };
   const OPERATIONAL_ROLES=new Set(["system_admin","site_admin","shipping_manager","coordinator"]);
+  const LOCATION_STORAGE_KEY="maxdock_location";
   const LIVE_REFRESH_MS=5000;
   const preferenceSaveTimers=new Map();
   let usageTimer=null;
@@ -44,10 +45,10 @@
     return profile?.role_code==="customer"&&normalize(profile?.external_party_type)==="vendor";
   }
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(isVendorProfile())return "my-appointments.html?v=70-db49";
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=70-db49";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=70-db49";
-    return "index.html?v=70-db49";
+    if(isVendorProfile())return "my-appointments.html?v=91-db70";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=91-db70";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=91-db70";
+    return "index.html?v=91-db70";
   }
   function navigationRoute(link){
     try{return (new URL(link.href,location.href).pathname.split("/").pop()||"").replace(/\.html$/i,"")}
@@ -296,6 +297,12 @@
     state.locations=locationResult.data||[];
     state.locationDirectory=directoryResult.data||[];
     if(!state.locations.length)throw new Error("This user has no permitted MaxDock locations.");
+    let rememberedLocation="";
+    try{rememberedLocation=localStorage.getItem(LOCATION_STORAGE_KEY)||""}catch(_ignored){}
+    selectLocation(rememberedLocation);
+    try{
+      if(state.currentLocation?.name)localStorage.setItem(LOCATION_STORAGE_KEY,state.currentLocation.name);
+    }catch(_ignored){}
     applyRoleNavigation();
     startUsageTracking();
     return state;
@@ -730,23 +737,70 @@
     select.innerHTML=state.locations.map(l=>`<option>${String(l.name).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</option>`).join("");
     select.value=state.currentLocation?.name||state.locations[0]?.name||"";
   }
+  function ensureLocationControl(actions){
+    if(!actions||!state.profile)return null;
+    const role=state.profile.role_code;
+    const operational=isOperationalRole(role);
+    const systemAdmin=role==="system_admin";
+    document.body.classList.toggle("systemAdminLocation",systemAdmin);
+    document.body.classList.toggle("operationalLocation",operational);
+    document.body.classList.toggle("fixedOperationalLocation",operational&&!systemAdmin);
+
+    let pill=actions.querySelector(".locationPill");
+    if(!pill&&operational){
+      pill=document.createElement("div");
+      pill.className="locationPill db70SharedLocation";
+      const label=document.createElement("label");
+      label.htmlFor="maxdockSharedLocation";
+      label.textContent="Location";
+      const select=document.createElement("select");
+      select.id="maxdockSharedLocation";
+      select.setAttribute("aria-label","Active MaxDock location");
+      pill.append(label,select);
+      actions.insertBefore(pill,actions.firstChild);
+    }
+    document.querySelectorAll(".headerActions .locationPill").forEach(item=>{
+      item.hidden=!operational;
+      item.style.setProperty("display",operational?"flex":"none","important");
+      const select=item.querySelector("select");
+      if(!select)return;
+      populateLocationSelect(select);
+      select.disabled=!systemAdmin;
+      select.setAttribute("aria-disabled",String(!systemAdmin));
+      select.title=systemAdmin?"Choose the active MaxDock location":`Assigned location: ${select.value}`;
+      if(select.dataset.maxdockLocationBound)return;
+      select.dataset.maxdockLocationBound="true";
+      select.addEventListener("change",event=>{
+        const selected=selectLocation(event.target.value);
+        if(!selected)return;
+        try{localStorage.setItem(LOCATION_STORAGE_KEY,selected.name)}catch(_ignored){}
+        event.target.title=systemAdmin?"Choose the active MaxDock location":`Assigned location: ${selected.name}`;
+        document.querySelectorAll(".headerActions .locationPill select").forEach(other=>{
+          if(other!==event.target&&[...other.options].some(option=>option.value===selected.name))other.value=selected.name;
+        });
+      });
+    });
+    return pill;
+  }
   function addAccountControls(){
     applyRoleNavigation();
-    const systemAdmin=state.profile?.role_code==="system_admin";
-    document.body.classList.toggle("systemAdminLocation",systemAdmin);
-    document.querySelectorAll(".locationPill").forEach(element=>element.hidden=!systemAdmin);
     const actions=document.querySelector(".headerActions");
-    if(!actions||document.getElementById("maxdockAccount"))return;
-    const wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
-    const identity=document.createElement("div");identity.className="accountIdentity";
-    const status=document.createElement("small");status.className="accountStatus";status.textContent="Signed in";
-    const label=document.createElement("span");label.className="accountName";label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
-    identity.append(status,label);
-    const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=68-db47";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
-    bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
-    const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
-    wrap.append(identity,bell,button);actions.append(wrap);
-    bell.hidden=!hasPermission("notifications.view");
+    if(!actions)return;
+    ensureLocationControl(actions);
+    let wrap=document.getElementById("maxdockAccount");
+    if(!wrap){
+      wrap=document.createElement("div");wrap.id="maxdockAccount";wrap.className="accountControl";
+      const identity=document.createElement("div");identity.className="accountIdentity";
+      const status=document.createElement("small");status.className="accountStatus";status.textContent="Signed in";
+      const label=document.createElement("span");label.className="accountName";label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
+      identity.append(status,label);
+      const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=91-db70";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+      bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
+      const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
+      wrap.append(identity,bell,button);actions.append(wrap);
+    }
+    const bell=document.getElementById("maxdockNotificationBell");
+    if(bell)bell.hidden=!hasPermission("notifications.view");
     if(hasPermission("notifications.view"))refreshNotificationBadge().catch(()=>{});
     if(!hasPermission("operations.queue.view"))document.querySelectorAll('a[href*="queue.html"]').forEach(a=>a.hidden=true);
     if(!hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(a=>a.hidden=true);
@@ -763,7 +817,9 @@
     badge.parentElement?.setAttribute("aria-label",count?`Open notifications: ${count} unread`:"Open notifications");
     return count;
   }
-  function hasPermission(code){return state.permissions.has(code)}
+  function hasPermission(code){
+    return state.profile?.role_code==="system_admin"||state.permissions.has(code);
+  }
 
   client.auth.onAuthStateChange((event)=>{
     if(event==="SIGNED_OUT"&&!location.pathname.endsWith("login.html"))location.replace("./login.html");

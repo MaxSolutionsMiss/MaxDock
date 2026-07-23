@@ -13,10 +13,18 @@
   function enforceRoleLocation(){
     const role=db?.getProfile?.()?.role_code||"";
     const admin=role==="system_admin";
+    const operational=db?.isOperationalRole?.(role)||false;
     document.body.classList.toggle("systemAdminLocation",admin);
+    document.body.classList.toggle("operationalLocation",operational);
+    document.body.classList.toggle("fixedOperationalLocation",operational&&!admin);
     document.querySelectorAll(".headerActions .locationPill").forEach(item=>{
-      item.hidden=!admin;
-      item.style.setProperty("display",admin?"flex":"none","important");
+      item.hidden=!operational;
+      item.style.setProperty("display",operational?"flex":"none","important");
+      const select=item.querySelector("select");
+      if(select){
+        select.disabled=!admin;
+        select.setAttribute("aria-disabled",String(!admin));
+      }
     });
     return Boolean(role);
   }
