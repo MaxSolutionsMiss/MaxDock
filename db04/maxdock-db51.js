@@ -46,7 +46,7 @@
     if(heading.parentElement!==row)row.appendChild(heading);
     if(button.parentElement!==row)row.appendChild(button);
     button.classList.add("maxdockPrimaryActionDB51");
-    button.href="./index.html?book=1&return=my-appointments&v=72-db51";
+    button.href="./index.html?book=1&return=my-appointments&v=91-db70";
     if(!button.querySelector("svg")){
       const text=button.textContent.trim()||"Book an Appointment";
       button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM12 12v5M9.5 14.5h5"/></svg><span></span>';

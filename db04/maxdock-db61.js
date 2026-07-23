@@ -158,11 +158,14 @@
     const profile=db?.getProfile?.();
     const locations=db?.getLocations?.()||[];
     if(!actions||!profile||!locations.length)return false;
+    const operational=db?.isOperationalRole?.(profile.role_code);
+    const systemAdmin=profile.role_code==="system_admin";
 
     let pill=findLocationPill(actions)||createLocationPill(actions);
     pill.classList.add("db61PersistentLocation");
-    if(pill.hidden)pill.hidden=false;
-    if(pill.hasAttribute("hidden"))pill.removeAttribute("hidden");
+    pill.hidden=!operational;
+    pill.style.setProperty("display",operational?"flex":"none","important");
+    if(!operational)return true;
 
     let select=pill.querySelector("select");
     if(!select){
@@ -180,6 +183,8 @@
     db.selectLocation?.(preferred);
     select.value=preferred;
     if(select.title!==preferred)select.title=preferred;
+    select.disabled=!systemAdmin;
+    select.setAttribute("aria-disabled",String(!systemAdmin));
 
     const account=$("maxdockAccount");
     if(account&&pill.nextElementSibling!==account)actions.insertBefore(pill,account);
@@ -187,6 +192,7 @@
     if(locationBoundSelect!==select){
       locationBoundSelect=select;
       select.addEventListener("change",event=>{
+        if(!systemAdmin)return;
         const value=event.target.value;
         localStorage.setItem("maxdock_location",value);
         db.selectLocation?.(value);
