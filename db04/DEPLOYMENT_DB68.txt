@@ -1,0 +1,38 @@
+MaxDock DB68 — Clean bootstrap and single-layout recovery
+
+Purpose
+- Recover the live interface from the mixed DB47–DB67 asset chain.
+- Use the core application files plus one DB68 stylesheet and one DB68 controller.
+
+Stability
+- Removes every historical release CSS and JavaScript loader from maxdock-config.js.
+- Removes all page-wide layout observers and wrapper-script races.
+- Keeps only scoped KPI-container observers for cards rendered by the page controllers.
+- Updates every active page and internal route to v=89-db68 cache keys.
+- Keeps automatic live refresh at three minutes.
+
+Interface
+- Uses one 78px KPI standard across Dashboard, My Appointments, Queue, Reports, and User Management.
+- Uses larger icon glyphs and larger KPI text without oversized icon backgrounds.
+- Uses rounded cards with top accent borders and consistent 10px section gaps.
+- Keeps all labels directly before their fields with reserved widths.
+- Places Dashboard Book Appointment and Block Time before Date Range.
+- Places Export CSV and Print directly before the gear controls.
+- Keeps My Appointments Book an Appointment beside the banner copy and the gear at the far right.
+- Places Appointment list before Notifications.
+- Removes the redundant Reports sidebar.
+
+Roles
+- Coordinator and Shipping Manager: Appointments, Queue, Reports, Dashboard.
+- Site Admin: those pages plus Settings.
+- System Admin: all pages and the only role with the top Location selector.
+- Customer and Vendor: My Appointments only.
+
+Release marker
+- MaxDock-v89-DB68
+- DB68 · clean bootstrap and single-layout recovery active
+
+Scope
+- Frontend only.
+- No Supabase migration.
+- No Edge Function deployment.
