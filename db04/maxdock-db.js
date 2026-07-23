@@ -702,7 +702,7 @@
     const retained=new Set(dockInputs.filter(x=>x.id).map(x=>x.id));
     const savedDocks=[];
     for(let i=0;i<dockInputs.length;i++){
-      const dock=dockInputs[i],payload={name:dock.name,sort_order:i+1,is_active:true};
+      const dock=dockInputs[i],payload={name:dock.name,sort_order:i+1,is_active:true,direction_mode:['inbound','outbound'].includes(dock.directionMode)?dock.directionMode:'both'};
       const result=dock.id
         ?await client.from("docks").update(payload).eq("id",dock.id).eq("location_id",locationId).select("*").single()
         :await client.from("docks").insert({...payload,location_id:locationId}).select("*").single();
@@ -865,4 +865,52 @@
   function apply(){if(applying)return;applying=true;document.body.classList.add("db71Regression");ensureDocumentTools();if(PAGE==="dashboard")ensureMetricGear("dashboard",$("metrics"),document.querySelector(".dashboardFilters"),"Dashboard metrics");if(PAGE==="reports")ensureMetricGear("reports",$("reportMetrics"),document.querySelector(".reportFilters"),"Report KPIs");if(PAGE==="myappointments")ensureMetricGear("myappointments",$("myAppointmentMetrics"),document.querySelector(".myAppointmentToolbar")||document.querySelector(".myAppointmentsBookingBarDB52"),"Appointment metrics");if(PAGE==="queue")repairQueueDetails();applying=false}
   function init(){apply();[100,300,700,1400,2600].forEach(delay=>setTimeout(apply,delay));let timer;new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(apply,40)}).observe(document.body,{childList:true,subtree:true})}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init()
+})();
+
+
+(function(){
+  'use strict';
+  const page=document.body.dataset.page||'';
+  function bindDetails(details){
+    if(!details||details.dataset.db72Bound)return;
+    details.dataset.db72Bound='1';
+    const summary=details.querySelector(':scope > summary');
+    if(!summary)return;
+    summary.addEventListener('click',function(e){
+      e.preventDefault();e.stopPropagation();details.open=!details.open;
+    });
+    document.addEventListener('click',e=>{if(details.open&&!details.contains(e.target))details.open=false});
+  }
+  function repairGears(){
+    document.querySelectorAll('#queueCustomize,#dashboardCustomize,.dashboardCustomize,#db64ReportCustomize,#myAppointmentsCustomizeDB65').forEach(bindDetails);
+    if(page==='queue'){
+      const gear=document.getElementById('queueCustomize');
+      const full=document.getElementById('openQueueDisplay');
+      const bar=document.querySelector('.queueFilterBar,.filterBar,.filterActions');
+      if(gear&&bar&&gear.parentElement!==bar)bar.appendChild(gear);
+      if(full&&!full.dataset.db72Bound){
+        full.dataset.db72Bound='1';
+        full.addEventListener('click',async e=>{
+          e.preventDefault();
+          const target=document.querySelector('main')||document.documentElement;
+          try{if(!document.fullscreenElement)await target.requestFullscreen();else await document.exitFullscreen()}catch(err){console.error(err)}
+        });
+      }
+    }
+  }
+  function settingsActions(){
+    if(page!=='settings')return;
+    document.querySelectorAll('.sectionWorkspacePanel,.settingsGroup').forEach(panel=>{
+      if(panel.querySelector('.settingsSectionActionsDB72'))return;
+      const row=document.createElement('div');row.className='settingsSectionActionsDB72';
+      row.innerHTML='<button type="button" class="secondaryBtn">Reset Default</button><button type="button" class="primaryBtn">Save Settings</button>';
+      row.children[0].addEventListener('click',()=>window.resetSettings?.());
+      row.children[1].addEventListener('click',()=>window.saveSettings?.());
+      panel.appendChild(row);
+    });
+  }
+  function run(){repairGears();settingsActions()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+  setTimeout(run,400);setTimeout(run,1200);
+  new MutationObserver(()=>repairGears()).observe(document.documentElement,{childList:true,subtree:true});
 })();

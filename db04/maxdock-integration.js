@@ -926,9 +926,10 @@
     updateDockPolicySummary();
     const truckTypes=db.getLocationData()?.truckTypes||[];
     $("docksList").innerHTML=`<div class="dockMatrixScroll"><table class="dockCompatibilityMatrix">
-      <thead><tr><th>Dock Door</th>${truckTypes.map(truck=>`<th title="${esc(truck.name)}">${esc(truck.name)}</th>`).join("")}<th class="dockMatrixActionCell">Action</th></tr></thead>
+      <thead><tr><th>Dock Door</th><th class="dockDirectionHeader">Direction</th>${truckTypes.map(truck=>`<th title="${esc(truck.name)}">${esc(truck.name)}</th>`).join("")}<th class="dockMatrixActionCell">Action</th></tr></thead>
       <tbody>${dockDraft.map((dock,index)=>`<tr>
         <td><input class="dockNameInput" data-dock-index="${index}" data-dock-id="${esc(dock.id||"")}" value="${esc(dock.name)}" aria-label="Dock name"></td>
+        <td><select class="dockDirectionSelect" data-dock-index="${index}" aria-label="${esc(dock.name)} appointment direction"><option value="both" ${dock.directionMode==="both"?"selected":""}>Both</option><option value="inbound" ${dock.directionMode==="inbound"?"selected":""}>Inbound only</option><option value="outbound" ${dock.directionMode==="outbound"?"selected":""}>Outbound only</option></select></td>
         ${truckTypes.map(truck=>`<td><label class="dockMatrixCheck" title="${esc(dock.name)} accepts ${esc(truck.name)}"><input class="dockTruckCheck" type="checkbox" data-dock-index="${index}" value="${esc(truck.code)}" ${(dock.truckTypeCodes||[]).includes(truck.code)?"checked":""}><span aria-hidden="true">✓</span></label></td>`).join("")}
         <td class="dockMatrixActionCell"><button class="dangerBtn dockMatrixRemove" onclick="removeDock(${index})">Remove</button></td>
       </tr>`).join("")}</tbody>
@@ -970,13 +971,14 @@
     if(inputs.length)dockDraft=inputs.map((input,index)=>({
       id:input.dataset.dockId||null,
       name:input.value.trim(),
-      truckTypeCodes:[...document.querySelectorAll(`.dockTruckCheck[data-dock-index="${index}"]:checked`)].map(check=>check.value)
+      truckTypeCodes:[...document.querySelectorAll(`.dockTruckCheck[data-dock-index="${index}"]:checked`)].map(check=>check.value),
+      directionMode:document.querySelector(`.dockDirectionSelect[data-dock-index="${index}"]`)?.value||'both'
     }));
   }
 
   addDock=function(){
     captureDockDraft();
-    dockDraft.push({id:null,name:`Dock ${dockDraft.length+1}`,truckTypeCodes:(db.getLocationData()?.truckTypes||[]).map(truck=>truck.code)});
+    dockDraft.push({id:null,name:`Dock ${dockDraft.length+1}`,truckTypeCodes:(db.getLocationData()?.truckTypes||[]).map(truck=>truck.code),directionMode:'both'});
     renderSettings();
   };
 
@@ -991,7 +993,7 @@
     try{
       if(!db.hasPermission("settings.manage")||!db.hasPermission("dock.manage"))throw new Error("Only an authorized MaxDock administrator can change these settings and dock doors.");
       captureDockDraft();
-      const docks=dockDraft.map(dock=>({...dock,name:dock.name.trim(),truckTypeCodes:[...new Set(dock.truckTypeCodes||[])]})).filter(dock=>dock.name);
+      const docks=dockDraft.map(dock=>({...dock,name:dock.name.trim(),truckTypeCodes:[...new Set(dock.truckTypeCodes||[])],directionMode:['inbound','outbound'].includes(dock.directionMode)?dock.directionMode:'both'})).filter(dock=>dock.name);
       if(!docks.length)throw new Error("At least one active dock is required.");
       if(new Set(docks.map(dock=>dock.name.toLowerCase())).size!==docks.length)throw new Error("Dock names must be unique.");
       settings.open=$("setOpen").value||defaultSettings.open;settings.close=$("setClose").value||defaultSettings.close;
@@ -1039,7 +1041,7 @@
     const existing=db.getDockRows();
     const allTruckCodes=(db.getLocationData()?.truckTypes||[]).map(truck=>truck.code);
     settings=JSON.parse(JSON.stringify(defaultSettings));
-    dockDraft=defaultSettings.docks.map((name,index)=>({id:existing[index]?.id||null,name,truckTypeCodes:allTruckCodes.slice()}));
+    dockDraft=defaultSettings.docks.map((name,index)=>({id:existing[index]?.id||null,name,truckTypeCodes:allTruckCodes.slice(),directionMode:'both'}));
     renderSettings();
   };
 
