@@ -10164,3 +10164,524 @@ body.db70Consistency[data-page="queue"] #queueCustomize>summary{
     margin-left:auto!important
   }
 }
+
+/* DB72: final shared page contract.
+   My Appointments is the reference for title actions, gear placement, and KPI cards. */
+body.db72Consistency{
+  --db72-gap:10px;
+  --db72-control-height:40px;
+  --db72-card-height:78px;
+  --db72-radius:12px;
+  --db72-border:#c7d7e4;
+  --db72-primary:#08769b;
+  --db72-primary-hover:#066887;
+  font-family:Arial,Helvetica,sans-serif!important
+}
+
+/* CSV and Print always occupy the title row at the same right edge. */
+body.db72Consistency main .pageHead{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  flex-wrap:nowrap!important;
+  gap:16px!important;
+  width:100%!important;
+  min-height:0!important;
+  margin:0 0 var(--db72-gap)!important;
+  padding:0 0 14px!important
+}
+body.db72Consistency main .pageHead>div:first-child{
+  flex:1 1 auto!important;
+  min-width:0!important
+}
+body.db72Consistency main .pageHead>.db72TitleDocumentActions{
+  position:static!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:flex-end!important;
+  flex:0 0 86px!important;
+  align-self:flex-start!important;
+  width:86px!important;
+  min-width:86px!important;
+  min-height:40px!important;
+  margin:0 0 0 auto!important;
+  padding:0!important;
+  background:transparent!important;
+  pointer-events:auto!important
+}
+body.db72Consistency main .pageHead .db72DocumentTools{
+  display:grid!important;
+  grid-template-columns:repeat(2,40px)!important;
+  gap:6px!important;
+  width:86px!important;
+  min-width:86px!important;
+  margin:0!important
+}
+body.db72Consistency main .pageHead .maxdockDocumentIcon{
+  box-sizing:border-box!important;
+  width:40px!important;
+  min-width:40px!important;
+  height:40px!important;
+  min-height:40px!important;
+  margin:0!important;
+  padding:0!important;
+  border:1px solid var(--db72-border)!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  box-shadow:none!important
+}
+
+/* One toolbar model. Labels and controls can never overlap. */
+body.db72Consistency :is(.dashboardFilters,.queueFilters,.reportFilters).db72ControlBar{
+  box-sizing:border-box!important;
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  gap:12px!important;
+  width:100%!important;
+  min-height:64px!important;
+  margin:0 0 var(--db72-gap)!important;
+  padding:10px 12px!important;
+  overflow:visible!important
+}
+body.db72Consistency .db72FieldPair{
+  box-sizing:border-box!important;
+  position:static!important;
+  display:flex!important;
+  align-items:center!important;
+  flex:0 0 auto!important;
+  gap:8px!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:var(--db72-control-height)!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important
+}
+body.db72Consistency .db72FieldPair>label{
+  position:static!important;
+  inset:auto!important;
+  z-index:auto!important;
+  display:block!important;
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:max-content!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  transform:none!important;
+  color:#53667a!important;
+  font:700 12px/1.15 Arial,Helvetica,sans-serif!important;
+  white-space:nowrap!important
+}
+body.db72Consistency .db72FieldPair>:is(input,select){
+  position:static!important;
+  box-sizing:border-box!important;
+  flex:0 0 auto!important;
+  height:var(--db72-control-height)!important;
+  min-height:var(--db72-control-height)!important;
+  max-height:var(--db72-control-height)!important;
+  margin:0!important;
+  padding-block:0!important;
+  transform:none!important
+}
+
+body.db72Consistency :is(.db72PrimaryActions,.db72QueueQuickActions,.db72QueueRightActions){
+  position:static!important;
+  display:flex!important;
+  align-items:center!important;
+  flex:0 0 auto!important;
+  gap:8px!important;
+  width:auto!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  transform:none!important
+}
+body.db72Consistency .db72QueueRightActions{
+  margin-left:auto!important
+}
+body.db72Consistency .db72Gear{
+  position:relative!important;
+  order:99!important;
+  flex:0 0 40px!important;
+  width:40px!important;
+  min-width:40px!important;
+  height:40px!important;
+  min-height:40px!important;
+  margin:0!important;
+  padding:0!important;
+  z-index:80!important
+}
+body.db72Consistency .db72Gear>summary{
+  box-sizing:border-box!important;
+  display:grid!important;
+  place-items:center!important;
+  width:40px!important;
+  min-width:40px!important;
+  height:40px!important;
+  min-height:40px!important;
+  margin:0!important;
+  padding:0!important;
+  border:1px solid var(--db72-border)!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  color:#29475c!important;
+  cursor:pointer!important;
+  list-style:none!important;
+  font-size:0!important
+}
+body.db72Consistency .db72Gear>summary::-webkit-details-marker{display:none!important}
+body.db72Consistency .db72Gear>summary svg{
+  display:block!important;
+  width:20px!important;
+  height:20px!important
+}
+
+/* Dashboard: filters, then Book/Block, then range; gear stays at the far right. */
+body.db72Consistency[data-page="dashboard"] .db72DashboardControlBar .db72PrimaryActions{
+  margin-left:2px!important
+}
+body.db72Consistency[data-page="dashboard"] .db72DashboardControlBar .db72PrimaryActions .dashboardActionPrimary{
+  box-sizing:border-box!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 164px!important;
+  gap:8px!important;
+  width:164px!important;
+  min-width:164px!important;
+  max-width:164px!important;
+  height:var(--db72-control-height)!important;
+  min-height:var(--db72-control-height)!important;
+  max-height:var(--db72-control-height)!important;
+  margin:0!important;
+  padding:0 12px!important;
+  border-color:var(--db72-primary)!important;
+  border-radius:9px!important;
+  background:var(--db72-primary)!important;
+  color:#fff!important;
+  box-shadow:none!important;
+  font:700 14px/1 Arial,Helvetica,sans-serif!important
+}
+body.db72Consistency[data-page="dashboard"] .db72DashboardControlBar>.db72Gear{
+  margin-left:auto!important
+}
+body.db72Consistency[data-page="dashboard"] .db72RefreshAction{
+  box-sizing:border-box!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 104px!important;
+  width:104px!important;
+  min-width:104px!important;
+  max-width:104px!important;
+  height:var(--db72-control-height)!important;
+  min-height:var(--db72-control-height)!important;
+  max-height:var(--db72-control-height)!important;
+  margin:0!important
+}
+
+/* Queue: day actions remain by the filters; full-screen and gear are far right. */
+body.db72Consistency[data-page="queue"] .db72QueueQuickActions :is(button,#queueToday,#queueTomorrow,#refreshQueue){
+  box-sizing:border-box!important;
+  flex:0 0 92px!important;
+  width:92px!important;
+  min-width:92px!important;
+  max-width:92px!important;
+  height:var(--db72-control-height)!important;
+  min-height:var(--db72-control-height)!important;
+  max-height:var(--db72-control-height)!important;
+  margin:0!important;
+  padding:0 12px!important
+}
+body.db72Consistency[data-page="queue"] .db72QueueRightActions #openQueueDisplay{
+  box-sizing:border-box!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 196px!important;
+  width:196px!important;
+  min-width:196px!important;
+  max-width:196px!important;
+  height:var(--db72-control-height)!important;
+  min-height:var(--db72-control-height)!important;
+  max-height:var(--db72-control-height)!important;
+  margin:0!important;
+  padding:0 14px!important
+}
+
+/* Reports: Update matches the fields; gear is always the last item. */
+body.db72Consistency[data-page="reports"] .db72ReportControlBar>.db72Gear{
+  margin-left:auto!important
+}
+body.db72Consistency[data-page="reports"] #runReport.db72UpdateAction{
+  box-sizing:border-box!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-self:center!important;
+  flex:0 0 104px!important;
+  width:104px!important;
+  min-width:104px!important;
+  max-width:104px!important;
+  height:var(--db72-control-height)!important;
+  min-height:var(--db72-control-height)!important;
+  max-height:var(--db72-control-height)!important;
+  margin:0!important;
+  padding:0 14px!important;
+  border-color:var(--db72-primary)!important;
+  border-radius:9px!important;
+  background:var(--db72-primary)!important;
+  color:#fff!important;
+  font:700 14px/1 Arial,Helvetica,sans-serif!important;
+  vertical-align:middle!important
+}
+body.db72Consistency[data-page="reports"] .reportCustomDates{
+  position:static!important;
+  display:flex!important;
+  align-items:center!important;
+  flex:0 0 auto!important;
+  gap:12px!important;
+  margin:0!important;
+  padding:0!important
+}
+body.db72Consistency[data-page="reports"] .reportCustomDates[hidden]{display:none!important}
+body.db72Consistency :is(.dashboardCustomizeMenu,.queueCustomizeMenu,.db64ReportCustomizeMenu,.myAppointmentsCustomizeMenuDB65) .preferenceSyncStatus,
+body.db72Consistency #reportPreferenceStatus{
+  display:none!important
+}
+
+/* Every KPI is the My Appointments horizontal card. */
+body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics).db72Metrics:not([hidden]):not(.metricsDashboardHidden){
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-auto-rows:var(--db72-card-height)!important;
+  gap:8px!important;
+  width:100%!important;
+  max-width:none!important;
+  height:var(--db72-card-height)!important;
+  min-height:var(--db72-card-height)!important;
+  max-height:var(--db72-card-height)!important;
+  margin:0 0 var(--db72-gap)!important;
+  padding:0!important;
+  overflow:visible!important
+}
+body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics).db72Metrics[hidden],
+body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics).db72Metrics.metricsDashboardHidden{
+  display:none!important;
+  height:0!important;
+  min-height:0!important;
+  max-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important
+}
+body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.db72MetricCard{
+  box-sizing:border-box!important;
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:40px minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  column-gap:10px!important;
+  row-gap:2px!important;
+  align-content:center!important;
+  align-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+  height:var(--db72-card-height)!important;
+  min-height:var(--db72-card-height)!important;
+  max-height:var(--db72-card-height)!important;
+  margin:0!important;
+  padding:11px 12px!important;
+  border:1px solid var(--metric-border,#c8d7e3)!important;
+  border-top:3px solid var(--metric-accent,#2872bd)!important;
+  border-radius:var(--db72-radius)!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+  text-align:left!important
+}
+body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.db72MetricCard>.metricIconDB47{
+  position:static!important;
+  inset:auto!important;
+  grid-column:1!important;
+  grid-row:1/3!important;
+  place-self:center!important;
+  display:grid!important;
+  place-items:center!important;
+  width:40px!important;
+  min-width:40px!important;
+  height:40px!important;
+  min-height:40px!important;
+  margin:0!important;
+  transform:none!important;
+  border-radius:10px!important
+}
+body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.db72MetricCard>.metricIconDB47 svg{
+  width:25px!important;
+  height:25px!important
+}
+body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.db72MetricCard>strong{
+  position:static!important;
+  grid-column:2!important;
+  grid-row:1!important;
+  align-self:end!important;
+  justify-self:start!important;
+  width:auto!important;
+  margin:0!important;
+  transform:none!important;
+  color:var(--metric-strong,#15334d)!important;
+  font:800 22px/1 Arial,Helvetica,sans-serif!important;
+  text-align:left!important
+}
+body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.db72MetricCard>small{
+  position:static!important;
+  grid-column:2!important;
+  grid-row:2!important;
+  align-self:start!important;
+  justify-self:start!important;
+  width:auto!important;
+  margin:0!important;
+  transform:none!important;
+  color:#52657a!important;
+  font:700 12px/1.1 Arial,Helvetica,sans-serif!important;
+  text-align:left!important;
+  white-space:normal!important
+}
+body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.db72MetricCard>.metricDelta{
+  display:none!important
+}
+
+/* My Appointments remains the placement reference. */
+body.db72Consistency[data-page="myappointments"] .db72MyAppointmentsReference{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:100%!important;
+  min-height:64px!important;
+  margin:0 0 var(--db72-gap)!important;
+  padding:10px 14px!important
+}
+body.db72Consistency[data-page="myappointments"] .db72MyAppointmentsReference>.db72Gear{
+  margin-left:auto!important
+}
+
+/* Settings: one selected section, with Save/Reset at that section's bottom. */
+body.db72Consistency[data-page="settings"] .db72LegacySettingsActions{
+  display:none!important
+}
+body.db72Consistency[data-page="settings"] .db72SettingsUnsavedBar>button{
+  display:none!important
+}
+body.db72Consistency[data-page="settings"] .db72SettingsWorkspace .sectionWorkspaceContent{
+  min-width:0!important
+}
+body.db72Consistency[data-page="settings"] .db72SettingsWorkspace .sectionWorkspaceContent>[data-section-panel]{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important
+}
+body.db72Consistency[data-page="settings"] .db72SettingsWorkspace .sectionWorkspaceContent>[data-section-panel][hidden]{
+  display:none!important
+}
+body.db72Consistency[data-page="settings"] .db72SettingsSectionActions{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  width:100%!important;
+  margin:18px 0 0!important;
+  padding:14px 0 0!important;
+  border-top:1px solid #dbe5ed!important
+}
+body.db72Consistency[data-page="settings"] .db72SettingsSectionActions>button{
+  box-sizing:border-box!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:124px!important;
+  height:var(--db72-control-height)!important;
+  min-height:var(--db72-control-height)!important;
+  max-height:var(--db72-control-height)!important;
+  margin:0!important;
+  padding:0 14px!important;
+  border-radius:9px!important;
+  box-shadow:none!important;
+  font:700 13px/1 Arial,Helvetica,sans-serif!important
+}
+
+@media(max-width:1480px){
+  body.db72Consistency :is(.dashboardFilters,.queueFilters,.reportFilters).db72ControlBar{
+    flex-wrap:wrap!important
+  }
+  body.db72Consistency[data-page="dashboard"] .db72DashboardControlBar>.db72Gear,
+  body.db72Consistency[data-page="queue"] .db72QueueRightActions,
+  body.db72Consistency[data-page="reports"] .db72ReportControlBar>.db72Gear{
+    margin-left:auto!important
+  }
+}
+@media(max-width:1180px){
+  body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics).db72Metrics:not([hidden]):not(.metricsDashboardHidden){
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;
+    grid-auto-rows:minmax(var(--db72-card-height),auto)!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important
+  }
+  body.db72Consistency :is(#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics)>.db72MetricCard{
+    height:auto!important;
+    min-height:var(--db72-card-height)!important;
+    max-height:none!important
+  }
+}
+@media(max-width:820px){
+  body.db72Consistency main .pageHead{
+    min-height:0!important
+  }
+  body.db72Consistency :is(.dashboardFilters,.queueFilters,.reportFilters).db72ControlBar{
+    align-items:stretch!important
+  }
+  body.db72Consistency .db72FieldPair{
+    flex:1 1 100%!important
+  }
+  body.db72Consistency .db72FieldPair>:is(input,select){
+    flex:1 1 auto!important;
+    width:auto!important;
+    min-width:0!important
+  }
+  body.db72Consistency[data-page="dashboard"] .db72PrimaryActions,
+  body.db72Consistency[data-page="queue"] :is(.db72QueueQuickActions,.db72QueueRightActions){
+    flex:1 1 100%!important
+  }
+  body.db72Consistency[data-page="dashboard"] .db72PrimaryActions .dashboardActionPrimary,
+  body.db72Consistency[data-page="queue"] .db72QueueQuickActions>button{
+    flex:1 1 0!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important
+  }
+  body.db72Consistency[data-page="queue"] .db72QueueRightActions{
+    justify-content:flex-end!important
+  }
+}
+@media(max-width:620px){
+  body.db72Consistency main .pageHead{
+    gap:10px!important
+  }
+  body.db72Consistency main .pageHead>.db72TitleDocumentActions{
+    flex-basis:86px!important
+  }
+  body.db72Consistency[data-page="myappointments"] .db72MyAppointmentsReference{
+    flex-wrap:wrap!important
+  }
+  body.db72Consistency[data-page="settings"] .db72SettingsSectionActions{
+    align-items:stretch!important;
+    flex-direction:column!important
+  }
+  body.db72Consistency[data-page="settings"] .db72SettingsSectionActions>button{
+    width:100%!important
+  }
+}

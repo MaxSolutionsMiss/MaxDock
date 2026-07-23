@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v92-DB71",
+  version: "MaxDock-v94-DB72",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -248,10 +248,10 @@ window.MAXDOCK_ICONS = Object.freeze({
 
   const initialize=async()=>{
     hydrateIcons();
-    await loadScript("maxdock-layout-discipline.js","93-db71","db71-layout");
+    await loadScript("maxdock-layout-discipline.js","94-db72","db72-layout");
     hydrateIcons();
     window.MaxDockUI?.setupAccessibility?.();
-    document.documentElement.dataset.maxdockRelease="db71";
+    document.documentElement.dataset.maxdockRelease="db72";
     document.querySelectorAll(".menu").forEach(menu=>{
       let stamp=menu.querySelector(".maxdockReleaseStamp");
       if(!stamp){
@@ -259,7 +259,7 @@ window.MAXDOCK_ICONS = Object.freeze({
         stamp.className="maxdockReleaseStamp";
         menu.appendChild(stamp);
       }
-      stamp.textContent="DB71 · live-readiness hotfix";
+      stamp.textContent="DB72 · consistency repair";
     });
   };
   if(document.readyState==="complete")initialize();

@@ -344,7 +344,7 @@
 
   async function refineDashboard(){
     const ready=await waitFor(()=>document.querySelector(".dashboardOverviewBand .dashboardControlRail")&&document.querySelector(".dashboardOverviewBand #metrics")&&document.querySelector(".dashboardPrimaryActions"));
-    if(!ready)return;
+    if(!ready||document.body.classList.contains("db72Consistency"))return;
 
     const pageHead=document.querySelector(".pageHead");
     const actions=document.querySelector(".dashboardActions");
@@ -358,6 +358,7 @@
     const dateField=controls.querySelector("#adminDate")?.closest(".filterField");
     const statusField=controls.querySelector("#adminStatus")?.closest(".filterField");
     const rangeHost=controls.querySelector(".dashboardRangeHost");
+    const refresh=controls.querySelector("#refreshDashboard");
 
     document.body.classList.add("layoutDisciplineDB36");
     pageHead?.classList.add("dashboardTitleRow");
@@ -371,7 +372,7 @@
       operational=makeGroup("dashboardOperationalControls","Dashboard filters");
       controls.prepend(operational);
     }
-    [dateField,statusField,rangeHost].forEach(item=>{if(item)operational.appendChild(item)});
+    [dateField,statusField,rangeHost,refresh].forEach(item=>{if(item)operational.appendChild(item)});
 
     identifyGroup(operational,"Schedule");
 
@@ -404,7 +405,7 @@
 
   async function refineQueue(){
     const ready=await waitFor(()=>document.querySelector(".queuePageHead")&&document.querySelector(".queueOpsToolbar")&&document.getElementById("queueToday")&&document.getElementById("queueCustomize"));
-    if(!ready)return;
+    if(!ready||document.body.classList.contains("db72Consistency"))return;
 
     const pageHead=document.querySelector(".queuePageHead");
     const toolbar=document.querySelector(".queueOpsToolbar");
@@ -1169,7 +1170,7 @@
     if(!button)return;
     button.classList.add("bookAppointmentBtnDB50");
     button.textContent="Book an Appointment";
-    button.href="./index.html?book=1&return=my-appointments&v=93-db71";
+    button.href="./index.html?book=1&return=my-appointments&v=94-db72";
   }
 
   function wrapCloseRequest(){
@@ -1179,7 +1180,7 @@
     window.closeRequest=function(){
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
-      location.replace("./my-appointments.html?v=93-db71");
+      location.replace("./my-appointments.html?v=94-db72");
     };
   }
 
@@ -1190,7 +1191,7 @@
     if(!document.body.classList.contains("maxdockContextReady"))return;
     if(db.isOperationalRole?.()&&PAGE!=="dashboard"){
       directBookingOpened=true;
-      location.replace("./dashboard.html?book=1&return=my-appointments&v=93-db71");
+      location.replace("./dashboard.html?book=1&return=my-appointments&v=94-db72");
       return;
     }
     if(!db.getCurrentLocation?.()||!db.getLocationData?.())return;
@@ -1275,7 +1276,7 @@
     if(heading.parentElement!==row)row.appendChild(heading);
     if(button.parentElement!==row)row.appendChild(button);
     button.classList.add("maxdockPrimaryActionDB51");
-    button.href="./index.html?book=1&return=my-appointments&v=93-db71";
+    button.href="./index.html?book=1&return=my-appointments&v=94-db72";
     if(!button.querySelector("svg")){
       const text=button.textContent.trim()||"Book an Appointment";
       button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM12 12v5M9.5 14.5h5"/></svg><span></span>';
@@ -1469,8 +1470,8 @@
   function roleAwareBookingUrl(){
     const role=window.MaxDockDB?.getProfile?.()?.role_code;
     return role&&role!=="customer"
-      ?"./dashboard.html?book=1&return=my-appointments&v=93-db71"
-      :"./index.html?book=1&return=my-appointments&v=93-db71";
+      ?"./dashboard.html?book=1&return=my-appointments&v=94-db72"
+      :"./index.html?book=1&return=my-appointments&v=94-db72";
   }
 
   function bookingContextReady(){
@@ -1570,7 +1571,7 @@
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
       $("requestModal")?.classList.remove("show");
-      location.replace("./my-appointments.html?v=93-db71");
+      location.replace("./my-appointments.html?v=94-db72");
     };
   }
 
@@ -1837,7 +1838,7 @@
   }
 
   function compactDashboardActions(){
-    if(PAGE!=="dashboard")return;
+    if(PAGE!=="dashboard"||document.body.classList.contains("db72Consistency"))return;
 
     const toolbar=document.querySelector(".dashboardWorkspaceToolbar");
     const operational=toolbar?.querySelector(".dashboardOperationalControls");
@@ -2090,6 +2091,7 @@
     }
     applyReportSelection();
   }
+  window.MaxDockEnsureReportGearDB72=ensureReportGear;
 
   function harmonizeReports(){
     if(PAGE!=="reports")return;
@@ -2159,7 +2161,7 @@
       important(link,"display",visible?"":"none");
       if(visible)link.removeAttribute("tabindex");else link.tabIndex=-1;
     });
-    if(PAGE==="settings")location.replace("./queue.html?v=93-db71");
+    if(PAGE==="settings")location.replace("./queue.html?v=94-db72");
     return true;
   }
 
@@ -2365,7 +2367,7 @@ const PAGE=document.body.dataset.page||"";
 const $=id=>document.getElementById(id);
 const imp=(el,p,v)=>el&&el.style.setProperty(p,v,"important");
 function pair(id){const control=$(id);if(!control)return null;const host=control.closest(".filterField,.rangeMetric")||control.parentElement;if(!host)return null;host.classList.add("db66FieldPair");const label=host.querySelector(":scope > label,:scope > small");if(label&&label.tagName==="SMALL"){const next=document.createElement("label");next.htmlFor=id;next.textContent=label.textContent.trim();label.replaceWith(next)}return host}
-function moveDashboardActions(){if(PAGE!=="dashboard")return;const filters=document.querySelector(".dashboardFilters");const primary=document.querySelector(".dashboardPrimaryActions");const utility=document.querySelector(".dashboardUtilityActions");const range=pair("dashboardRange");pair("adminDate");pair("adminStatus");if(filters&&primary&&range&&primary.parentElement!==filters)filters.insertBefore(primary,range);if(filters&&utility&&utility.parentElement!==filters)filters.appendChild(utility);const gear=document.querySelector("#dashboardCustomize,.dashboardCustomize");if(utility&&gear&&gear.parentElement!==utility){gear.classList.add("db66GearHost");utility.insertBefore(gear,utility.firstChild)}}
+function moveDashboardActions(){if(PAGE!=="dashboard")return;const filters=document.querySelector(".dashboardFilters");const primary=document.querySelector(".dashboardPrimaryActions");const utility=document.querySelector(".dashboardUtilityActions");const range=pair("dashboardRange");pair("adminDate");pair("adminStatus");if(filters&&primary&&range&&primary.parentElement!==filters){if(range.parentElement===filters)filters.insertBefore(primary,range);else filters.appendChild(primary)}if(filters&&utility&&utility.parentElement!==filters)filters.appendChild(utility);const gear=document.querySelector("#dashboardCustomize,.dashboardCustomize");if(utility&&gear&&gear.parentElement!==utility){gear.classList.add("db66GearHost");utility.insertBefore(gear,utility.firstChild)}}
 function harmonizeFields(){["adminDate","adminStatus","dashboardRange","queueDate","queueStatus","reportView","reportPreset","reportStart","reportEnd","myAppointmentFilter"].forEach(pair)}
 function gridCount(container,varName){if(!container)return;const visible=[...container.children].filter(el=>!el.hidden&&getComputedStyle(el).display!=="none").length||1;container.style.setProperty(varName,String(visible))}
 function harmonizeMetrics(){gridCount($("metrics"),"--db66-dashboard-columns");gridCount($("myAppointmentMetrics"),"--db66-appointment-columns");gridCount($("queueMetrics"),"--db66-queue-columns");gridCount($("reportMetrics"),"--db66-report-columns");const dashboard=$("metrics");if(dashboard)imp(dashboard,"grid-template-columns",`repeat(${Math.max(1,[...dashboard.children].filter(x=>!x.hidden).length)},minmax(0,1fr))`)}
@@ -2659,6 +2661,494 @@ function init(){
 
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
 else init();
+})();
+
+/* DB72: one final shared layout and interaction contract.
+   My Appointments is the visual reference for page actions and KPI cards. */
+(function(){
+  "use strict";
+
+  const PAGE=document.body.dataset.page||"";
+  const $=id=>document.getElementById(id);
+  const METRICS=[
+    {container:"metrics",toggle:"dashboardShowMetrics"},
+    {container:"myAppointmentMetrics",toggle:"myAppointmentsShowMetricsDB65"},
+    {container:"queueMetrics",toggle:"queueShowMetrics"},
+    {container:"reportMetrics",toggle:"db64ReportShowMetrics"}
+  ];
+  const CONTROL_WIDTHS={
+    adminDate:"152px",
+    adminStatus:"170px",
+    dashboardRange:"150px",
+    queueDate:"152px",
+    queueStatus:"154px",
+    reportView:"190px",
+    reportPreset:"170px",
+    reportStart:"150px",
+    reportEnd:"150px",
+    myAppointmentFilter:"170px"
+  };
+  let queued=false;
+
+  function important(element,property,value){
+    if(!element)return;
+    if(element.style.getPropertyValue(property)!==value||element.style.getPropertyPriority(property)!=="important"){
+      element.style.setProperty(property,value,"important");
+    }
+  }
+
+  function fieldPair(id){
+    const control=$(id);
+    if(!control)return null;
+    const host=control.closest(".filterField,.rangeMetric,.dashboardRangeHost")||control.parentElement;
+    if(!host)return null;
+    host.classList.add("db72FieldPair");
+    let label=host.querySelector(":scope > label,:scope > small");
+    if(label?.tagName==="SMALL"){
+      const replacement=document.createElement("label");
+      replacement.htmlFor=id;
+      replacement.textContent=label.textContent.trim();
+      label.replaceWith(replacement);
+      label=replacement;
+    }
+    if(label){
+      important(label,"position","static");
+      important(label,"inset","auto");
+      important(label,"display","block");
+      important(label,"flex","0 0 auto");
+      important(label,"width","auto");
+      important(label,"min-width","max-content");
+      important(label,"margin","0");
+      important(label,"padding","0");
+      important(label,"transform","none");
+      important(label,"white-space","nowrap");
+    }
+    important(host,"position","static");
+    important(host,"display","flex");
+    important(host,"align-items","center");
+    important(host,"flex","0 0 auto");
+    important(host,"gap","8px");
+    important(host,"width","auto");
+    important(host,"min-width","0");
+    important(host,"margin","0");
+    important(host,"padding","0");
+    important(host,"overflow","visible");
+    important(control,"position","static");
+    important(control,"flex","0 0 auto");
+    important(control,"width",CONTROL_WIDTHS[id]||"auto");
+    important(control,"min-width","0");
+    important(control,"height","40px");
+    important(control,"min-height","40px");
+    important(control,"max-height","40px");
+    important(control,"margin","0");
+    important(control,"transform","none");
+    return host;
+  }
+
+  function order(parent,elements){
+    if(!parent)return;
+    elements.filter(Boolean).forEach((element,index)=>{
+      if(element.parentElement!==parent||parent.children[index]!==element){
+        parent.insertBefore(element,parent.children[index]||null);
+      }
+    });
+  }
+
+  function markGear(details,label){
+    if(!details)return null;
+    details.classList.add("db72Gear");
+    const summary=details.querySelector(":scope > summary");
+    if(summary){
+      summary.title=label;
+      summary.setAttribute("aria-label",label);
+      summary.setAttribute("aria-expanded",String(details.open));
+    }
+    return details;
+  }
+
+  function normalizeDocumentActions(){
+    const pageHead=document.querySelector("main .pageHead");
+    const row=$("maxdockDocumentUtilityRow");
+    if(!pageHead||!row)return;
+    row.classList.add("db72TitleDocumentActions");
+    if(row.parentElement!==pageHead)pageHead.appendChild(row);
+    const tools=$("maxdockDocumentTools");
+    if(tools)tools.classList.add("db72DocumentTools");
+  }
+
+  function normalizeDashboard(){
+    if(PAGE!=="dashboard")return;
+    const toolbar=document.querySelector(".dashboardFilters");
+    if(!toolbar)return;
+    toolbar.classList.add("db72ControlBar","db72DashboardControlBar");
+    const date=fieldPair("adminDate");
+    const status=fieldPair("adminStatus");
+    const range=fieldPair("dashboardRange");
+    let primary=document.querySelector(".dashboardPrimaryActions");
+    if(!primary){
+      const actions=[...document.querySelectorAll(".dashboardActionPrimary")];
+      primary=document.createElement("div");
+      primary.className="dashboardPrimaryActions";
+      actions.forEach(action=>primary.appendChild(action));
+    }
+    const primaryActions=[...primary.querySelectorAll(".dashboardActionPrimary")];
+    const actionSpecs=[
+      {kind:"book",label:"Book Appointment",className:"appointmentActionBtn",handler:()=>window.openRequest?.()},
+      {kind:"block",label:"Block Time",className:"blockActionBtn",handler:()=>window.openBlockModal?.()}
+    ];
+    actionSpecs.forEach(spec=>{
+      let button=primaryActions.find(action=>action.classList.contains(spec.className)||action.dataset.db72DashboardAction===spec.kind);
+      if(!button){
+        button=document.createElement("button");
+        button.type="button";
+        button.className=`primaryBtn dashboardActionPrimary ${spec.className}`;
+        button.dataset.db72DashboardAction=spec.kind;
+        button.innerHTML=`<span class="buttonIcon" aria-hidden="true">${window.MAXDOCK_ICONS?.calendar||""}</span><span>${spec.label}</span>`;
+        button.addEventListener("click",spec.handler);
+        primary.appendChild(button);
+      }
+    });
+    if(!primary.childElementCount){
+      primary.remove();
+      primary=null;
+    }
+    const refresh=$("refreshDashboard");
+    const gear=markGear(document.querySelector("#dashboardCustomize,.dashboardCustomize"),"Customize dashboard");
+    if(primary)primary.classList.add("db72PrimaryActions");
+    if(refresh)refresh.classList.add("db72RefreshAction");
+    order(toolbar,[date,status,primary,range,refresh,gear]);
+    toolbar.querySelectorAll(":scope > .dashboardOperationalControls,:scope > .dashboardCommandStripDB54,:scope > .dashboardToolbarViewActions,:scope > .dashboardToolbarDocuments,:scope > .dashboardUtilityActions")
+      .forEach(group=>{if(!group.childElementCount)group.remove()});
+    toolbar.querySelectorAll(":scope > .rangeMetric").forEach(group=>{
+      if(!group.querySelector("#dashboardRange"))group.remove();
+    });
+    document.querySelectorAll(".pageHead .dashboardActions").forEach(group=>{if(!group.childElementCount)group.remove()});
+  }
+
+  function normalizeQueue(){
+    if(PAGE!=="queue")return;
+    const toolbar=document.querySelector(".queueFilters");
+    if(!toolbar)return;
+    toolbar.classList.add("db72ControlBar","db72QueueControlBar");
+    const date=fieldPair("queueDate");
+    const status=fieldPair("queueStatus");
+    let quick=toolbar.querySelector(":scope > .db72QueueQuickActions");
+    if(!quick){
+      quick=toolbar.querySelector(":scope > .queueFilterActions")||document.createElement("div");
+      quick.classList.add("db72QueueQuickActions");
+      quick.setAttribute("role","group");
+      quick.setAttribute("aria-label","Queue date and refresh actions");
+    }
+    [$("queueToday"),$("queueTomorrow"),$("refreshQueue")].filter(Boolean).forEach(button=>quick.appendChild(button));
+    let right=toolbar.querySelector(":scope > .db72QueueRightActions");
+    if(!right){
+      right=document.createElement("div");
+      right.className="db72QueueRightActions";
+      right.setAttribute("role","group");
+      right.setAttribute("aria-label","Queue display and settings actions");
+    }
+    const display=$("openQueueDisplay");
+    const gear=markGear($("queueCustomize"),"Customize operations queue");
+    if(display){
+      display.disabled=false;
+      display.removeAttribute("aria-disabled");
+      right.appendChild(display);
+    }
+    if(gear)right.appendChild(gear);
+    order(toolbar,[date,status,quick,right]);
+    toolbar.querySelectorAll(":scope > .db69QueueRightActions,:scope > .db70QueueRightActions")
+      .forEach(group=>{if(group!==right&&!group.childElementCount)group.remove()});
+  }
+
+  function normalizeReports(){
+    if(PAGE!=="reports")return;
+    const toolbar=document.querySelector(".reportFilters");
+    if(!toolbar)return;
+    toolbar.classList.add("db72ControlBar","db72ReportControlBar");
+    window.MaxDockEnsureReportGearDB72?.();
+    const view=fieldPair("reportView");
+    const preset=fieldPair("reportPreset");
+    fieldPair("reportStart");
+    fieldPair("reportEnd");
+    const custom=$("reportCustomDates");
+    const update=$("runReport");
+    const gear=markGear($("db64ReportCustomize"),"Customize report KPIs");
+    if(update)update.classList.add("db72UpdateAction");
+    order(toolbar,[view,preset,custom,update,gear]);
+    toolbar.querySelectorAll(":scope > .db69ReportRightActions,:scope > .db70ReportRightActions")
+      .forEach(group=>{if(!group.childElementCount)group.remove()});
+    document.querySelectorAll("#reportPreferenceStatus,.reportFilters>.preferenceSyncStatus").forEach(status=>status.remove());
+  }
+
+  function normalizeMyAppointments(){
+    if(PAGE!=="myappointments")return;
+    fieldPair("myAppointmentFilter");
+    const bookingBar=document.querySelector(".myAppointmentsBookingBarDB52");
+    const book=$("bookAppointmentFromMyAppointments");
+    const gear=markGear($("myAppointmentsCustomizeDB65"),"Customize appointment KPIs");
+    if(!bookingBar)return;
+    bookingBar.classList.add("db72MyAppointmentsReference");
+    if(book)bookingBar.appendChild(book);
+    if(gear)bookingBar.appendChild(gear);
+  }
+
+  function visibleMetricCards(container){
+    return [...container.children].filter(card=>{
+      if(card.hidden||card.classList.contains("metricHidden"))return false;
+      return getComputedStyle(card).display!=="none";
+    });
+  }
+
+  function syncMetricContainer({container:containerId,toggle:toggleId}){
+    const container=$(containerId);
+    if(!container)return;
+    const toggle=$(toggleId);
+    const show=toggle?Boolean(toggle.checked):!container.hidden;
+    if(!show){
+      container.hidden=true;
+      container.classList.add("metricsDashboardHidden","db72Metrics");
+      container.setAttribute("aria-hidden","true");
+      important(container,"display","none");
+      important(container,"height","0px");
+      important(container,"min-height","0px");
+      important(container,"max-height","0px");
+      important(container,"margin","0px");
+      return;
+    }
+
+    container.hidden=false;
+    container.classList.remove("metricsDashboardHidden");
+    container.classList.add("db72Metrics");
+    container.setAttribute("aria-hidden","false");
+    const cards=visibleMetricCards(container);
+    const count=Math.max(1,cards.length);
+    const compact=window.innerWidth<=1180;
+    important(container,"display","grid");
+    important(container,"grid-template-columns",compact?"repeat(auto-fit,minmax(180px,1fr))":`repeat(${count},minmax(0,1fr))`);
+    important(container,"grid-auto-rows",compact?"minmax(78px,auto)":"78px");
+    important(container,"height",compact?"auto":"78px");
+    important(container,"min-height",compact?"0px":"78px");
+    important(container,"max-height",compact?"none":"78px");
+    important(container,"margin","0px 0px 10px");
+    cards.forEach(card=>{
+      card.classList.add("db72MetricCard");
+      important(card,"display","grid");
+      important(card,"grid-template-columns","40px minmax(0,1fr)");
+      important(card,"grid-template-rows","auto auto");
+      important(card,"height",compact?"auto":"78px");
+      important(card,"min-height","78px");
+      important(card,"max-height",compact?"none":"78px");
+      important(card,"margin","0px");
+      const icon=card.querySelector(":scope > .metricIconDB47");
+      if(icon){
+        important(icon,"position","static");
+        important(icon,"inset","auto");
+        important(icon,"transform","none");
+        important(icon,"grid-column","1");
+        important(icon,"grid-row","1 / 3");
+        important(icon,"place-self","center");
+        important(icon,"margin","0");
+      }
+      const value=card.querySelector(":scope > strong");
+      const label=card.querySelector(":scope > small");
+      if(value){
+        important(value,"position","static");
+        important(value,"grid-column","2");
+        important(value,"grid-row","1");
+        important(value,"align-self","end");
+        important(value,"justify-self","start");
+        important(value,"margin","0");
+        important(value,"transform","none");
+        important(value,"text-align","left");
+      }
+      if(label){
+        important(label,"position","static");
+        important(label,"grid-column","2");
+        important(label,"grid-row","2");
+        important(label,"align-self","start");
+        important(label,"justify-self","start");
+        important(label,"margin","0");
+        important(label,"transform","none");
+        important(label,"text-align","left");
+      }
+      const delta=card.querySelector(":scope > .metricDelta");
+      if(delta)delta.hidden=true;
+    });
+  }
+
+  function syncMetrics(){
+    METRICS.forEach(syncMetricContainer);
+  }
+
+  function activateSettingsSection(workspace,name,{persist=true}={}){
+    const buttons=[...workspace.querySelectorAll(".sectionWorkspaceTabs>[data-section-target]")];
+    const panels=[...workspace.querySelectorAll(".sectionWorkspaceContent>[data-section-panel]")];
+    const selected=buttons.find(button=>button.dataset.sectionTarget===name)||buttons[0];
+    if(!selected)return;
+    const active=selected.dataset.sectionTarget;
+    buttons.forEach((button,index)=>{
+      const isActive=button===selected;
+      if(!button.id)button.id=`settings-db72-tab-${index+1}`;
+      button.classList.toggle("isActive",isActive);
+      if(button.getAttribute("aria-selected")!==String(isActive))button.setAttribute("aria-selected",String(isActive));
+      button.tabIndex=isActive?0:-1;
+    });
+    panels.forEach(panel=>{
+      const isActive=panel.dataset.sectionPanel===active;
+      if(panel.hidden===isActive)panel.hidden=!isActive;
+      if(panel.getAttribute("aria-hidden")!==String(!isActive))panel.setAttribute("aria-hidden",String(!isActive));
+      panel.style.setProperty("display",isActive?"block":"none","important");
+      const controller=buttons.find(button=>button.dataset.sectionTarget===panel.dataset.sectionPanel);
+      if(controller&&panel.getAttribute("aria-labelledby")!==controller.id)panel.setAttribute("aria-labelledby",controller.id);
+    });
+    if(persist){
+      try{localStorage.setItem("maxdock-db72-settings-section",active)}catch(_error){}
+    }
+  }
+
+  async function runSettingsAction(kind,source){
+    const buttons=[...document.querySelectorAll(`[data-settings-action="${kind}"]`)];
+    const original=source.textContent;
+    buttons.forEach(button=>button.disabled=true);
+    source.textContent=kind==="save"?"Saving…":"Loading…";
+    try{
+      const action=kind==="save"?window.saveSettings:window.resetSettings;
+      if(typeof action==="function")await action();
+    }finally{
+      buttons.forEach(button=>button.disabled=false);
+      source.textContent=original;
+    }
+  }
+
+  function ensureSettingsActions(panel){
+    let actions=panel.querySelector(":scope > .db72SettingsSectionActions");
+    if(actions)return actions;
+    actions=document.createElement("div");
+    actions.className="db72SettingsSectionActions";
+    actions.setAttribute("role","group");
+    actions.setAttribute("aria-label","Settings actions");
+    const save=document.createElement("button");
+    save.type="button";
+    save.className="greenBtn";
+    save.dataset.settingsAction="save";
+    save.textContent="Save Settings";
+    const reset=document.createElement("button");
+    reset.type="button";
+    reset.className="secondaryBtn destructiveSecondary";
+    reset.dataset.settingsAction="reset";
+    reset.textContent="Reset Defaults";
+    save.addEventListener("click",()=>runSettingsAction("save",save));
+    reset.addEventListener("click",()=>runSettingsAction("reset",reset));
+    actions.append(save,reset);
+    panel.appendChild(actions);
+    return actions;
+  }
+
+  function normalizeSettings(){
+    if(PAGE!=="settings")return;
+    document.querySelector(".pageHead>.compactPageActions")?.classList.add("db72LegacySettingsActions");
+    const unsaved=$("settingsUnsavedBar");
+    if(unsaved)unsaved.classList.add("db72SettingsUnsavedBar");
+    const workspace=document.querySelector(".settingsWorkspace");
+    if(!workspace)return;
+    workspace.classList.add("db72SettingsWorkspace");
+    const buttons=[...workspace.querySelectorAll(".sectionWorkspaceTabs>[data-section-target]")];
+    const panels=[...workspace.querySelectorAll(".sectionWorkspaceContent>[data-section-panel]")];
+    panels.forEach(ensureSettingsActions);
+    buttons.forEach(button=>{
+      if(button.dataset.db72SettingsBound)return;
+      button.dataset.db72SettingsBound="true";
+      button.addEventListener("click",event=>{
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        activateSettingsSection(workspace,button.dataset.sectionTarget);
+      },true);
+    });
+    let initial=buttons.find(button=>button.getAttribute("aria-selected")==="true")?.dataset.sectionTarget
+      ||workspace.dataset.defaultSection
+      ||buttons[0]?.dataset.sectionTarget;
+    try{initial=localStorage.getItem("maxdock-db72-settings-section")||initial}catch(_error){}
+    activateSettingsSection(workspace,initial,{persist:false});
+  }
+
+  function hidePreferenceWarnings(){
+    document.querySelectorAll(".dashboardCustomizeMenu .preferenceSyncStatus,.queueCustomizeMenu .preferenceSyncStatus,.db64ReportCustomizeMenu .preferenceSyncStatus,.myAppointmentsCustomizeMenuDB65 .preferenceSyncStatus")
+      .forEach(status=>{status.hidden=true;status.setAttribute("aria-hidden","true")});
+  }
+
+  function normalize(){
+    document.body.classList.add("db72Consistency");
+    normalizeDocumentActions();
+    normalizeDashboard();
+    normalizeQueue();
+    normalizeReports();
+    normalizeMyAppointments();
+    normalizeSettings();
+    hidePreferenceWarnings();
+    syncMetrics();
+  }
+
+  function queueNormalize(){
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(()=>{
+      queued=false;
+      normalize();
+    });
+  }
+
+  function installObservers(){
+    document.querySelectorAll(".dashboardFilters,.queueFilters,.reportFilters,.myAppointmentsBookingBarDB52")
+      .forEach(toolbar=>{
+        if(toolbar.dataset.db72Observed)return;
+        toolbar.dataset.db72Observed="true";
+        new window.MaxDockSharedMutationObserver(queueNormalize).observe(toolbar,{childList:true,subtree:false});
+      });
+    METRICS.forEach(({container})=>{
+      const element=$(container);
+      if(!element||element.dataset.db72Observed)return;
+      element.dataset.db72Observed="true";
+      new window.MaxDockSharedMutationObserver(queueNormalize).observe(element,{
+        childList:true,
+        subtree:false,
+        attributes:true,
+        attributeFilter:["hidden","class","style"]
+      });
+    });
+    const settings=document.querySelector(".settingsWorkspace");
+    if(settings&&!settings.dataset.db72Observed){
+      settings.dataset.db72Observed="true";
+      new window.MaxDockSharedMutationObserver(queueNormalize).observe(settings,{
+        childList:true,
+        subtree:true,
+        attributes:true,
+        attributeFilter:["hidden","aria-selected"]
+      });
+    }
+  }
+
+  function initialize(){
+    normalize();
+    installObservers();
+    [60,180,420,850,1500,3200].forEach(delay=>setTimeout(()=>{
+      normalize();
+      installObservers();
+    },delay));
+    document.addEventListener("change",event=>{
+      if(event.target.matches("#dashboardShowMetrics,#myAppointmentsShowMetricsDB65,#queueShowMetrics,#db64ReportShowMetrics,input[type='checkbox']")){
+        queueNormalize();
+      }
+    },true);
+    document.addEventListener("toggle",event=>{
+      const details=event.target.closest?.(".db72Gear");
+      const summary=details?.querySelector(":scope > summary");
+      if(summary)summary.setAttribute("aria-expanded",String(details.open));
+    },true);
+    window.addEventListener("resize",queueNormalize,{passive:true});
+  }
+
+  window.MaxDockDB72Consistency={normalize,installObservers};
+  initialize();
 })();
 
 /* Consolidated from maxdock-db70.js. */
@@ -2971,4 +3461,17 @@ else init();
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
   else init();
+})();
+
+/* DB72 deliberately runs after every consolidated legacy module so the current
+   release remains the final authority when older compatibility code also moves
+   the shared controls. */
+(function(){
+  "use strict";
+  function finalize(){
+    window.MaxDockDB72Consistency?.normalize();
+    window.MaxDockDB72Consistency?.installObservers();
+  }
+  finalize();
+  [100,360,900,1800,3400].forEach(delay=>setTimeout(finalize,delay));
 })();
