@@ -48,7 +48,7 @@ for(const file of mirrored){
 
 for(const page of pages){
   const source=read(page);
-  check(source.includes("95-db73"),`${page} is missing the DB73 cache marker.`);
+  check(source.includes("96-db74"),`${page} is missing the DB73 cache marker.`);
   check(!source.includes("94-db72"),`${page} still references DB72 assets.`);
   check((source.match(/<link rel="stylesheet"/g)||[]).length===1,`${page} must load exactly one stylesheet.`);
 
@@ -65,8 +65,8 @@ for(const page of pages){
   check(!numberedPatchAssets.length,`${page} loads numbered patch assets: ${numberedPatchAssets.join(", ")}.`);
 }
 
-contains(config,'version: "MaxDock-v95-DB73"',"Runtime version is not DB73.");
-contains(config,'loadScript("maxdock-layout-discipline.js","95-db73","db73-layout")',"DB73 layout loader is missing.");
+contains(config,'version: "MaxDock-v96-DB74"',"Runtime version is not DB73.");
+contains(config,'loadScript("maxdock-layout-discipline.js","96-db74","db73-layout")',"DB73 layout loader is missing.");
 contains(config,'dataset.maxdockRelease="db73"',"Document release marker is not DB73.");
 contains(config,'stamp.textContent="DB73 · shared layout repair"',"Visible release stamp is not DB73.");
 contains(config,'document.addEventListener("DOMContentLoaded",initialize,{once:true})',"DB73 layout does not start at DOMContentLoaded.");

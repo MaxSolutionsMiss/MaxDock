@@ -60,6 +60,148 @@
   };
 })();
 
+/* DB74: targeted regression repair.
+   Keep the consolidated runtime authoritative without adding another patch asset. */
+(function(){
+  "use strict";
+
+  const PAGE=document.body.dataset.page||"";
+  const $=id=>document.getElementById(id);
+  const METRIC_CONTAINERS=["metrics","myAppointmentMetrics","queueMetrics","reportMetrics"];
+  const GEAR_SELECTOR="#dashboardCustomize,.dashboardCustomize,#queueCustomize,#db64ReportCustomize,#myAppointmentsCustomizeDB65";
+  const METRIC_ICON='<svg data-icon="line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m5 10V5m5 14v-7m5 7V3"/></svg>';
+
+  function toneFor(card,index){
+    const text=`${card.querySelector("small")?.textContent||""} ${card.className}`.toLowerCase();
+    if(text.includes("complete"))return "completed";
+    if(text.includes("inbound"))return "inbound";
+    if(text.includes("outbound"))return "outbound";
+    if(text.includes("priority"))return "priority";
+    if(text.includes("skid"))return "skids";
+    if(text.includes("block"))return "blocks";
+    if(text.includes("soon")||text.includes("late"))return "soon";
+    if(text.includes("pending"))return "pending";
+    if(text.includes("open")||text.includes("available"))return "open-slots";
+    return ["appointments","scheduled","completed","priority","open-slots","inbound","outbound"][index%7];
+  }
+
+  function normalizeMetrics(){
+    METRIC_CONTAINERS.forEach(id=>{
+      const container=$(id);
+      if(!container)return;
+      container.classList.add("db74Metrics");
+      [...container.children].forEach((card,index)=>{
+        card.classList.add("db74MetricCard");
+        card.dataset.metricTone=toneFor(card,index);
+        let icon=card.querySelector(":scope > .metricIconDB47");
+        if(!icon){
+          icon=document.createElement("span");
+          icon.className="metricIconDB47";
+          icon.innerHTML=METRIC_ICON;
+          card.prepend(icon);
+        }
+      });
+    });
+  }
+
+  function bindGears(){
+    document.querySelectorAll(GEAR_SELECTOR).forEach(details=>{
+      const summary=details.querySelector(":scope > summary");
+      if(!summary||summary.dataset.db74Bound)return;
+      summary.dataset.db74Bound="true";
+      summary.addEventListener("click",event=>{
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        details.open=!details.open;
+        summary.setAttribute("aria-expanded",String(details.open));
+      },true);
+      details.addEventListener("toggle",()=>summary.setAttribute("aria-expanded",String(details.open)));
+    });
+  }
+
+  function bookingUrl(){
+    const role=window.MaxDockDB?.getProfile?.()?.role_code;
+    const operational=["system_admin","site_admin","shipping_manager","coordinator"].includes(role);
+    return `./${operational?"dashboard":"index"}.html?book=1&return=my-appointments&v=96-db74`;
+  }
+
+  function bindBooking(){
+    const button=$("bookAppointmentFromMyAppointments");
+    if(!button||button.dataset.db74Bound)return;
+    button.dataset.db74Bound="true";
+    button.disabled=false;
+    button.removeAttribute("aria-disabled");
+    button.addEventListener("click",event=>{
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if(!window.MaxDockDB?.getProfile?.()){
+        window.MaxDockUI?.toast?.("MaxDock is still loading your access. Please try again.",{tone:"error"});
+        return;
+      }
+      if(!window.MaxDockDB?.hasPermission?.("appointment.create")){
+        window.MaxDockUI?.toast?.("This account does not have permission to create appointments.",{tone:"error"});
+        return;
+      }
+      location.assign(bookingUrl());
+    },true);
+  }
+
+  function bindQueueFullscreen(){
+    if(PAGE!=="queue")return;
+    const button=$("openQueueDisplay");
+    if(!button)return;
+    button.disabled=false;
+    button.removeAttribute("aria-disabled");
+    window.openQueueDisplay=function(){
+      document.body.classList.add("queueDisplayMode");
+      const bar=$("queueDisplayBar");
+      if(bar)bar.hidden=false;
+      button.hidden=true;
+      if(document.documentElement.requestFullscreen&&!document.fullscreenElement){
+        document.documentElement.requestFullscreen().catch(()=>{});
+      }
+    };
+  }
+
+  function orderDashboard(){
+    if(PAGE!=="dashboard")return;
+    const toolbar=document.querySelector(".dashboardFilters");
+    if(!toolbar)return;
+    const field=id=>$(id)?.closest(".db72FieldPair,.filterField,.rangeMetric,.dashboardRangeHost");
+    const date=field("adminDate");
+    const range=field("dashboardRange");
+    const refresh=$("refreshDashboard");
+    const status=field("adminStatus");
+    const actions=document.querySelector(".dashboardPrimaryActions");
+    const gear=document.querySelector("#dashboardCustomize,.dashboardCustomize");
+    [date,range,refresh,status,actions,gear].filter(Boolean).forEach(item=>toolbar.appendChild(item));
+  }
+
+  function normalize(){
+    document.body.classList.add("db74RegressionRepair");
+    normalizeMetrics();
+    bindGears();
+    bindBooking();
+    bindQueueFullscreen();
+    orderDashboard();
+  }
+
+  window.MaxDockDB74RegressionRepair={normalize};
+  normalize();
+  document.addEventListener("DOMContentLoaded",normalize,{once:true});
+  window.setTimeout(normalize,500);
+  window.setTimeout(normalize,3800);
+  const root=document.querySelector("main");
+  if(root&&window.MutationObserver){
+    let queued=false;
+    new MutationObserver(records=>{
+      if(queued||!records.some(record=>record.type==="childList"))return;
+      queued=true;
+      requestAnimationFrame(()=>{queued=false;normalize()});
+    }).observe(root,{childList:true,subtree:true});
+  }
+})();
+
 /* Consolidated from maxdock-ops-density.js. */
 (function(){
   "use strict";
@@ -1186,7 +1328,7 @@
     if(!button)return;
     button.classList.add("bookAppointmentBtnDB50");
     button.textContent="Book an Appointment";
-    button.href="./index.html?book=1&return=my-appointments&v=95-db73";
+    button.href="./index.html?book=1&return=my-appointments&v=96-db74";
   }
 
   function wrapCloseRequest(){
@@ -1196,7 +1338,7 @@
     window.closeRequest=function(){
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
-      location.replace("./my-appointments.html?v=95-db73");
+      location.replace("./my-appointments.html?v=96-db74");
     };
   }
 
@@ -1207,7 +1349,7 @@
     if(!document.body.classList.contains("maxdockContextReady"))return;
     if(db.isOperationalRole?.()&&PAGE!=="dashboard"){
       directBookingOpened=true;
-      location.replace("./dashboard.html?book=1&return=my-appointments&v=95-db73");
+      location.replace("./dashboard.html?book=1&return=my-appointments&v=96-db74");
       return;
     }
     if(!db.getCurrentLocation?.()||!db.getLocationData?.())return;
@@ -1292,7 +1434,7 @@
     if(heading.parentElement!==row)row.appendChild(heading);
     if(button.parentElement!==row)row.appendChild(button);
     button.classList.add("maxdockPrimaryActionDB51");
-    button.href="./index.html?book=1&return=my-appointments&v=95-db73";
+    button.href="./index.html?book=1&return=my-appointments&v=96-db74";
     if(!button.querySelector("svg")){
       const text=button.textContent.trim()||"Book an Appointment";
       button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM12 12v5M9.5 14.5h5"/></svg><span></span>';
@@ -1486,8 +1628,8 @@
   function roleAwareBookingUrl(){
     const role=window.MaxDockDB?.getProfile?.()?.role_code;
     return role&&role!=="customer"
-      ?"./dashboard.html?book=1&return=my-appointments&v=95-db73"
-      :"./index.html?book=1&return=my-appointments&v=95-db73";
+      ?"./dashboard.html?book=1&return=my-appointments&v=96-db74"
+      :"./index.html?book=1&return=my-appointments&v=96-db74";
   }
 
   function bookingContextReady(){
@@ -1587,7 +1729,7 @@
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
       $("requestModal")?.classList.remove("show");
-      location.replace("./my-appointments.html?v=95-db73");
+      location.replace("./my-appointments.html?v=96-db74");
     };
   }
 
@@ -2177,7 +2319,7 @@
       important(link,"display",visible?"":"none");
       if(visible)link.removeAttribute("tabindex");else link.tabIndex=-1;
     });
-    if(PAGE==="settings")location.replace("./queue.html?v=95-db73");
+    if(PAGE==="settings")location.replace("./queue.html?v=96-db74");
     return true;
   }
 
@@ -3519,3 +3661,6 @@ else init();
   }
   finalize();
 })();
+
+/* Run the targeted regression contract after every consolidated legacy layer. */
+window.MaxDockDB74RegressionRepair?.normalize();
