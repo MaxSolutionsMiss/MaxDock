@@ -35,7 +35,7 @@
       important(link,"display",visible?"":"none");
       if(visible)link.removeAttribute("tabindex");else link.tabIndex=-1;
     });
-    if(PAGE==="settings")location.replace("./queue.html?v=86-db65");
+    if(PAGE==="settings")location.replace("./queue.html?v=91-db70");
     return true;
   }
 

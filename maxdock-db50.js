@@ -24,7 +24,7 @@
     if(!button)return;
     button.classList.add("bookAppointmentBtnDB50");
     button.textContent="Book an Appointment";
-    button.href="./index.html?book=1&return=my-appointments&v=71-db50";
+    button.href="./index.html?book=1&return=my-appointments&v=91-db70";
   }
 
   function wrapCloseRequest(){
@@ -34,7 +34,7 @@
     window.closeRequest=function(){
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
-      location.replace("./my-appointments.html?v=71-db50");
+      location.replace("./my-appointments.html?v=91-db70");
     };
   }
 
@@ -42,6 +42,14 @@
     if(!directBooking||directBookingOpened)return;
     const db=window.MaxDockDB;
     if(!db?.getProfile?.()||typeof window.openRequest!=="function"||!document.getElementById("requestModal"))return;
+    if(!document.body.classList.contains("maxdockContextReady"))return;
+    if(db.isOperationalRole?.()&&PAGE!=="dashboard"){
+      directBookingOpened=true;
+      location.replace("./dashboard.html?book=1&return=my-appointments&v=91-db70");
+      return;
+    }
+    if(!db.getCurrentLocation?.()||!db.getLocationData?.())return;
+    if(!db.hasPermission?.("appointment.create"))return;
     directBookingOpened=true;
     document.body.classList.add("directBookingDB50");
     wrapCloseRequest();
