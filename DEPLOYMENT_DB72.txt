@@ -1,0 +1,53 @@
+MaxDock DB72 — Cross-Page Consistency Repair
+============================================
+
+Status
+------
+- Review candidate. DB71 remains the live and rollback reference until approval.
+- DB71 reference commit: 65869d984b4e58d0141a7eb20674cf73fb156b29
+- Browser cache marker: v94-db72
+
+Purpose
+-------
+DB72 applies one final shared interface contract to the current DB71 source.
+My Appointments remains the visual reference for page-title document actions,
+far-right settings controls, and horizontal KPI cards.
+
+Repairs
+-------
+- Places Export CSV and Print in one two-icon group at the far right of every
+  signed-in page title without adding another row or pushing page content down.
+- Keeps each relevant gear at the far right of its page control bar.
+- Restores Queue full-screen/settings controls and moves both to the right-side
+  action group.
+- Keeps Queue date, view, Today, Tomorrow, and Refresh controls together at the
+  left side of the toolbar.
+- Makes the Queue metrics master toggle hide or show the complete KPI section.
+- Rebuilds Dashboard controls in the approved order: date, status, Book
+  Appointment, Block Time, date range, Refresh, and far-right gear.
+- Prevents Dashboard label/field overlap and protects Book/Block/Refresh controls
+  from older consolidated layout controllers.
+- Makes Reports Update the same 40px height as its fields, removes the
+  save-to-login warning, and keeps the report gear at the far right.
+- Uses the My Appointments 78px horizontal icon/value/label card pattern for
+  Dashboard, Queue, Reports, and My Appointments KPIs.
+- Repairs Settings navigation so exactly one selected panel is visible and adds
+  Save Settings and Reset Defaults at the bottom of all five setting panels.
+- Retains the shared operational-location contract: System Admin may select the
+  active location; fixed-location operational roles see their assigned location.
+- Removes stale empty legacy wrappers that could displace current controls.
+
+Release safeguards
+------------------
+- Root and db04 release files are identical.
+- No new release-numbered CSS or JavaScript patch assets were added.
+- Consolidated JavaScript passes syntax validation.
+- DB72 source-contract and runtime DOM checks cover Dashboard, Queue, Reports,
+  My Appointments, Settings navigation, KPI toggles, and document actions.
+- Release identifiers and cache markers were advanced to DB72 / v94-db72.
+
+Rollback
+--------
+Before approval, close the DB72 pull request; DB71 remains untouched.
+After an approved deployment, restore static content from commit
+65869d984b4e58d0141a7eb20674cf73fb156b29.
