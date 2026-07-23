@@ -1,115 +1,133 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
-<meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
-<link href="./maxdock.css?v=89-db68" rel="stylesheet"/>
-<link href="./maxdock-db04.css?v=89-db68" rel="stylesheet"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<link rel="stylesheet" href="./maxdock.css?v=68-db47">
+<link rel="stylesheet" href="./maxdock-db04.css?v=68-db47">
 <title>MaxDock – Operation Queue</title>
 </head>
-<body data-page="queue" data-release="db68">
+<body data-page="queue">
 <header class="topbar">
-<div class="topbarInner">
-<div class="brandRow"><div class="brand">
-<a aria-label="Go to MaxDock main page" class="logoLink" href="./index.html?v=89-db68"><div class="logo"><img alt="Max Solutions mark" class="logoMark" src="./max-solutions-mark.png"/></div></a>
-<div><h1 class="appTitle">MaxDock</h1><p class="appSub">Max Solutions Packaging Inc.</p></div>
-</div></div>
-<div class="headerActions">
-<div class="locationPill" id="queueLocationPill"><label for="queueLocation">Location</label><select id="queueLocation"></select></div>
-<a class="ghostBtn" href="./index.html?v=89-db68">Main Page</a>
-<details class="menuDetails">
-<summary aria-label="Open menu" class="iconBtn" title="Menu"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"></path></svg></summary>
-<nav class="menu">
-<a href="./my-appointments.html?v=89-db68">My Appointments</a>
-<a aria-current="page" href="./queue.html?v=89-db68">Operation Queue</a>
-<a href="./reports.html?v=89-db68">Reports</a>
-<a href="./dashboard.html?v=89-db68">Dashboard</a>
-<a href="./settings.html?v=89-db68">Settings</a>
-<a href="./admin.html?v=89-db68">User Management</a>
-<a href="./data.html?v=89-db68">Data Integration</a>
-</nav>
-</details>
-</div>
-</div>
+  <div class="topbarInner">
+    <div class="brandRow"><div class="brand">
+      <a class="logoLink" href="./index.html?v=68-db47" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+      <div><h1 class="appTitle">MaxDock</h1><p class="appSub">Max Solutions Packaging Inc.</p></div>
+    </div></div>
+    <div class="headerActions">
+      <div class="locationPill" id="queueLocationPill"><label for="queueLocation">Location</label><select id="queueLocation"></select></div>
+      <a class="ghostBtn" href="./index.html?v=68-db47">Main Page</a>
+      <details class="menuDetails">
+        <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
+        <nav class="menu">
+          <a href="./my-appointments.html?v=68-db47">My Appointments</a>
+          <a href="./queue.html?v=68-db47" aria-current="page">Operation Queue</a>
+          <a href="./reports.html?v=68-db47">Reports</a>
+          <a href="./dashboard.html?v=68-db47">Dashboard</a>
+          <a href="./settings.html?v=68-db47">Settings</a>
+          <a href="./admin.html?v=68-db47">User Management</a>
+          <a href="./data.html?v=68-db47">Data Integration</a>
+        </nav>
+      </details>
+    </div>
+  </div>
 </header>
+
 <main class="screen pageWrap">
-<div class="queueDisplayBar" hidden="" id="queueDisplayBar">
-<div><span class="liveDot"></span><div><strong>Operation Queue</strong><span id="queueDisplayStatus">Live queue display · updates every 3 minutes</span></div></div>
-<div class="queueDisplayActions"><button class="secondaryBtn utilityBtn" onclick="closeQueueDisplay()" type="button">Close Display</button></div>
-</div>
-<div class="pageHead queuePageHead">
-<div><h2>Operation Queue</h2><p>Today’s inbound, outbound, and dock-readiness execution list.</p><small class="liveDataStatus" id="queueLiveStatus"><span class="liveDot"></span>Live appointments · refreshes every 3 minutes</small></div>
+  <div class="queueDisplayBar" id="queueDisplayBar" hidden>
+    <div><span class="liveDot"></span><div><strong>Operation Queue</strong><span id="queueDisplayStatus">Live queue display · updates every 3 minutes</span></div></div>
+    <div class="queueDisplayActions"><button class="secondaryBtn utilityBtn" type="button" onclick="closeQueueDisplay()">Close Display</button></div>
+  </div>
+  <div class="pageHead queuePageHead">
+    <div><h2>Operation Queue</h2><p>Today’s inbound, outbound, and dock-readiness execution list.</p><small class="liveDataStatus" id="queueLiveStatus"><span class="liveDot"></span>Live appointments · refreshes every 3 minutes</small></div>
+    <div class="toolbar utilityToolbar pageUtilityActions" role="group" aria-label="Document actions"><button class="secondaryBtn utilityBtn" id="exportQueue" type="button">Export CSV</button><button class="secondaryBtn utilityBtn" id="printQueue" type="button">Print</button></div>
+  </div>
 
-</div>
-<div class="db68ControlBar queueControlBar"><div class="db68ControlMain"><div class="filterField"><label for="queueDate">Operating Date</label><input id="queueDate" type="date"/></div><div class="filterField"><label for="queueStatus">Queue View</label><select id="queueStatus"><option value="pending">Pending</option><option value="all">All</option><option value="completed">Completed</option></select></div><button class="secondaryBtn filterActionBtn" id="queueToday" type="button">Today</button><button class="secondaryBtn filterActionBtn" id="queueTomorrow" type="button">Tomorrow</button><button class="primaryBtn filterActionBtn" id="refreshQueue" type="button">Refresh</button></div><div class="db68ControlEnd"><button class="secondaryBtn filterActionBtn" id="openQueueDisplay" type="button">Open Full-Screen View</button><button class="secondaryBtn utilityBtn" id="exportQueue" type="button">Export CSV</button><button class="secondaryBtn utilityBtn" id="printQueue" type="button">Print</button><details class="queueCustomize db68Customize" id="queueCustomize">
-<summary aria-label="Customize operation queue" class="db68GearButton" title="Customize operation queue"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"></path></svg></summary>
-<div class="queueCustomizeMenu" id="queueCustomizeMenu">
-<fieldset><legend>Shift brief cards</legend>
-<label><input checked="" data-pref-section="brief" type="checkbox" value="first"/>First load</label>
-<label><input checked="" data-pref-section="brief" type="checkbox" value="peak"/>Peak period</label>
-<label><input checked="" data-pref-section="brief" type="checkbox" value="docks"/>Doors in use</label>
-<label><input checked="" data-pref-section="brief" type="checkbox" value="priority"/>Priority loads</label>
-<label><input checked="" data-pref-section="brief" type="checkbox" value="review"/>Needs review</label>
-</fieldset>
-<fieldset><legend>Queue metrics</legend>
-<label><input checked="" data-pref-section="metrics" type="checkbox" value="pending"/>Pending</label>
-<label><input checked="" data-pref-section="metrics" type="checkbox" value="completed"/>Completed</label>
-<label><input checked="" data-pref-section="metrics" type="checkbox" value="inbound"/>Inbound</label>
-<label><input checked="" data-pref-section="metrics" type="checkbox" value="outbound"/>Outbound</label>
-<label><input checked="" data-pref-section="metrics" type="checkbox" value="skids"/>Pending skids</label>
-<label><input checked="" data-pref-section="metrics" type="checkbox" value="blocks"/>Dock blocks</label>
-<label><input checked="" data-pref-section="metrics" type="checkbox" value="priority"/>Priority loads</label>
-<label><input checked="" data-pref-section="metrics" type="checkbox" value="soon"/>Due soon</label>
-</fieldset>
-<fieldset class="queueDisplayPreferences"><legend>Dashboard display</legend>
-<label class="preferenceWide"><input checked="" data-pref-toggle="showMetrics" id="queueShowMetrics" type="checkbox"/>Show metrics dashboard</label>
-</fieldset>
-<button class="secondaryBtn utilityBtn" id="resetQueuePreferences" type="button">Reset default view</button>
-<small class="preferenceSyncStatus" data-status="saved" id="queuePreferenceStatus">Saved to your login</small>
-</div>
-</details></div></div>
-<section aria-labelledby="morningBriefTitle" class="morningBrief" id="morningBrief">
-<div class="morningBriefLead">
-<div class="morningBriefLeadTop">
-<small id="morningBriefEyebrow">Shift brief</small>
+  <div class="dashboardFilters queueFilters">
+    <div class="filterField"><label for="queueDate">Operating Date</label><input id="queueDate" type="date"></div>
+    <div class="filterField"><label for="queueStatus">Queue View</label><select id="queueStatus"><option value="pending">Pending</option><option value="all">All</option><option value="completed">Completed</option></select></div>
+    <div class="queueFilterActions" role="group" aria-label="Queue date and refresh actions">
+      <button class="secondaryBtn filterActionBtn" id="queueToday" type="button">Today</button>
+      <button class="secondaryBtn filterActionBtn" id="queueTomorrow" type="button">Tomorrow</button>
+      <button class="primaryBtn filterActionBtn" id="refreshQueue" type="button">Refresh</button>
+      <button class="secondaryBtn filterActionBtn" id="openQueueDisplay" type="button">Open Full-Screen View</button>
+    </div>
+  </div>
 
-</div>
-<h3 id="morningBriefTitle">Preparing today’s operating picture…</h3><p id="morningBriefSummary"></p>
-</div>
-<div class="morningBriefFacts" id="morningBriefFacts"></div>
-</section>
-<div class="metrics" id="queueMetrics"></div>
-<section class="queueFocus" id="queueFocus"></section>
-<div aria-live="polite" class="queueNotice" hidden="" id="queueNotice" role="status"></div>
-<section class="panel returnLoadPanel" hidden="" id="queueReturnLoadPanel">
-<div class="panelHeader"><div><h3>Potential Return Loads</h3><small>Confirm the carrier and timing with both sites before changing transportation.</small></div></div>
-<div class="returnLoadList" id="queueReturnLoadList"></div>
-</section>
-<section class="panel queueActionPanel">
-<div class="panelHeader"><div><h3>Shift Action List</h3><small id="queueActionSummary"></small></div></div>
-<div class="queueActionList" id="queueActions"></div>
-</section>
-<div class="queueLanes">
-<section class="panel queueLane inboundLane">
-<div class="panelHeader"><div><h3>Inbound</h3><small id="inboundSummary"></small></div></div>
-<div class="queueCards" id="inboundQueue"></div>
-</section>
-<section class="panel queueLane outboundLane">
-<div class="panelHeader"><div><h3>Outbound</h3><small id="outboundSummary"></small></div></div>
-<div class="queueCards" id="outboundQueue"></div>
-</section>
-</div>
-<section class="panel queueBlocksPanel" hidden="" id="queueBlocksPanel">
-<div class="panelHeader"><h3>Dock Restrictions</h3></div>
-<div class="queueCards" id="queueBlocks"></div>
-</section>
-<div class="error" id="queueError" role="alert"></div>
+  <section class="morningBrief" id="morningBrief" aria-labelledby="morningBriefTitle">
+    <div class="morningBriefLead">
+      <div class="morningBriefLeadTop">
+        <small id="morningBriefEyebrow">Shift brief</small>
+        <details class="queueCustomize" id="queueCustomize">
+          <summary>Customize view</summary>
+          <div class="queueCustomizeMenu" id="queueCustomizeMenu">
+            <fieldset><legend>Shift brief cards</legend>
+              <label><input type="checkbox" data-pref-section="brief" value="first" checked>First load</label>
+              <label><input type="checkbox" data-pref-section="brief" value="peak" checked>Peak period</label>
+              <label><input type="checkbox" data-pref-section="brief" value="docks" checked>Doors in use</label>
+              <label><input type="checkbox" data-pref-section="brief" value="priority" checked>Priority loads</label>
+              <label><input type="checkbox" data-pref-section="brief" value="review" checked>Needs review</label>
+            </fieldset>
+            <fieldset><legend>Queue metrics</legend>
+              <label><input type="checkbox" data-pref-section="metrics" value="pending" checked>Pending</label>
+              <label><input type="checkbox" data-pref-section="metrics" value="completed" checked>Completed</label>
+              <label><input type="checkbox" data-pref-section="metrics" value="inbound" checked>Inbound</label>
+              <label><input type="checkbox" data-pref-section="metrics" value="outbound" checked>Outbound</label>
+              <label><input type="checkbox" data-pref-section="metrics" value="skids" checked>Pending skids</label>
+              <label><input type="checkbox" data-pref-section="metrics" value="blocks" checked>Dock blocks</label>
+              <label><input type="checkbox" data-pref-section="metrics" value="priority" checked>Priority loads</label>
+              <label><input type="checkbox" data-pref-section="metrics" value="soon" checked>Due soon</label>
+            </fieldset>
+            <fieldset class="queueDisplayPreferences"><legend>Dashboard display</legend>
+              <label class="preferenceWide"><input id="queueShowMetrics" type="checkbox" data-pref-toggle="showMetrics" checked>Show metrics dashboard</label>
+            </fieldset>
+            <button class="secondaryBtn utilityBtn" id="resetQueuePreferences" type="button">Reset default view</button>
+            <small class="preferenceSyncStatus" id="queuePreferenceStatus" data-status="saved">Saved to your login</small>
+          </div>
+        </details>
+      </div>
+      <h3 id="morningBriefTitle">Preparing today’s operating picture…</h3><p id="morningBriefSummary"></p>
+    </div>
+    <div class="morningBriefFacts" id="morningBriefFacts"></div>
+  </section>
+
+  <div class="metrics" id="queueMetrics"></div>
+
+  <section class="queueFocus" id="queueFocus"></section>
+  <div class="queueNotice" id="queueNotice" role="status" aria-live="polite" hidden></div>
+
+  <section class="panel returnLoadPanel" id="queueReturnLoadPanel" hidden>
+    <div class="panelHeader"><div><h3>Potential Return Loads</h3><small>Confirm the carrier and timing with both sites before changing transportation.</small></div></div>
+    <div class="returnLoadList" id="queueReturnLoadList"></div>
+  </section>
+
+  <section class="panel queueActionPanel">
+    <div class="panelHeader"><div><h3>Shift Action List</h3><small id="queueActionSummary"></small></div></div>
+    <div class="queueActionList" id="queueActions"></div>
+  </section>
+
+  <div class="queueLanes">
+    <section class="panel queueLane inboundLane">
+      <div class="panelHeader"><div><h3>Inbound</h3><small id="inboundSummary"></small></div></div>
+      <div class="queueCards" id="inboundQueue"></div>
+    </section>
+    <section class="panel queueLane outboundLane">
+      <div class="panelHeader"><div><h3>Outbound</h3><small id="outboundSummary"></small></div></div>
+      <div class="queueCards" id="outboundQueue"></div>
+    </section>
+  </div>
+
+  <section class="panel queueBlocksPanel" id="queueBlocksPanel" hidden>
+    <div class="panelHeader"><h3>Dock Restrictions</h3></div>
+    <div class="queueCards" id="queueBlocks"></div>
+  </section>
+  <div class="error" id="queueError" role="alert"></div>
 </main>
-<script src="./supabase-2.110.3.js?v=89-db68"></script>
-<script src="./maxdock-config.js?v=89-db68"></script>
-<script src="./maxdock-db.js?v=89-db68"></script>
-<script src="./maxdock-queue.js?v=89-db68"></script>
+
+<script src="./supabase-2.110.3.js?v=68-db47"></script>
+<script src="./maxdock-config.js?v=68-db47"></script>
+<script src="./maxdock-db.js?v=68-db47"></script>
+<script src="./maxdock-queue.js?v=68-db47"></script>
 </body>
 </html>
