@@ -17,7 +17,7 @@
   function bindDashboardActions(){
     if(PAGE!=="dashboard")return;
     const book=[...document.querySelectorAll("button")].find(button=>button.textContent.trim()==="Book Appointment"&&button.closest(".dashboardPrimaryActions"));
-    replaceAndBind(book,()=>{if(typeof window.openRequest==="function")window.openRequest();else location.assign("./index.html?book=1&v=99-db77")},"dashboard-book");
+    replaceAndBind(book,()=>{if(typeof window.openRequest==="function")window.openRequest();else location.assign("./index.html?book=1&v=100-db78")},"dashboard-book");
     const block=[...document.querySelectorAll("button")].find(button=>button.textContent.trim()==="Block Time"&&button.closest(".dashboardPrimaryActions"));
     replaceAndBind(block,()=>{if(typeof window.openBlockModal==="function")window.openBlockModal();else window.MaxDockUI?.toast?.("Block Time is still loading. Please try again.",{tone:"error"})},"dashboard-block");
   }
@@ -29,12 +29,19 @@
       if(!db.hasPermission?.("appointment.create")){window.MaxDockUI?.toast?.("This account does not have permission to create appointments.",{tone:"error"});return}
       const role=db.getProfile()?.role_code;
       const operational=["system_admin","site_admin","shipping_manager","coordinator"].includes(role);
-      location.assign(`./${operational?"dashboard":"index"}.html?book=1&return=my-appointments&v=99-db77`);
+      location.assign(`./${operational?"dashboard":"index"}.html?book=1&return=my-appointments&v=100-db78`);
     },"myappointments-book");
+  }
+  function bindRequesterBooking(){
+    if(PAGE!=="requester")return;
+    document.querySelectorAll("button").forEach(button=>{
+      if(button.textContent.trim()!=="Book Appointment")return;
+      if(button.closest(".wizardNav"))replaceAndBind(button,()=>{if(typeof window.submitBooking==="function")window.submitBooking()},"requester-submit-booking");
+    });
   }
   function openQueueDisplay(){
     const url=new URL("./queue.html",location.href);
-    url.searchParams.set("v","99-db77");url.searchParams.set("display","1");
+    url.searchParams.set("v","100-db78");url.searchParams.set("display","1");
     url.searchParams.set("date",$("queueDate")?.value||new Date().toISOString().slice(0,10));
     url.searchParams.set("status",$("queueStatus")?.value||"pending");
     const locationName=window.MaxDockDB?.getCurrentLocation?.()?.name||$("locationSelect")?.value||"";
@@ -69,6 +76,6 @@
     style.textContent='body[data-page="dashboard"] .dashboardFilters{align-items:end!important}body[data-page="dashboard"] #refreshDashboard{align-self:end!important;height:42px!important;margin:0!important}body[data-page="admin"] .adminUsersTable th:first-child,body[data-page="admin"] .adminUsersTable td:first-child{width:26px!important;min-width:26px!important;max-width:26px!important;padding:8px 1px!important}body[data-page="admin"] .adminUsersTable th:nth-child(2),body[data-page="admin"] .adminUsersTable td:nth-child(2){padding-left:2px!important}.passwordInput{position:relative!important}.passwordInput #loginPassword{padding-right:44px!important}.passwordEyeButtonDB77{position:absolute!important;right:5px!important;top:50%!important;transform:translateY(-50%)!important;width:34px!important;height:34px!important;padding:7px!important;border:0!important;background:transparent!important;color:currentColor!important;display:grid!important;place-items:center!important;z-index:2!important}.passwordEyeButtonDB77 svg{width:20px!important;height:20px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}';
     document.head.appendChild(style);
   }
-  function run(){addStyles();bindDashboardActions();bindMyAppointmentsBook();bindQueueFullscreen();bindMetricGears();upgradePasswordEye()}
+  function run(){addStyles();bindDashboardActions();bindMyAppointmentsBook();bindRequesterBooking();bindQueueFullscreen();bindMetricGears();upgradePasswordEye()}
   run();[150,500,1200,2600,4800].forEach(delay=>setTimeout(run,delay));window.MaxDockDB77Controls={run};
 })();
