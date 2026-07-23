@@ -27,8 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: Replace live files with DB70
-        run: |
-          rsync -a --delete --exclude='.git/' db70/ live/
+        run: rsync -a --delete --exclude='.git/' db70/ live/
 
       - name: Commit restored live site
         working-directory: live
