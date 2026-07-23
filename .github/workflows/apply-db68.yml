@@ -85,7 +85,7 @@ jobs:
           assert 'maxdock-layout-discipline' not in config
 
           my=(root/'my-appointments.html').read_text()
-          assert my.index('id="myAppointmentFilter"') < my.index('id="notificationPanel"')
+          assert my.index('id="myAppointmentFilter"') < my.index('notificationPanel')
 
           dashboard=(root/'dashboard.html').read_text()
           assert 'id="dashboardRange"' in dashboard
