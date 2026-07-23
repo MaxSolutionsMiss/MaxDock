@@ -1,0 +1,29 @@
+MaxDock DB76 — Full Functional Audit and Live Recovery
+
+Purpose
+- Recover functionality regressed by DB74 without redesigning or replacing working page structures.
+- Correct the deployment gap that left the live gh-pages site on DB74 after DB75 was merged only to main.
+
+Audited repairs
+- Book Appointment from My Appointments uses role-aware routing.
+- Operations Queue full-screen opens the operator display with date, status, and location context, with in-page full-screen fallback.
+- Dashboard, Queue, Reports, and My Appointments metric settings controls open reliably.
+- Settings and Data Integration workspace tabs show the correct panel.
+- KPI icons are selected by metric title instead of using one repeated chart icon.
+- User Management selection spacing is reduced without changing table functions.
+- Fresh v=98-db76 cache markers are used across every HTML page and generated route.
+- Root and db04 copies remain synchronized.
+
+Validation
+- JavaScript syntax checks passed.
+- Duplicate HTML ID audit passed.
+- Static button and link audit passed.
+- Chromium interaction tests passed for booking, full-screen, metric settings, Settings tabs, Data Integration tabs, and distinct KPI icons.
+- Queue display mode hides the top bar and side navigation.
+
+Deferred
+- QR/barcode appointment confirmation and scan-to-status workflow remain a separate database-backed release.
+
+Rollback
+- DB70 remains the user-designated reference point.
+- DB74 live deployment commit: c825b3dc3f79b9df62a9f8ec128c2aa567e299d0
