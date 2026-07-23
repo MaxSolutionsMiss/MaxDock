@@ -1,0 +1,25 @@
+name: DB78 Restore Controls
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply-db78-controls.mjs'
+      - '.github/workflows/db78-restore-controls.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore pages from gh-pages and add DB78 loader
+        run: node scripts/apply-db78-controls.mjs
+      - name: Commit generated pages
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add db04/dashboard.html db04/queue.html db04/index.html db04/my-appointments.html db04/reports.html db04/admin.html
+          git diff --cached --quiet || git commit -m "DB78 restore pages and explicitly load controls"
+          git push
