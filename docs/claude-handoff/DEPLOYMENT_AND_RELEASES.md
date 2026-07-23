@@ -2,7 +2,7 @@
 
 ## Branches
 
-- `main`: reviewed source of truth; currently contains DB70 / PR #59.
+- `main`: reviewed source of truth; currently contains merged DB71 / PR #60.
 - Feature branches: one coherent change per branch/PR.
 - `gh-pages`: live static deployment branch.
 
@@ -27,10 +27,12 @@ Do not commit feature work directly to `main` or `gh-pages`, and never merge a P
 - Gear-menu marker: `DB70 · shared document tools`
 - Live path: `https://maxsolutionsmiss.github.io/MaxDock/db04/`
 
-DB71 / `v92-db71` is an isolated review candidate and is not production until
-the owner explicitly approves and merges it. Any future browser release must use
-a deliberate unique cache marker so testers do not mistake cached assets for the
-new version.
+DB71 / PR #60 is merged on `main` but not production because `gh-pages` still
+points to DB70. The `v93-db71` live-readiness hotfix keeps document actions in
+the page-title row and repairs the Queue settings/full-screen contracts. It must
+be reviewed and merged before `gh-pages` is fast-forwarded to the approved DB71
+commit. Every browser release must use a deliberate unique cache marker so
+testers do not mistake cached assets for the new version.
 
 ## Rollback reference
 

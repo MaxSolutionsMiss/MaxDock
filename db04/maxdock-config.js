@@ -248,7 +248,7 @@ window.MAXDOCK_ICONS = Object.freeze({
 
   const initialize=async()=>{
     hydrateIcons();
-    await loadScript("maxdock-layout-discipline.js","92-db71","db71-layout");
+    await loadScript("maxdock-layout-discipline.js","93-db71","db71-layout");
     hydrateIcons();
     window.MaxDockUI?.setupAccessibility?.();
     document.documentElement.dataset.maxdockRelease="db71";
@@ -259,7 +259,7 @@ window.MAXDOCK_ICONS = Object.freeze({
         stamp.className="maxdockReleaseStamp";
         menu.appendChild(stamp);
       }
-      stamp.textContent="DB71 · consolidated interface candidate";
+      stamp.textContent="DB71 · live-readiness hotfix";
     });
   };
   if(document.readyState==="complete")initialize();

@@ -10120,3 +10120,47 @@ body.db70Consistency[data-page="reports"] #reportMetrics>.metric>.metricDelta{
   .metricSkeleton::before,.dashboardRefreshButton.isRefreshing svg{animation:none!important}
   .maxdockToast{transition:none!important}
 }
+
+/* DB71 live-readiness hotfix: document actions belong to the page-title row. */
+body.db70Consistency main .pageHead{
+  flex-wrap:nowrap!important;
+  align-items:flex-start!important
+}
+body.db70Consistency main .pageHead>div:first-child{
+  min-width:0
+}
+body.db70Consistency main .pageHead>.maxdockDocumentUtilityRow{
+  position:relative!important;
+  z-index:2!important;
+  display:flex!important;
+  flex:0 0 auto!important;
+  align-self:flex-start!important;
+  justify-content:flex-end!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0 0 0 auto!important;
+  padding:0!important;
+  background:transparent!important;
+  pointer-events:auto!important
+}
+body.db70Consistency main .pageHead .maxdockDocumentTools{
+  align-self:flex-start!important
+}
+body.db70Consistency[data-page="queue"] #queueCustomize,
+body.db70Consistency[data-page="queue"] #queueCustomize>summary,
+body.db70Consistency[data-page="queue"] #openQueueDisplay{
+  pointer-events:auto!important
+}
+body.db70Consistency[data-page="queue"] #queueCustomize>summary{
+  cursor:pointer!important
+}
+
+@media(max-width:620px){
+  body.db70Consistency main .pageHead{
+    gap:10px!important
+  }
+  body.db70Consistency main .pageHead>.maxdockDocumentUtilityRow{
+    margin-left:auto!important
+  }
+}

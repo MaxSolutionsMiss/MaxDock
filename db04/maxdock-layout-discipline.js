@@ -1169,7 +1169,7 @@
     if(!button)return;
     button.classList.add("bookAppointmentBtnDB50");
     button.textContent="Book an Appointment";
-    button.href="./index.html?book=1&return=my-appointments&v=92-db71";
+    button.href="./index.html?book=1&return=my-appointments&v=93-db71";
   }
 
   function wrapCloseRequest(){
@@ -1179,7 +1179,7 @@
     window.closeRequest=function(){
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
-      location.replace("./my-appointments.html?v=92-db71");
+      location.replace("./my-appointments.html?v=93-db71");
     };
   }
 
@@ -1190,7 +1190,7 @@
     if(!document.body.classList.contains("maxdockContextReady"))return;
     if(db.isOperationalRole?.()&&PAGE!=="dashboard"){
       directBookingOpened=true;
-      location.replace("./dashboard.html?book=1&return=my-appointments&v=92-db71");
+      location.replace("./dashboard.html?book=1&return=my-appointments&v=93-db71");
       return;
     }
     if(!db.getCurrentLocation?.()||!db.getLocationData?.())return;
@@ -1275,7 +1275,7 @@
     if(heading.parentElement!==row)row.appendChild(heading);
     if(button.parentElement!==row)row.appendChild(button);
     button.classList.add("maxdockPrimaryActionDB51");
-    button.href="./index.html?book=1&return=my-appointments&v=92-db71";
+    button.href="./index.html?book=1&return=my-appointments&v=93-db71";
     if(!button.querySelector("svg")){
       const text=button.textContent.trim()||"Book an Appointment";
       button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM12 12v5M9.5 14.5h5"/></svg><span></span>';
@@ -1332,7 +1332,8 @@
     if(queue){
       event.preventDefault();
       event.stopImmediatePropagation();
-      enterQueueDisplay();
+      if(typeof window.openQueueDisplay==="function")window.openQueueDisplay();
+      else enterQueueDisplay();
       return;
     }
     const dashboard=event.target.closest?.("#tvModeButton");
@@ -1468,8 +1469,8 @@
   function roleAwareBookingUrl(){
     const role=window.MaxDockDB?.getProfile?.()?.role_code;
     return role&&role!=="customer"
-      ?"./dashboard.html?book=1&return=my-appointments&v=92-db71"
-      :"./index.html?book=1&return=my-appointments&v=92-db71";
+      ?"./dashboard.html?book=1&return=my-appointments&v=93-db71"
+      :"./index.html?book=1&return=my-appointments&v=93-db71";
   }
 
   function bookingContextReady(){
@@ -1569,7 +1570,7 @@
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
       $("requestModal")?.classList.remove("show");
-      location.replace("./my-appointments.html?v=92-db71");
+      location.replace("./my-appointments.html?v=93-db71");
     };
   }
 
@@ -2158,7 +2159,7 @@
       important(link,"display",visible?"":"none");
       if(visible)link.removeAttribute("tabindex");else link.tabIndex=-1;
     });
-    if(PAGE==="settings")location.replace("./queue.html?v=92-db71");
+    if(PAGE==="settings")location.replace("./queue.html?v=93-db71");
     return true;
   }
 
@@ -2776,19 +2777,18 @@ else init();
     if(!tools||!signOut)return;
     const rect=signOut.getBoundingClientRect();
     tools.style.setProperty("--db70-document-tools-width",`${Math.max(88,Math.round(rect.width))}px`);
-    tools.style.setProperty("--db70-document-tools-right",`${Math.max(14,Math.round(window.innerWidth-rect.right))}px`);
   }
 
   function ensureDocumentTools(){
     if(["login","setpassword"].includes(PAGE))return;
-    const header=document.querySelector(".topbar");
+    const pageHead=document.querySelector("main .pageHead");
     const signOut=document.querySelector("#maxdockAccount .accountSignOut");
-    if(!header||!signOut)return;
+    if(!pageHead||!signOut)return;
     let row=$("maxdockDocumentUtilityRow");
     if(!row){
       row=document.createElement("div");
       row.id="maxdockDocumentUtilityRow";
-      row.className="maxdockDocumentUtilityRow";
+      row.className="maxdockDocumentUtilityRow maxdockTitleDocumentActions";
       row.setAttribute("aria-label","Page document actions");
       const tools=document.createElement("div");
       tools.id="maxdockDocumentTools";
@@ -2811,8 +2811,8 @@ else init();
       printButton.addEventListener("click",()=>window.print());
       tools.append(exportButton,printButton);
       row.appendChild(tools);
-      header.insertAdjacentElement("afterend",row);
     }
+    if(row.parentElement!==pageHead)pageHead.appendChild(row);
     alignDocumentTools();
   }
 
@@ -2920,6 +2920,28 @@ else init();
     });
   }
 
+  function ensureQueueControls(){
+    if(PAGE!=="queue")return;
+    const display=$("openQueueDisplay");
+    if(display){
+      display.disabled=false;
+      display.removeAttribute("aria-disabled");
+    }
+    const details=$("queueCustomize");
+    const summary=details?.querySelector(":scope > summary");
+    if(!details||!summary||summary.dataset.db71QueueSettingsBound)return;
+    summary.dataset.db71QueueSettingsBound="true";
+    summary.addEventListener("click",event=>{
+      event.preventDefault();
+      event.stopPropagation();
+      details.open=!details.open;
+      summary.setAttribute("aria-expanded",String(details.open));
+    });
+    details.addEventListener("toggle",()=>{
+      summary.setAttribute("aria-expanded",String(details.open));
+    });
+  }
+
   function apply(){
     document.body.classList.add("db70Consistency");
     markLegacyDocumentButtons();
@@ -2928,6 +2950,7 @@ else init();
     normalizeReports();
     enforceLocationContract();
     ensureDocumentTools();
+    ensureQueueControls();
     protectReportMetrics();
   }
 
