@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
+// Explicitly attach the DB78 controls to every affected live page.
 const pages=['dashboard.html','queue.html','index.html','my-appointments.html','reports.html','admin.html'];
 for(const name of pages){
   const path=`db04/${name}`;
