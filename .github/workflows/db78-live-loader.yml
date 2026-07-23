@@ -1,0 +1,21 @@
+name: DB78 Live Loader
+on:
+  push:
+    branches: [gh-pages]
+    paths:
+      - 'scripts/apply-db78-live-loader.mjs'
+      - '.github/workflows/db78-live-loader.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/apply-db78-live-loader.mjs
+      - run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add db04/dashboard.html db04/queue.html db04/index.html db04/my-appointments.html db04/reports.html db04/admin.html
+          git diff --cached --quiet || git commit -m "DB78 explicitly load controls on live pages"
+          git push
