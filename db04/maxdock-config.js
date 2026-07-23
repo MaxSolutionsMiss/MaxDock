@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v95-DB73",
+  version: "MaxDock-v96-DB74",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -248,7 +248,7 @@ window.MAXDOCK_ICONS = Object.freeze({
 
   const initialize=async()=>{
     hydrateIcons();
-    await loadScript("maxdock-layout-discipline.js","95-db73","db73-layout");
+    await loadScript("maxdock-layout-discipline.js","96-db74","db73-layout");
     hydrateIcons();
     window.MaxDockUI?.setupAccessibility?.();
     document.documentElement.dataset.maxdockRelease="db73";
