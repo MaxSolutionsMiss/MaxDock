@@ -1,5 +1,5 @@
 window.MAXDOCK_CONFIG = Object.freeze({
-  version: "MaxDock-v94-DB72",
+  version: "MaxDock-v95-DB73",
   supabaseUrl: "https://rywzqepzramurbrpmept.supabase.co",
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
@@ -248,10 +248,10 @@ window.MAXDOCK_ICONS = Object.freeze({
 
   const initialize=async()=>{
     hydrateIcons();
-    await loadScript("maxdock-layout-discipline.js","94-db72","db72-layout");
+    await loadScript("maxdock-layout-discipline.js","95-db73","db73-layout");
     hydrateIcons();
     window.MaxDockUI?.setupAccessibility?.();
-    document.documentElement.dataset.maxdockRelease="db72";
+    document.documentElement.dataset.maxdockRelease="db73";
     document.querySelectorAll(".menu").forEach(menu=>{
       let stamp=menu.querySelector(".maxdockReleaseStamp");
       if(!stamp){
@@ -259,9 +259,9 @@ window.MAXDOCK_ICONS = Object.freeze({
         stamp.className="maxdockReleaseStamp";
         menu.appendChild(stamp);
       }
-      stamp.textContent="DB72 · consistency repair";
+      stamp.textContent="DB73 · shared layout repair";
     });
   };
-  if(document.readyState==="complete")initialize();
-  else window.addEventListener("load",initialize,{once:true});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initialize,{once:true});
+  else initialize();
 })();
