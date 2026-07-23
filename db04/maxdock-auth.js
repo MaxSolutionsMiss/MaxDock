@@ -22,26 +22,6 @@
     const recoverySuccess=document.getElementById("recoverySuccess");
     const recoveryButton=document.getElementById("recoveryButton");
     const loginHelp=document.querySelector(".loginHelp");
-    const passwordInput=document.getElementById("loginPassword");
-    const passwordToggle=document.getElementById("toggleLoginPassword");
-    const capsLockHint=document.getElementById("capsLockHint");
-    let failedAttempts=0;
-    let retryTimer=null;
-
-    passwordToggle?.addEventListener("click",()=>{
-      const showing=passwordInput.type==="text";
-      passwordInput.type=showing?"password":"text";
-      passwordToggle.textContent=showing?"Show":"Hide";
-      passwordToggle.setAttribute("aria-pressed",String(!showing));
-      passwordInput.focus();
-    });
-    const updateCapsLock=event=>{
-      const active=Boolean(event.getModifierState?.("CapsLock"));
-      capsLockHint.hidden=!active;
-    };
-    passwordInput?.addEventListener("keydown",updateCapsLock);
-    passwordInput?.addEventListener("keyup",updateCapsLock);
-    passwordInput?.addEventListener("blur",()=>capsLockHint.hidden=true);
 
     function setRecoveryMode(active){
       form.hidden=active;
@@ -79,22 +59,10 @@
         await window.MaxDockDB.loadContext();
         location.replace(`./${destination()}`);
       }catch(err){
-        failedAttempts+=1;
-        const throttled=failedAttempts>=5;
-        errorBox.textContent=throttled
-          ?"Several sign-in attempts failed. Wait 30 seconds before trying again, or use account recovery."
-          :failedAttempts>=3
-          ?`${err.message} Check Caps Lock or use account recovery if needed.`
-          :err.message;
+        errorBox.textContent=err.message;
         errorBox.style.display="block";
-        if(throttled){
-          button.disabled=true;button.textContent="Try Again in 30s";
-          window.clearTimeout(retryTimer);
-          retryTimer=window.setTimeout(()=>{failedAttempts=0;button.disabled=false;button.textContent="Sign In"},30000);
-        }else{
-          button.disabled=false;
-          button.textContent="Sign In";
-        }
+        button.disabled=false;
+        button.textContent="Sign In";
       }
     });
 

@@ -2,7 +2,7 @@
 
 ## Branches
 
-- `main`: reviewed source of truth; currently contains merged DB71 / PR #60.
+- `main`: reviewed source of truth; currently contains DB37.
 - Feature branches: one coherent change per branch/PR.
 - `gh-pages`: live static deployment branch.
 
@@ -22,20 +22,14 @@ Do not commit feature work directly to `main` or `gh-pages`, and never merge a P
 
 ## Current production
 
-- Main and Pages commit: `4fb1a5f3611fdab91f42eee43dff41011e617724` — DB70
-- Cache marker: `v91-db70`
-- Gear-menu marker: `DB70 · shared document tools`
+- Main merge: `53b9a73` — DB37
+- Pages commit: `36eef0c` — DB37
+- Cache marker: `v58-db37`
+- Gear-menu marker: `DB37 · DB36 interface active`
 - Live path: `https://maxsolutionsmiss.github.io/MaxDock/db04/`
 
-DB71 / PR #60 is merged on `main` but not production because `gh-pages` still
-points to DB70. The `v93-db71` live-readiness hotfix keeps document actions in
-the page-title row and repairs the Queue settings/full-screen contracts. It must
-be reviewed and merged before `gh-pages` is fast-forwarded to the approved DB71
-commit. Every browser release must use a deliberate unique cache marker so
-testers do not mistake cached assets for the new version.
+DB37 is frontend-only. It forces fresh DB31–DB36 assets and guarantees DB33 initialization before DB36. Any future browser release must use a deliberate unique cache marker so testers do not mistake cached assets for the new version.
 
 ## Rollback reference
 
-DB70 / PR #59 at `4fb1a5f3611fdab91f42eee43dff41011e617724`
-is the approved rollback reference. Rollback must be a normal, reviewed forward
-commit or revert PR; do not rewrite shared branch history or reset Supabase.
+DB31 remains the approved visual reference point. Rollback must be a normal, reviewed forward commit or revert PR; do not rewrite shared branch history or reset Supabase.

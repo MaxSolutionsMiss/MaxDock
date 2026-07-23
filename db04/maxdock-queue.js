@@ -4,12 +4,7 @@
   const $=id=>document.getElementById(id);
   const query=new URLSearchParams(location.search);
   const queueDisplayMode=query.get("display")==="1";
-  const DEFAULT_PREFERENCES={brief:["first","peak","docks","priority","review"],metrics:["pending","completed","inbound","outbound","skids","blocks","priorityMetric","soon"],showMetrics:true};
-  const PRESETS={
-    shift:DEFAULT_PREFERENCES,
-    dock:{brief:["first","docks","review"],metrics:["pending","inbound","outbound","skids","blocks","soon"],showMetrics:true},
-    wall:{brief:["first","peak","docks","priority","review"],metrics:["pending","inbound","outbound","skids","priorityMetric","soon"],showMetrics:true}
-  };
+  const DEFAULT_PREFERENCES={brief:["first","peak","docks","priority","review"],metrics:["pending","completed","inbound","outbound","skids","blocks","priority","soon"],showMetrics:true};
   const VALID_PREFERENCES={brief:new Set(DEFAULT_PREFERENCES.brief),metrics:new Set(DEFAULT_PREFERENCES.metrics)};
   const state={rows:[],pendingRows:[],completedRows:[],blocks:[],returnLoads:[],busyId:null,
     preferences:{brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics],showMetrics:DEFAULT_PREFERENCES.showMetrics},
@@ -66,11 +61,11 @@
   }
   window.openQueueDisplay=function(){
     const url=new URL("./queue.html",location.href);
-    url.searchParams.set("v","98-db76");
+    url.searchParams.set("v","68-db47");
     url.searchParams.set("display","1");
     url.searchParams.set("date",$("queueDate").value||today());
     url.searchParams.set("status",$("queueStatus").value||"pending");
-    url.searchParams.set("location",db.getCurrentLocation()?.name||$("locationSelect").value);
+    url.searchParams.set("location",db.getCurrentLocation()?.name||$("queueLocation").value);
     const width=Math.max(900,window.screen?.availWidth||window.innerWidth);
     const height=Math.max(650,window.screen?.availHeight||window.innerHeight);
     const left=window.screen?.availLeft||0,top=window.screen?.availTop||0;
@@ -166,12 +161,6 @@
     state.preferences={brief:[...DEFAULT_PREFERENCES.brief],metrics:[...DEFAULT_PREFERENCES.metrics],showMetrics:DEFAULT_PREFERENCES.showMetrics};
     saveQueuePreferences();syncPreferenceControls();render();
   }
-  function applyQueuePreset(name){
-    const preset=PRESETS[name];if(!preset)return;
-    state.preferences={brief:[...preset.brief],metrics:[...preset.metrics],showMetrics:preset.showMetrics};
-    saveQueuePreferences();syncPreferenceControls();render();
-    preferenceStatus(`${name==="shift"?"Shift Manager":name==="dock"?"Dock Lead":"Wall Display"} preset saved`,"saved");
-  }
 
   function queueRows(){
     const date=$("queueDate").value;
@@ -198,7 +187,7 @@
     const completed=item.status==="Completed";
     const tag=item.linkedMovement?"Cross-site":completed?"Completed":level==="overdue"?"Time passed":level==="soon"?"Due within 60 min":item.priority?"Priority":"Planned";
     const canChange=!item.linkedMovement&&(completed?db.hasPermission("appointment.update"):db.hasPermission("appointment.complete"));
-    const historyLink=!item.linkedMovement&&db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=98-db76&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
+    const historyLink=!item.linkedMovement&&db.hasPermission("audit.view")?`<a class="secondaryBtn queueCardUtility" href="./dashboard.html?v=91-db70&amp;date=${esc($("queueDate").value)}&amp;history=${esc(item.id)}">History</a>`:"";
     return `<article class="queueCard ${level} ${item.linkedMovement?"linkedMovement":""}">
       <div class="queueCardTime"><strong>${esc(displayTime(item.start))}</strong><small>${esc(displayTime(item.end))}</small></div>
       <div class="queueCardBody">
@@ -267,7 +256,7 @@
   function renderFocus(rows){
     const next=rows.find(item=>$("queueDate").value!==today()||minuteValue(item.end)>=currentMinutes())||rows[0];
     if(!next){$("queueFocus").innerHTML=`<div><small>${esc(displayDate($("queueDate").value))}</small><h3>No active appointments scheduled</h3><p>The location has no inbound or outbound work in the execution queue for this date.</p></div>`;return}
-    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=98-db76&date=${esc($("queueDate").value)}">Open schedule</a>`;
+    $("queueFocus").innerHTML=`<div><small>Next operational focus · ${esc(displayDate($("queueDate").value))}</small><h3><span>${esc(displayTime(next.start))}</span> ${esc(next.direction)} · ${esc(next.ref)}</h3><p>${esc(next.company)} · ${esc(next.truck)} · ${Number(next.skids||0)} skids · ${esc(next.dock)}</p></div><a class="secondaryBtn actionBtn" href="./dashboard.html?v=91-db70&date=${esc($("queueDate").value)}">Open schedule</a>`;
   }
 
   function renderLane(direction,elementId,summaryId){
@@ -307,7 +296,7 @@
       {key:"pending",label:"Pending",value:state.pendingRows.length},{key:"completed",label:"Completed",value:state.completedRows.length},
       {key:"inbound",label:"Inbound",value:inbound.length},{key:"outbound",label:"Outbound",value:outbound.length},
       {key:"skids",label:"Pending skids",value:totalSkids},{key:"blocks",label:"Dock blocks",value:state.blocks.length},
-      {key:"priorityMetric",label:"Priority loads",value:state.pendingRows.filter(item=>item.priority).length},
+      {key:"priority",label:"Priority loads",value:state.pendingRows.filter(item=>item.priority).length},
       {key:"soon",label:"Due soon",value:state.pendingRows.filter(item=>urgency(item)==="soon").length}
     ].filter(item=>state.preferences.metrics.includes(item.key));
     $("queueMetrics").innerHTML=metricItems.map(item=>`<div class="metric queueMetric ${item.key}"><small>${esc(item.label)}</small><strong>${item.value}</strong></div>`).join("");
@@ -343,8 +332,8 @@
     const button=$("refreshQueue"),label=button?.textContent;
     if(button){button.disabled=true;button.textContent="Refreshing…"}
     try{
-      await db.loadLocation($("locationSelect").value);
-      localStorage.setItem("maxdock_location",db.getCurrentLocation()?.name||$("locationSelect").value);
+      await db.loadLocation($("queueLocation").value);
+      localStorage.setItem("maxdock_location",db.getCurrentLocation()?.name||$("queueLocation").value);
       await loadReturnLoads();
       render();saveQueuePreferences();
     }
@@ -354,13 +343,14 @@
     try{
       if(!await db.requireAuth())return;
       await db.loadContext();
-      if(!db.hasPermission("operations.queue.view"))throw new Error("This account cannot view the Operations Queue.");
+      if(!db.hasPermission("operations.queue.view"))throw new Error("This account cannot view the Operation Queue.");
       await loadQueuePreferences();
       const requestedLocation=query.get("location");
-      db.selectLocation(requestedLocation||localStorage.getItem("maxdock_location")||state.view.locationName);db.populateLocationSelect($("locationSelect"));db.addAccountControls();
+      db.selectLocation(requestedLocation||localStorage.getItem("maxdock_location")||state.view.locationName);db.populateLocationSelect($("queueLocation"));db.addAccountControls();
       const role=db.getProfile()?.role_code;
-      $("locationSelect").disabled=role!=="system_admin";
-      $("locationSelect").setAttribute("aria-disabled",String(role!=="system_admin"));
+      $("queueLocationPill").hidden=!db.isOperationalRole(role);
+      $("queueLocation").disabled=role!=="system_admin";
+      $("queueLocation").setAttribute("aria-disabled",String(role!=="system_admin"));
       if(role!=="system_admin")document.querySelectorAll('a[href*="admin.html"],a[href*="data.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(link=>link.hidden=true);
       const savedDate=state.view.dateMode==="tomorrow"?today(1):state.view.dateMode==="custom"&&state.view.customDate?state.view.customDate:today();
@@ -368,7 +358,7 @@
       $("queueStatus").value=["pending","all","completed"].includes(query.get("status"))?query.get("status"):state.view.status;
       $("queueDate").addEventListener("change",()=>{loadReturnLoads().then(render).catch(showError);saveQueuePreferences()});
       $("queueStatus").addEventListener("change",()=>{render();saveQueuePreferences()});
-      $("locationSelect").addEventListener("change",()=>changeLocation().catch(showError));
+      $("queueLocation").addEventListener("change",()=>changeLocation().catch(showError));
       $("queueToday").addEventListener("click",()=>{$("queueDate").value=today();loadReturnLoads().then(render).catch(showError);saveQueuePreferences()});
       $("queueTomorrow").addEventListener("click",()=>{$("queueDate").value=today(1);loadReturnLoads().then(render).catch(showError);saveQueuePreferences()});
       $("refreshQueue").addEventListener("click",()=>changeLocation().catch(showError));
@@ -382,10 +372,6 @@
           saveQueuePreferences();render();
         }
       });
-      $("queueCustomizeMenu").addEventListener("click",event=>{
-        const button=event.target.closest("[data-queue-preset]");
-        if(button)applyQueuePreset(button.dataset.queuePreset);
-      });
       $("resetQueuePreferences").addEventListener("click",resetQueuePreferences);
       document.querySelectorAll(".queueCards").forEach(container=>container.addEventListener("click",event=>{
         const button=event.target.closest("[data-queue-id]");
@@ -398,14 +384,13 @@
       document.addEventListener("keydown",event=>{
         if(event.key==="Escape"&&document.body.classList.contains("queueDisplayMode")&&(!queueDisplayMode||!document.fullscreenElement))window.closeQueueDisplay();
       });
-      await db.loadLocation($("locationSelect").value);await loadReturnLoads();render();
+      await db.loadLocation($("queueLocation").value);await loadReturnLoads();render();
       preferenceStatus("Saved to your login","saved");
       if(queueDisplayMode){
-        document.title=`MaxDock Operations Queue — ${db.getCurrentLocation()?.name||"Display"}`;
+        document.title=`MaxDock Operation Queue — ${db.getCurrentLocation()?.name||"Display"}`;
         activateQueueDisplay(false);
       }else queueDisplayTimer=window.setInterval(refreshQueueDisplay,db.LIVE_REFRESH_MS);
     }catch(error){showError(error)}
   }
   document.addEventListener("DOMContentLoaded",init);
 })();
-

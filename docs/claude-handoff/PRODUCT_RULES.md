@@ -40,7 +40,7 @@ Always verify the live `roles`, `permissions`, and `role_permissions` data befor
 
 ## Live data and user experience
 
-- Dashboard, Queue, Reports, My Appointments, and full-screen operational displays refresh appointment data every three minutes. Dashboard and Queue also provide an explicit Refresh action.
+- Dashboard, Queue, Reports, My Appointments, and full-screen operational displays refresh appointment data every five seconds.
 - Do not rebuild or jump the “Pick an Available Time” control while the user is selecting a slot.
 - Gear/dropdown menus close on outside click and Escape.
 - Keep the interface calm, compact, readable, operation-oriented, and responsive. Use the approved Arial/Helvetica system typography.

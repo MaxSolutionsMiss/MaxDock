@@ -1,0 +1,93 @@
+@import url("./maxdock-db31-base.css?v=68-db47");
+
+/* DB32 narrower booking window and quieter booking steps */
+/* Main Pages cache refresh: 2026-07-17 */
+.requestModalCompact{
+  width:min(880px,100%);
+  max-height:calc(100vh - 12px)
+}
+.requestModalCompact .modalBody{padding-top:10px}
+.requestModalCompact .steps{
+  gap:7px;
+  margin-bottom:18px
+}
+.requestModalCompact .stepPill{
+  --step-accent:#2f7898;
+  --step-bg:#eef7fb;
+  --step-border:#c8dfea;
+  grid-template-columns:auto auto;
+  grid-template-rows:1fr;
+  gap:7px;
+  min-height:44px;
+  padding:4px 8px;
+  border:1px solid var(--step-border);
+  border-radius:11px;
+  background:var(--step-bg);
+  color:#315a6c;
+  font-size:13px;
+  font-weight:700;
+  line-height:1.12;
+  box-shadow:0 2px 7px rgba(6,26,45,.05);
+  filter:none
+}
+.requestModalCompact .stepPill:nth-child(2){--step-accent:#2f8379;--step-bg:#eef8f6;--step-border:#c8e3de;color:#315f59}
+.requestModalCompact .stepPill:nth-child(3){--step-accent:#3f70a9;--step-bg:#eff5fb;--step-border:#cbdbea;color:#355772}
+.requestModalCompact .stepPill:nth-child(4){--step-accent:#7967a7;--step-bg:#f4f1fa;--step-border:#ddd5ec;color:#5e527d}
+.requestModalCompact .stepPill:nth-child(5){--step-accent:#9a6a2a;--step-bg:#faf6ed;--step-border:#eadcc0;color:#73562f}
+.requestModalCompact .stepNum{
+  min-width:20px;
+  font-size:23px;
+  font-weight:800;
+  line-height:1
+}
+.requestModalCompact .stepPill.active{
+  border-color:var(--step-accent);
+  background:var(--step-bg);
+  color:var(--step-accent);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--step-accent) 24%,transparent),0 4px 10px rgba(6,26,45,.08);
+  filter:none
+}
+.requestModalCompact .stepPill.completed{
+  border-color:var(--step-border);
+  background:var(--step-bg);
+  color:var(--step-accent);
+  box-shadow:0 2px 7px rgba(6,26,45,.05);
+  filter:none
+}
+.requestModalCompact .bookingRouteFields{
+  grid-template-columns:.8fr 1.05fr 1.65fr;
+  align-items:end
+}
+.requestModalCompact .bookingRouteFields>.field:nth-child(5){grid-column:span 2}
+.requestModalCompact .bookingSummaryRow{
+  grid-template-columns:1.15fr 1fr;
+  gap:10px
+}
+.requestModalCompact .bookingRouteSummary,
+.requestModalCompact .bookingRequesterSummary{
+  grid-template-columns:1fr;
+  gap:4px;
+  align-content:start;
+  min-height:72px
+}
+.requestModalCompact .bookingRouteSummary strong,
+.requestModalCompact .bookingRequesterSummary strong{
+  grid-row:auto;
+  justify-self:start;
+  align-self:auto
+}
+@media(max-width:760px){
+  .requestModalCompact{width:100%;max-height:100vh}
+}
+@media(max-width:620px){
+  .requestModalCompact .steps{margin-bottom:14px}
+  .requestModalCompact .stepPill{grid-template-columns:1fr;gap:1px;min-height:54px;padding:4px 3px;font-size:11px}
+  .requestModalCompact .stepNum{font-size:22px}
+  .requestModalCompact .bookingRouteFields{grid-template-columns:1fr 1fr}
+  .requestModalCompact .bookingRouteFields>.field:nth-child(5){grid-column:auto}
+  .requestModalCompact .bookingSummaryRow{grid-template-columns:1fr}
+  .requestModalCompact .bookingRouteSummary,
+  .requestModalCompact .bookingRequesterSummary{grid-template-columns:1fr;min-height:0}
+  .requestModalCompact .bookingRouteSummary strong,
+  .requestModalCompact .bookingRequesterSummary strong{grid-row:auto}
+}

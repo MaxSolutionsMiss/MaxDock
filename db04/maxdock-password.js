@@ -45,7 +45,7 @@
       errorBox.textContent="";
       const password=document.getElementById("newPassword").value;
       const confirmation=document.getElementById("confirmPassword").value;
-      if(password.length<12)return showError("Use a password with at least 12 characters.");
+      if(password.length<6)return showError("Use a password with at least 6 characters.");
       if(password!==confirmation)return showError("The two passwords do not match.");
 
       button.disabled=true;

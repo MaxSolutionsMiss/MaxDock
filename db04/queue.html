@@ -4,43 +4,43 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=100-db78">
-<title>MaxDock – Operations Queue</title>
+<link rel="stylesheet" href="./maxdock.css?v=91-db70">
+<link rel="stylesheet" href="./maxdock-db04.css?v=91-db70">
+<title>MaxDock – Operation Queue</title>
 </head>
 <body data-page="queue">
-<a class="skipLink" href="#mainContent">Skip to main content</a>
 <header class="topbar">
   <div class="topbarInner">
     <div class="brandRow"><div class="brand">
-      <a class="logoLink" href="./index.html?v=100-db78" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+      <a class="logoLink" href="./index.html?v=91-db70" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
       <div><h1 class="appTitle">MaxDock</h1><p class="appSub">Max Solutions Packaging Inc.</p></div>
     </div></div>
     <div class="headerActions">
-      <div class="locationPill sharedLocationControl"><label for="locationSelect">Location</label><select id="locationSelect"></select></div>
-      <a class="ghostBtn" href="./index.html?v=100-db78">Main Page</a>
+      <div class="locationPill" id="queueLocationPill"><label for="queueLocation">Location</label><select id="queueLocation"></select></div>
+      <a class="ghostBtn" href="./index.html?v=91-db70">Main Page</a>
       <details class="menuDetails">
-        <summary aria-expanded="false" class="iconBtn" title="Menu" aria-label="Open menu"><span class="maxdockIconSlot" data-maxdock-icon="menu" aria-hidden="true"></span></summary>
+        <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=100-db78">My Appointments</a>
-          <a href="./queue.html?v=100-db78" aria-current="page">Operations Queue</a>
-          <a href="./reports.html?v=100-db78">Reports</a>
-          <a href="./dashboard.html?v=100-db78">Dashboard</a>
-          <a href="./settings.html?v=100-db78">Settings</a>
-          <a href="./admin.html?v=100-db78">User Management</a>
-          <a href="./data.html?v=100-db78">Data Integration</a>
+          <a href="./my-appointments.html?v=91-db70">My Appointments</a>
+          <a href="./queue.html?v=91-db70" aria-current="page">Operation Queue</a>
+          <a href="./reports.html?v=91-db70">Reports</a>
+          <a href="./dashboard.html?v=91-db70">Dashboard</a>
+          <a href="./settings.html?v=91-db70">Settings</a>
+          <a href="./admin.html?v=91-db70">User Management</a>
+          <a href="./data.html?v=91-db70">Data Integration</a>
         </nav>
       </details>
     </div>
   </div>
 </header>
 
-<main id="mainContent" class="screen pageWrap">
+<main class="screen pageWrap">
   <div class="queueDisplayBar" id="queueDisplayBar" hidden>
-    <div><span class="liveDot"></span><div><strong>Operations Queue</strong><span id="queueDisplayStatus">Live queue display · updates every 3 minutes</span></div></div>
+    <div><span class="liveDot"></span><div><strong>Operation Queue</strong><span id="queueDisplayStatus">Live queue display · updates every 3 minutes</span></div></div>
     <div class="queueDisplayActions"><button class="secondaryBtn utilityBtn" type="button" onclick="closeQueueDisplay()">Close Display</button></div>
   </div>
   <div class="pageHead queuePageHead">
-    <div><h2>Operations Queue</h2><p>Today’s inbound, outbound, and dock-readiness execution list.</p><small class="liveDataStatus" id="queueLiveStatus"><span class="liveDot"></span>Live appointments · refreshes every 3 minutes</small></div>
+    <div><h2>Operation Queue</h2><p>Today’s inbound, outbound, and dock-readiness execution list.</p><small class="liveDataStatus" id="queueLiveStatus"><span class="liveDot"></span>Live appointments · refreshes every 3 minutes</small></div>
   </div>
 
   <div class="dashboardFilters queueFilters">
@@ -59,15 +59,8 @@
       <div class="morningBriefLeadTop">
         <small id="morningBriefEyebrow">Shift brief</small>
         <details class="queueCustomize" id="queueCustomize">
-          <summary aria-expanded="false">Customize view</summary>
+          <summary>Customize view</summary>
           <div class="queueCustomizeMenu" id="queueCustomizeMenu">
-            <fieldset class="queuePresetOptions"><legend>Quick presets</legend>
-              <div class="queuePresetButtons" role="group" aria-label="Queue view presets">
-                <button class="secondaryBtn" type="button" data-queue-preset="shift">Shift Manager</button>
-                <button class="secondaryBtn" type="button" data-queue-preset="dock">Dock Lead</button>
-                <button class="secondaryBtn" type="button" data-queue-preset="wall">Wall Display</button>
-              </div>
-            </fieldset>
             <fieldset><legend>Shift brief cards</legend>
               <label><input type="checkbox" data-pref-section="brief" value="first" checked>First load</label>
               <label><input type="checkbox" data-pref-section="brief" value="peak" checked>Peak period</label>
@@ -82,7 +75,7 @@
               <label><input type="checkbox" data-pref-section="metrics" value="outbound" checked>Outbound</label>
               <label><input type="checkbox" data-pref-section="metrics" value="skids" checked>Pending skids</label>
               <label><input type="checkbox" data-pref-section="metrics" value="blocks" checked>Dock blocks</label>
-              <label><input type="checkbox" data-pref-section="metrics" value="priorityMetric" checked>Priority loads</label>
+              <label><input type="checkbox" data-pref-section="metrics" value="priority" checked>Priority loads</label>
               <label><input type="checkbox" data-pref-section="metrics" value="soon" checked>Due soon</label>
             </fieldset>
             <fieldset class="queueDisplayPreferences"><legend>Dashboard display</legend>
@@ -131,10 +124,9 @@
   <div class="error" id="queueError" role="alert"></div>
 </main>
 
-<script src="./supabase-2.110.3.js?v=100-db78"></script>
-<script src="./maxdock-config.js?v=100-db78"></script>
-<script src="./maxdock-db.js?v=100-db78"></script>
-<script src="./maxdock-queue.js?v=100-db78"></script>
-<script src="./maxdock-db77-controls.js?v=100-db78"></script>
+<script src="./supabase-2.110.3.js?v=91-db70"></script>
+<script src="./maxdock-config.js?v=91-db70"></script>
+<script src="./maxdock-db.js?v=91-db70"></script>
+<script src="./maxdock-queue.js?v=91-db70"></script>
 </body>
 </html>

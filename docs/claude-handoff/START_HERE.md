@@ -5,11 +5,9 @@ This package gives Claude enough context to continue MaxDock without relying on 
 ## Current baseline
 
 - Source branch: `main`
-- Production reference commit: `4fb1a5f3611fdab91f42eee43dff41011e617724`
-- Production interface release: DB70 / `v91-db70` / PR #59
-- Main source release: DB71 / PR #60 (merged, not deployed)
-- Current review candidate: DB71 live-readiness hotfix / `v93-db71`
-- Production GitHub Pages commit: `4fb1a5f3611fdab91f42eee43dff41011e617724`
+- Source baseline when this handoff was prepared: `53b9a73`
+- Production interface release: DB37 / `v58-db37`
+- GitHub Pages deployment commit: `36eef0c`
 - Live application: `https://maxsolutionsmiss.github.io/MaxDock/db04/`
 - Supabase project URL: `https://rywzqepzramurbrpmept.supabase.co`
 
@@ -25,6 +23,6 @@ Use the connected GitHub repository as the source of truth. Merge the handoff PR
 4. `SUPABASE_STATE.md`
 5. `DEPLOYMENT_AND_RELEASES.md`
 6. `TESTING.md`
-7. `DEPLOYMENT_DB70.txt`, then `DEPLOYMENT_DB71.txt` for DB71 and its live-readiness hotfix
+7. The most recent `DEPLOYMENT_DB31.txt` through `DEPLOYMENT_DB37.txt`
 
 Use `CLAUDE_START_PROMPT.md` as the first instruction in Claude. Claude should first produce a read-only understanding check; it should not begin by restructuring the app or changing production.

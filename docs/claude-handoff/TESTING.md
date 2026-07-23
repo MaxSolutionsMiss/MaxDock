@@ -6,7 +6,6 @@
 find . -type f -name '*.js' -not -path './.git/*' -print0 | xargs -0 -n1 node --check
 git diff --check
 bash ./scripts/verify-root-db04-parity.sh
-bash ./scripts/verify-no-ui-patch-assets.sh
 ```
 
 For TypeScript Edge Functions, inspect imports and run the available Deno/type check when the execution environment provides it. A missing local CLI does not justify deploying unreviewed source.
@@ -31,7 +30,7 @@ For TypeScript Edge Functions, inspect imports and run the available Deno/type c
 - Verify customer availability stays inside operating hours.
 - Check warn/enforce capacity behavior with an inventory baseline and scheduled skid movement.
 - Confirm return-load suggestions are advisory only and never auto-merge appointments.
-- Confirm Dashboard, Queue, Reports, My Appointments, and full-screen views receive fresh appointment data every three minutes without disrupting an in-progress slot selection. Confirm the Dashboard and Queue Refresh actions update immediately.
+- Confirm Dashboard, Queue, Reports, My Appointments, and full-screen views receive fresh appointment data every five seconds without disrupting an in-progress slot selection.
 - Confirm the gear menu closes on outside click and Escape.
 - Confirm User Management and Data Integration remain distinct admin destinations.
 - Verify password recovery, temporary-password forced change, username/email login, and customer permitted-location editing after any auth/admin change.

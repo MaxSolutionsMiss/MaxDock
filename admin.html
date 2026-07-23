@@ -4,40 +4,39 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=99-db77">
+<link rel="stylesheet" href="./maxdock.css?v=91-db70">
+<link rel="stylesheet" href="./maxdock-db04.css?v=91-db70">
 <title>MaxDock – User Management</title>
 </head>
 <body data-page="admin">
-<a class="skipLink" href="#mainContent">Skip to main content</a>
 
 <header class="topbar">
   <div class="topbarInner">
     <div class="brandRow">
       <div class="brand">
-        <a class="logoLink" href="./index.html?v=99-db77" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+        <a class="logoLink" href="./index.html?v=91-db70" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
         <div><h1 class="appTitle">MaxDock</h1><p class="appSub">Max Solutions Packaging Inc.</p></div>
       </div>
     </div>
     <div class="headerActions">
-      <div class="locationPill sharedLocationControl locationPlaceholder" aria-hidden="true"><label for="locationSelect">Location</label><select id="locationSelect" disabled aria-disabled="true"></select></div>
-      <a class="ghostBtn" href="./index.html?v=99-db77">Main Page</a>
+      <a class="ghostBtn" href="./index.html?v=91-db70">Main Page</a>
       <details class="menuDetails">
-        <summary aria-expanded="false" class="iconBtn" title="Menu" aria-label="Open menu"><span class="maxdockIconSlot" data-maxdock-icon="menu" aria-hidden="true"></span></summary>
+        <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=99-db77">My Appointments</a>
-          <a href="./queue.html?v=99-db77">Operations Queue</a>
-          <a href="./reports.html?v=99-db77">Reports</a>
-          <a href="./dashboard.html?v=99-db77">Dashboard</a>
-          <a href="./settings.html?v=99-db77">Settings</a>
-          <a href="./admin.html?v=99-db77" aria-current="page">User Management</a>
-          <a href="./data.html?v=99-db77">Data Integration</a>
+          <a href="./my-appointments.html?v=91-db70">My Appointments</a>
+          <a href="./queue.html?v=91-db70">Operation Queue</a>
+          <a href="./reports.html?v=91-db70">Reports</a>
+          <a href="./dashboard.html?v=91-db70">Dashboard</a>
+          <a href="./settings.html?v=91-db70">Settings</a>
+          <a href="./admin.html?v=91-db70" aria-current="page">User Management</a>
+          <a href="./data.html?v=91-db70">Data Integration</a>
         </nav>
       </details>
     </div>
   </div>
 </header>
 
-<main id="mainContent" class="screen pageWrap adminPage">
+<main class="screen pageWrap adminPage">
   <div class="pageHead">
     <div>
       <h2>User Management</h2>
@@ -49,12 +48,12 @@
   <div class="sectionWorkspace adminSectionWorkspace">
     <aside class="sectionWorkspaceRail adminUserRail" aria-label="User groups">
       <div class="sectionWorkspaceRailHead"><strong>User groups</strong><small>Focus the account list.</small></div>
-      <div class="sectionWorkspaceTabs adminUserFilterTabs" role="group" aria-label="Filter user list">
-        <button type="button" data-admin-user-filter="all" aria-controls="admin-user-list" aria-pressed="true"><span>All Users</span><small><b id="adminFilterAllCount">—</b> accounts</small></button>
-        <button type="button" data-admin-user-filter="internal" aria-controls="admin-user-list" aria-pressed="false"><span>Internal Team</span><small><b id="adminFilterInternalCount">—</b> accounts</small></button>
-        <button type="button" data-admin-user-filter="customer" aria-controls="admin-user-list" aria-pressed="false"><span>Customers</span><small><b id="adminFilterCustomerCount">—</b> accounts</small></button>
-        <button type="button" data-admin-user-filter="vendor" aria-controls="admin-user-list" aria-pressed="false"><span>Vendors</span><small><b id="adminFilterVendorCount">—</b> accounts</small></button>
-        <button type="button" data-admin-user-filter="setup" aria-controls="admin-user-list" aria-pressed="false"><span>Setup Required</span><small><b id="adminFilterSetupCount">—</b> accounts</small></button>
+      <div class="sectionWorkspaceTabs adminUserFilterTabs" role="tablist" aria-orientation="vertical">
+        <button type="button" role="tab" data-admin-user-filter="all" aria-controls="admin-user-list" aria-selected="true"><span>All users</span><small><b id="adminFilterAllCount">—</b> accounts</small></button>
+        <button type="button" role="tab" data-admin-user-filter="internal" aria-controls="admin-user-list"><span>Internal team</span><small><b id="adminFilterInternalCount">—</b> accounts</small></button>
+        <button type="button" role="tab" data-admin-user-filter="customer" aria-controls="admin-user-list"><span>Customers</span><small><b id="adminFilterCustomerCount">—</b> accounts</small></button>
+        <button type="button" role="tab" data-admin-user-filter="vendor" aria-controls="admin-user-list"><span>Vendors</span><small><b id="adminFilterVendorCount">—</b> accounts</small></button>
+        <button type="button" role="tab" data-admin-user-filter="setup" aria-controls="admin-user-list"><span>Setup required</span><small><b id="adminFilterSetupCount">—</b> accounts</small></button>
       </div>
     </aside>
 
@@ -66,23 +65,18 @@
         <div class="adminSummaryCard attention"><span>No tracked use yet</span><strong id="neverUsed">—</strong></div>
       </section>
 
-      <section class="panel adminUsersPanel" id="admin-user-list">
+      <section class="panel adminUsersPanel" id="admin-user-list" role="tabpanel">
         <div class="panelHeader">
           <div><h3 id="adminUserListTitle">All MaxDock Users</h3><p class="panelIntro">Select Details to view location access and account identity.</p></div>
           <label class="adminSearch"><span>Search users</span><input id="userSearch" type="search" placeholder="Name, company, username, or email"></label>
         </div>
-        <div class="adminBulkBar" id="adminBulkBar" role="status" hidden><strong id="adminBulkCount">0 users selected</strong><div><button class="secondaryBtn" id="bulkActivateUsers" type="button">Activate</button><button class="destructiveSecondary secondaryBtn" id="bulkDeactivateUsers" type="button">Deactivate</button></div></div>
         <div class="tableScroll">
           <table class="adminUsersTable">
-            <thead><tr><th><input id="selectAllUsers" type="checkbox" aria-label="Select all visible users"></th><th>User</th><th>Role</th><th>Status</th><th>Usage</th><th>Last activity</th><th>Action</th></tr></thead>
-            <tbody id="userTableBody"><tr><td colspan="7">Loading MaxDock users…</td></tr></tbody>
+            <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Usage</th><th>Last activity</th><th>Action</th></tr></thead>
+            <tbody id="userTableBody"><tr><td colspan="6">Loading MaxDock users…</td></tr></tbody>
           </table>
         </div>
       </section>
-      <details class="panel adminAuditPanel">
-        <summary aria-expanded="false">Recent User Administration Activity</summary>
-        <div class="tableScroll"><table><thead><tr><th>When</th><th>Action</th><th>Target</th><th>Changed by</th></tr></thead><tbody id="adminAuditBody"><tr><td colspan="4">Loading administration history…</td></tr></tbody></table></div>
-      </details>
     </div>
   </div>
 
@@ -106,9 +100,9 @@
           </div>
         </fieldset>
         <div class="field" id="userEmailField"><label for="userEmail">Email address <span id="userEmailRequired">*</span></label><input id="userEmail" type="email" autocomplete="email"><small id="userEmailHelp">The secure invitation link will be addressed to this person.</small></div>
-        <div class="field" id="userPasswordField" hidden><label for="userTemporaryPassword">Temporary password *</label><div class="adminPasswordInput"><input id="userTemporaryPassword" type="text" autocomplete="off" minlength="12"><button class="tiny" id="generatePasswordButton" type="button">Generate</button></div><small>Use at least 12 characters. The user must replace this after the first sign-in.</small></div>
+        <div class="field" id="userPasswordField" hidden><label for="userTemporaryPassword">Temporary password *</label><div class="adminPasswordInput"><input id="userTemporaryPassword" type="text" autocomplete="off" minlength="6"><button class="tiny" id="generatePasswordButton" type="button">Generate</button></div><small>Use at least 6 characters. The user must replace this after the first sign-in.</small></div>
         <div class="field"><label for="userRole">Privilege level *</label><select id="userRole" required></select></div>
-        <div class="field adminActiveField"><span class="fieldCaption">Account status</span><label class="adminToggle"><input id="userActive" type="checkbox" checked><span>Active user</span></label></div>
+        <div class="field adminActiveField"><label>Account status</label><label class="adminToggle"><input id="userActive" type="checkbox" checked><span>Active user</span></label></div>
         <fieldset class="field full adminExternalIdentityField" id="userExternalIdentityField" hidden>
           <legend>Customer or vendor identity *</legend>
           <div class="formGrid adminExternalIdentityGrid">
@@ -143,16 +137,16 @@
       <div class="adminAccessDetails" id="accessDetails"></div>
       <div class="error" id="accessError" role="alert"></div>
       <div class="wizardNav">
-        <button class="primaryBtn" id="copyAccessButton" type="button">Copy Details</button>
-        <div class="rightNav"><button class="secondaryBtn" id="openOutlookButton" type="button">Open Email Draft</button><button class="secondaryBtn" id="doneAccessButton" type="button">Done</button></div>
+        <button class="secondaryBtn" id="openOutlookButton" type="button">Open Outlook Draft</button>
+        <div class="rightNav"><button class="secondaryBtn" id="copyAccessButton" type="button">Copy Details</button><button class="primaryBtn" id="doneAccessButton" type="button">Done</button></div>
       </div>
     </div>
   </div>
 </div>
 
-<script src="./supabase-2.110.3.js?v=99-db77"></script>
-<script src="./maxdock-config.js?v=99-db77"></script>
-<script src="./maxdock-db.js?v=99-db77"></script>
-<script src="./maxdock-admin.js?v=99-db77"></script>
+<script src="./supabase-2.110.3.js?v=91-db70"></script>
+<script src="./maxdock-config.js?v=91-db70"></script>
+<script src="./maxdock-db.js?v=91-db70"></script>
+<script src="./maxdock-admin.js?v=91-db70"></script>
 </body>
 </html>

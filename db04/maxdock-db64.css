@@ -1,0 +1,144 @@
+/* MaxDock DB64 — stable harmonized interface and screenshot-driven cleanup. */
+
+/* Prevent the retired patch layers from animating or fighting the stable layout. */
+body.db64Stable :is(.dashboardFilters,#metrics,#myAppointmentMetrics,#queueMetrics,#reportMetrics,.queueFilters,.reportFilters,.panel,.morningBrief){
+  transition:none!important;
+  animation:none!important
+}
+
+/* Header location is a system-admin control only. */
+body.db64Stable:not(.systemAdminLocation) .headerActions .locationPill{display:none!important}
+body.db64Stable.systemAdminLocation .headerActions .locationPill{display:flex!important}
+
+/* Shared compact field language: label immediately before its field. */
+body.db64Stable :is(.db64InlineField,.dashboardFilters>.filterField,.dashboardRangeHost>.rangeMetric,.queueFilters>.filterField,.reportFilters>.filterField,.reportCustomDates>.filterField,.myAppointmentToolbar .filterField){
+  box-sizing:border-box!important;
+  display:flex!important;
+  grid-template-columns:none!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:0!important
+}
+body.db64Stable :is(.db64InlineField,.dashboardFilters>.filterField,.dashboardRangeHost>.rangeMetric,.queueFilters>.filterField,.reportFilters>.filterField,.reportCustomDates>.filterField,.myAppointmentToolbar .filterField)>:is(label,small){
+  display:block!important;
+  position:static!important;
+  width:auto!important;
+  min-width:max-content!important;
+  margin:0!important;
+  padding:0!important;
+  white-space:nowrap!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  text-transform:none!important
+}
+body.db64Stable :is(.dashboardFilters,.queueFilters,.reportFilters){
+  box-sizing:border-box!important;
+  display:flex!important;
+  grid-template-columns:none!important;
+  flex-flow:row nowrap!important;
+  align-items:center!important;
+  min-height:56px!important;
+  gap:14px!important;
+  padding:8px 12px!important;
+  margin:0!important;
+  overflow:visible!important
+}
+body.db64Stable :is(.dashboardFilters,.queueFilters,.reportFilters) :is(input,select){height:36px!important;min-height:36px!important;margin:0!important}
+
+/* Dashboard: one compact control row, full-width KPI row, consistent 10px rhythm. */
+body.db64Stable[data-page="dashboard"] .dashboardOverviewBand{display:grid!important;gap:10px!important;margin:0 0 10px!important}
+body.db64Stable[data-page="dashboard"] .dashboardFilters{order:1!important}
+body.db64Stable[data-page="dashboard"] #metrics{order:2!important;margin:0!important;gap:8px!important}
+body.db64Stable[data-page="dashboard"] #adminDate{width:150px!important}
+body.db64Stable[data-page="dashboard"] #adminStatus{width:150px!important}
+body.db64Stable[data-page="dashboard"] .dashboardRangeHost{display:flex!important;align-items:center!important;min-width:0!important}
+body.db64Stable[data-page="dashboard"] .dashboardRangeHost>.rangeMetric{height:36px!important;min-height:36px!important;max-height:36px!important}
+body.db64Stable[data-page="dashboard"] .dashboardRangeHost>.rangeMetric>.metricIconDB47{display:none!important}
+body.db64Stable[data-page="dashboard"] #dashboardRange{width:150px!important;height:36px!important}
+body.db64Stable[data-page="dashboard"] .dashboardActions{margin-left:auto!important;flex:0 0 auto!important}
+body.db64Stable[data-page="dashboard"] #dockSchedulePanel{margin-top:0!important}
+body.db64Stable[data-page="dashboard"] #metrics>.metric,
+body.db64Stable[data-page="myappointments"] #myAppointmentMetrics>.metric{
+  box-sizing:border-box!important;
+  height:92px!important;
+  min-height:92px!important;
+  max-height:92px!important;
+  margin:0!important;
+  padding:18px 12px!important
+}
+body.db64Stable[data-page="dashboard"] #metrics{grid-auto-rows:92px!important}
+body.db64Stable[data-page="dashboard"] #metrics:not([hidden]){display:grid!important;grid-template-columns:repeat(var(--db64-dashboard-columns,6),minmax(0,1fr))!important}
+
+/* My Appointments: exact 10px spacing and no phantom KPI-container height. */
+body.db64Stable[data-page="myappointments"] .myAppointmentsBookingBarDB52{margin:0 0 10px!important}
+body.db64Stable[data-page="myappointments"] #myAppointmentMetrics{
+  display:grid!important;
+  grid-template-columns:repeat(var(--db64-appointment-columns,5),minmax(0,1fr))!important;
+  grid-auto-rows:92px!important;
+  height:92px!important;
+  min-height:92px!important;
+  max-height:92px!important;
+  gap:8px!important;
+  margin:0 0 10px!important;
+  overflow:visible!important
+}
+body.db64Stable[data-page="myappointments"] #myAppointmentMetrics[hidden]{display:none!important;height:0!important;min-height:0!important;max-height:0!important;margin-bottom:10px!important}
+body.db64Stable[data-page="myappointments"] .nextAppointmentSpotlight[hidden]{display:none!important;height:0!important;margin:0!important;padding:0!important}
+body.db64Stable[data-page="myappointments"] .db64AppointmentListPanel{margin-top:0!important;padding-top:8px!important}
+body.db64Stable[data-page="myappointments"] .db64NotificationPanel{margin-top:10px!important}
+body.db64Stable[data-page="myappointments"] .myAppointmentToolbar{min-height:36px!important;margin:0 0 6px!important;padding:0!important}
+body.db64Stable[data-page="myappointments"] #myAppointmentFilter{width:150px!important;height:36px!important}
+
+/* Queue: harmonized controls and section rhythm. */
+body.db64Stable[data-page="queue"] .queueFilters{margin:0 0 10px!important}
+body.db64Stable[data-page="queue"] #queueDate{width:150px!important}
+body.db64Stable[data-page="queue"] #queueStatus{width:150px!important}
+body.db64Stable[data-page="queue"] .queueFilterActions{display:flex!important;align-items:center!important;gap:8px!important;margin:0!important;white-space:nowrap!important}
+body.db64Stable[data-page="queue"] .queueFilterActions #openQueueDisplay{margin-left:auto!important}
+body.db64Stable[data-page="queue"] .morningBrief{margin-top:0!important;margin-bottom:10px!important}
+body.db64Stable[data-page="queue"] :is(.queueFocus,.queueActionPanel,.queueLanes,.queueBlocksPanel){margin-top:10px!important}
+
+/* Reports: remove redundant sidebar, fill the page, add KPI settings at far right. */
+body.db64Stable[data-page="reports"] .reportSectionWorkspace{display:block!important;grid-template-columns:none!important;margin-top:0!important}
+body.db64Stable[data-page="reports"] .reportSectionWorkspace>.sectionWorkspaceRail{display:none!important}
+body.db64Stable[data-page="reports"] .reportWorkspaceContent{width:100%!important;max-width:none!important;min-width:0!important;margin:0!important}
+body.db64Stable[data-page="reports"] .reportFilters{margin:0 0 10px!important}
+body.db64Stable[data-page="reports"] #reportView{width:190px!important;min-width:190px!important}
+body.db64Stable[data-page="reports"] #reportPreset{width:150px!important}
+body.db64Stable[data-page="reports"] .reportCustomDates{display:flex!important;align-items:center!important;gap:12px!important;margin:0!important}
+body.db64Stable[data-page="reports"] .reportCustomDates[hidden]{display:none!important}
+body.db64Stable[data-page="reports"] #reportMetrics{margin:0 0 10px!important;gap:8px!important;grid-template-columns:repeat(var(--db64-report-columns,9),minmax(0,1fr))!important}
+body.db64Stable[data-page="reports"] #reportMetrics[hidden]{display:none!important}
+body.db64Stable[data-page="reports"] .aiBriefPanel{margin-top:0!important}
+body.db64Stable[data-page="reports"] .reportVisualPanel{margin-top:10px!important}
+body.db64Stable[data-page="reports"] .db64ReportCustomize{position:relative!important;margin-left:auto!important;flex:0 0 40px!important;z-index:25!important}
+body.db64Stable[data-page="reports"] .db64ReportCustomize>summary{box-sizing:border-box;display:grid;place-items:center;width:40px;height:36px;border:1px solid #c7d7e4;border-radius:10px;background:#fff;cursor:pointer;list-style:none}
+body.db64Stable[data-page="reports"] .db64ReportCustomize>summary::-webkit-details-marker{display:none}
+body.db64Stable[data-page="reports"] .db64ReportCustomize>summary svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8}
+body.db64Stable[data-page="reports"] .db64ReportCustomizeMenu{position:absolute;right:0;top:42px;width:255px;padding:12px;border:1px solid #c7d7e4;border-radius:14px;background:#fff;box-shadow:0 14px 34px rgba(15,35,55,.16);z-index:50}
+body.db64Stable[data-page="reports"] .db64ReportCustomizeMenu fieldset{border:0;padding:0;margin:0 0 10px}
+body.db64Stable[data-page="reports"] .db64ReportCustomizeMenu legend{font-weight:800;margin-bottom:7px}
+body.db64Stable[data-page="reports"] .db64ReportMetricOptions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+body.db64Stable[data-page="reports"] .db64ReportCustomizeMenu label{display:flex;align-items:center;gap:6px;font-size:12px}
+body.db64Stable[data-page="reports"] .db64ReportWide{grid-column:1/-1}
+
+/* Schedule ruler: labels remain centred in each visible segment. */
+body.db64Stable[data-page="dashboard"] .timeRulerTick .centeredTimeLabel{white-space:nowrap!important}
+
+@media(max-width:1180px){
+  body.db64Stable :is(.dashboardFilters,.queueFilters,.reportFilters){flex-wrap:wrap!important}
+  body.db64Stable[data-page="dashboard"] #metrics,
+  body.db64Stable[data-page="reports"] #reportMetrics{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))!important}
+  body.db64Stable[data-page="myappointments"] #myAppointmentMetrics{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;height:auto!important;max-height:none!important}
+}
+@media(max-width:760px){
+  body.db64Stable[data-page="dashboard"] #metrics>.metric,
+  body.db64Stable[data-page="myappointments"] #myAppointmentMetrics>.metric{height:84px!important;min-height:84px!important;max-height:84px!important;padding:14px 10px!important}
+  body.db64Stable[data-page="myappointments"] #myAppointmentMetrics{grid-auto-rows:84px!important}
+}

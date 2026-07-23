@@ -1,0 +1,32 @@
+/* MaxDock DB63 — screenshot-driven spacing and control alignment corrections. */
+
+body.db63ScreenshotFix :is(.db63InlineField,.db63RangeField){box-sizing:border-box!important;display:flex!important;grid-template-columns:none!important;flex-direction:row!important;align-items:center!important;align-self:center!important;gap:8px!important;width:auto!important;min-width:max-content!important;min-height:36px!important;margin:0!important;padding:0!important}
+body.db63ScreenshotFix :is(.db63InlineField,.db63RangeField)>:is(label,small){display:block!important;position:static!important;width:auto!important;min-width:auto!important;margin:0!important;padding:0!important;line-height:1.1!important;white-space:nowrap!important}
+body.db63ScreenshotFix :is(.db63InlineField,.db63RangeField)>:is(input,select){height:36px!important;min-height:36px!important;margin:0!important}
+body.db63ScreenshotFix[data-page="queue"] .db63QueueToolbar{box-sizing:border-box!important;display:flex!important;grid-template-columns:none!important;flex-flow:row nowrap!important;align-items:center!important;min-height:0!important;gap:10px!important;padding:8px 10px!important}
+body.db63ScreenshotFix[data-page="queue"] .db63QueueFilters{box-sizing:border-box!important;display:flex!important;grid-template-columns:none!important;flex-flow:row nowrap!important;align-items:center!important;flex:1 1 auto!important;min-width:0!important;gap:12px!important;padding:0!important;margin:0!important}
+body.db63ScreenshotFix[data-page="queue"] .db63QueueFilters>.db63InlineField{flex:0 0 auto!important}
+body.db63ScreenshotFix[data-page="queue"] #queueDate{width:142px!important}
+body.db63ScreenshotFix[data-page="queue"] #queueStatus{width:122px!important}
+body.db63ScreenshotFix[data-page="queue"] .db63QueueQuickActions{display:flex!important;flex:0 0 auto!important;align-items:center!important;gap:8px!important;margin:0!important;padding:0!important}
+body.db63ScreenshotFix[data-page="queue"] :is(.queueToolbarViewActions,.queueToolbarDocuments){flex:0 0 auto!important;align-self:center!important;margin:0!important}
+body.db63ScreenshotFix[data-page="queue"] .queueToolbarViewActions{margin-left:auto!important}
+body.db63ScreenshotFix[data-page="dashboard"] .db63DashboardToolbar{box-sizing:border-box!important;display:flex!important;align-items:center!important;min-height:0!important;gap:12px!important;padding:8px 10px!important}
+body.db63ScreenshotFix[data-page="dashboard"] .db63DashboardOperational{display:flex!important;grid-template-columns:none!important;flex-flow:row nowrap!important;align-items:center!important;flex:1 1 auto!important;min-width:0!important;gap:14px!important;margin:0!important;padding:0!important}
+body.db63ScreenshotFix[data-page="dashboard"] #adminDate{width:148px!important}
+body.db63ScreenshotFix[data-page="dashboard"] #adminStatus{width:150px!important}
+body.db63ScreenshotFix[data-page="dashboard"] #dashboardRange{width:142px!important}
+body.db63ScreenshotFix[data-page="dashboard"] .dashboardCommandStripDB54{margin-left:auto!important}
+body.db63ScreenshotFix[data-page="reports"] .db63ReportFilters{box-sizing:border-box!important;display:flex!important;grid-template-columns:none!important;flex-flow:row wrap!important;align-items:center!important;gap:10px 16px!important;min-height:0!important;padding:8px 10px!important}
+body.db63ScreenshotFix[data-page="reports"] #reportView{width:220px!important}
+body.db63ScreenshotFix[data-page="reports"] #reportPreset{width:154px!important}
+body.db63ScreenshotFix[data-page="reports"] .reportUpdateButton{align-self:center!important;height:40px!important;margin:0!important}
+body.db63ScreenshotFix[data-page="reports"] .reportCustomDates:not([hidden]){display:flex!important;align-items:center!important;gap:12px!important;margin:0!important}
+body.db63ScreenshotFix[data-page="myappointments"] #myAppointmentMetrics{box-sizing:border-box!important;height:92px!important;min-height:92px!important;max-height:92px!important;grid-auto-rows:92px!important;align-content:start!important;margin:0!important;padding:0!important;overflow:visible!important}
+body.db63ScreenshotFix[data-page="myappointments"] #myAppointmentMetrics+.nextAppointmentSpotlight[hidden]{display:none!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important}
+body.db63ScreenshotFix[data-page="myappointments"] #myAppointmentMetrics~.panel{margin-top:10px!important}
+body.db63ScreenshotFix[data-page="myappointments"] #myAppointmentMetrics~.panel[hidden]{display:none!important}
+body.db63ScreenshotFix[data-page="dashboard"] #metrics{grid-template-columns:repeat(var(--db63-dashboard-columns,7),minmax(0,1fr))!important}
+body.db63ScreenshotFix[data-page="dashboard"] .dashboardCustomizeOptions input[type="checkbox"]{opacity:1!important;cursor:pointer!important}
+@media(max-width:1180px){body.db63ScreenshotFix[data-page="dashboard"] .db63DashboardToolbar,body.db63ScreenshotFix[data-page="queue"] .db63QueueToolbar{flex-wrap:wrap!important}body.db63ScreenshotFix[data-page="dashboard"] .db63DashboardOperational,body.db63ScreenshotFix[data-page="queue"] .db63QueueFilters{flex-wrap:wrap!important;width:100%!important}body.db63ScreenshotFix[data-page="dashboard"] #metrics{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important}}
+@media(max-width:760px){body.db63ScreenshotFix :is(.db63InlineField,.db63RangeField){min-width:0!important}body.db63ScreenshotFix[data-page="myappointments"] #myAppointmentMetrics{height:auto!important;min-height:0!important;max-height:none!important;grid-auto-rows:86px!important}}

@@ -136,7 +136,7 @@ function calculateDuration(){
   const truck=$("reqTruck").value,type=$("reqType").value,handling=$("reqHandling").value;
   let d=settings.base+skids*settings.perSkid+(settings.truckSetup[truck]||0)+(settings.typeAdj[type]||0)+(settings.handlingAdj[handling]||0)+settings.buffer;
   if(truck.includes("53")||skids>=24)d=Math.max(d,settings.fullTruck);
-  if($("reqPriority").checked)d=Math.max(d,settings.priorityMin);
+  if($("reqPriority").value==="Yes")d=Math.max(d,settings.priorityMin);
   return Math.max(settings.interval,Math.ceil(d/settings.interval)*settings.interval);
 }
 function moveRequestDate(delta){
@@ -185,7 +185,7 @@ function renderReview(){
       <div class="reviewItem"><b>Handling</b>${esc($("reqHandling").value)}</div>
       <div class="reviewItem"><b>Contact</b>${esc($("reqName").value)} | ${esc($("reqEmail").value)}</div>
       <div class="reviewItem"><b>PO / BOL / Job #</b>${esc($("reqRef").value)}</div>
-      <div class="reviewItem"><b>Priority</b>${$("reqPriority").checked?"Yes":"No"}</div>
+      <div class="reviewItem"><b>Priority</b>${esc($("reqPriority").value)}</div>
     </div></div>`;
 }
 function submitBooking(){
@@ -198,7 +198,7 @@ function submitBooking(){
       location:currentLocation,date:selectedSlot.date,start:selectedSlot.start,end:selectedSlot.end,dock:selectedSlot.dock,
       direction:$("reqDirection").value,company:requesterCompany(),type:$("reqType").value,
       truck:$("reqTruck").value,skids:Number($("reqSkids").value||0),handling:$("reqHandling").value,
-      priority:$("reqPriority").checked,name:$("reqName").value.trim(),email:$("reqEmail").value.trim(),
+      priority:$("reqPriority").value==="Yes",name:$("reqName").value.trim(),email:$("reqEmail").value.trim(),
       carrier:$("reqCarrier").value.trim(),job:$("reqRef").value.trim(),notes:$("reqNotes").value.trim(),
       status:"Scheduled",created:new Date().toISOString()
     };
@@ -220,18 +220,11 @@ PO / BOL / Job #: ${lastBooked.job}
 Dock: Assigned by site`;
 }
 async function copyConfirmation(){
-  try{
-    await navigator.clipboard.writeText(confirmationText());
-    window.MaxDockUI?.toast?.("Confirmation copied.");
-  }catch{
-    window.MaxDockUI?.toast?.("Clipboard access is unavailable. Select and copy the confirmation from the page.",{tone:"error"});
-  }
+  try{await navigator.clipboard.writeText(confirmationText());alert("Confirmation copied.")}
+  catch{alert(confirmationText())}
 }
 function openEmailDraft(){
-  if(!lastBooked){
-    window.MaxDockUI?.toast?.("Complete a booking first.",{tone:"error"});
-    return;
-  }
+  if(!lastBooked)return alert("Complete a booking first.");
   window.location.href=`mailto:${encodeURIComponent(lastBooked.email)}?subject=${encodeURIComponent("MaxDock Confirmation – "+lastBooked.ref)}&body=${encodeURIComponent(confirmationText())}`;
 }
 
@@ -615,20 +608,14 @@ function updateStatus(id,status){
   if(i>=0){items[i].status=status;saveAppointments(items);renderDashboard()}
 }
 
-async function deleteAppointment(id){
+function deleteAppointment(id){
   const items=getAppointments();
   const appt=items.find(a=>a.id===id);
   if(!appt)return;
   const label=appt.ref&&appt.ref!=="BLOCK"
     ?`${appt.ref} — ${appt.company}`
     :(appt.company||"appointment");
-  const confirmed=await (window.MaxDockUI?.confirmAction?.({
-    title:`Delete ${label}?`,
-    message:"Permanent deletion removes the local record and cannot be undone.",
-    confirmLabel:"Delete",
-    tone:"danger"
-  })??Promise.resolve(false));
-  if(!confirmed)return;
+  if(!confirm(`Delete ${label}? This cannot be undone.`))return;
   saveAppointments(items.filter(a=>a.id!==id));
   renderDashboard();
 }
@@ -777,8 +764,7 @@ function saveSettings(){
   settings.fullTruck=Number($("setFullTruck").value||75);settings.priorityMin=Number($("setPriorityMin").value||75);
   settings.docks=[...document.querySelectorAll(".dockNameInput")].map(x=>x.value.trim()).filter(Boolean);
   if(!settings.docks.length)settings.docks=["Dock 1"];
-  localStorage.setItem(LS_SETTINGS,JSON.stringify(settings));
-  window.MaxDockUI?.toast?.("Settings saved.");
+  localStorage.setItem(LS_SETTINGS,JSON.stringify(settings));alert("Settings saved.");
 }
 function resetSettings(){
   settings=JSON.parse(JSON.stringify(defaultSettings));localStorage.setItem(LS_SETTINGS,JSON.stringify(settings));renderSettings();

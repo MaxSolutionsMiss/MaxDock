@@ -1,0 +1,251 @@
+/* MaxDock DB51 — audited action consistency, aligned controls, and unified operator displays. */
+:root{
+  --db51-primary:#0b6287;
+  --db51-primary-hover:#084f70;
+  --db51-primary-height:40px;
+  --db51-primary-radius:10px;
+  --db51-workspace-gutter:24px;
+}
+
+/* One primary-action system across the application, using Save settings as the reference. */
+body.interfaceAuditDB51 :is(
+  .primaryBtn,
+  .greenBtn,
+  .requestMega,
+  .dashboardPrimaryActions .dashboardActionPrimary,
+  .bookAppointmentBtnDB50,
+  .maxdockPrimaryActionDB51
+){
+  box-sizing:border-box!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  width:auto!important;
+  min-width:0!important;
+  height:var(--db51-primary-height)!important;
+  min-height:var(--db51-primary-height)!important;
+  max-height:var(--db51-primary-height)!important;
+  padding:0 17px!important;
+  border:1px solid var(--db51-primary)!important;
+  border-radius:var(--db51-primary-radius)!important;
+  background:var(--db51-primary)!important;
+  background-image:none!important;
+  color:#fff!important;
+  box-shadow:none!important;
+  font-size:13px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  text-align:center!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  transform:none!important
+}
+body.interfaceAuditDB51 :is(
+  .primaryBtn,
+  .greenBtn,
+  .requestMega,
+  .dashboardPrimaryActions .dashboardActionPrimary,
+  .bookAppointmentBtnDB50,
+  .maxdockPrimaryActionDB51
+):hover{
+  border-color:var(--db51-primary-hover)!important;
+  background:var(--db51-primary-hover)!important;
+  color:#fff!important;
+  box-shadow:none!important;
+  transform:none!important
+}
+body.interfaceAuditDB51 :is(.primaryBtn,.greenBtn,.dashboardActionPrimary,.bookAppointmentBtnDB50) :is(svg,.buttonIcon svg){
+  width:16px!important;
+  height:16px!important;
+  flex:0 0 16px!important;
+  stroke:currentColor!important
+}
+body.interfaceAuditDB51 .dashboardPrimaryActions{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important
+}
+body.interfaceAuditDB51 .dashboardPrimaryActions .dashboardActionPrimary{
+  min-width:156px!important
+}
+
+/* Keep Vendor booking immediately beside the My Appointments title. */
+body.interfaceAuditDB51[data-page="myappointments"] .myAppointmentsPageHeadDB51{
+  align-items:flex-start!important
+}
+body.interfaceAuditDB51 .myAppointmentsHeadingDB51{min-width:0!important}
+body.interfaceAuditDB51 .myAppointmentsTitleRowDB51{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:14px!important;
+  flex-wrap:wrap!important
+}
+body.interfaceAuditDB51 .myAppointmentsTitleRowDB51 h2{margin:0!important}
+body.interfaceAuditDB51 .myAppointmentsTitleRowDB51 .bookAppointmentBtnDB50{
+  min-width:188px!important;
+  flex:0 0 auto!important
+}
+
+/* Dashboard filters are three equal fields on one vertical baseline. */
+body.interfaceAuditDB51[data-page="dashboard"] .dashboardWorkspaceToolbar{
+  min-height:0!important;
+  padding:12px!important;
+  align-items:flex-end!important
+}
+body.interfaceAuditDB51[data-page="dashboard"] .dashboardOperationalControls{
+  display:flex!important;
+  align-items:flex-end!important;
+  align-content:flex-end!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  flex-wrap:wrap!important;
+  min-height:53px!important
+}
+body.interfaceAuditDB51[data-page="dashboard"] .dashboardOperationalControls :is(.filterField,.dashboardRangeHost){
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-rows:14px 36px!important;
+  align-content:end!important;
+  align-items:end!important;
+  width:150px!important;
+  min-width:150px!important;
+  max-width:150px!important;
+  height:53px!important;
+  min-height:53px!important;
+  max-height:53px!important;
+  gap:3px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important
+}
+body.interfaceAuditDB51[data-page="dashboard"] .dashboardOperationalControls :is(.filterField,.dashboardRangeHost)>label{
+  display:flex!important;
+  align-items:center!important;
+  height:14px!important;
+  min-height:14px!important;
+  margin:0!important;
+  color:#173650!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  line-height:1!important
+}
+body.interfaceAuditDB51[data-page="dashboard"] .dashboardOperationalControls :is(input,select){
+  box-sizing:border-box!important;
+  width:150px!important;
+  min-width:150px!important;
+  max-width:150px!important;
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  margin:0!important;
+  padding:0 12px!important;
+  border:1px solid #c7d5e2!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#102f49!important;
+  box-shadow:none!important
+}
+body.interfaceAuditDB51[data-page="dashboard"] .dashboardRangeHost :is(.rangeMetric,.metricIconDB47,small){display:none!important}
+body.interfaceAuditDB51[data-page="dashboard"] .dashboardOverviewBand{
+  align-items:start!important
+}
+
+/* Long location names must remain fully readable. */
+body.interfaceAuditDB51 .headerActions .locationPill{
+  min-width:250px!important;
+  flex:0 0 auto!important
+}
+body.interfaceAuditDB51 .headerActions .locationPill select{
+  box-sizing:border-box!important;
+  width:172px!important;
+  min-width:172px!important;
+  max-width:172px!important;
+  padding-left:10px!important;
+  padding-right:28px!important;
+  text-overflow:clip!important
+}
+
+/* Dashboard and Queue operator displays use the same monitor-filling canvas. */
+body.interfaceAuditDB51:is(.tvScheduleMode,.queueDisplayMode){
+  overflow:auto!important;
+  background:#f5f8fb!important
+}
+body.interfaceAuditDB51:is(.tvScheduleMode,.queueDisplayMode) :is(.topbar,.maxdockSideRailDB47){display:none!important}
+body.interfaceAuditDB51:is(.tvScheduleMode,.queueDisplayMode) .screen.pageWrap{
+  box-sizing:border-box!important;
+  width:100vw!important;
+  max-width:none!important;
+  min-height:100vh!important;
+  margin:0!important;
+  padding:12px 14px 18px!important
+}
+body.interfaceAuditDB51.queueDisplayMode .queueDisplayBar,
+body.interfaceAuditDB51.tvScheduleMode .tvScheduleBar{
+  position:sticky!important;
+  top:0!important;
+  z-index:500!important;
+  border-radius:8px!important
+}
+body.interfaceAuditDB51 :is(.queueDisplayActions,.scheduleDisplayActions) #queueFullscreenButton,
+body.interfaceAuditDB51 :is(.queueDisplayActions,.scheduleDisplayActions) #scheduleFullscreenButton{
+  display:none!important
+}
+body.interfaceAuditDB51 :is(.queueDisplayActions,.scheduleDisplayActions){
+  margin-left:auto!important
+}
+
+/* Warehouse-capacity activation belongs with the capacity content, not at the far edge. */
+body.interfaceAuditDB51 .capacitySettingsHead{
+  display:block!important;
+  margin-bottom:16px!important
+}
+body.interfaceAuditDB51 .capacityEnableRowDB51{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:14px!important;
+  flex-wrap:wrap!important;
+  margin-top:10px!important
+}
+body.interfaceAuditDB51 .capacityEnableRowDB51 .capacityToggle{
+  box-sizing:border-box!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:8px!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:32px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#173650!important;
+  font-weight:700!important
+}
+body.interfaceAuditDB51 .capacityEnableRowDB51 .capacityToggle input{
+  width:18px!important;
+  height:18px!important;
+  margin:0!important;
+  flex:0 0 18px!important
+}
+body.interfaceAuditDB51 #capacityEnabledLocationsDB51{
+  color:#4d6f82!important;
+  font-size:12px!important;
+  font-weight:650!important
+}
+
+@media(max-width:1040px){
+  body.interfaceAuditDB51 .headerActions .locationPill{min-width:220px!important;flex:1 1 220px!important}
+  body.interfaceAuditDB51 .headerActions .locationPill select{width:155px!important;min-width:155px!important;max-width:none!important;flex:1 1 auto!important}
+  body.interfaceAuditDB51[data-page="myappointments"] .myAppointmentsTitleRowDB51{align-items:stretch!important}
+  body.interfaceAuditDB51[data-page="myappointments"] .bookAppointmentBtnDB50{width:100%!important}
+}

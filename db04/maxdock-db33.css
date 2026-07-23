@@ -1,0 +1,331 @@
+/* MaxDock DB33 — operational density and workspace cleanup */
+
+body.opsDensityDB33 .pageWrap{
+  max-width:1480px;
+  padding-top:16px;
+  padding-bottom:44px
+}
+body.opsDensityDB33 .pageHead{
+  align-items:center;
+  margin-bottom:10px
+}
+body.opsDensityDB33 .pageHead h2{font-size:clamp(24px,2.1vw,32px)}
+body.opsDensityDB33 .pageHead p{margin-top:4px;font-size:13px}
+body.opsDensityDB33 .liveDataStatus{margin-top:4px;font-size:11px}
+body.opsDensityDB33 .panel{
+  margin-top:10px;
+  padding:13px;
+  border-radius:20px
+}
+body.opsDensityDB33 .panelHeader{margin-bottom:8px}
+body.opsDensityDB33 .panelHeader h3{font-size:17px}
+body.opsDensityDB33 .panelHeader small{font-size:11px}
+body.opsDensityDB33 .toolbar{gap:7px}
+body.opsDensityDB33 .utilityBtn,
+body.opsDensityDB33 .filterActionBtn,
+body.opsDensityDB33 .actionBtn,
+body.opsDensityDB33 .dashboardActionPrimary{
+  width:auto;
+  min-width:0;
+  min-height:36px;
+  height:36px;
+  padding:0 11px;
+  border-radius:11px;
+  font-size:12px;
+  white-space:nowrap
+}
+body.opsDensityDB33 .filterField{
+  min-width:0;
+  gap:3px
+}
+body.opsDensityDB33 .filterField label{
+  font-size:10px;
+  line-height:1.2
+}
+body.opsDensityDB33 .filterField input,
+body.opsDensityDB33 .filterField select,
+body.opsDensityDB33 .toolbar input,
+body.opsDensityDB33 .toolbar select{
+  width:auto;
+  min-width:0;
+  height:36px;
+  padding:0 10px;
+  border-radius:10px;
+  font-size:12px
+}
+body.opsDensityDB33 .metric{
+  min-height:72px;
+  padding:11px 13px;
+  border-radius:16px
+}
+body.opsDensityDB33 .metric small{font-size:10px}
+body.opsDensityDB33 .metric strong{margin-top:4px;font-size:24px}
+body.opsDensityDB33 .tableScroll th,
+body.opsDensityDB33 .tableScroll td{padding-top:8px;padding-bottom:8px}
+
+/* Dashboard: one compact operational overview band */
+body[data-page="dashboard"].opsDensityDB33 .pageHead{
+  margin-bottom:8px
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardActions{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardPrimaryActions,
+body[data-page="dashboard"].opsDensityDB33 .dashboardUtilityActions{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardOverviewBand{
+  display:grid;
+  grid-template-columns:minmax(290px,.78fr) minmax(600px,1.8fr);
+  gap:10px;
+  align-items:stretch;
+  margin-bottom:8px
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardControlRail{
+  display:grid;
+  grid-template-columns:minmax(132px,1fr) minmax(132px,1fr);
+  gap:7px;
+  margin:0;
+  padding:9px;
+  border:1px solid rgba(216,222,233,.92);
+  border-radius:16px;
+  background:rgba(255,255,255,.9);
+  box-shadow:0 8px 18px rgba(6,26,45,.055)
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardControlRail .filterField{width:100%}
+body[data-page="dashboard"].opsDensityDB33 .dashboardControlRail input,
+body[data-page="dashboard"].opsDensityDB33 .dashboardControlRail select{width:100%}
+body[data-page="dashboard"].opsDensityDB33 .dashboardControlRail .viewPreferenceNote{
+  grid-column:1/-1;
+  margin:0;
+  align-self:center;
+  font-size:10px
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardRangeHost{min-width:0}
+body[data-page="dashboard"].opsDensityDB33 .dashboardRangeCompact{
+  min-height:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardRangeCompact small{
+  display:block;
+  margin-bottom:3px;
+  color:#64748b;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.06em
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardRangeCompact select{
+  width:100%;
+  height:36px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:0 30px 0 10px;
+  background:#fff;
+  color:#111827;
+  font-size:12px;
+  font-weight:600
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardRangeCompact .rangeCalendarBtn{
+  width:100%;
+  min-height:30px;
+  margin-top:5px;
+  border-radius:9px;
+  font-size:10px
+}
+body[data-page="dashboard"].opsDensityDB33 #metrics.dashboardMetricGrid{
+  display:grid;
+  grid-template-columns:repeat(var(--visible-dashboard-metrics,5),minmax(92px,1fr));
+  gap:7px;
+  margin:0
+}
+body[data-page="dashboard"].opsDensityDB33 #metrics.dashboardMetricGrid .metric[hidden]{display:none!important}
+body[data-page="dashboard"].opsDensityDB33 #metrics.dashboardMetricGrid .metric{
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardCustomize,
+body[data-page="queue"].opsDensityDB33 .queueCustomize{
+  position:relative;
+  min-width:0
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardCustomize summary,
+body[data-page="queue"].opsDensityDB33 .queueCustomize summary{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:36px;
+  padding:0 10px;
+  border:1px solid #b9ccd7;
+  border-radius:10px;
+  background:#fff;
+  color:#315467;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+  cursor:pointer;
+  list-style:none
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardCustomize summary::-webkit-details-marker,
+body[data-page="queue"].opsDensityDB33 .queueCustomize summary::-webkit-details-marker{display:none}
+body[data-page="dashboard"].opsDensityDB33 .dashboardCustomize summary::after,
+body[data-page="queue"].opsDensityDB33 .queueCustomize summary::after{content:"⌄";margin-left:6px}
+body[data-page="dashboard"].opsDensityDB33 .dashboardCustomizeMenu{
+  position:absolute;
+  top:42px;
+  right:0;
+  z-index:90;
+  width:270px;
+  padding:12px;
+  border:1px solid #cbd8e2;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 18px 45px rgba(15,23,42,.18)
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardCustomizeMenu strong{display:block;margin-bottom:8px;font-size:12px}
+body[data-page="dashboard"].opsDensityDB33 .dashboardCustomizeOptions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+body[data-page="dashboard"].opsDensityDB33 .dashboardCustomizeOptions label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-height:31px;
+  padding:6px 7px;
+  border:1px solid #e2e8f0;
+  border-radius:9px;
+  background:#f8fafc;
+  font-size:10px;
+  cursor:pointer
+}
+body[data-page="dashboard"].opsDensityDB33 .dashboardCustomizeOptions input{width:15px;height:15px;padding:0}
+body[data-page="dashboard"].opsDensityDB33 .dashboardCustomizeMenu small{display:block;margin-top:8px;color:#64748b;font-size:9px;line-height:1.4}
+body[data-page="dashboard"].opsDensityDB33 .dockSchedulePanel{margin-top:8px}
+body[data-page="dashboard"].opsDensityDB33 .scheduleCompactBar{gap:8px}
+body[data-page="dashboard"].opsDensityDB33 .scheduleNavCenter{gap:6px}
+body[data-page="dashboard"].opsDensityDB33 .scheduleNavCenter .navArrow,
+body[data-page="dashboard"].opsDensityDB33 .scheduleNavCenter .todayBtn,
+body[data-page="dashboard"].opsDensityDB33 .scheduleDateTitle{height:38px;min-height:38px}
+body[data-page="dashboard"].opsDensityDB33 .scheduleNavCenter .navArrow{width:38px}
+body[data-page="dashboard"].opsDensityDB33 .scheduleNavCenter .todayBtn{min-width:68px}
+
+/* Operations Queue: controls live beside the page title */
+body[data-page="queue"].opsDensityDB33 .queuePageHead{
+  display:grid;
+  grid-template-columns:minmax(230px,.75fr) minmax(680px,2.25fr);
+  align-items:end;
+  gap:12px;
+  margin-bottom:8px
+}
+body[data-page="queue"].opsDensityDB33 .queueOpsToolbar{
+  display:flex;
+  align-items:end;
+  justify-content:flex-end;
+  gap:6px;
+  min-width:0;
+  margin:0;
+  padding:8px;
+  border:1px solid rgba(216,222,233,.92);
+  border-radius:15px;
+  background:rgba(255,255,255,.9);
+  box-shadow:0 8px 18px rgba(6,26,45,.055)
+}
+body[data-page="queue"].opsDensityDB33 .queueOpsToolbar .filterField{flex:0 1 148px}
+body[data-page="queue"].opsDensityDB33 .queueOpsToolbar .filterField input,
+body[data-page="queue"].opsDensityDB33 .queueOpsToolbar .filterField select{width:100%}
+body[data-page="queue"].opsDensityDB33 .queueFilterActions{
+  display:flex;
+  align-items:end;
+  justify-content:flex-end;
+  gap:6px;
+  flex-wrap:nowrap
+}
+body[data-page="queue"].opsDensityDB33 .queueFilterActions .pageUtilityActions{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin:0;
+  padding-left:6px;
+  border-left:1px solid #dbe4ea
+}
+body[data-page="queue"].opsDensityDB33 .queueCustomize{flex:0 0 auto}
+body[data-page="queue"].opsDensityDB33 .queueCustomizeMenu{top:42px}
+body[data-page="queue"].opsDensityDB33 .morningBrief{
+  grid-template-columns:minmax(250px,.9fr) minmax(520px,2.1fr);
+  gap:12px;
+  padding:13px 15px;
+  margin-top:0
+}
+body[data-page="queue"].opsDensityDB33 .morningBriefLeadTop{margin-bottom:2px}
+body[data-page="queue"].opsDensityDB33 .morningBrief h3{font-size:17px;line-height:1.18}
+body[data-page="queue"].opsDensityDB33 .morningBrief p{margin-top:4px;font-size:11px;line-height:1.4}
+body[data-page="queue"].opsDensityDB33 .morningBriefFacts{gap:6px}
+body[data-page="queue"].opsDensityDB33 .morningBriefFacts>div{
+  min-height:64px;
+  padding:9px 10px;
+  border-left-width:4px
+}
+body[data-page="queue"].opsDensityDB33 .morningBriefFacts small{font-size:9px}
+body[data-page="queue"].opsDensityDB33 .morningBriefFacts strong{margin-top:4px;font-size:17px}
+body[data-page="queue"].opsDensityDB33 #queueMetrics{
+  grid-template-columns:repeat(var(--visible-queue-metrics,5),minmax(100px,1fr));
+  gap:7px;
+  margin:8px 0 0
+}
+body[data-page="queue"].opsDensityDB33 #queueMetrics .metric{min-height:68px;padding:10px 12px}
+body[data-page="queue"].opsDensityDB33 .queueFocus{margin-top:8px;padding:12px 14px}
+body[data-page="queue"].opsDensityDB33 .queueActionPanel{margin-top:8px}
+body[data-page="queue"].opsDensityDB33 .queueLanes{gap:10px}
+
+/* Reports, settings, administration and supporting pages */
+body.opsDensityDB33 .reportFilters,
+body.opsDensityDB33 .dashboardFilters:not(.dashboardControlRail):not(.queueOpsToolbar){
+  gap:8px;
+  margin-bottom:10px;
+  padding:10px;
+  border-radius:16px
+}
+body.opsDensityDB33 .reportFilters .filterField{min-width:140px}
+body.opsDensityDB33 .reportFilters button{width:auto;min-width:96px}
+body.opsDensityDB33 .settingsGrid{gap:10px}
+body.opsDensityDB33 .settingsGroup{padding:13px;border-radius:18px}
+body.opsDensityDB33 .adminSummary{gap:8px}
+body.opsDensityDB33 .adminSummaryCard{padding:12px 14px;border-radius:16px}
+body.opsDensityDB33 .adminUsersPanel{padding:13px}
+body.opsDensityDB33 .notificationPanel,
+body.opsDensityDB33 .dataPanel{padding:13px}
+
+@media(max-width:1180px){
+  body[data-page="dashboard"].opsDensityDB33 .dashboardOverviewBand{grid-template-columns:1fr}
+  body[data-page="queue"].opsDensityDB33 .queuePageHead{grid-template-columns:1fr}
+  body[data-page="queue"].opsDensityDB33 .queueOpsToolbar{justify-content:flex-start;flex-wrap:wrap}
+  body[data-page="queue"].opsDensityDB33 .queueFilterActions{flex-wrap:wrap}
+}
+@media(max-width:820px){
+  body[data-page="dashboard"].opsDensityDB33 #metrics.dashboardMetricGrid{grid-template-columns:repeat(3,minmax(90px,1fr))}
+  body[data-page="queue"].opsDensityDB33 #queueMetrics{grid-template-columns:repeat(3,minmax(90px,1fr))}
+  body[data-page="queue"].opsDensityDB33 .morningBrief{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  body.opsDensityDB33 .pageWrap{padding-top:12px}
+  body[data-page="dashboard"].opsDensityDB33 .dashboardControlRail{grid-template-columns:1fr 1fr}
+  body[data-page="dashboard"].opsDensityDB33 #metrics.dashboardMetricGrid,
+  body[data-page="queue"].opsDensityDB33 #queueMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  body[data-page="dashboard"].opsDensityDB33 .dashboardCustomizeMenu,
+  body[data-page="queue"].opsDensityDB33 .queueCustomizeMenu{position:fixed;top:110px;right:14px;left:14px;width:auto;max-height:calc(100vh - 140px);overflow:auto}
+  body[data-page="queue"].opsDensityDB33 .queueOpsToolbar{align-items:stretch}
+  body[data-page="queue"].opsDensityDB33 .queueOpsToolbar .filterField{flex:1 1 140px}
+  body[data-page="queue"].opsDensityDB33 .queueFilterActions{width:100%}
+  body[data-page="queue"].opsDensityDB33 .queueFilterActions>*{flex:1 1 auto}
+  body[data-page="queue"].opsDensityDB33 .queueFilterActions .pageUtilityActions{width:100%;padding:6px 0 0;border-left:0;border-top:1px solid #dbe4ea}
+}

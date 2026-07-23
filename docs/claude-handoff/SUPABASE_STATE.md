@@ -1,6 +1,6 @@
 # Supabase production state
 
-Snapshot date: 2026-07-23. This is operational metadata only; no production row data or secret values are included.
+Snapshot date: 2026-07-19. This is operational metadata only; no production row data or secret values are included.
 
 ## Project
 
@@ -36,7 +36,6 @@ The generated type file is a schema snapshot, not a replacement for migrations. 
 | 20260717044728 | `maxdock_db27_secure_customer_identity_rpcs` |
 | 20260717044932 | `maxdock_db27_canonical_company_directory` |
 | 20260717122947 | `maxdock_db28_customer_location_access` |
-| 20260720185521 | `maxdock_db39_dock_scheduling_policy` |
 
 Important: the repository contains later release SQL beginning at v11, but not a complete clean-room migration history for v01 through v10 or every production hotfix. Production is authoritative. Do not reset, reconstruct, or replay the database from the checked-in SQL. Inspect the live ledger and create one new forward-only named migration for any schema change.
 
@@ -55,20 +54,7 @@ Use `supabase/database.types.ts` for exact columns, relationships, and RPC signa
 | `maxdock-invite-user` | 8 | Disabled; function performs its own authorization | `14b6c22383365a81294ed671573e4fac5c426589b2faccde5b722014f6e09fd0` |
 | `maxdock-ai-brief` | 1 | Disabled; function validates the bearer session itself | `4ecaea189eb36112b9edd19228f69a7dec0ad84ff4b59a1407e10ee1bda27e50` |
 
-DB70's checked-in `maxdock-invite-user` source was verified byte-for-byte
-against production during handoff. DB71 raises the candidate source's temporary
-password minimum to 12 characters; that source is not deployed. The live
-`maxdock-ai-brief` source was recovered into this repository because it had not
-previously been checked in.
-
-## Current advisor findings
-
-The 2026-07-23 read-only advisor check reports 24 unindexed foreign keys, five
-RLS auth-init-plan advisories, eleven duplicate permissive SELECT-policy
-advisories, anonymously executable security-definer functions, and disabled
-leaked-password protection. `MaxDock_DB_v22_DB71_Security_Performance.sql`
-contains only the reviewed RPC-grant and index portion and remains unapplied.
-Policy consolidation and Auth settings require separate production review.
+The checked-in `maxdock-invite-user` source was verified byte-for-byte against production during handoff. The live `maxdock-ai-brief` source was recovered into this repository because it had not previously been checked in.
 
 ## Secret names only
 
