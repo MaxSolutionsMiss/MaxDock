@@ -4,39 +4,40 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=91-db70">
-<link rel="stylesheet" href="./maxdock-db04.css?v=91-db70">
+<link rel="stylesheet" href="./maxdock.css?v=93-db71">
 <title>MaxDock – Data Integration</title>
 </head>
 <body data-page="data">
+<a class="skipLink" href="#mainContent">Skip to main content</a>
 
 <header class="topbar">
   <div class="topbarInner">
     <div class="brandRow">
       <div class="brand">
-        <a class="logoLink" href="./index.html?v=91-db70" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+        <a class="logoLink" href="./index.html?v=93-db71" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
         <div><h1 class="appTitle">MaxDock</h1><p class="appSub">Max Solutions Packaging Inc.</p></div>
       </div>
     </div>
     <div class="headerActions">
-      <a class="ghostBtn" href="./index.html?v=91-db70">Main Page</a>
+      <div class="locationPill sharedLocationControl locationPlaceholder" aria-hidden="true"><label for="locationSelect">Location</label><select id="locationSelect" disabled aria-disabled="true"></select></div>
+      <a class="ghostBtn" href="./index.html?v=93-db71">Main Page</a>
       <details class="menuDetails">
-        <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
+        <summary aria-expanded="false" class="iconBtn" title="Menu" aria-label="Open menu"><span class="maxdockIconSlot" data-maxdock-icon="menu" aria-hidden="true"></span></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=91-db70">My Appointments</a>
-          <a href="./queue.html?v=91-db70">Operation Queue</a>
-          <a href="./reports.html?v=91-db70">Reports</a>
-          <a href="./dashboard.html?v=91-db70">Dashboard</a>
-          <a href="./settings.html?v=91-db70">Settings</a>
-          <a href="./admin.html?v=91-db70">User Management</a>
-          <a href="./data.html?v=91-db70" aria-current="page">Data Integration</a>
+          <a href="./my-appointments.html?v=93-db71">My Appointments</a>
+          <a href="./queue.html?v=93-db71">Operations Queue</a>
+          <a href="./reports.html?v=93-db71">Reports</a>
+          <a href="./dashboard.html?v=93-db71">Dashboard</a>
+          <a href="./settings.html?v=93-db71">Settings</a>
+          <a href="./admin.html?v=93-db71">User Management</a>
+          <a href="./data.html?v=93-db71" aria-current="page">Data Integration</a>
         </nav>
       </details>
     </div>
   </div>
 </header>
 
-<main class="screen pageWrap adminPage dataPage">
+<main id="mainContent" class="screen pageWrap adminPage dataPage">
   <div class="pageHead compactPageHead">
     <div>
       <h2>Data Integration</h2>
@@ -44,27 +45,25 @@
     </div>
   </div>
 
-  <div class="sectionWorkspace dataWorkspace" data-section-workspace data-default-section="connection">
+  <div class="sectionWorkspace dataWorkspace" data-section-workspace data-default-section="imports">
     <aside class="sectionWorkspaceRail" aria-label="Data Integration sections">
       <div class="sectionWorkspaceRailHead"><strong>Data workspace</strong><small>Configure or import data.</small></div>
       <div class="sectionWorkspaceTabs" role="tablist" aria-orientation="vertical">
-        <button type="button" role="tab" data-section-target="connection" aria-controls="data-connection"><span>Integration options</span><small>CSV, bridge, file, or API</small></button>
         <button type="button" role="tab" data-section-target="imports" aria-controls="data-imports"><span>Inventory imports</span><small>Upload and history</small></button>
+        <button type="button" role="tab" data-section-target="connection" aria-controls="data-connection"><span>Integration options</span><small>Bridge and roadmap</small></button>
       </div>
     </aside>
     <div class="sectionWorkspaceContent">
-  <section class="panel misIntegrationPanel sectionWorkspacePanel" id="data-connection" role="tabpanel" data-section-panel="connection">
+  <section class="panel misIntegrationPanel sectionWorkspacePanel" id="data-connection" role="tabpanel" data-section-panel="connection" hidden>
     <div class="panelHeader misPanelHeader">
       <div><h3>MIS Data Integration</h3><p class="panelIntro">Import warehouse inventory now and prepare a secure server-side connection to the company MIS database.</p></div>
       <span class="misConnectionBadge" id="misConnectionBadge">Loading…</span>
     </div>
-    <div class="integrationMethodGrid" aria-label="Data integration methods">
+    <div class="integrationMethodGrid" aria-label="Available data integration methods">
       <article class="integrationMethodCard available"><div><strong>Daily CSV upload</strong><small>Upload inventory directly in MaxDock.</small></div><span>Available</span></article>
       <article class="integrationMethodCard configurable"><div><strong>Secure database bridge</strong><small>Prepare an approved server-side MIS connection.</small></div><span>Configurable</span></article>
-      <article class="integrationMethodCard planned"><div><strong>SFTP file feed</strong><small>Receive a scheduled file from a protected folder.</small></div><span>Planned</span></article>
-      <article class="integrationMethodCard planned"><div><strong>REST API feed</strong><small>Connect an approved business system through an API.</small></div><span>Planned</span></article>
-      <article class="integrationMethodCard planned"><div><strong>SharePoint / OneDrive</strong><small>Collect a controlled inventory file on a schedule.</small></div><span>Planned</span></article>
     </div>
+    <details class="integrationRoadmap"><summary aria-expanded="false">Integration Roadmap</summary><div class="integrationMethodGrid"><article class="integrationMethodCard planned"><div><strong>SFTP file feed</strong><small>Receive a scheduled file from a protected folder.</small></div><span>Planned</span></article><article class="integrationMethodCard planned"><div><strong>REST API feed</strong><small>Connect an approved business system through an API.</small></div><span>Planned</span></article><article class="integrationMethodCard planned"><div><strong>SharePoint / OneDrive</strong><small>Collect a controlled inventory file on a schedule.</small></div><span>Planned</span></article></div></details>
     <form id="misIntegrationForm" class="misIntegrationForm">
       <div class="formGrid">
         <div class="field"><label for="misSyncMode">Data method</label><select id="misSyncMode"><option value="manual_csv">Daily CSV upload</option><option value="secure_bridge">Future secure database bridge</option></select></div>
@@ -83,11 +82,11 @@
     </form>
   </section>
 
-  <section class="panel misImportsWorkspace sectionWorkspacePanel" id="data-imports" role="tabpanel" data-section-panel="imports" hidden>
+  <section class="panel misImportsWorkspace sectionWorkspacePanel" id="data-imports" role="tabpanel" data-section-panel="imports">
     <div class="panelHeader"><div><h3>Warehouse Inventory</h3><p class="panelIntro">Update the capacity baseline from a daily CSV and review recent imports.</p></div></div>
     <div class="misImportGrid">
       <section class="misImportCard">
-        <div><h4>Daily Warehouse Inventory Import</h4><p>Upload current occupied skids by location. This immediately updates the capacity baseline used for booking recommendations.</p></div>
+        <div><h3>Daily Warehouse Inventory Import</h3><p>Upload current occupied skids by location. This immediately updates the capacity baseline used for booking recommendations.</p></div>
         <label class="field"><span>Inventory CSV file</span><input id="misInventoryFile" type="file" accept=".csv,text/csv"></label>
         <div class="misImportActions"><button class="secondaryBtn" id="downloadMisTemplate" type="button">Download CSV Template</button><button class="greenBtn" id="importMisInventory" type="button">Import Inventory</button></div>
         <small>Required columns: location_code, snapshot_at, occupied_skids. Optional: total_skid_capacity, reserve_skids, notes.</small>
@@ -95,7 +94,7 @@
         <div class="notice" id="misImportResult" hidden></div>
       </section>
       <section class="misImportCard">
-        <div><h4>Recent Imports</h4><p id="misLastSync">No successful import recorded yet.</p></div>
+        <div><h3>Recent Imports</h3><p id="misLastSync">Checking import history…</p></div>
         <div class="tableScroll"><table class="misImportTable"><thead><tr><th scope="col">When</th><th scope="col">File</th><th scope="col">Rows</th><th scope="col">By</th></tr></thead><tbody id="misImportHistory"><tr><td colspan="4">Loading import history…</td></tr></tbody></table></div>
       </section>
     </div>
@@ -104,9 +103,9 @@
   </div>
 </main>
 
-<script src="./supabase-2.110.3.js?v=91-db70"></script>
-<script src="./maxdock-config.js?v=91-db70"></script>
-<script src="./maxdock-db.js?v=91-db70"></script>
-<script src="./maxdock-mis.js?v=91-db70"></script>
+<script src="./supabase-2.110.3.js?v=93-db71"></script>
+<script src="./maxdock-config.js?v=93-db71"></script>
+<script src="./maxdock-db.js?v=93-db71"></script>
+<script src="./maxdock-mis.js?v=93-db71"></script>
 </body>
 </html>

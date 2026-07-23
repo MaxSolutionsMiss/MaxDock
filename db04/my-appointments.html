@@ -4,43 +4,44 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=91-db70">
-<link rel="stylesheet" href="./maxdock-db04.css?v=91-db70">
+<link rel="stylesheet" href="./maxdock.css?v=93-db71">
 <title>MaxDock – My Appointments</title>
 </head>
 <body data-page="myappointments">
+<a class="skipLink" href="#mainContent">Skip to main content</a>
 <header class="topbar">
   <div class="topbarInner">
     <div class="brandRow"><div class="brand">
-      <a class="logoLink" href="./index.html?v=91-db70" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+      <a class="logoLink" href="./index.html?v=93-db71" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
       <div><h1 class="appTitle">MaxDock</h1><p class="appSub">Max Solutions Packaging Inc.</p></div>
     </div></div>
     <div class="headerActions">
-      <a class="ghostBtn" href="./index.html?v=91-db70">Main Page</a>
+      <div class="locationPill sharedLocationControl locationPlaceholder" aria-hidden="true"><label for="locationSelect">Location</label><select id="locationSelect" disabled aria-disabled="true"></select></div>
+      <a class="ghostBtn" href="./index.html?v=93-db71">Main Page</a>
       <details class="menuDetails">
-        <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
+        <summary aria-expanded="false" class="iconBtn" title="Menu" aria-label="Open menu"><span class="maxdockIconSlot" data-maxdock-icon="menu" aria-hidden="true"></span></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=91-db70" aria-current="page">My Appointments</a>
-          <a href="./queue.html?v=91-db70">Operation Queue</a>
-          <a href="./reports.html?v=91-db70">Reports</a>
-          <a href="./dashboard.html?v=91-db70">Dashboard</a>
-          <a href="./settings.html?v=91-db70">Settings</a>
-          <a href="./admin.html?v=91-db70">User Management</a>
-          <a href="./data.html?v=91-db70">Data Integration</a>
+          <a href="./my-appointments.html?v=93-db71" aria-current="page">My Appointments</a>
+          <a href="./queue.html?v=93-db71">Operations Queue</a>
+          <a href="./reports.html?v=93-db71">Reports</a>
+          <a href="./dashboard.html?v=93-db71">Dashboard</a>
+          <a href="./settings.html?v=93-db71">Settings</a>
+          <a href="./admin.html?v=93-db71">User Management</a>
+          <a href="./data.html?v=93-db71">Data Integration</a>
         </nav>
       </details>
     </div>
   </div>
 </header>
 
-<main class="screen pageWrap">
+<main id="mainContent" class="screen pageWrap">
   <div class="pageHead myAppointmentsPageHeadDB52">
     <div><h2>My Appointments</h2><p>Your MaxDock bookings across all permitted locations.</p><small class="liveDataStatus" id="myAppointmentsLiveStatus"><span class="liveDot"></span>Live appointments · refreshes every 3 minutes</small></div>
   </div>
 
   <section class="myAppointmentsBookingBarDB52" aria-label="Book an appointment">
     <div class="myAppointmentsBookingCopyDB52"><strong>Need a new dock time?</strong><span>Book an appointment in five quick steps.</span></div>
-    <button class="primaryBtn bookAppointmentActionDB52" id="bookAppointmentFromMyAppointments" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM12 12v5M9.5 14.5h5"/></svg><span>Book an Appointment</span></button>
+    <button class="primaryBtn bookAppointmentActionDB52" id="bookAppointmentFromMyAppointments" type="button" data-db52-bound="true"><span class="maxdockIconSlot" data-maxdock-icon="calendar" aria-hidden="true"></span><span>Book an Appointment</span></button>
   </section>
 
   <div class="metrics" id="myAppointmentMetrics"></div>
@@ -67,9 +68,9 @@
   <div class="error" id="myAppointmentsError" role="alert"></div>
 </main>
 
-<script src="./supabase-2.110.3.js?v=91-db70"></script>
-<script src="./maxdock-config.js?v=91-db70"></script>
-<script src="./maxdock-db.js?v=91-db70"></script>
-<script src="./maxdock-my-appointments.js?v=91-db70"></script>
+<script src="./supabase-2.110.3.js?v=93-db71"></script>
+<script src="./maxdock-config.js?v=93-db71"></script>
+<script src="./maxdock-db.js?v=93-db71"></script>
+<script src="./maxdock-my-appointments.js?v=93-db71"></script>
 </body>
 </html>

@@ -1,0 +1,91 @@
+MaxDock DB71 — Audit Repair Candidate
+=====================================
+
+Status
+------
+- Review candidate only. Do not merge or deploy without owner approval.
+- DB70 / PR #59 remains the exact production and rollback reference.
+- DB70 reference commit: 4fb1a5f3611fdab91f42eee43dff41011e617724
+- Browser cache marker: v93-db71
+
+Purpose
+-------
+DB71 addresses the independent v91-db70 source audit while preserving MaxDock's
+role, routing, privacy, audit-history, and dual-site dock rules.
+
+Interface and behavior
+----------------------
+- Consolidates the 33-style-sheet cascade into maxdock.css.
+- Consolidates the 22 post-load UI patches into maxdock-layout-discipline.js.
+- Replaces 16 native MutationObservers with one shared, animation-frame-batched
+  observer hub.
+- Adds a guard that rejects newly-added maxdock-dbNN CSS or JavaScript assets.
+- Uses one line/solid icon contract and one shared icon source.
+- Keeps Export and Print as two icon buttons in each signed-in page-title row,
+  top-aligned with the title without creating another row or pushing the page
+  content down; legacy page-toolbar document buttons stay removed.
+- Restores one reliable Queue settings toggle and routes Queue full-screen
+  through the canonical display function instead of competing legacy handlers.
+- Uses one canonical location control on every operational page. System Admin
+  can select it; Site Admin, Shipping Manager, and Coordinator see a fixed
+  assigned location; external roles retain invisible header geometry.
+- Fixes the My Appointments booking action so authorized users do not hit the
+  stale DB52 permission dialog.
+- Adds an explicit Dashboard refresh action while retaining the three-minute
+  automatic refresh.
+- Adds stable Dashboard loading/KPI geometry and narrow-screen appointment cards.
+- Corrects report KPI icon/text overlap, Update alignment, report tabs, visible
+  preference status, heatmap scale, previous-period deltas, and brief copying.
+- Adds Queue presets and removes the duplicate priority preference key.
+- Adds Settings dirty-state protection, impact preview, and named reset
+  confirmation.
+- Adds User Management bulk activation/deactivation, typed delete confirmation,
+  and recent account audit history.
+- Leads Data Integration with the working CSV flow and moves planned connectors
+  under Roadmap.
+- Adds accessible dialog semantics, focus containment/restoration, skip links,
+  tab keyboard behavior, disclosure state, touch sizing, and reduced-motion
+  handling.
+- Replaces remaining browser alert/confirm/prompt dialogs with MaxDock toast or
+  confirmation UI.
+- Raises password guidance and invitation-generated temporary passwords to a
+  12-character minimum.
+- Reconciles code and documentation on the three-minute refresh interval.
+
+Database and Auth review
+------------------------
+Read-only production inspection confirmed:
+- 15 anonymously executable SECURITY DEFINER functions.
+- 24 unindexed foreign keys.
+- 5 RLS auth-init-plan advisories.
+- 11 duplicate permissive SELECT-policy advisories.
+- Leaked-password protection is disabled.
+
+MaxDock_DB_v22_DB71_Security_Performance.sql is included but intentionally not
+applied. It:
+- removes REST execution from trigger-only functions;
+- limits browser RPC execution to authenticated users; and
+- adds covering foreign-key indexes.
+
+The migration must be reviewed and applied once as a named Supabase migration
+only after the candidate is approved. RLS policies are not rewritten in DB71:
+their exact production definitions must be reviewed before consolidation.
+
+Post-approval release gates
+---------------------------
+1. Review and merge the candidate PR only after owner sign-off.
+2. Apply MaxDock_DB_v22_DB71_Security_Performance.sql once with a named migration.
+3. Regenerate supabase/database.types.ts after the migration.
+4. Deploy supabase/functions/maxdock-invite-user/index.ts.
+5. Set the Supabase Auth minimum password length to 12 and enable leaked-password
+   protection.
+6. Deploy the approved static commit to gh-pages.
+7. Re-run root/db04 parity, role, booking, reports, document-tool, and responsive
+   checks against the deployed cache marker.
+
+Rollback
+--------
+Before approval, rollback means closing the DB71 PR; DB70 remains untouched.
+After an approved deployment, restore static content from commit
+4fb1a5f3611fdab91f42eee43dff41011e617724. Database and Auth changes are
+forward-only and require a separately reviewed rollback migration/config change.

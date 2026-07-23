@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=91-db70">
-<link rel="stylesheet" href="./maxdock-db04.css?v=91-db70">
+<link rel="stylesheet" href="./maxdock.css?v=93-db71">
 <title>MaxDock – Internal Sign In</title>
 </head>
 <body data-page="login" class="loginPage">
-  <main class="loginShell">
+<a class="skipLink" href="#mainContent">Skip to main content</a>
+  <main id="mainContent" class="loginShell">
     <section class="loginCard" aria-labelledby="loginTitle">
-      <div class="loginBrand">
+      <div class="loginBrand brand">
         <div class="logo loginLogo" aria-hidden="true"><img class="logoMark" src="./max-solutions-mark.png" alt=""></div>
-        <div><h1 class="loginProduct" id="loginTitle">MaxDock</h1><p class="loginCompany">Max Solutions Packaging Inc.</p></div>
+        <div><h1 class="loginProduct appTitle" id="loginTitle">MaxDock</h1><p class="loginCompany appSub">Max Solutions Packaging Inc.</p></div>
       </div>
       <p class="loginIntro">Sign in with your MaxDock username or email.</p>
 
@@ -24,7 +24,8 @@
         </div>
         <div class="field">
           <label for="loginPassword">Password</label>
-          <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+          <div class="passwordInput"><input id="loginPassword" name="password" type="password" autocomplete="current-password" required><button class="passwordToggle" id="toggleLoginPassword" type="button" aria-controls="loginPassword" aria-pressed="false">Show</button></div>
+          <small class="capsLockHint" id="capsLockHint" role="status" hidden>Caps Lock is on.</small>
         </div>
         <div class="error loginError" id="loginError" role="alert"></div>
         <button class="primaryBtn loginButton" id="loginButton" type="submit">Sign In</button>
@@ -49,9 +50,9 @@
       </form>
     </section>
   </main>
-<script src="./supabase-2.110.3.js?v=91-db70"></script>
-<script src="./maxdock-config.js?v=91-db70"></script>
-<script src="./maxdock-db.js?v=91-db70"></script>
-<script src="./maxdock-auth.js?v=91-db70"></script>
+<script src="./supabase-2.110.3.js?v=93-db71"></script>
+<script src="./maxdock-config.js?v=93-db71"></script>
+<script src="./maxdock-db.js?v=93-db71"></script>
+<script src="./maxdock-auth.js?v=93-db71"></script>
 </body>
 </html>
