@@ -1,0 +1,116 @@
+name: Apply DB68 clean bootstrap
+
+on:
+  push:
+    branches:
+      - codex/db68-clean-bootstrap-recovery
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: "!contains(github.event.head_commit.message, '[db68-finalized]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/db68-clean-bootstrap-recovery
+          fetch-depth: 0
+
+      - name: Rebuild and apply DB68 package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/db68-payload/part-* > /tmp/db68-package.b64
+          echo "4359e59da9eeb940c7728146326074a771662654a356ed1d7b7e1ff6cfdbf9ad  /tmp/db68-package.b64" | sha256sum -c -
+          base64 -d /tmp/db68-package.b64 > /tmp/db68-package.tar.xz
+          echo "e25e90ebebd1f029a9c0e939fc7dcef096a70d51997ab1ca7a58738f2d2a9b84  /tmp/db68-package.tar.xz" | sha256sum -c -
+          tar -xJf /tmp/db68-package.tar.xz -C . --overwrite
+
+      - name: Validate clean bootstrap and mirrored assets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          grep -q 'MaxDock-v89-DB68' maxdock-config.js
+          grep -q 'MaxDock-v89-DB68' db04/maxdock-config.js
+          grep -q 'maxdock-db68.css' maxdock-config.js
+          grep -q 'maxdock-db68.js' maxdock-config.js
+          grep -q 'DB68 · clean bootstrap and single-layout recovery active' maxdock-config.js
+
+          if grep -Eq 'maxdock-ops-density|maxdock-layout-discipline|maxdock-db(4[2-9]|5[0-9]|6[0-7])\.(css|js)' maxdock-config.js db04/maxdock-config.js; then
+            echo 'Legacy layout loader detected in DB68 config.' >&2
+            exit 1
+          fi
+
+          node --check maxdock-config.js
+          node --check db04/maxdock-config.js
+          node --check maxdock-db68.js
+          node --check db04/maxdock-db68.js
+          for file in maxdock-db.js maxdock-integration.js maxdock-queue.js maxdock-my-appointments.js maxdock-reports.js maxdock-admin.js maxdock-mis.js maxdock.js; do
+            node --check "$file"
+            node --check "db04/$file"
+          done
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          root=Path('.')
+          mirrored=[
+              'DEPLOYMENT_DB68.txt','admin.html','dashboard.html','data.html','index.html',
+              'login.html','maxdock-admin.js','maxdock-config.js','maxdock-db.js',
+              'maxdock-db04.css','maxdock-db68.css','maxdock-db68.js',
+              'maxdock-integration.js','maxdock-mis.js','maxdock-my-appointments.js',
+              'maxdock-queue.js','maxdock-reports.js','maxdock.js',
+              'my-appointments.html','queue.html','reports.html','set-password.html','settings.html',
+          ]
+          for name in mirrored:
+              assert (root/name).read_bytes()==(root/'db04'/name).read_bytes(), f'root/db04 mismatch: {name}'
+
+          pages=['index','dashboard','queue','reports','my-appointments','settings','admin','data','login','set-password']
+          for page in pages:
+              for prefix in ('','db04/'):
+                  path=root/f'{prefix}{page}.html'
+                  text=path.read_text()
+                  keys=set(re.findall(r'v=\d+-db\d+',text))
+                  assert keys=={'v=89-db68'}, (str(path),keys)
+
+          config=(root/'maxdock-config.js').read_text()
+          assert 'MaxDock-v89-DB68' in config
+          assert 'maxdock-db68.css' in config and 'maxdock-db68.js' in config
+          assert 'maxdock-db67' not in config
+          assert 'maxdock-ops-density' not in config
+          assert 'maxdock-layout-discipline' not in config
+
+          my=(root/'my-appointments.html').read_text()
+          assert my.index('id="myAppointmentFilter"') < my.index('id="notificationPanel"')
+
+          dashboard=(root/'dashboard.html').read_text()
+          assert 'id="dashboardRange"' in dashboard
+
+          core=(root/'maxdock.js').read_text()
+          assert 'rangeMetric' not in core
+
+          reports=(root/'reports.html').read_text()
+          assert 'sectionWorkspaceRail' not in reports
+
+          css=(root/'maxdock-db68.css').read_text()
+          js=(root/'maxdock-db68.js').read_text()
+          assert '--db68-kpi-height:78px' in css
+          assert 'db68Clean' in js
+          assert 'MutationObserver' not in js
+          PY
+
+      - name: Finalize DB68 review branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .github/db68-payload
+          rm -f .github/workflows/apply-db68.yml
+          git config user.name MaxSolutionsMiss
+          git config user.email javadresa@maxpkgsolutions.com
+          git add -A
+          git commit -m "[db68-finalized] Clean bootstrap and recover single-layout interface"
+          git push origin HEAD:codex/db68-clean-bootstrap-recovery
