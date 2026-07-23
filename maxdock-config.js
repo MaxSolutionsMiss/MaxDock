@@ -4,32 +4,7 @@ window.MAXDOCK_CONFIG = Object.freeze({
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
 
-/* DB62 refresh policy is installed before maxdock-db.js so all page timers use three minutes. */
-(function(){
-  const minimumInterval=180000;
-  let currentValue;
-  const wrap=value=>{
-    if(!value||typeof value!=="object")return value;
-    const originalStart=typeof value.startLiveRefresh==="function"?value.startLiveRefresh.bind(value):null;
-    return Object.freeze({
-      ...value,
-      LIVE_REFRESH_MS:minimumInterval,
-      startLiveRefresh:originalStart
-        ?(task,options={})=>originalStart(task,{...options,interval:Math.max(minimumInterval,Number(options.interval||0))})
-        :value.startLiveRefresh
-    });
-  };
-  const existing=window.MaxDockDB;
-  const descriptor=Object.getOwnPropertyDescriptor(window,"MaxDockDB");
-  if(descriptor&&!descriptor.configurable)return;
-  currentValue=existing?wrap(existing):undefined;
-  Object.defineProperty(window,"MaxDockDB",{
-    configurable:true,
-    enumerable:true,
-    get(){return currentValue},
-    set(value){currentValue=wrap(value)}
-  });
-})();
+
 
 (function(){
   const current=document.currentScript;
@@ -43,7 +18,7 @@ window.MAXDOCK_CONFIG = Object.freeze({
     document.head.appendChild(link);
   };
   const loadScript=(file,version,release)=>new Promise(resolve=>{
-    const existing=document.querySelector(`script[data-maxdock-release="${release}"]`);
+    const existing=document.querySelector(`script[data-maxdock-release="${release}"]`)||document.querySelector(`script[src*="${file}"]`);
     if(existing){resolve();return}
     const script=document.createElement("script");
     script.src=new URL(`${file}?v=${version}`,base).href;
@@ -86,6 +61,7 @@ window.MAXDOCK_CONFIG = Object.freeze({
   loadCss("maxdock-db66.css","91-db70","db66");
   loadCss("maxdock-db69.css","91-db70","db69");
   loadCss("maxdock-db70.css","91-db70","db70");
+  loadCss("maxdock-db74-clean.css","106-db75","canonical-controls");
 
   const initialize=async()=>{
     await loadScript("maxdock-ops-density.js","91-db70","db33");
@@ -110,12 +86,13 @@ window.MAXDOCK_CONFIG = Object.freeze({
     await loadScript("maxdock-db66.js","91-db70","db66");
     await loadScript("maxdock-db69.js","91-db70","db69");
     await loadScript("maxdock-db70.js","91-db70","db70");
-    document.documentElement.dataset.maxdockRelease="db70";
+    await loadScript("maxdock-db74-clean.js","106-db75","canonical-controls");
+    document.documentElement.dataset.maxdockRelease="db75";
     document.querySelectorAll(".menu").forEach(menu=>{
       if(menu.querySelector(".maxdockReleaseStamp"))return;
       const stamp=document.createElement("small");
       stamp.className="maxdockReleaseStamp";
-      stamp.textContent="DB70 · shared location and document controls active";
+      stamp.textContent="DB75 · canonical controls and booking improvements active";
       menu.appendChild(stamp);
     });
   };

@@ -702,7 +702,7 @@
     const retained=new Set(dockInputs.filter(x=>x.id).map(x=>x.id));
     const savedDocks=[];
     for(let i=0;i<dockInputs.length;i++){
-      const dock=dockInputs[i],payload={name:dock.name,sort_order:i+1,is_active:true};
+      const dock=dockInputs[i],payload={name:dock.name,sort_order:i+1,is_active:true,direction_mode:['inbound','outbound'].includes(dock.directionMode)?dock.directionMode:'both'};
       const result=dock.id
         ?await client.from("docks").update(payload).eq("id",dock.id).eq("location_id",locationId).select("*").single()
         :await client.from("docks").insert({...payload,location_id:locationId}).select("*").single();
