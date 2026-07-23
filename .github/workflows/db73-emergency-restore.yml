@@ -1,0 +1,23 @@
+name: DB73 emergency live restore
+on:
+  push:
+    paths:
+      - '.github/workflows/db73-emergency-restore.yml'
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+      - name: Restore verified DB72 files
+        run: |
+          git checkout 69f392a6c3712a5024d6ae40d4cc7ffc35c0d9c9 -- db04/maxdock-db.js db04/maxdock.css db04/settings.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add db04/maxdock-db.js db04/maxdock.css db04/settings.html
+          git commit -m 'Emergency restore verified DB72 live files'
+          git push origin gh-pages
