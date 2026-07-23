@@ -1255,3 +1255,31 @@ textarea{min-height:92px;resize:vertical}
   .topbar,.toolbar,.headerActions,.tiny,.panelHeader .secondaryBtn{display:none!important}
   body{background:white}.pageWrap{padding:0}.panel{box-shadow:none;border:1px solid #ddd}
 }
+
+
+/* DB71 regression repair: spacing, KPI geometry, and metric controls. */
+body.db71Regression .maxdockDocumentUtilityRow{position:relative!important;z-index:70!important;width:100%!important;min-height:0!important;height:0!important;margin:0!important;padding:0 22px!important;overflow:visible!important;pointer-events:none!important}
+body.db71Regression .maxdockDocumentTools{position:absolute!important;top:6px!important;right:22px!important;display:flex!important;gap:7px!important;width:auto!important;min-width:0!important;pointer-events:auto!important}
+body.db71Regression .maxdockDocumentIcon{width:44px!important;min-width:44px!important;height:40px!important;min-height:40px!important;padding:0!important}
+body.db71Regression .pageWrap{padding-top:24px!important}
+body.db71Regression .pageHead{margin-top:0!important;padding-top:0!important}
+body.db71Regression .pageHead>div:first-child,body.db71Regression .pageHead h2{margin-top:0!important}
+body.db71Regression .db71MetricCustomize{position:relative!important;flex:0 0 auto!important;margin-left:auto!important;z-index:90!important}
+body.db71Regression .db71MetricCustomize>summary{box-sizing:border-box!important;display:grid!important;place-items:center!important;width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important;padding:0!important;border:1px solid #c7d7e4!important;border-radius:9px!important;background:#fff!important;color:#29475c!important;cursor:pointer!important;list-style:none!important}
+body.db71Regression .db71MetricCustomize>summary::-webkit-details-marker{display:none!important}
+body.db71Regression .db71MetricCustomize>summary svg{width:20px!important;height:20px!important;fill:currentColor!important}
+body.db71Regression .db71MetricCustomize>summary:hover{border-color:#8bb9cb!important;background:#f3fafc!important;color:#08769b!important}
+body.db71Regression .db71MetricMenu{position:absolute!important;top:calc(100% + 8px)!important;right:0!important;z-index:100!important;box-sizing:border-box!important;width:280px!important;max-height:min(430px,70vh)!important;overflow:auto!important;padding:14px!important;border:1px solid #c7d7e4!important;border-radius:12px!important;background:#fff!important;box-shadow:0 16px 38px rgba(15,35,55,.18)!important}
+body.db71Regression .db71MetricMenu fieldset{margin:0 0 12px!important;padding:0!important;border:0!important}
+body.db71Regression .db71MetricMenu legend{margin-bottom:8px!important;font-weight:800!important;color:#123a59!important}
+body.db71Regression .db71MetricMenu label{display:flex!important;align-items:center!important;gap:8px!important;padding:6px 2px!important;font-size:13px!important}
+body.db71Regression .db71MetricMenu button{width:100%!important}
+body.db71Regression[data-page="dashboard"] .dashboardFilters,body.db71Regression[data-page="reports"] .reportFilters,body.db71Regression[data-page="queue"] .queueFilters{position:relative!important;overflow:visible!important}
+body.db71Regression[data-page="dashboard"] .dashboardFilters .db71MetricCustomize,body.db71Regression[data-page="reports"] .reportFilters .db71MetricCustomize,body.db71Regression[data-page="queue"] .queueFilters .db71MetricCustomize{margin-left:auto!important}
+body.db71Regression[data-page="queue"] #queueMetrics{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;grid-auto-rows:minmax(86px,auto)!important;align-items:stretch!important;gap:10px!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0 0 16px!important;overflow:visible!important}
+body.db71Regression[data-page="queue"] #queueMetrics>.metric{box-sizing:border-box!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;width:auto!important;min-width:0!important;height:86px!important;min-height:86px!important;max-height:86px!important;margin:0!important;padding:13px 14px!important;overflow:hidden!important}
+body.db71Regression[data-page="queue"] #queueMetrics>.metric small{width:100%!important;margin:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+body.db71Regression[data-page="queue"] #queueMetrics>.metric strong{margin-top:6px!important;line-height:1!important}
+body.db71Regression[data-page="reports"] #reportMetrics{height:auto!important;max-height:none!important;overflow:visible!important}
+@media(max-width:900px){body.db71Regression .pageWrap{padding-top:18px!important}body.db71Regression .maxdockDocumentTools{right:14px!important}body.db71Regression[data-page="queue"] #queueMetrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:560px){body.db71Regression[data-page="queue"] #queueMetrics{grid-template-columns:1fr!important}}
