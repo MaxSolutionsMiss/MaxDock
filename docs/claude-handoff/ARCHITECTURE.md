@@ -9,7 +9,7 @@ The browser uses Supabase for:
 - Auth and session persistence
 - Postgres tables protected by row-level security
 - Security-definer RPCs for booking, scheduling, administration, reports, preferences, capacity, and MIS imports
-- Live refresh through five-second appointment queries on operational views
+- Live refresh through three-minute appointment queries on operational views, with explicit immediate refresh actions on Dashboard and Queue
 - `maxdock-invite-user` for privileged account administration and public username-to-email login resolution
 - `maxdock-ai-brief` for privacy-filtered aggregate operational analysis, with a rules-based fallback when no OpenAI key is configured
 
@@ -30,7 +30,7 @@ Every change to a shared HTML, CSS, JavaScript, image, release note, or release 
 
 ## Interface layering
 
-The approved DB31 visual base remains in `maxdock-db31-base.css`. DB33 through DB36 are additive refinement layers and initialization scripts. DB37 is a cache-delivery release that guarantees DB33 initializes before DB36 and exposes `DB37 · DB36 interface active` in the gear menu. Preserve load order and update cache markers deliberately when changing these assets.
+DB70 / PR #59 remains the production reference. The DB71 candidate consolidates the previously additive CSS cascade into `maxdock.css` and the remaining compatibility behavior into `maxdock-layout-discipline.js`. Future visual work must edit an existing file; do not create new release-numbered CSS or JavaScript patch layers.
 
 ## Data boundaries
 

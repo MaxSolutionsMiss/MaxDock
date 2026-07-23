@@ -2,7 +2,7 @@
   "use strict";
 
   const db=window.MaxDockDB;
-  const state={roles:[],users:[],externalCompanies:[],editingUser:null,currentUserId:null,accessPackage:null,usernameEdited:false,userFilter:"all",expandedUsers:new Set()};
+  const state={roles:[],users:[],externalCompanies:[],auditRows:[],auditError:"",editingUser:null,currentUserId:null,accessPackage:null,usernameEdited:false,userFilter:"all",expandedUsers:new Set(),selectedUsers:new Set()};
   const $=id=>document.getElementById(id);
 
   function escapeHtml(value){
@@ -102,8 +102,8 @@
     document.querySelectorAll("[data-admin-user-filter]").forEach(button=>{
       const active=button.dataset.adminUserFilter===state.userFilter;
       button.classList.toggle("isActive",active);
-      button.setAttribute("aria-selected",String(active));
-      button.tabIndex=active?0:-1;
+      button.setAttribute("aria-pressed",String(active));
+      button.tabIndex=0;
     });
     $("adminUserListTitle").textContent=labels[state.userFilter]||labels.all;
   }
@@ -132,6 +132,7 @@
         ? `${escapeHtml(user.external_party_type||"External")} · ${escapeHtml(user.organization_name)}`
         : `${escapeHtml(roleDisplayName(user))} account`;
       return `<tr class="adminUserSummaryRow" data-user-summary="${escapeHtml(user.user_id)}">
+        <td><input class="adminUserSelect" type="checkbox" value="${escapeHtml(user.user_id)}" aria-label="Select ${escapeHtml(user.full_name||user.username||"user")}" ${state.selectedUsers.has(user.user_id)?"checked":""} ${user.user_id===state.currentUserId?"disabled":""}></td>
         <td><div class="adminUserIdentity"><strong>${escapeHtml(user.full_name||user.username||"Unnamed user")}</strong><span>${escapeHtml(displayEmail(user))}</span>${user.organization_name?`<small>${escapeHtml(user.external_party_type||"External")} · ${escapeHtml(user.organization_name)}</small>`:""}</div></td>
         <td><span class="adminRole role-${escapeHtml(selectedPrivilegeCode(user))}">${escapeHtml(roleDisplayName(user))}</span></td>
         <td><div class="adminStatusStack"><span class="adminUserStatus ${user.is_active?"active":"inactive"}"><i></i>${user.is_active?"Active":"Inactive"}</span>${pending}</div></td>
@@ -140,13 +141,17 @@
         <td><div class="adminRowActions">${accessButton}<button class="tiny adminViewUser" type="button" data-user-id="${escapeHtml(user.user_id)}" aria-expanded="${expanded}" aria-controls="user-details-${escapeHtml(user.user_id)}">${expanded?"Hide":"Details"}</button><button class="tiny adminEditUser" type="button" data-user-id="${escapeHtml(user.user_id)}">Edit</button></div></td>
       </tr>
       <tr class="adminUserDetailsRow" id="user-details-${escapeHtml(user.user_id)}" data-user-details="${escapeHtml(user.user_id)}" ${expanded?"":"hidden"}>
-        <td colspan="6"><div class="adminUserDetails">
+        <td colspan="7"><div class="adminUserDetails">
           <div><span>Location access</span><div class="adminLocationTags">${locations}</div></div>
           <div><span>Account identity</span><strong>${accountIdentity}</strong></div>
           <div><span>Username</span><strong>${escapeHtml(user.username||"—")}</strong></div>
         </div></td>
       </tr>`;
-    }).join("")||'<tr><td colspan="6">No users match this view.</td></tr>';
+    }).join("")||'<tr><td colspan="7">No users match this view.</td></tr>';
+    document.querySelectorAll(".adminUserSelect").forEach(input=>input.addEventListener("change",()=>{
+      if(input.checked)state.selectedUsers.add(input.value);else state.selectedUsers.delete(input.value);
+      updateBulkBar();
+    }));
     document.querySelectorAll(".adminEditUser").forEach(button=>button.addEventListener("click",()=>openUserModal(button.dataset.userId)));
     document.querySelectorAll(".adminCreateLink").forEach(button=>button.addEventListener("click",()=>createExistingSetupLink(button.dataset.userId)));
     document.querySelectorAll(".adminViewUser").forEach(button=>button.addEventListener("click",()=>{
@@ -162,6 +167,31 @@
     }));
     updateUserFilterTabs();
     updateSummary();
+    updateBulkBar();
+  }
+
+  function updateBulkBar(){
+    const count=state.selectedUsers.size;
+    $("adminBulkBar").hidden=!count;
+    $("adminBulkCount").textContent=`${count} user${count===1?"":"s"} selected`;
+    const visible=[...document.querySelectorAll(".adminUserSelect:not(:disabled)")];
+    if($("selectAllUsers")){
+      $("selectAllUsers").checked=Boolean(visible.length)&&visible.every(input=>input.checked);
+      $("selectAllUsers").indeterminate=visible.some(input=>input.checked)&&!visible.every(input=>input.checked);
+    }
+  }
+
+  function renderAuditLog(){
+    const body=$("adminAuditBody");if(!body)return;
+    if(state.auditError){
+      body.innerHTML=`<tr><td colspan="4">${escapeHtml(state.auditError)}</td></tr>`;
+      return;
+    }
+    const usersById=new Map(state.users.map(user=>[user.user_id,user]));
+    body.innerHTML=state.auditRows.length?state.auditRows.map(row=>{
+      const actor=usersById.get(row.actor_user_id);
+      return `<tr><td>${escapeHtml(formatDateTime(row.created_at))}</td><td>${escapeHtml(String(row.action||"").replaceAll("_"," "))}</td><td>${escapeHtml(row.target_username||usersById.get(row.target_user_id)?.username||"Unknown user")}</td><td>${escapeHtml(actor?.full_name||actor?.username||"System Admin")}</td></tr>`;
+    }).join(""):`<tr><td colspan="4">No user administration activity has been recorded.</td></tr>`;
   }
 
   function renderRoleOptions(){
@@ -388,10 +418,11 @@
   }
 
   async function loadUsers(){
-    const [usersResult,usageResult,companies]=await Promise.all([
+    const [usersResult,usageResult,companies,auditResult]=await Promise.all([
       db.client.rpc("admin_list_users_with_identity"),
       db.client.rpc("admin_list_user_usage"),
-      db.listExternalCompanies()
+      db.listExternalCompanies(),
+      db.client.from("user_admin_audit_log").select("id,action,actor_user_id,target_user_id,target_username,created_at").order("created_at",{ascending:false}).limit(100)
     ]);
     if(usersResult.error)throw usersResult.error;
     if(usageResult.error)throw usageResult.error;
@@ -399,7 +430,45 @@
     renderExternalOrganizationOptions();
     const usageByUser=new Map((usageResult.data||[]).map(item=>[item.user_id,item]));
     state.users=(usersResult.data||[]).map(user=>({...user,...(usageByUser.get(user.user_id)||{})}));
+    state.auditRows=auditResult.error?[]:(auditResult.data||[]);
+    state.auditError=auditResult.error?"Administration history is unavailable for this account.":"";
     renderUsers();
+    renderAuditLog();
+  }
+
+  async function applyBulkStatus(active){
+    const users=state.users.filter(user=>state.selectedUsers.has(user.user_id)&&user.user_id!==state.currentUserId&&user.is_active!==active);
+    if(!users.length){
+      window.MaxDockUI?.toast?.(`The selected users are already ${active?"active":"inactive"}.`);
+      return;
+    }
+    const confirmed=await (window.MaxDockUI?.confirmAction?.({
+      title:`${active?"Activate":"Deactivate"} ${users.length} user${users.length===1?"":"s"}?`,
+      message:active
+        ?"These accounts will regain their existing MaxDock role and location access."
+        :"These accounts will no longer be able to sign in. Appointment and administration history will be preserved.",
+      confirmLabel:active?"Activate Users":"Deactivate Users",
+      tone:active?"default":"danger"
+    })??Promise.resolve(false));
+    if(!confirmed)return;
+    setLoading(true,`${active?"Activating":"Deactivating"} users…`);
+    const results=await Promise.allSettled(users.map(user=>db.client.rpc("admin_update_user",{
+      p_user_id:user.user_id,
+      p_full_name:user.full_name,
+      p_role_code:user.role_code,
+      p_is_active:active,
+      p_location_ids:user.role_code==="system_admin"?[]:(user.location_ids||[]),
+      p_external_party_type:user.external_party_type,
+      p_organization_name:user.organization_name
+    }).then(result=>{if(result.error)throw result.error})));
+    const failed=results.filter(result=>result.status==="rejected");
+    state.selectedUsers.clear();
+    await loadUsers();
+    setLoading(false);
+    window.MaxDockUI?.toast?.(failed.length
+      ?`${users.length-failed.length} user${users.length-failed.length===1?"":"s"} updated; ${failed.length} could not be changed.`
+      :`${users.length} user${users.length===1?"":"s"} ${active?"activated":"deactivated"}.`,
+    {tone:failed.length?"error":"success",duration:6200});
   }
 
   async function createExistingSetupLink(userId){
@@ -419,7 +488,13 @@
     const user=state.editingUser;
     if(!user||user.user_id===state.currentUserId)return;
     const label=user.full_name||user.username;
-    if(!confirm(`Reset the password for ${label}? Their current password will stop working immediately.`))return;
+    const confirmed=await (window.MaxDockUI?.confirmAction?.({
+      title:`Reset ${label}'s password?`,
+      message:"Their current password will stop working immediately. A new temporary password will be shown once.",
+      confirmLabel:"Reset Password",
+      tone:"danger"
+    })??Promise.resolve(false));
+    if(!confirmed)return;
 
     const button=$("resetPasswordButton");
     button.disabled=true;button.textContent="Resetting…";setFormError();
@@ -447,12 +522,16 @@
     const user=state.editingUser;
     if(!user||user.user_id===state.currentUserId)return;
     const label=user.full_name||user.username;
-    if(!confirm(`Delete ${label} from MaxDock? Their login and access will be removed. Existing appointment history will be preserved.`))return;
-    const confirmation=prompt(`Type the username ${user.username} to confirm deletion:`);
-    if(confirmation===null)return;
-    if(confirmation.trim().toLowerCase()!==String(user.username).toLowerCase()){
-      return setFormError("The username did not match. The user was not deleted.");
-    }
+    const confirmed=await (window.MaxDockUI?.confirmAction?.({
+      title:`Delete ${label} from MaxDock?`,
+      message:"Their login and access will be removed. Existing appointment and audit history will be preserved.",
+      confirmLabel:"Delete User",
+      tone:"danger",
+      verificationLabel:`Type the username ${user.username} to confirm`,
+      verificationValue:user.username,
+      verificationHelp:"This confirmation protects against deleting the wrong account."
+    })??Promise.resolve(false));
+    if(!confirmed)return;
 
     const button=$("deleteUserButton");
     button.disabled=true;button.textContent="Deleting…";setFormError();
@@ -491,7 +570,7 @@
     if(!/^[A-Za-z0-9._-]{3,50}$/.test(username))return setFormError("Use a username with 3–50 letters, numbers, dots, dashes, or underscores.");
     if(!editing&&deliveryMethod==="invite_link"&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setFormError("Enter a valid email address for the invitation link.");
     if(!editing&&deliveryMethod==="temporary_password"&&email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setFormError("Enter a valid contact email or leave it blank.");
-    if(!editing&&deliveryMethod==="temporary_password"&&temporaryPassword.length<6)return setFormError("The temporary password must contain at least 6 characters.");
+    if(!editing&&deliveryMethod==="temporary_password"&&temporaryPassword.length<12)return setFormError("The temporary password must contain at least 12 characters.");
     if(isExternal&&!organizationName)return setFormError(`Company name is required for a ${externalPartyType} access account.`);
     if(roleCode!=="system_admin"&&!locationIds.length)return setFormError("Select at least one location for this user.");
 
@@ -561,6 +640,15 @@
     $("userRole").addEventListener("change",updateLocationMode);
     $("userExternalPartyType").addEventListener("change",renderExternalOrganizationOptions);
     $("userSearch").addEventListener("input",renderUsers);
+    $("selectAllUsers").addEventListener("change",event=>{
+      document.querySelectorAll(".adminUserSelect:not(:disabled)").forEach(input=>{
+        input.checked=event.target.checked;
+        if(input.checked)state.selectedUsers.add(input.value);else state.selectedUsers.delete(input.value);
+      });
+      updateBulkBar();
+    });
+    $("bulkActivateUsers").addEventListener("click",()=>applyBulkStatus(true).catch(showFatalError));
+    $("bulkDeactivateUsers").addEventListener("click",()=>applyBulkStatus(false).catch(showFatalError));
     document.querySelectorAll("[data-admin-user-filter]").forEach(button=>button.addEventListener("click",()=>{
       state.userFilter=button.dataset.adminUserFilter||"all";
       renderUsers();

@@ -340,8 +340,8 @@ Deno.serve(async (request: Request) => {
     if (action === "create_temporary_password" && email && !validEmail(email)) {
       return response(request, 400, {error: "Enter a valid contact email or leave it blank."});
     }
-    if (action === "create_temporary_password" && (password.length < 6 || password.length > 128)) {
-      return response(request, 400, {error: "The temporary password must contain 6–128 characters."});
+    if (action === "create_temporary_password" && (password.length < 12 || password.length > 128)) {
+      return response(request, 400, {error: "The temporary password must contain 12–128 characters."});
     }
 
     const {data: existingUsername} = await serviceClient
