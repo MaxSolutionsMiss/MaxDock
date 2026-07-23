@@ -132,7 +132,7 @@
       }
       const role=db.getProfile()?.role_code;
       const operational=["system_admin","site_admin","shipping_manager","coordinator"].includes(role);
-      location.assign(`./${operational?"dashboard":"index"}.html?book=1&return=my-appointments&v=92-db71`);
+      location.assign(`./${operational?"dashboard":"index"}.html?book=1&return=my-appointments&v=93-db71`);
     });
   }
 

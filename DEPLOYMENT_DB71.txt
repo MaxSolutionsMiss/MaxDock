@@ -6,7 +6,7 @@ Status
 - Review candidate only. Do not merge or deploy without owner approval.
 - DB70 / PR #59 remains the exact production and rollback reference.
 - DB70 reference commit: 4fb1a5f3611fdab91f42eee43dff41011e617724
-- Browser cache marker: v92-db71
+- Browser cache marker: v93-db71
 
 Purpose
 -------
@@ -21,8 +21,11 @@ Interface and behavior
   observer hub.
 - Adds a guard that rejects newly-added maxdock-dbNN CSS or JavaScript assets.
 - Uses one line/solid icon contract and one shared icon source.
-- Keeps Export and Print as two icon buttons directly below Sign Out on every
-  signed-in page; legacy page-toolbar document buttons stay removed.
+- Keeps Export and Print as two icon buttons in each signed-in page-title row,
+  top-aligned with the title without creating another row or pushing the page
+  content down; legacy page-toolbar document buttons stay removed.
+- Restores one reliable Queue settings toggle and routes Queue full-screen
+  through the canonical display function instead of competing legacy handlers.
 - Uses one canonical location control on every operational page. System Admin
   can select it; Site Admin, Shipping Manager, and Coordinator see a fixed
   assigned location; external roles retain invisible header geometry.

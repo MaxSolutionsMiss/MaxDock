@@ -1,6 +1,6 @@
 # MaxDock repository memory
 
-MaxDock is a static GitHub Pages dock-appointment application backed by Supabase Auth, Postgres/RLS/RPCs, and two Supabase Edge Functions. DB70 / PR #59 is the current reviewed production reference. DB71 is an isolated consolidation candidate until the owner explicitly approves and merges it.
+MaxDock is a static GitHub Pages dock-appointment application backed by Supabase Auth, Postgres/RLS/RPCs, and two Supabase Edge Functions. DB70 / PR #59 is the current reviewed production reference on `gh-pages`. DB71 / PR #60 is merged on `main`; the `v93-db71` live-readiness hotfix remains isolated until the owner explicitly approves and merges it.
 
 Before changing anything, read every file in `docs/claude-handoff/`, beginning with `START_HERE.md`. Treat those files, the current source, and the connected production schema as a single handoff.
 

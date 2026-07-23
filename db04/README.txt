@@ -1,8 +1,9 @@
-MaxDock v92-DB71 — Audit Repair Candidate
+MaxDock v93-DB71 — Live-Readiness Hotfix
 
 Release status
 - DB70 / PR #59 at 4fb1a5f3611fdab91f42eee43dff41011e617724 is the production and rollback reference.
-- DB71 is an isolated candidate. Do not merge, deploy, apply its SQL, change Auth settings, or deploy its Edge Function source without owner approval.
+- DB71 / PR #60 is merged on main, while gh-pages still serves DB70.
+- The v93-db71 hotfix is an isolated candidate. Do not merge, deploy, apply its SQL, change Auth settings, or deploy its Edge Function source without owner approval.
 - DB71 consolidates the browser style/script patch waterfall, standardizes location and document controls, and applies the accessibility, security, and page-level repairs described in DEPLOYMENT_DB71.txt.
 
 Supabase project

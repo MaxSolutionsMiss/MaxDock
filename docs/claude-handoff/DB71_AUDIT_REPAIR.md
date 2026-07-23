@@ -1,7 +1,8 @@
 # DB71 audit-repair map
 
 DB70 / PR #59 at `4fb1a5f3611fdab91f42eee43dff41011e617724`
-remains the production reference. DB71 is an isolated review candidate.
+remains the production reference on `gh-pages`. DB71 / PR #60 is merged on
+`main`; the `v93-db71` live-readiness hotfix remains an isolated review candidate.
 
 ## Implemented
 
@@ -10,7 +11,7 @@ remains the production reference. DB71 is an isolated review candidate.
 | 33 CSS layers and 22 sequential patch scripts | Folded into `maxdock.css` and one `maxdock-layout-discipline.js` load. |
 | 16 competing MutationObservers | Routed through one shared, requestAnimationFrame-batched observer hub. |
 | Broken line icons and duplicated gear markup | Added shared `MAXDOCK_ICONS` plus explicit `data-icon="line"` / `"solid"` rendering. |
-| Inconsistent document actions | Retained DB70's two-icon Export/Print strip directly below Sign Out and removed page-toolbar copies. |
+| Inconsistent document actions | Keeps one two-icon Export/Print group in each page-title row, top-aligned with the title without adding page height, and removes page-toolbar copies. |
 | Header/location drift | Standardized `#locationSelect`; System Admin selects, operational site roles see a fixed location, external roles retain placeholder geometry. |
 | Missing dialog semantics and focus handling | Added dialog names/semantics, focus containment, Escape handling, and focus restoration. |
 | Orphaned form labels | Associated audited labels with their controls and replaced the nested account-status label with a caption. |
