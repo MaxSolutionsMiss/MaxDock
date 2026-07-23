@@ -4,6 +4,7 @@
   const NativeObserver=window.MutationObserver;
   if(!NativeObserver||window.MaxDockSharedMutationObserver)return;
   const clients=new Set();
+  let acceptingClients=true;
   let scheduled=false;
   const registrationsMatch=(record,registration)=>{
     const {target,options}=registration;
@@ -37,10 +38,25 @@
   const start=()=>observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});
   if(document.documentElement)start();else document.addEventListener("DOMContentLoaded",start,{once:true});
   window.MaxDockSharedMutationObserver=class{
-    constructor(callback){this.callback=callback;this.registrations=[];this.active=true;clients.add(this)}
-    observe(target,options={}){if(!target)return;this.registrations.push({target,options});this.active=true;clients.add(this)}
+    constructor(callback){
+      this.callback=callback;
+      this.registrations=[];
+      this.active=acceptingClients;
+      if(this.active)clients.add(this)
+    }
+    observe(target,options={}){
+      if(!target||!acceptingClients)return;
+      this.registrations.push({target,options});
+      this.active=true;
+      clients.add(this)
+    }
     disconnect(){this.active=false;this.registrations=[];clients.delete(this);pending.delete(this)}
     takeRecords(){const records=pending.get(this)||[];pending.delete(this);return records}
+    static freezeLegacyObservers(){
+      acceptingClients=false;
+      [...clients].forEach(client=>client.disconnect());
+      pending.clear()
+    }
   };
 })();
 
@@ -269,7 +285,7 @@
     const menu=$("queueCustomizeMenu");
 
     filters.classList.add("queueOpsToolbar");
-    pageHead.appendChild(filters);
+    pageHead.insertAdjacentElement("afterend",filters);
     if(actions&&customize)actions.appendChild(customize);
     if(actions&&utility)actions.appendChild(utility);
 
@@ -1170,7 +1186,7 @@
     if(!button)return;
     button.classList.add("bookAppointmentBtnDB50");
     button.textContent="Book an Appointment";
-    button.href="./index.html?book=1&return=my-appointments&v=94-db72";
+    button.href="./index.html?book=1&return=my-appointments&v=95-db73";
   }
 
   function wrapCloseRequest(){
@@ -1180,7 +1196,7 @@
     window.closeRequest=function(){
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
-      location.replace("./my-appointments.html?v=94-db72");
+      location.replace("./my-appointments.html?v=95-db73");
     };
   }
 
@@ -1191,7 +1207,7 @@
     if(!document.body.classList.contains("maxdockContextReady"))return;
     if(db.isOperationalRole?.()&&PAGE!=="dashboard"){
       directBookingOpened=true;
-      location.replace("./dashboard.html?book=1&return=my-appointments&v=94-db72");
+      location.replace("./dashboard.html?book=1&return=my-appointments&v=95-db73");
       return;
     }
     if(!db.getCurrentLocation?.()||!db.getLocationData?.())return;
@@ -1276,7 +1292,7 @@
     if(heading.parentElement!==row)row.appendChild(heading);
     if(button.parentElement!==row)row.appendChild(button);
     button.classList.add("maxdockPrimaryActionDB51");
-    button.href="./index.html?book=1&return=my-appointments&v=94-db72";
+    button.href="./index.html?book=1&return=my-appointments&v=95-db73";
     if(!button.querySelector("svg")){
       const text=button.textContent.trim()||"Book an Appointment";
       button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM12 12v5M9.5 14.5h5"/></svg><span></span>';
@@ -1470,8 +1486,8 @@
   function roleAwareBookingUrl(){
     const role=window.MaxDockDB?.getProfile?.()?.role_code;
     return role&&role!=="customer"
-      ?"./dashboard.html?book=1&return=my-appointments&v=94-db72"
-      :"./index.html?book=1&return=my-appointments&v=94-db72";
+      ?"./dashboard.html?book=1&return=my-appointments&v=95-db73"
+      :"./index.html?book=1&return=my-appointments&v=95-db73";
   }
 
   function bookingContextReady(){
@@ -1571,7 +1587,7 @@
       if(!directBooking)return original.apply(this,arguments);
       window.closeEfficiencyOpportunity?.();
       $("requestModal")?.classList.remove("show");
-      location.replace("./my-appointments.html?v=94-db72");
+      location.replace("./my-appointments.html?v=95-db73");
     };
   }
 
@@ -2161,7 +2177,7 @@
       important(link,"display",visible?"":"none");
       if(visible)link.removeAttribute("tabindex");else link.tabIndex=-1;
     });
-    if(PAGE==="settings")location.replace("./queue.html?v=94-db72");
+    if(PAGE==="settings")location.replace("./queue.html?v=95-db73");
     return true;
   }
 
@@ -2663,7 +2679,7 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 else init();
 })();
 
-/* DB72: one final shared layout and interaction contract.
+/* DB73: one authoritative layout and interaction contract.
    My Appointments is the visual reference for page actions and KPI cards. */
 (function(){
   "use strict";
@@ -2689,6 +2705,7 @@ else init();
     myAppointmentFilter:"170px"
   };
   let queued=false;
+  let observer=null;
 
   function important(element,property,value){
     if(!element)return;
@@ -2756,9 +2773,12 @@ else init();
 
   function markGear(details,label){
     if(!details)return null;
-    details.classList.add("db72Gear");
+    details.classList.add("db72Gear","db73Gear");
     const summary=details.querySelector(":scope > summary");
     if(summary){
+      if(!summary.querySelector("svg[data-icon='solid']")){
+        summary.innerHTML=`${window.MAXDOCK_ICONS?.menu||""}<span class="maxdockSrOnly">${label}</span>`;
+      }
       summary.title=label;
       summary.setAttribute("aria-label",label);
       summary.setAttribute("aria-expanded",String(details.open));
@@ -2770,17 +2790,33 @@ else init();
     const pageHead=document.querySelector("main .pageHead");
     const row=$("maxdockDocumentUtilityRow");
     if(!pageHead||!row)return;
-    row.classList.add("db72TitleDocumentActions");
+    row.classList.add("db72TitleDocumentActions","db73TitleDocumentActions");
     if(row.parentElement!==pageHead)pageHead.appendChild(row);
     const tools=$("maxdockDocumentTools");
-    if(tools)tools.classList.add("db72DocumentTools");
+    if(tools)tools.classList.add("db72DocumentTools","db73DocumentTools");
+  }
+
+  function placeAfter(reference,element){
+    if(!reference||!element||!reference.parentElement)return;
+    if(reference.nextElementSibling!==element)reference.insertAdjacentElement("afterend",element);
+  }
+
+  function unwrapDashboardBand(pageHead,toolbar,metrics){
+    const band=document.querySelector(".dashboardOverviewBand");
+    if(!pageHead||!toolbar)return;
+    placeAfter(pageHead,toolbar);
+    if(metrics)placeAfter(toolbar,metrics);
+    if(band&&!band.children.length)band.remove();
   }
 
   function normalizeDashboard(){
     if(PAGE!=="dashboard")return;
+    const pageHead=document.querySelector("main .pageHead");
     const toolbar=document.querySelector(".dashboardFilters");
     if(!toolbar)return;
-    toolbar.classList.add("db72ControlBar","db72DashboardControlBar");
+    const metrics=$("metrics");
+    unwrapDashboardBand(pageHead,toolbar,metrics);
+    toolbar.classList.add("db72ControlBar","db72DashboardControlBar","db73ControlBar");
     const date=fieldPair("adminDate");
     const status=fieldPair("adminStatus");
     const range=fieldPair("dashboardRange");
@@ -2822,14 +2858,20 @@ else init();
     toolbar.querySelectorAll(":scope > .rangeMetric").forEach(group=>{
       if(!group.querySelector("#dashboardRange"))group.remove();
     });
+    toolbar.querySelectorAll(":scope > .dashboardRangeHost").forEach(group=>{
+      if(!group.querySelector("#dashboardRange"))group.remove();
+    });
     document.querySelectorAll(".pageHead .dashboardActions").forEach(group=>{if(!group.childElementCount)group.remove()});
+    unwrapDashboardBand(pageHead,toolbar,metrics);
   }
 
   function normalizeQueue(){
     if(PAGE!=="queue")return;
+    const pageHead=document.querySelector("main .queuePageHead,main .pageHead");
     const toolbar=document.querySelector(".queueFilters");
     if(!toolbar)return;
-    toolbar.classList.add("db72ControlBar","db72QueueControlBar");
+    placeAfter(pageHead,toolbar);
+    toolbar.classList.add("db72ControlBar","db72QueueControlBar","db73ControlBar");
     const date=fieldPair("queueDate");
     const status=fieldPair("queueStatus");
     let quick=toolbar.querySelector(":scope > .db72QueueQuickActions");
@@ -2858,13 +2900,14 @@ else init();
     order(toolbar,[date,status,quick,right]);
     toolbar.querySelectorAll(":scope > .db69QueueRightActions,:scope > .db70QueueRightActions")
       .forEach(group=>{if(group!==right&&!group.childElementCount)group.remove()});
+    placeAfter(pageHead,toolbar);
   }
 
   function normalizeReports(){
     if(PAGE!=="reports")return;
     const toolbar=document.querySelector(".reportFilters");
     if(!toolbar)return;
-    toolbar.classList.add("db72ControlBar","db72ReportControlBar");
+    toolbar.classList.add("db72ControlBar","db72ReportControlBar","db73ControlBar");
     window.MaxDockEnsureReportGearDB72?.();
     const view=fieldPair("reportView");
     const preset=fieldPair("reportPreset");
@@ -2892,6 +2935,31 @@ else init();
     if(gear)bookingBar.appendChild(gear);
   }
 
+  function normalizeAdminSummary(){
+    if(PAGE!=="admin")return;
+    const container=document.querySelector(".adminSummary");
+    if(!container)return;
+    container.classList.add("db73Metrics");
+    const icons=[
+      '<path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-1a3 3 0 1 0 0-6m-8 9c-4 0-6 2-6 5v2h12v-2c0-3-2-5-6-5Zm8-1c3 0 5 2 5 5v2h-5"/>',
+      '<path d="M8 12.5 11 16l6-8M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18Z"/>',
+      '<path d="M4 19V9m5 10V5m5 14v-7m5 7V3"/>',
+      '<path d="M12 7v5l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>'
+    ];
+    const tones=["appointments","completed","inbound","soon"];
+    [...container.querySelectorAll(":scope > .adminSummaryCard")].forEach((card,index)=>{
+      card.classList.add("db73MetricCard");
+      card.dataset.metricTone=tones[index]||"appointments";
+      let icon=card.querySelector(":scope > .metricIconDB47");
+      if(!icon){
+        icon=document.createElement("span");
+        icon.className="metricIconDB47";
+        card.prepend(icon);
+      }
+      icon.innerHTML=`<svg data-icon="line" viewBox="0 0 24 24" aria-hidden="true">${icons[index]||icons[0]}</svg>`;
+    });
+  }
+
   function visibleMetricCards(container){
     return [...container.children].filter(card=>{
       if(card.hidden||card.classList.contains("metricHidden"))return false;
@@ -2906,7 +2974,7 @@ else init();
     const show=toggle?Boolean(toggle.checked):!container.hidden;
     if(!show){
       container.hidden=true;
-      container.classList.add("metricsDashboardHidden","db72Metrics");
+      container.classList.add("metricsDashboardHidden","db72Metrics","db73Metrics");
       container.setAttribute("aria-hidden","true");
       important(container,"display","none");
       important(container,"height","0px");
@@ -2918,7 +2986,7 @@ else init();
 
     container.hidden=false;
     container.classList.remove("metricsDashboardHidden");
-    container.classList.add("db72Metrics");
+    container.classList.add("db72Metrics","db73Metrics");
     container.setAttribute("aria-hidden","false");
     const cards=visibleMetricCards(container);
     const count=Math.max(1,cards.length);
@@ -2931,7 +2999,7 @@ else init();
     important(container,"max-height",compact?"none":"78px");
     important(container,"margin","0px 0px 10px");
     cards.forEach(card=>{
-      card.classList.add("db72MetricCard");
+      card.classList.add("db72MetricCard","db73MetricCard");
       important(card,"display","grid");
       important(card,"grid-template-columns","40px minmax(0,1fr)");
       important(card,"grid-template-rows","auto auto");
@@ -2988,7 +3056,7 @@ else init();
     const active=selected.dataset.sectionTarget;
     buttons.forEach((button,index)=>{
       const isActive=button===selected;
-      if(!button.id)button.id=`settings-db72-tab-${index+1}`;
+      if(!button.id)button.id=`settings-db73-tab-${index+1}`;
       button.classList.toggle("isActive",isActive);
       if(button.getAttribute("aria-selected")!==String(isActive))button.setAttribute("aria-selected",String(isActive));
       button.tabIndex=isActive?0:-1;
@@ -3002,7 +3070,7 @@ else init();
       if(controller&&panel.getAttribute("aria-labelledby")!==controller.id)panel.setAttribute("aria-labelledby",controller.id);
     });
     if(persist){
-      try{localStorage.setItem("maxdock-db72-settings-section",active)}catch(_error){}
+      try{localStorage.setItem("maxdock-db73-settings-section",active)}catch(_error){}
     }
   }
 
@@ -3056,8 +3124,8 @@ else init();
     const panels=[...workspace.querySelectorAll(".sectionWorkspaceContent>[data-section-panel]")];
     panels.forEach(ensureSettingsActions);
     buttons.forEach(button=>{
-      if(button.dataset.db72SettingsBound)return;
-      button.dataset.db72SettingsBound="true";
+      if(button.dataset.db73SettingsBound)return;
+      button.dataset.db73SettingsBound="true";
       button.addEventListener("click",event=>{
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -3067,7 +3135,7 @@ else init();
     let initial=buttons.find(button=>button.getAttribute("aria-selected")==="true")?.dataset.sectionTarget
       ||workspace.dataset.defaultSection
       ||buttons[0]?.dataset.sectionTarget;
-    try{initial=localStorage.getItem("maxdock-db72-settings-section")||initial}catch(_error){}
+    try{initial=localStorage.getItem("maxdock-db73-settings-section")||localStorage.getItem("maxdock-db72-settings-section")||initial}catch(_error){}
     activateSettingsSection(workspace,initial,{persist:false});
   }
 
@@ -3077,12 +3145,13 @@ else init();
   }
 
   function normalize(){
-    document.body.classList.add("db72Consistency");
+    document.body.classList.add("db72Consistency","db73Consistency");
     normalizeDocumentActions();
     normalizeDashboard();
     normalizeQueue();
     normalizeReports();
     normalizeMyAppointments();
+    normalizeAdminSummary();
     normalizeSettings();
     hidePreferenceWarnings();
     syncMetrics();
@@ -3097,43 +3166,21 @@ else init();
     });
   }
 
-  function installObservers(){
-    document.querySelectorAll(".dashboardFilters,.queueFilters,.reportFilters,.myAppointmentsBookingBarDB52")
-      .forEach(toolbar=>{
-        if(toolbar.dataset.db72Observed)return;
-        toolbar.dataset.db72Observed="true";
-        new window.MaxDockSharedMutationObserver(queueNormalize).observe(toolbar,{childList:true,subtree:false});
-      });
-    METRICS.forEach(({container})=>{
-      const element=$(container);
-      if(!element||element.dataset.db72Observed)return;
-      element.dataset.db72Observed="true";
-      new window.MaxDockSharedMutationObserver(queueNormalize).observe(element,{
-        childList:true,
-        subtree:false,
-        attributes:true,
-        attributeFilter:["hidden","class","style"]
-      });
+  function installObserver(){
+    if(observer||!window.MutationObserver)return;
+    const root=document.querySelector("main");
+    if(!root)return;
+    observer=new window.MutationObserver(records=>{
+      if(records.some(record=>record.type==="childList"))queueNormalize();
     });
-    const settings=document.querySelector(".settingsWorkspace");
-    if(settings&&!settings.dataset.db72Observed){
-      settings.dataset.db72Observed="true";
-      new window.MaxDockSharedMutationObserver(queueNormalize).observe(settings,{
-        childList:true,
-        subtree:true,
-        attributes:true,
-        attributeFilter:["hidden","aria-selected"]
-      });
-    }
+    observer.observe(root,{childList:true,subtree:true});
   }
 
   function initialize(){
+    window.MaxDockSharedMutationObserver?.freezeLegacyObservers?.();
     normalize();
-    installObservers();
-    [60,180,420,850,1500,3200].forEach(delay=>setTimeout(()=>{
-      normalize();
-      installObservers();
-    },delay));
+    installObserver();
+    window.setTimeout(normalize,3600);
     document.addEventListener("change",event=>{
       if(event.target.matches("#dashboardShowMetrics,#myAppointmentsShowMetricsDB65,#queueShowMetrics,#db64ReportShowMetrics,input[type='checkbox']")){
         queueNormalize();
@@ -3147,7 +3194,7 @@ else init();
     window.addEventListener("resize",queueNormalize,{passive:true});
   }
 
-  window.MaxDockDB72Consistency={normalize,installObservers};
+  window.MaxDockDB73Consistency={normalize,installObserver};
   initialize();
 })();
 
@@ -3272,8 +3319,7 @@ else init();
   function ensureDocumentTools(){
     if(["login","setpassword"].includes(PAGE))return;
     const pageHead=document.querySelector("main .pageHead");
-    const signOut=document.querySelector("#maxdockAccount .accountSignOut");
-    if(!pageHead||!signOut)return;
+    if(!pageHead)return;
     let row=$("maxdockDocumentUtilityRow");
     if(!row){
       row=document.createElement("div");
@@ -3303,7 +3349,7 @@ else init();
       row.appendChild(tools);
     }
     if(row.parentElement!==pageHead)pageHead.appendChild(row);
-    alignDocumentTools();
+    if(document.querySelector("#maxdockAccount .accountSignOut"))alignDocumentTools();
   }
 
   function rightHost(toolbar,className,label){
@@ -3435,12 +3481,13 @@ else init();
   function apply(){
     document.body.classList.add("db70Consistency");
     markLegacyDocumentButtons();
-    normalizeDashboard();
-    normalizeQueue();
-    normalizeReports();
     enforceLocationContract();
     ensureDocumentTools();
     ensureQueueControls();
+    if(document.body.classList.contains("db73Consistency"))return;
+    normalizeDashboard();
+    normalizeQueue();
+    normalizeReports();
     protectReportMetrics();
   }
 
@@ -3463,15 +3510,12 @@ else init();
   else init();
 })();
 
-/* DB72 deliberately runs after every consolidated legacy module so the current
-   release remains the final authority when older compatibility code also moves
-   the shared controls. */
+/* DB73 runs once after the consolidated compatibility modules. */
 (function(){
   "use strict";
   function finalize(){
-    window.MaxDockDB72Consistency?.normalize();
-    window.MaxDockDB72Consistency?.installObservers();
+    window.MaxDockDB73Consistency?.normalize();
+    window.MaxDockDB73Consistency?.installObserver();
   }
   finalize();
-  [100,360,900,1800,3400].forEach(delay=>setTimeout(finalize,delay));
 })();
