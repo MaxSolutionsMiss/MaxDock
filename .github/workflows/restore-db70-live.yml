@@ -1,0 +1,40 @@
+name: Restore live site to DB70
+
+on:
+  push:
+    paths:
+      - '.github/workflows/restore-db70-live.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: live
+          fetch-depth: 0
+
+      - name: Checkout DB70 baseline
+        uses: actions/checkout@v4
+        with:
+          ref: 4fb1a5f3611fdab91f42eee43dff41011e617724
+          path: db70
+          fetch-depth: 0
+
+      - name: Replace live files with DB70
+        run: |
+          rsync -a --delete --exclude='.git/' db70/ live/
+
+      - name: Commit restored live site
+        working-directory: live
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet || git commit -m 'Restore live site to DB70 working baseline'
+          git push origin gh-pages
