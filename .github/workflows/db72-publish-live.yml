@@ -1,0 +1,80 @@
+name: DB72 publish live repairs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/db72-publish-live.yml
+      - db04/maxdock-db72-targeted.css
+      - db04/maxdock-db72-targeted.js
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+
+      - name: Fetch DB72 assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git show origin/main:db04/maxdock-db72-targeted.css > /tmp/db72.css
+          git show origin/main:db04/maxdock-db72-targeted.js > /tmp/db72.js
+
+      - name: Apply DB72 live repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! grep -q 'DB72 targeted regression repair' db04/maxdock.css; then
+            printf '\n\n' >> db04/maxdock.css
+            cat /tmp/db72.css >> db04/maxdock.css
+          fi
+          if ! grep -q "settingsSectionActionsDB72" db04/maxdock-db.js; then
+            printf '\n\n' >> db04/maxdock-db.js
+            cat /tmp/db72.js >> db04/maxdock-db.js
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('db04/maxdock-db.js')
+          t=p.read_text()
+          old="const dock=dockInputs[i],payload={name:dock.name,sort_order:i+1,is_active:true};"
+          new="const dock=dockInputs[i],payload={name:dock.name,sort_order:i+1,is_active:true,direction_mode:['inbound','outbound'].includes(dock.directionMode)?dock.directionMode:'both'};"
+          if old in t:t=t.replace(old,new)
+          p.write_text(t)
+
+          p=Path('db04/maxdock-integration.js')
+          t=p.read_text()
+          t=t.replace("truckTypeCodes:db.getDockTruckTypes(dock.id).map(truck=>truck.code)","truckTypeCodes:db.getDockTruckTypes(dock.id).map(truck=>truck.code),\n      directionMode:['inbound','outbound'].includes(dock.direction_mode)?dock.direction_mode:'both'")
+          t=t.replace('<thead><tr><th>Dock Door</th>${truckTypes.map', '<thead><tr><th>Dock Door</th><th class="dockDirectionHeader">Direction</th>${truckTypes.map')
+          t=t.replace('${truckTypes.map(truck=>`<td><label class="dockMatrixCheck"', '<td><select class="dockDirectionSelect" data-dock-index="${index}" aria-label="${esc(dock.name)} appointment direction"><option value="both" ${dock.directionMode==="both"?"selected":""}>Both</option><option value="inbound" ${dock.directionMode==="inbound"?"selected":""}>Inbound only</option><option value="outbound" ${dock.directionMode==="outbound"?"selected":""}>Outbound only</option></select></td>\n        ${truckTypes.map(truck=>`<td><label class="dockMatrixCheck"')
+          t=t.replace('truckTypeCodes:[...document.querySelectorAll(`.dockTruckCheck[data-dock-index="${index}"]:checked`)].map(check=>check.value)', 'truckTypeCodes:[...document.querySelectorAll(`.dockTruckCheck[data-dock-index="${index}"]:checked`)].map(check=>check.value),\n      directionMode:document.querySelector(`.dockDirectionSelect[data-dock-index="${index}"]`)?.value||\'both\'')
+          t=t.replace("truckTypeCodes:(db.getLocationData()?.truckTypes||[]).map(truck=>truck.code)}", "truckTypeCodes:(db.getLocationData()?.truckTypes||[]).map(truck=>truck.code),directionMode:'both'}")
+          t=t.replace("truckTypeCodes:[...new Set(dock.truckTypeCodes||[])]})).filter", "truckTypeCodes:[...new Set(dock.truckTypeCodes||[])],directionMode:['inbound','outbound'].includes(dock.directionMode)?dock.directionMode:'both'})).filter")
+          t=t.replace("truckTypeCodes:allTruckCodes.slice()}));", "truckTypeCodes:allTruckCodes.slice(),directionMode:'both'}));")
+          p.write_text(t)
+          PY
+          node --check db04/maxdock-db.js
+          node --check db04/maxdock-integration.js
+
+      - name: Commit live DB72 repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add db04/maxdock.css db04/maxdock-db.js db04/maxdock-integration.js
+          if git diff --cached --quiet; then
+            echo 'DB72 repair already present.'
+            exit 0
+          fi
+          git commit -m 'DB72 publish queue, gear, spacing, and dock-direction repairs'
+          git push origin gh-pages
