@@ -4,32 +4,7 @@ window.MAXDOCK_CONFIG = Object.freeze({
   supabasePublishableKey: "sb_publishable_xZL-zqQP2qaQKGVBL1TGdA_62I9r1PA"
 });
 
-/* DB62 refresh policy is installed before maxdock-db.js so all page timers use three minutes. */
-(function(){
-  const minimumInterval=180000;
-  let currentValue;
-  const wrap=value=>{
-    if(!value||typeof value!=="object")return value;
-    const originalStart=typeof value.startLiveRefresh==="function"?value.startLiveRefresh.bind(value):null;
-    return Object.freeze({
-      ...value,
-      LIVE_REFRESH_MS:minimumInterval,
-      startLiveRefresh:originalStart
-        ?(task,options={})=>originalStart(task,{...options,interval:Math.max(minimumInterval,Number(options.interval||0))})
-        :value.startLiveRefresh
-    });
-  };
-  const existing=window.MaxDockDB;
-  const descriptor=Object.getOwnPropertyDescriptor(window,"MaxDockDB");
-  if(descriptor&&!descriptor.configurable)return;
-  currentValue=existing?wrap(existing):undefined;
-  Object.defineProperty(window,"MaxDockDB",{
-    configurable:true,
-    enumerable:true,
-    get(){return currentValue},
-    set(value){currentValue=wrap(value)}
-  });
-})();
+
 
 (function(){
   const current=document.currentScript;
