@@ -1,0 +1,27 @@
+/* DB72 targeted regression repair */
+body:not([data-page="requester"]) .documentActions,
+body:not([data-page="requester"]) .pageUtilityActions{
+  position:absolute!important; top:74px!important; right:28px!important; z-index:40!important;
+  height:auto!important; min-height:0!important; margin:0!important; padding:0!important;
+}
+body:not([data-page="requester"]) main{padding-top:18px!important}
+body:not([data-page="requester"]) .pageHeader{margin-top:0!important;padding-top:0!important;min-height:52px}
+@media(max-width:760px){body:not([data-page="requester"]) .documentActions,body:not([data-page="requester"]) .pageUtilityActions{top:68px!important;right:16px!important}}
+
+body[data-page="queue"] .queueFilterBar,
+body[data-page="queue"] .filterBar{display:flex!important;align-items:end!important;gap:12px!important;flex-wrap:wrap!important}
+body[data-page="queue"] #queueCustomize{margin-left:auto!important;position:relative!important;order:99!important}
+body[data-page="queue"] #queueCustomize>summary{width:42px!important;height:42px!important;display:grid!important;place-items:center!important;font-size:0!important;cursor:pointer!important;list-style:none!important}
+body[data-page="queue"] #queueCustomize>summary::after{content:"⚙";font-size:20px!important}
+body[data-page="queue"] #queueCustomizeMenu{position:absolute!important;right:0!important;top:48px!important;z-index:1000!important;min-width:300px!important}
+body[data-page="queue"] #queueMetrics{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:10px!important;margin:12px 0!important}
+body[data-page="queue"] #queueMetrics .queueMetric{min-width:0!important;height:84px!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:14px 16px!important;border-radius:12px!important;overflow:hidden!important}
+body[data-page="queue"] #queueMetrics .queueMetric small{position:static!important;transform:none!important;margin:0!important;font-size:13px!important}
+body[data-page="queue"] #queueMetrics .queueMetric strong{position:static!important;transform:none!important;margin:0!important;align-self:flex-end!important;font-size:24px!important;line-height:1!important}
+body[data-page="queue"] #queueMetrics .queueMetric::before,body[data-page="queue"] #queueMetrics .queueMetric::after{display:none!important}
+@media(max-width:1100px){body[data-page="queue"] #queueMetrics{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:700px){body[data-page="queue"] #queueMetrics{grid-template-columns:1fr 1fr!important}}
+
+#dashboardCustomize>summary,#db64ReportCustomize>summary,#myAppointmentsCustomizeDB65>summary,.dashboardCustomize>summary{cursor:pointer!important}
+.settingsSectionActionsDB72{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line,#d8dee8)}
+.dockDirectionSelect{min-width:140px}
