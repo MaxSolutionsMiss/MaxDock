@@ -1,9 +1,27 @@
 /* MaxDock DB66 — Operational Reports reference harmonization. */
-body.db66Reference{--db66-gap:10px;--db66-card-height:78px;--db66-radius:12px}
-body.db66Reference :is(.dashboardFilters,.queueFilters,.reportFilters){display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:12px!important;min-height:54px!important;padding:8px 12px!important;margin:0 0 var(--db66-gap)!important;overflow:visible!important}
-body.db66Reference .db66FieldPair{display:flex!important;align-items:center!important;gap:7px!important;flex:0 0 auto!important;width:auto!important;min-width:0!important;margin:0!important;padding:0!important}
-body.db66Reference .db66FieldPair>label{position:static!important;display:block!important;width:auto!important;min-width:max-content!important;margin:0!important;padding:0!important;white-space:nowrap!important;font-size:11px!important;font-weight:700!important;line-height:1!important}
-body.db66Reference .db66FieldPair>:is(input,select){height:36px!important;min-height:36px!important;margin:0!important}
+body.db66Reference{
+  --db66-gap:10px;
+  --db66-card-height:78px;
+  --db66-radius:12px
+}
+body.db66Reference :is(.dashboardFilters,.queueFilters,.reportFilters){
+  display:flex!important;align-items:center!important;flex-wrap:nowrap!important;
+  gap:12px!important;min-height:54px!important;padding:8px 12px!important;
+  margin:0 0 var(--db66-gap)!important;overflow:visible!important
+}
+body.db66Reference .db66FieldPair{
+  display:flex!important;align-items:center!important;gap:7px!important;
+  flex:0 0 auto!important;width:auto!important;min-width:0!important;
+  margin:0!important;padding:0!important
+}
+body.db66Reference .db66FieldPair>label{
+  position:static!important;display:block!important;width:auto!important;
+  min-width:max-content!important;margin:0!important;padding:0!important;
+  white-space:nowrap!important;font-size:11px!important;font-weight:700!important;line-height:1!important
+}
+body.db66Reference .db66FieldPair>:is(input,select){
+  height:36px!important;min-height:36px!important;margin:0!important
+}
 body.db66Reference[data-page="dashboard"] :is(#adminDate,#adminStatus,#dashboardRange){width:150px!important}
 body.db66Reference[data-page="queue"] :is(#queueDate,#queueStatus){width:150px!important}
 body.db66Reference[data-page="reports"] #reportView{width:190px!important}
