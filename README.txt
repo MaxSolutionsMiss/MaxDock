@@ -1,4 +1,9 @@
-MaxDock v62-DB41 — Dashboard, Queue, and User Setup Refinement
+MaxDock v92-DB71 — Audit Repair Candidate
+
+Release status
+- DB70 / PR #59 at 4fb1a5f3611fdab91f42eee43dff41011e617724 is the production and rollback reference.
+- DB71 is an isolated candidate. Do not merge, deploy, apply its SQL, change Auth settings, or deploy its Edge Function source without owner approval.
+- DB71 consolidates the browser style/script patch waterfall, standardizes location and document controls, and applies the accessibility, security, and page-level repairs described in DEPLOYMENT_DB71.txt.
 
 Supabase project
 - URL: https://rywzqepzramurbrpmept.supabase.co
@@ -96,7 +101,7 @@ Integrated database operations
 - Larger, mobile-readable Operations Queue shipment details
 - Consistent low-emphasis styling for print, export, and secondary text actions
 - Coordinator appointment editing and schedule movement through existing permissions
-- Dashboard, Queue, Reports, My Appointments, booking availability, and full-screen displays refresh appointment data every five seconds
+- Dashboard, Queue, Reports, My Appointments, booking availability, and full-screen displays refresh appointment data every three minutes; Dashboard and Queue also provide an explicit Refresh action
 - Customer Main Page contains only the booking workflow; the redundant queue shortcut is removed
 - Compact page headings and a balanced header with the location selector beside the account controls
 - Request Appointment uses the same calm system typeface as the authenticated pages with a lighter, more readable weight
@@ -120,7 +125,7 @@ Integrated database operations
 - Dock Doors and Vehicle Compatibility uses the full Settings width with a compact, always-visible Action column
 - Operating Hours and Timing Rules are aligned in the same balanced Settings row
 - Open Full-Screen View launches a separate live schedule window so the original Dashboard remains available for editing
-- The schedule display follows the selected location and date, refreshes every five seconds, and provides a user-activated full-screen control
+- The schedule display follows the selected location and date, refreshes every three minutes, and provides a user-activated full-screen control
 - Full-screen schedule typography scales by available height and dock count for maximum readable distance
 - Operations Queue defaults to eight larger metrics, including Priority Loads and Due Soon
 - Morning Shift Brief cards are taller, color-coded, and easier to scan from a distance
@@ -128,14 +133,14 @@ Integrated database operations
 - Full-screen schedule cards cap typography to their actual appointment width, use a compact time range, and wrap shipment details without horizontal clipping
 - System Admins assign one or more permitted booking locations to each Customer or Vendor account
 - Customer destination choices are limited to the locations assigned to that account
-- MaxDock password forms and temporary-password creation use Supabase's supported 6-character minimum
+- MaxDock password forms and temporary-password creation require at least 12 characters
 - Operations Queue provides a separate live full-screen window while the original Queue remains available on the working monitor
 - Dashboard and Operations Queue use the same categorized Schedule, Display, and Documents toolbar system
 - Queue day controls are grouped separately so date filters, fast actions, display tools, and document actions remain predictable
 - Dashboard and Queue customization menus use matching equal-size option cards, reset controls, and saved-view feedback
 - Dashboard and Queue KPI cards share an equal-height operational grid
 - Decorative shadows are removed platform-wide in favor of clean borders, flat surfaces, and visible focus outlines
-- Full-screen Operations Queue follows the selected location, date, and view and refreshes appointment data every five seconds
+- Full-screen Operations Queue follows the selected location, date, and view and refreshes appointment data every three minutes
 - Subtle self-service password recovery from the sign-in page using Supabase's secure email reset flow
 - A forgotten username no longer blocks access because the connected email address can also be used to sign in
 - Dashboard, Operations Queue, and Reports views save automatically to the signed-in user's profile

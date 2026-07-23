@@ -19,6 +19,8 @@
   let dashboardPreferenceReady=false;
   let lastDashboardPreferenceSignature="";
   let liveAppointmentStop=null;
+  let settingsBaseline="";
+  let settingsDirty=false;
 
   function dashboardPreferenceStatus(message,status){
     const element=$("dashboardPreferenceStatus");
@@ -51,6 +53,7 @@
   }
   renderDashboard=function(){
     originalRenderDashboard();
+    $("metrics")?.setAttribute("aria-busy","false");
     saveDashboardPreference();
     refreshDashboardReturnLoads();
   };
@@ -312,7 +315,7 @@
 
   function customBookingSignature(){
     return [$("reqDate")?.value,$("reqCustomTime")?.value,$("reqDirection")?.value,$("reqRequesterType")?.value,$("reqDestination")?.value,$("reqCompany")?.value,
-      $("reqType")?.value,$("reqTruck")?.value,$("reqSkids")?.value,$("reqHandling")?.value,$("reqPriority")?.value].join("|");
+      $("reqType")?.value,$("reqTruck")?.value,$("reqSkids")?.value,$("reqHandling")?.value,$("reqPriority")?.checked].join("|");
   }
 
   function clearBookingReturnLoads(){
@@ -359,26 +362,47 @@
     notice.innerHTML=bookingReturnLoads.length?`<strong>Potential return load</strong><p>${bookingReturnLoads.map(item=>
       `${esc(item.booking_reference)} · ${esc(item.origin_location_name)} → ${esc(item.destination_location_name)} · ${formatReturnLoadGap(item.time_gap_minutes)} gap`
     ).join("<br>")}</p><small>Consider using one truck for the outbound and return movement. Confirm with both sites and the carrier; MaxDock will not merge appointments automatically.</small>`:"";
-    showEfficiencyOpportunity();
-  }
-
-  function showEfficiencyOpportunity(){
-    const modal=$("efficiencyOpportunityModal"),list=$("efficiencyOpportunityList");
-    if(!modal||!list||!bookingReturnLoads.length)return;
-    const signature=[selectedSlot?.date,selectedSlot?.start,...bookingReturnLoads.map(item=>item.appointment_id)].join("|");
-    if(signature===bookingReturnLoadPopupSignature)return;
-    bookingReturnLoadPopupSignature=signature;
-    list.innerHTML=bookingReturnLoads.map(item=>`<article class="efficiencyOpportunityRoute">
-      <strong>${esc(item.origin_location_name)} → ${esc(item.destination_location_name)}</strong>
-      <span>${esc(item.booking_reference)} · ${formatReturnLoadGap(item.time_gap_minutes)} between movements</span>
-      <small>${esc(item.sequence_text||item.recommendation||"Reverse route opportunity")}</small>
-    </article>`).join("");
-    modal.classList.add("show");
-  }
-
-  window.closeEfficiencyOpportunity=function(){
-    $("efficiencyOpportunityModal")?.classList.remove("show");
   };
+
+  function settingsSignature(){
+    const workspace=document.querySelector(".settingsWorkspace");
+    if(!workspace)return "";
+    return JSON.stringify([...workspace.querySelectorAll("input,select,textarea")].map(field=>({
+      id:field.id||"",
+      name:field.name||"",
+      type:field.type||field.tagName,
+      value:field.type==="checkbox"||field.type==="radio"?field.checked:field.value,
+      dockIndex:field.dataset.dockIndex||"",
+      dockId:field.dataset.dockId||""
+    })));
+  }
+
+  function settingsImpactText(){
+    const location=db.getCurrentLocation()?.name||currentLocation||"this location";
+    const open=$("setOpen")?.value||settings.open;
+    const close=$("setClose")?.value||settings.close;
+    const outside=(db.getAppointments?.()||[]).filter(appointment=>{
+      if(appointment.location&&appointment.location!==location)return false;
+      if(["Cancelled","cancelled","Completed","completed"].includes(appointment.status))return false;
+      if(!appointment.start||!appointment.end)return false;
+      return minutes(appointment.start)<minutes(open)||minutes(appointment.end)>minutes(close);
+    }).length;
+    const dockCount=document.querySelectorAll(".dockNameInput").length;
+    return outside
+      ?`${outside} scheduled appointment${outside===1?"":"s"} at ${location} fall outside the proposed ${displayTime(open)}–${displayTime(close)} hours. Review before saving.`
+      :`Changes are not saved for ${location}. Proposed hours are ${displayTime(open)}–${displayTime(close)} across ${dockCount} dock${dockCount===1?"":"s"}.`;
+  }
+
+  function syncSettingsDirtyState(forceClean=false){
+    if(PAGE!=="settings")return;
+    const signature=settingsSignature();
+    if(forceClean||!settingsBaseline)settingsBaseline=signature;
+    settingsDirty=Boolean(signature&&signature!==settingsBaseline);
+    const bar=$("settingsUnsavedBar");
+    if(bar)bar.hidden=!settingsDirty;
+    if($("settingsImpactPreview"))$("settingsImpactPreview").textContent=settingsDirty?settingsImpactText():"All settings are saved.";
+    document.body.classList.toggle("settingsDirty",settingsDirty);
+  }
 
   async function refreshBookingReturnLoadMatches(){
     clearBookingReturnLoads();
@@ -409,11 +433,16 @@
         date,start:time,direction:bookingDatabaseDirection(),type:$("reqType").value,
         requesterType:bookingCounterparty().requesterType,company:bookingCounterparty().company,
         truck:$("reqTruck").value,skids:Number($("reqSkids").value||0),handling:$("reqHandling").value,
-        priority:$("reqPriority").value==="Yes"
+        priority:$("reqPriority").checked
       });
       let confirmed=false;
       if(preview.isAfterHours){
-        confirmed=window.confirm(`This appointment is outside normal operating hours at one or both Max Solutions locations.\n\nIs this intentional? Select OK to confirm the staff override.`);
+        confirmed=await (window.MaxDockUI?.confirmAction?.({
+          title:"Confirm outside-hours appointment?",
+          message:"This appointment is outside normal operating hours at one or both Max Solutions locations. The staff override will be recorded in the appointment audit history.",
+          confirmLabel:"Confirm Override",
+          tone:"danger"
+        })??Promise.resolve(false));
         if(!confirmed)throw new Error("The outside-hours appointment was not confirmed.");
       }
       selectedSlot={
@@ -500,7 +529,7 @@
     $("reqTruck").value=nameForCode(data.truckTypeByCode,template.truck_type_code);
     $("reqHandling").value=nameForCode(data.handlingTypeByCode,template.handling_type_code);
     $("reqSkids").value=String(template.skid_count??0);
-    $("reqPriority").value=template.is_priority?"Yes":"No";
+    $("reqPriority").checked=Boolean(template.is_priority);
     $("reqCarrier").value=template.carrier_name||"";
     const start=String(template.preferred_start_time||"").slice(0,5);
     const end=String(template.preferred_end_time||"").slice(0,5);
@@ -521,7 +550,7 @@
         name,direction:bookingDatabaseDirection(),requesterType:counterparty.requesterType,
         company:counterparty.company,
         type:$("reqType").value,truck:$("reqTruck").value,skids:Number($("reqSkids").value||0),
-        handling:$("reqHandling").value,priority:$("reqPriority").value==="Yes",
+        handling:$("reqHandling").value,priority:$("reqPriority").checked,
         carrier:$("reqCarrier").value.trim(),preferredStart:windowPreference.start,preferredEnd:windowPreference.end
       });
       await refreshBookingTemplates(saved.id);$("reqTemplateName").value="";
@@ -531,7 +560,14 @@
 
   window.deleteSelectedBookingTemplate=async function(){
     const template=bookingTemplates.find(item=>item.id===$("reqTemplateSelect")?.value);
-    if(!template||!confirm(`Delete the ${template.name} booking template?`))return;
+    if(!template)return;
+    const confirmed=await (window.MaxDockUI?.confirmAction?.({
+      title:`Delete ${template.name}?`,
+      message:"This removes the saved booking template. Existing appointments are not affected.",
+      confirmLabel:"Delete Template",
+      tone:"danger"
+    })??Promise.resolve(false));
+    if(!confirmed)return;
     try{await db.deleteBookingTemplate(template.id);await refreshBookingTemplates();showTemplateNotice(`${template.name} deleted.`)}
     catch(error){showTemplateNotice(error.message)}
   };
@@ -561,7 +597,7 @@
       if(PAGE==="settings")renderSettings();
       applyPermissions();
     }catch(err){
-      alert(err.message);
+      window.MaxDockUI?.toast?.(err.message,{tone:"error"});
       currentLocation=previous;
       db.populateLocationSelect($("locationSelect"));
       applyTheme(previous);
@@ -571,8 +607,14 @@
   };
 
   openRequest=function(){
-    if(!db.hasPermission("appointment.create"))return alert("You do not have permission to create appointments.");
-    if(isExternalAccount()&&!externalAccountIdentity().organizationName)return alert("This account needs a company identity before it can book. Ask a System Admin to open User Management and assign the Customer/Vendor type and company name.");
+    if(!db.hasPermission("appointment.create")){
+      window.MaxDockUI?.toast?.("This account does not have permission to create appointments.",{tone:"error"});
+      return;
+    }
+    if(isExternalAccount()&&!externalAccountIdentity().organizationName){
+      window.MaxDockUI?.toast?.("This account needs a company identity before it can book. Ask a System Admin to assign the Customer or Vendor type and company name.",{tone:"error",duration:6800});
+      return;
+    }
     populateBookingLocations();
     populateRequesterLocations();
     populateBookingLoadOptions();
@@ -625,7 +667,7 @@
         truck:$("reqTruck").value,
         skids:Number($("reqSkids").value||0),
         handling:$("reqHandling").value,
-        priority:$("reqPriority").value==="Yes",
+        priority:$("reqPriority").checked,
         preferredStart:windowPreference.start,
         preferredEnd:windowPreference.end
       });
@@ -686,7 +728,7 @@
         date:selectedSlot.date,start:selectedSlot.start,direction:bookingDatabaseDirection(),
         requesterType:counterparty.requesterType,type:$("reqType").value,truck:$("reqTruck").value,
         skids:Number($("reqSkids").value||0),handling:$("reqHandling").value,
-        priority:$("reqPriority").value==="Yes",name:$("reqName").value.trim(),
+        priority:$("reqPriority").checked,name:$("reqName").value.trim(),
         email:$("reqEmail").value.trim(),reference:$("reqRef").value.trim(),
         company:counterparty.company,
         carrier:$("reqCarrier").value.trim(),notes:$("reqNotes").value.trim(),
@@ -865,21 +907,33 @@
     if(!appointment)return;
     let reason=null;
     if(status==="Cancelled"){
-      if(!confirm(`Cancel ${appointment.ref||appointment.company}?`))return;
+      const confirmed=await (window.MaxDockUI?.confirmAction?.({
+        title:`Cancel ${appointment.ref||appointment.company}?`,
+        message:"The appointment will remain in history with its audit trail and be marked Cancelled.",
+        confirmLabel:"Cancel Appointment",
+        tone:"danger"
+      })??Promise.resolve(false));
+      if(!confirmed)return;
       reason="Cancelled by a MaxDock administrator.";
-    }else if(!confirm(`Mark ${appointment.ref||appointment.company} as completed?`)){
-      return;
+    }else{
+      const confirmed=await (window.MaxDockUI?.confirmAction?.({
+        title:`Complete ${appointment.ref||appointment.company}?`,
+        message:"This marks the appointment as Completed and records the change in its history.",
+        confirmLabel:"Mark Completed",
+        tone:"default"
+      })??Promise.resolve(false));
+      if(!confirmed)return;
     }
     try{
       await db.changeStatus(id,status,reason);
       renderDashboard();
     }catch(err){
-      alert(err.message);
+      window.MaxDockUI?.toast?.(err.message,{tone:"error"});
     }
   };
 
   deleteAppointment=function(){
-    alert("Permanent deletion is disabled. Cancel the appointment to preserve the audit history.");
+    window.MaxDockUI?.toast?.("Permanent deletion is disabled. Cancel the appointment to preserve its audit history.",{tone:"error"});
   };
 
   submitBlockTime=async function(){
@@ -978,16 +1032,20 @@
     captureDockDraft();
     dockDraft.push({id:null,name:`Dock ${dockDraft.length+1}`,truckTypeCodes:(db.getLocationData()?.truckTypes||[]).map(truck=>truck.code)});
     renderSettings();
+    syncSettingsDirtyState();
   };
 
   removeDock=function(index){
     captureDockDraft();
-    if(dockDraft.length<=1)return alert("At least one active dock is required.");
-    dockDraft.splice(index,1);renderSettings();
+    if(dockDraft.length<=1){
+      window.MaxDockUI?.toast?.("At least one active dock is required.",{tone:"error"});
+      return;
+    }
+    dockDraft.splice(index,1);renderSettings();syncSettingsDirtyState();
   };
 
   saveSettings=async function(){
-    const button=document.querySelector('[onclick="saveSettings()"]');
+    const button=$("saveSettingsButton");
     try{
       if(!db.hasPermission("settings.manage")||!db.hasPermission("dock.manage"))throw new Error("Only an authorized MaxDock administrator can change these settings and dock doors.");
       captureDockDraft();
@@ -1023,9 +1081,10 @@
       }
       if(button){button.disabled=true;button.textContent="Saving…";}
       await db.saveLocationSettings(settings,docks);
-      syncDatabaseState();renderSettings();alert("Settings saved to MaxDock.");
+      syncDatabaseState();renderSettings();syncSettingsDirtyState(true);
+      window.MaxDockUI?.toast?.(`Settings saved for ${db.getCurrentLocation()?.name||currentLocation}.`);
     }catch(err){
-      alert(err.message);
+      window.MaxDockUI?.toast?.(err.message,{tone:"error",duration:6200});
     }finally{
       if(button){button.disabled=false;button.textContent="Save Settings";}
     }
@@ -1034,13 +1093,20 @@
   $("setDockAssignmentStrategy")?.addEventListener("change",updateDockPolicySummary);
   $("setMaxConcurrentAppointments")?.addEventListener("input",updateDockPolicySummary);
 
-  resetSettings=function(){
-    if(!confirm("Load the MaxDock default timing and dock names into this form? Nothing is saved until you select Save Settings."))return;
+  resetSettings=async function(){
+    const location=db.getCurrentLocation()?.name||currentLocation||"this location";
+    const confirmed=await (window.MaxDockUI?.confirmAction?.({
+      title:`Reset ${location} defaults?`,
+      message:`This will replace the operating hours, slot timing, dock names, dock compatibility, scheduling policy, and capacity values currently shown for ${location}. Nothing is saved until you select Save Settings.`,
+      confirmLabel:"Load Defaults",
+      tone:"danger"
+    })??Promise.resolve(false));
+    if(!confirmed)return;
     const existing=db.getDockRows();
     const allTruckCodes=(db.getLocationData()?.truckTypes||[]).map(truck=>truck.code);
     settings=JSON.parse(JSON.stringify(defaultSettings));
     dockDraft=defaultSettings.docks.map((name,index)=>({id:existing[index]?.id||null,name,truckTypeCodes:allTruckCodes.slice()}));
-    renderSettings();
+    renderSettings();syncSettingsDirtyState();
   };
 
   function applyPermissions(){
@@ -1050,11 +1116,13 @@
     const canSelectHeaderLocation=roleCode==="system_admin";
     document.body.classList.toggle("customerAccount",isCustomer);
     document.querySelectorAll(".locationPill").forEach(element=>{
-      element.hidden=!isOperational;
+      element.hidden=false;
+      element.classList.toggle("locationPlaceholder",!isOperational);
+      element.setAttribute("aria-hidden",String(!isOperational));
       const select=element.querySelector("select");
       if(select){
-        select.disabled=!canSelectHeaderLocation;
-        select.setAttribute("aria-disabled",String(!canSelectHeaderLocation));
+        select.disabled=!canSelectHeaderLocation||!isOperational;
+        select.setAttribute("aria-disabled",String(!canSelectHeaderLocation||!isOperational));
       }
     });
     document.querySelectorAll(".headerActions > .ghostBtn").forEach(element=>element.hidden=isCustomer||isOperational);
@@ -1200,7 +1268,7 @@
       return;
     }
     if(db.getProfile()?.role_code==="customer"&&PAGE!=="requester"){
-      location.replace("./index.html?v=91-db70");
+      location.replace("./index.html?v=92-db71");
       return;
     }
     if(PAGE==="dashboard"&&!db.hasPermission("appointment.view"))throw new Error("This account cannot view the appointment dashboard.");
@@ -1234,6 +1302,25 @@
       dashboardCustomEnd=/^\d{4}-\d{2}-\d{2}$/.test(savedDashboard?.customRangeEnd||"")?savedDashboard.customRangeEnd:todayISO();
       window.scrollTo(0,0);$("adminDate").value=/^\d{4}-\d{2}-\d{2}$/.test(requestedDate||"")?requestedDate:savedDate;
       dashboardPreferenceReady=true;renderDashboard();dashboardPreferenceStatus("This view is saved to your login.","saved");
+      $("refreshDashboard")?.addEventListener("click",async event=>{
+        const button=event.currentTarget;
+        try{
+          button.disabled=true;
+          button.classList.add("isRefreshing");
+          await db.fetchAppointments();
+          syncDatabaseState();
+          renderDashboard();
+          await refreshDashboardReturnLoads(true);
+          const status=$("dashboardLiveStatus");
+          if(status)status.innerHTML=`<span class="liveDot"></span>Live appointments · updated ${new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"})}`;
+          window.MaxDockUI?.toast?.("Dashboard refreshed.");
+        }catch(error){
+          window.MaxDockUI?.toast?.(error.message||"Dashboard refresh failed.",{tone:"error"});
+        }finally{
+          button.disabled=false;
+          button.classList.remove("isRefreshing");
+        }
+      });
       $("editAppointmentForm")?.addEventListener("submit",saveEditedAppointment);
       $("editAppointmentModal")?.addEventListener("click",event=>{if(event.target===$("editAppointmentModal"))window.closeAppointmentEditor()});
       $("appointmentHistoryModal")?.addEventListener("click",event=>{if(event.target===$("appointmentHistoryModal"))window.closeAppointmentHistory()});
@@ -1259,11 +1346,18 @@
       });
       $("reqCompany")?.addEventListener("input",updateBookingRouteSummary);
       ["reqType","reqPriority","reqCustomTime"].forEach(id=>$(id)?.addEventListener("change",()=>renderSlots()));
-      $("efficiencyOpportunityModal")?.addEventListener("click",event=>{if(event.target===$("efficiencyOpportunityModal"))window.closeEfficiencyOpportunity()});
       if(new URLSearchParams(location.search).get("open")==="request")setTimeout(openRequest,0);
     }
     if(PAGE==="settings"){
       renderSettings();
+      syncSettingsDirtyState(true);
+      document.querySelector(".settingsWorkspace")?.addEventListener("input",()=>syncSettingsDirtyState());
+      document.querySelector(".settingsWorkspace")?.addEventListener("change",()=>syncSettingsDirtyState());
+      window.addEventListener("beforeunload",event=>{
+        if(!settingsDirty)return;
+        event.preventDefault();
+        event.returnValue="";
+      });
       $("setCapacityEnabled")?.addEventListener("change",updateCapacityControls);
       ["setCapacityTotal","setCapacityOccupied","setCapacityReserve","setCapacityMode"].forEach(id=>$(id)?.addEventListener("input",updateCapacityControls));
     }
@@ -1277,8 +1371,7 @@
     }
     document.addEventListener("keydown",event=>{
       if(event.key!=="Escape")return;
-      if($("efficiencyOpportunityModal")?.classList.contains("show"))window.closeEfficiencyOpportunity();
-      else if(document.body.classList.contains("tvScheduleMode")){
+      if(document.body.classList.contains("tvScheduleMode")){
         if(!scheduleDisplayMode||!document.fullscreenElement)window.closeTvSchedule();
       }
       else if($("appointmentHistoryModal")?.classList.contains("show"))window.closeAppointmentHistory();

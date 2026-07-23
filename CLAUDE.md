@@ -1,6 +1,6 @@
 # MaxDock repository memory
 
-MaxDock is a static GitHub Pages dock-appointment application backed by Supabase Auth, Postgres/RLS/RPCs, and two Supabase Edge Functions. The current production release is DB47, built on the DB31 through DB47 interface and scheduling refinements.
+MaxDock is a static GitHub Pages dock-appointment application backed by Supabase Auth, Postgres/RLS/RPCs, and two Supabase Edge Functions. DB70 / PR #59 is the current reviewed production reference. DB71 is an isolated consolidation candidate until the owner explicitly approves and merges it.
 
 Before changing anything, read every file in `docs/claude-handoff/`, beginning with `START_HERE.md`. Treat those files, the current source, and the connected production schema as a single handoff.
 
@@ -11,6 +11,7 @@ Before changing anything, read every file in `docs/claude-handoff/`, beginning w
 - Browser-facing files at the repository root and in `db04/` are mirrored. Change and publish both copies together.
 - Keep root and `db04/` copies byte-for-byte identical unless an existing, documented exception applies.
 - This is a no-build static application. Do not introduce a framework or bundler without explicit approval.
+- A visual change must modify an existing stylesheet or controller. Creating a new `maxdock-dbNN.css` or `maxdock-dbNN.js` patch layer is not an acceptable way to change the interface.
 - Never commit passwords, service-role keys, OpenAI keys, database credentials, tokens, `.env` files, or production row data.
 - The public Supabase publishable key in `maxdock-config.js` is intentionally browser-visible. It is not a substitute for RLS.
 - Apply database DDL only as a clearly named Supabase migration. Inspect the production migration ledger first and do not replay an applied migration.
@@ -23,7 +24,7 @@ Before changing anything, read every file in `docs/claude-handoff/`, beginning w
 - Core UI: `maxdock.js`, `maxdock.css`.
 - Supabase integration: `maxdock-config.js`, `maxdock-db.js`, `maxdock-integration.js`, `maxdock-auth.js`.
 - Page controllers: `maxdock-admin.js`, `maxdock-queue.js`, `maxdock-reports.js`, `maxdock-mis.js`, `maxdock-my-appointments.js`, `maxdock-password.js`.
-- Current UI refinement layers: `maxdock-db31-base.css`, `maxdock-db33.css`, `maxdock-db34.css`, `maxdock-db35.css`, `maxdock-db36.css`, `maxdock-db38.css`, `maxdock-db39.css`, `maxdock-db40.css`, `maxdock-db41.css`, `maxdock-db42.css`, `maxdock-db43.css`, `maxdock-db44.css`, `maxdock-db45.css`, `maxdock-db46.css`, `maxdock-db47.css`, `maxdock-db47-polish.css`, `maxdock-ops-density.js`, `maxdock-layout-discipline.js`, `maxdock-db42.js`, `maxdock-db43.js`, `maxdock-db44.js`, `maxdock-db45.js`, `maxdock-db46.js`, `maxdock-db47.js`.
+- Consolidated UI: `maxdock.css` contains the reviewed style cascade; `maxdock-layout-discipline.js` contains the remaining compatibility/layout behavior behind one shared observer. Do not recreate release-numbered patch layers.
 - Supabase SQL history available in this repository: `MaxDock_DB_v11_*.sql` through `MaxDock_DB_v21_*.sql`, mirrored in `db04/`.
 - Edge Functions: `supabase/functions/maxdock-invite-user/index.ts` and `supabase/functions/maxdock-ai-brief/index.ts`.
 - Live schema snapshot: `supabase/database.types.ts`. Regenerate it after every schema migration.
@@ -36,6 +37,7 @@ Run before every commit and again before handoff:
 find . -type f -name '*.js' -not -path './.git/*' -print0 | xargs -0 -n1 node --check
 git diff --check
 bash ./scripts/verify-root-db04-parity.sh
+bash ./scripts/verify-no-ui-patch-assets.sh
 ```
 
 Also manually test the affected roles and workflows described in `docs/claude-handoff/TESTING.md`.

@@ -96,18 +96,45 @@
     const item=state.appointments.find(row=>row.appointment_id===id);if(!item)return;
     const when=localParts(item.start_at,item.location_timezone);
     const text=["MaxDock appointment",`Reference: ${item.booking_reference}`,`Location: ${item.location_name}`,`Date and time: ${when.label}`,`Vehicle: ${item.truck_type}`,`Status: ${title(item.status)}`].join("\n");
-    try{await navigator.clipboard.writeText(text);alert("Appointment details copied.")}catch{alert(text)}
+    try{
+      await navigator.clipboard.writeText(text);
+      window.MaxDockUI?.toast?.("Appointment details copied.");
+    }catch{
+      window.MaxDockUI?.toast?.("Clipboard access is unavailable. Select and copy the appointment details from the page.",{tone:"error"});
+    }
   };
 
   window.cancelMyAppointment=async function(id){
     const item=state.appointments.find(row=>row.appointment_id===id);if(!item)return;
-    if(!confirm(`Cancel appointment ${item.booking_reference}?`))return;
+    const confirmed=await (window.MaxDockUI?.confirmAction?.({
+      title:`Cancel ${item.booking_reference}?`,
+      message:"The appointment will be retained in history and marked Cancelled. This cannot be undone from My Appointments.",
+      confirmLabel:"Cancel Appointment",
+      tone:"danger"
+    })??Promise.resolve(false));
+    if(!confirmed)return;
     try{
       const result=await db.client.rpc("cancel_my_appointment",{p_appointment_id:id});
       if(result.error)throw result.error;
       await refresh();
+      window.MaxDockUI?.toast?.(`${item.booking_reference} was cancelled.`);
     }catch(error){showError(error)}
   };
+
+  function bindBookingAction(){
+    const button=$("bookAppointmentFromMyAppointments");
+    if(!button)return;
+    button.dataset.db52Bound="true";
+    button.addEventListener("click",()=>{
+      if(!db.hasPermission("appointment.create")){
+        window.MaxDockUI?.toast?.("This account does not have permission to create appointments.",{tone:"error"});
+        return;
+      }
+      const role=db.getProfile()?.role_code;
+      const operational=["system_admin","site_admin","shipping_manager","coordinator"].includes(role);
+      location.assign(`./${operational?"dashboard":"index"}.html?book=1&return=my-appointments&v=92-db71`);
+    });
+  }
 
   async function markAllRead(){
     const unreadIds=state.notifications.filter(item=>!item.read_at).map(item=>item.id);if(!unreadIds.length)return;
@@ -122,6 +149,7 @@
       await db.loadContext();
       if(!db.hasPermission("appointment.view_own"))throw new Error("This account cannot view My Appointments.");
       db.addAccountControls();applyNavigationPermissions();
+      bindBookingAction();
       $("myAppointmentFilter").addEventListener("change",renderAppointments);
       $("markNotificationsRead").addEventListener("click",()=>markAllRead().catch(showError));
       await refresh();

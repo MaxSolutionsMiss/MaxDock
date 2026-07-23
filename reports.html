@@ -4,56 +4,55 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=91-db70">
-<link rel="stylesheet" href="./maxdock-db04.css?v=91-db70">
+<link rel="stylesheet" href="./maxdock.css?v=92-db71">
 <title>MaxDock – Operational Reports</title>
 </head>
 <body data-page="reports">
+<a class="skipLink" href="#mainContent">Skip to main content</a>
 <header class="topbar">
   <div class="topbarInner">
     <div class="brandRow"><div class="brand">
-      <a class="logoLink" href="./index.html?v=91-db70" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
+      <a class="logoLink" href="./index.html?v=92-db71" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="./max-solutions-mark.png" alt="Max Solutions mark"></div></a>
       <div><h1 class="appTitle">MaxDock</h1><p class="appSub">Max Solutions Packaging Inc.</p></div>
     </div></div>
     <div class="headerActions">
-      <div class="locationPill"><label for="reportLocation">Location</label><select id="reportLocation"></select></div>
-      <a class="ghostBtn" href="./index.html?v=91-db70">Main Page</a>
+      <div class="locationPill sharedLocationControl"><label for="locationSelect">Location</label><select id="locationSelect"></select></div>
+      <a class="ghostBtn" href="./index.html?v=92-db71">Main Page</a>
       <details class="menuDetails">
-        <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6-1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
+        <summary aria-expanded="false" class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6-1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
         <nav class="menu">
-          <a href="./my-appointments.html?v=91-db70">My Appointments</a>
-          <a href="./queue.html?v=91-db70">Operation Queue</a>
-          <a href="./reports.html?v=91-db70" aria-current="page">Reports</a>
-          <a href="./dashboard.html?v=91-db70">Dashboard</a>
-          <a href="./settings.html?v=91-db70">Settings</a>
-          <a href="./admin.html?v=91-db70">User Management</a>
-          <a href="./data.html?v=91-db70">Data Integration</a>
+          <a href="./my-appointments.html?v=92-db71">My Appointments</a>
+          <a href="./queue.html?v=92-db71">Operations Queue</a>
+          <a href="./reports.html?v=92-db71" aria-current="page">Reports</a>
+          <a href="./dashboard.html?v=92-db71">Dashboard</a>
+          <a href="./settings.html?v=92-db71">Settings</a>
+          <a href="./admin.html?v=92-db71">User Management</a>
+          <a href="./data.html?v=92-db71">Data Integration</a>
         </nav>
       </details>
     </div>
   </div>
 </header>
 
-<main class="screen pageWrap">
+<main id="mainContent" class="screen pageWrap">
   <div class="pageHead compactPageHead">
     <div><h2>Operational Reports</h2><p>Choose an operating view and period for truck flow, skid movement, and dock utilization.</p><small class="liveDataStatus" id="reportLiveStatus"><span class="liveDot"></span>Live appointments · refreshes every 3 minutes</small></div>
   </div>
 
-  <div class="sectionWorkspace reportSectionWorkspace">
+  <div class="sectionWorkspace reportSectionWorkspace" data-section-workspace data-default-section="overview">
     <aside class="sectionWorkspaceRail" aria-label="Report views">
       <div class="sectionWorkspaceRailHead"><strong>Report views</strong><small>Choose an operating lens.</small></div>
       <div class="sectionWorkspaceTabs" role="tablist" aria-orientation="vertical" data-report-tabs>
-        <button type="button" role="tab" data-report-view="overview"><span>Overview</span><small>Volume and capacity</small></button>
-        <button type="button" role="tab" data-report-view="trucks"><span>Truck flow</span><small>Inbound and outbound</small></button>
-        <button type="button" role="tab" data-report-view="skids"><span>Skid movement</span><small>Material flow</small></button>
-        <button type="button" role="tab" data-report-view="utilization"><span>Dock utilization</span><small>Occupied capacity</small></button>
+        <button type="button" role="tab" data-report-view="overview" data-section-target="overview" aria-controls="report-workspace"><span>Overview</span><small>Volume and capacity</small></button>
+        <button type="button" role="tab" data-report-view="trucks" data-section-target="trucks" aria-controls="report-workspace"><span>Truck Flow</span><small>Inbound and outbound</small></button>
+        <button type="button" role="tab" data-report-view="skids" data-section-target="skids" aria-controls="report-workspace"><span>Skid Movement</span><small>Material flow</small></button>
+        <button type="button" role="tab" data-report-view="utilization" data-section-target="utilization" aria-controls="report-workspace"><span>Dock Utilization</span><small>Occupied capacity</small></button>
       </div>
     </aside>
-    <div class="sectionWorkspaceContent reportWorkspaceContent">
+    <div class="sectionWorkspaceContent reportWorkspaceContent" id="report-workspace" role="tabpanel">
   <div class="dashboardFilters reportFilters">
-    <div class="filterField workspaceSourceControl"><label for="reportView">Report View</label><select id="reportView"><option value="overview">Operations Overview</option><option value="trucks">Truck Flow</option><option value="skids">Skid Movement</option><option value="utilization">Dock Utilization</option></select></div>
     <div class="filterField"><label for="reportPreset">Date Range</label><select id="reportPreset"><option value="7">Past 7 Days</option><option value="30" selected>Past 30 Days</option><option value="month">This Month</option><option value="custom">Custom Range</option></select></div>
-    <small class="maxdockSrOnly" id="reportPreferenceStatus" data-status="saved">This report view saves automatically to your login.</small>
+    <small class="preferenceSyncStatus" id="reportPreferenceStatus" data-status="saved">This report view saves automatically to your login.</small>
     <div class="reportCustomDates" id="reportCustomDates" hidden>
       <div class="filterField"><label for="reportStart">Start Date</label><input id="reportStart" type="date"></div>
       <div class="filterField"><label for="reportEnd">End Date</label><input id="reportEnd" type="date"></div>
@@ -61,12 +60,13 @@
     <button class="primaryBtn actionBtn reportUpdateButton" id="runReport" type="button">Update</button>
   </div>
 
+  <div class="reportComparisonSummary" id="reportComparisonSummary" role="status"></div>
   <div class="metrics reportMetrics" id="reportMetrics"></div>
 
   <section class="panel aiBriefPanel">
     <div class="panelHeader aiBriefHeader">
       <div><div class="aiTitleRow"><h3>AI Operations Brief</h3><span class="aiModeBadge" id="aiModeBadge">Not generated</span></div><small>Advisory analysis of aggregate operational data only. AI cannot change the schedule.</small></div>
-      <button class="primaryBtn actionBtn" id="generateAiBrief" type="button">Generate brief</button>
+      <div class="aiBriefActions"><button class="secondaryBtn actionBtn" id="copyAiBrief" type="button">Copy Brief</button><button class="primaryBtn actionBtn" id="generateAiBrief" type="button">Generate Brief</button></div>
     </div>
     <div class="aiBriefContent" id="aiBriefContent"><div class="emptyState">Select a date range and generate a management-ready operations brief.</div></div>
   </section>
@@ -77,7 +77,7 @@
   </section>
 
   <section class="panel reportVisualPanel">
-    <div class="panelHeader"><div><h3>Capacity Heatmap</h3><small>Average occupied dock capacity by starting hour for the selected period.</small></div><div class="heatLegend"><span>Open</span><i class="heatLow"></i><i class="heatMedium"></i><i class="heatHigh"></i><span>Busy</span></div></div>
+    <div class="panelHeader"><div><h3>Capacity Heatmap</h3><small>Average occupied dock capacity by starting hour for the selected period.</small></div><div class="heatLegend" aria-label="Capacity scale from zero to one hundred percent"><span>0% Open</span><i class="heatLow"></i><i class="heatMedium"></i><i class="heatHigh"></i><span>100% Busy</span></div></div>
     <div class="capacityHeatmap" id="capacityHeatmap"></div>
   </section>
 
@@ -95,9 +95,9 @@
   </div>
 </main>
 
-<script src="./supabase-2.110.3.js?v=91-db70"></script>
-<script src="./maxdock-config.js?v=91-db70"></script>
-<script src="./maxdock-db.js?v=91-db70"></script>
-<script src="./maxdock-reports.js?v=91-db70"></script>
+<script src="./supabase-2.110.3.js?v=92-db71"></script>
+<script src="./maxdock-config.js?v=92-db71"></script>
+<script src="./maxdock-db.js?v=92-db71"></script>
+<script src="./maxdock-reports.js?v=92-db71"></script>
 </body>
 </html>

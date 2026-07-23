@@ -27,7 +27,7 @@
   };
   const OPERATIONAL_ROLES=new Set(["system_admin","site_admin","shipping_manager","coordinator"]);
   const LOCATION_STORAGE_KEY="maxdock_location";
-  const LIVE_REFRESH_MS=5000;
+  const LIVE_REFRESH_MS=180000;
   const preferenceSaveTimers=new Map();
   let usageTimer=null;
   let usageStarted=false;
@@ -45,10 +45,10 @@
     return profile?.role_code==="customer"&&normalize(profile?.external_party_type)==="vendor";
   }
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(isVendorProfile())return "my-appointments.html?v=91-db70";
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=91-db70";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=91-db70";
-    return "index.html?v=91-db70";
+    if(isVendorProfile())return "my-appointments.html?v=92-db71";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=92-db71";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=92-db71";
+    return "index.html?v=92-db71";
   }
   function navigationRoute(link){
     try{return (new URL(link.href,location.href).pathname.split("/").pop()||"").replace(/\.html$/i,"")}
@@ -747,27 +747,28 @@
     document.body.classList.toggle("fixedOperationalLocation",operational&&!systemAdmin);
 
     let pill=actions.querySelector(".locationPill");
-    if(!pill&&operational){
+    if(!pill){
       pill=document.createElement("div");
-      pill.className="locationPill db70SharedLocation";
+      pill.className="locationPill sharedLocationControl";
       const label=document.createElement("label");
-      label.htmlFor="maxdockSharedLocation";
+      label.htmlFor="locationSelect";
       label.textContent="Location";
       const select=document.createElement("select");
-      select.id="maxdockSharedLocation";
+      select.id="locationSelect";
       select.setAttribute("aria-label","Active MaxDock location");
       pill.append(label,select);
       actions.insertBefore(pill,actions.firstChild);
     }
     document.querySelectorAll(".headerActions .locationPill").forEach(item=>{
-      item.hidden=!operational;
-      item.style.setProperty("display",operational?"flex":"none","important");
+      item.hidden=false;
+      item.classList.toggle("locationPlaceholder",!operational);
+      item.setAttribute("aria-hidden",String(!operational));
       const select=item.querySelector("select");
       if(!select)return;
-      populateLocationSelect(select);
-      select.disabled=!systemAdmin;
-      select.setAttribute("aria-disabled",String(!systemAdmin));
-      select.title=systemAdmin?"Choose the active MaxDock location":`Assigned location: ${select.value}`;
+      if(operational)populateLocationSelect(select);
+      select.disabled=!operational||!systemAdmin;
+      select.setAttribute("aria-disabled",String(!operational||!systemAdmin));
+      select.title=!operational?"Location does not apply to this account":systemAdmin?"Choose the active MaxDock location":`Assigned location: ${select.value}`;
       if(select.dataset.maxdockLocationBound)return;
       select.dataset.maxdockLocationBound="true";
       select.addEventListener("change",event=>{
@@ -794,8 +795,8 @@
       const status=document.createElement("small");status.className="accountStatus";status.textContent="Signed in";
       const label=document.createElement("span");label.className="accountName";label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
       identity.append(status,label);
-      const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=91-db70";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
-      bell.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
+      const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=92-db71";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+      bell.innerHTML=`<svg data-icon="solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
       const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
       wrap.append(identity,bell,button);actions.append(wrap);
     }

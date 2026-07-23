@@ -7,6 +7,7 @@
   let preferenceReady=false;
   let lastPreferenceSignature="";
   let stopLiveRefresh=null;
+  let currentView="overview";
 
   const REPORT_VIEWS={
     overview:{
@@ -43,7 +44,7 @@
   function duration(item){return Math.max(0,minutes(item.end)-minutes(item.start))}
   function group(items,key){const counts=new Map();items.forEach(item=>counts.set(item[key]||"Unspecified",(counts.get(item[key]||"Unspecified")||0)+1));return [...counts].sort((a,b)=>b[1]-a[1])}
   function bars(items){const max=Math.max(1,...items.map(([,count])=>count));return items.length?items.map(([label,count])=>`<div class="reportBar"><div class="reportBarLabel"><span>${esc(label)}</span><b>${count}</b></div><div class="reportBarTrack"><i style="width:${Math.round(count/max*100)}%"></i></div></div>`).join(""):`<div class="emptyState">No data in this range.</div>`}
-  function selectedView(){return REPORT_VIEWS[$("reportView")?.value]||REPORT_VIEWS.overview}
+  function selectedView(){return REPORT_VIEWS[currentView]||REPORT_VIEWS.overview}
   function preferenceStatus(message,status){
     const element=$("reportPreferenceStatus");
     if(!element)return;
@@ -52,8 +53,8 @@
   function saveReportPreference(){
     if(!preferenceReady)return;
     const value={
-      locationName:db.getCurrentLocation()?.name||$("reportLocation").value||"",
-      view:$("reportView").value,
+      locationName:db.getCurrentLocation()?.name||$("locationSelect").value||"",
+      view:currentView,
       preset:$("reportPreset").value,
       customStart:$("reportStart").value,
       customEnd:$("reportEnd").value
@@ -83,8 +84,8 @@
     $("aiBriefContent").innerHTML=`<div class="emptyState">Generate a new brief for this location and date range.</div>`;
   }
 
-  function reportData(){
-    const start=$("reportStart").value,end=$("reportEnd").value;
+  function reportData(startValue="",endValue=""){
+    const start=startValue||$("reportStart").value,end=endValue||$("reportEnd").value;
     if(!start||!end||start>end)throw new Error("Choose a valid report date range.");
     const dates=eachDate(start,end);
     if(dates.length>93)throw new Error("Choose a report range of 93 days or less.");
@@ -102,6 +103,39 @@
       return !hours?.is_open?0:Math.max(0,minutes(String(hours.close_time).slice(0,5))-minutes(String(hours.open_time).slice(0,5)))*dockCount;
     };
     return {start,end,dates,all,appointments,booked,cancelled,blocks,locationData,settings,openDays,dockCount,capacityForDate};
+  }
+
+  function summaryFor(data){
+    const bookedMinutes=data.booked.reduce((sum,item)=>sum+duration(item),0);
+    const blockedMinutes=data.blocks.reduce((sum,item)=>sum+duration(item),0);
+    const availableMinutes=data.dates.reduce((sum,date)=>sum+data.capacityForDate(date),0);
+    return {
+      appointments:data.appointments.length,
+      activeTrucks:data.booked.length,
+      cancelled:data.cancelled.length,
+      cancellationRate:data.appointments.length?data.cancelled.length/data.appointments.length*100:0,
+      bookedHours:bookedMinutes/60,
+      utilization:availableMinutes?(bookedMinutes+blockedMinutes)/availableMinutes*100:0,
+      blockedHours:blockedMinutes/60,
+      inbound:data.booked.filter(item=>item.direction==="Inbound").reduce((sum,item)=>sum+Number(item.skids||0),0),
+      outbound:data.booked.filter(item=>item.direction==="Outbound").reduce((sum,item)=>sum+Number(item.skids||0),0)
+    };
+  }
+
+  function previousPeriod(data){
+    const start=new Date(`${data.start}T12:00:00`);
+    const end=new Date(`${data.end}T12:00:00`);
+    const days=Math.round((end-start)/86400000)+1;
+    const previousEnd=new Date(start);previousEnd.setDate(previousEnd.getDate()-1);
+    const previousStart=new Date(previousEnd);previousStart.setDate(previousStart.getDate()-days+1);
+    return reportData(localISO(previousStart),localISO(previousEnd));
+  }
+
+  function deltaLabel(current,previous,{suffix="",precision=0}={}){
+    const delta=Number(current||0)-Number(previous||0);
+    const rounded=Math.abs(delta).toFixed(precision);
+    if(Math.abs(delta)<Math.pow(10,-precision)/2)return `No change vs previous period`;
+    return `${delta>0?"+":"−"}${rounded}${suffix} vs previous period`;
   }
 
   function buildChartRows(data){
@@ -183,7 +217,7 @@
   }
 
   function renderTrend(){
-    const view=$("reportView").value,details=selectedView();
+    const view=currentView,details=selectedView();
     $("reportTrendTitle").textContent=details.title;$("reportTrendSubtitle").textContent=details.subtitle;
     if(view==="trucks"){
       $("reportTrendLegend").innerHTML=`<span><i class="inboundLegend"></i>Inbound trucks</span><span><i class="outboundLegend"></i>Outbound trucks</span>`;
@@ -222,7 +256,7 @@
   }
 
   function dailySchema(data){
-    const view=$("reportView").value;
+    const view=currentView;
     if(view==="trucks")return {headers:["Date","Total Trucks","Inbound","Outbound","Priority","Cancelled"],values:row=>[row.date,row.activeTrucks,row.inboundTrucks,row.outboundTrucks,row.priority,row.cancelled]};
     if(view==="skids")return {headers:["Date","Total Skids","Inbound Skids","Outbound Skids","Trucks","Average / Truck"],values:row=>[row.date,row.totalSkids,row.inboundSkids,row.outboundSkids,row.activeTrucks,row.activeTrucks?(row.totalSkids/row.activeTrucks).toFixed(1):"0.0"]};
     if(view==="utilization")return {headers:["Date","Occupied Capacity","Scheduled Hours","Blocked Hours","Active Trucks","Docks Used"],values:row=>[row.date,`${row.utilization.toFixed(1)}%`,row.hours.toFixed(1),row.blockedHours.toFixed(1),row.activeTrucks,`${row.docksUsed} / ${data.dockCount}`]};
@@ -238,15 +272,21 @@
 
   function render(){
     const data=reportData();
-    const bookedMinutes=data.booked.reduce((sum,item)=>sum+duration(item),0),blockedMinutes=data.blocks.reduce((sum,item)=>sum+duration(item),0);
-    const availableMinutes=data.dates.reduce((sum,date)=>sum+data.capacityForDate(date),0),utilization=availableMinutes?(bookedMinutes+blockedMinutes)/availableMinutes*100:0;
-    const cancellationRate=data.appointments.length?data.cancelled.length/data.appointments.length*100:0;
-    const inbound=data.booked.filter(item=>item.direction==="Inbound").reduce((sum,item)=>sum+Number(item.skids||0),0);
-    const outbound=data.booked.filter(item=>item.direction==="Outbound").reduce((sum,item)=>sum+Number(item.skids||0),0);
+    const current=summaryFor(data);
+    const previousData=previousPeriod(data);
+    const previous=summaryFor(previousData);
+    $("reportComparisonSummary").textContent=`Compared with ${previousData.start} through ${previousData.end}.`;
     $("reportMetrics").innerHTML=[
-      ["Appointments",data.appointments.length],["Active Trucks",data.booked.length],["Cancelled",data.cancelled.length],["Cancellation Rate",`${cancellationRate.toFixed(1)}%`],
-      ["Booked Hours",(bookedMinutes/60).toFixed(1)],["Occupied Capacity",`${utilization.toFixed(1)}%`],["Blocked Hours",(blockedMinutes/60).toFixed(1)],["Inbound Skids",inbound],["Outbound Skids",outbound]
-    ].map(([label,value])=>`<div class="metric"><small>${label}</small><strong>${value}</strong></div>`).join("");
+      ["Appointments",current.appointments,deltaLabel(current.appointments,previous.appointments)],
+      ["Active Trucks",current.activeTrucks,deltaLabel(current.activeTrucks,previous.activeTrucks)],
+      ["Cancelled",current.cancelled,deltaLabel(current.cancelled,previous.cancelled)],
+      ["Cancellation Rate",`${current.cancellationRate.toFixed(1)}%`,deltaLabel(current.cancellationRate,previous.cancellationRate,{suffix:" pts",precision:1})],
+      ["Booked Hours",current.bookedHours.toFixed(1),deltaLabel(current.bookedHours,previous.bookedHours,{precision:1})],
+      ["Occupied Capacity",`${current.utilization.toFixed(1)}%`,deltaLabel(current.utilization,previous.utilization,{suffix:" pts",precision:1})],
+      ["Blocked Hours",current.blockedHours.toFixed(1),deltaLabel(current.blockedHours,previous.blockedHours,{precision:1})],
+      ["Inbound Skids",current.inbound,deltaLabel(current.inbound,previous.inbound)],
+      ["Outbound Skids",current.outbound,deltaLabel(current.outbound,previous.outbound)]
+    ].map(([label,value,delta])=>`<div class="metric"><small>${label}</small><strong>${value}</strong><span class="metricDelta">${esc(delta)}</span></div>`).join("");
     $("truckReport").innerHTML=bars(group(data.booked,"truck"));$("typeReport").innerHTML=bars(group(data.booked,"type"));
     chartRows=buildChartRows(data);
     reportRows=chartRows.filter(row=>row.appointments>0||row.blockedHours>0);
@@ -278,43 +318,67 @@
     try{
       const data=reportData(),schema=dailySchema(data),lines=[schema.headers,...reportRows.map(schema.values)];
       const blob=new Blob([lines.map(row=>row.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(",")).join("\n")],{type:"text/csv"});
-      const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=`maxdock-${$("reportView").value}-${data.start}-to-${data.end}.csv`;link.click();URL.revokeObjectURL(link.href);
+      const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=`maxdock-${currentView}-${data.start}-to-${data.end}.csv`;link.click();URL.revokeObjectURL(link.href);
     }catch(error){showError(error)}
   }
   window.maxdockExportReport=exportCsv;
 
   async function changeLocation(){
-    await db.loadLocation($("reportLocation").value);
-    localStorage.setItem("maxdock_location",db.getCurrentLocation()?.name||$("reportLocation").value);
+    await db.loadLocation($("locationSelect").value);
+    localStorage.setItem("maxdock_location",db.getCurrentLocation()?.name||$("locationSelect").value);
     resetBrief();render();saveReportPreference();
   }
-  function updateSelection(){try{resetBrief();render();saveReportPreference()}catch(error){showError(error)}}
+  function syncReportTabs(focus=false){
+    const buttons=[...document.querySelectorAll("[data-report-view]")];
+    buttons.forEach((button,index)=>{
+      const selected=button.dataset.reportView===currentView;
+      if(!button.id)button.id=`report-workspace-tab-${index+1}`;
+      button.setAttribute("aria-selected",String(selected));
+      button.tabIndex=selected?0:-1;
+      button.classList.toggle("isActive",selected);
+      if(selected){
+        $("report-workspace")?.setAttribute("aria-labelledby",button.id);
+        if(focus)button.focus();
+      }
+    });
+  }
+  function updateSelection(view=currentView,focus=false){
+    try{
+      if(Object.prototype.hasOwnProperty.call(REPORT_VIEWS,view))currentView=view;
+      syncReportTabs(focus);resetBrief();render();saveReportPreference();
+    }catch(error){showError(error)}
+  }
+  function copyAiBrief(){
+    const text=$("aiBriefContent")?.innerText?.trim();
+    if(!text)return;
+    navigator.clipboard.writeText(text).then(()=>window.MaxDockUI?.toast?.("Operations brief copied.")).catch(()=>window.MaxDockUI?.toast?.("Copy was not available."));
+  }
 
   async function init(){
     try{
       if(!await db.requireAuth())return;await db.loadContext();
       if(!db.hasPermission("reports.view"))throw new Error("This account cannot view operational reports.");
       const saved=await db.loadPreference("reports",{locationName:"",view:"overview",preset:"30",customStart:"",customEnd:""});
-      db.selectLocation(localStorage.getItem("maxdock_location")||saved.locationName);db.populateLocationSelect($("reportLocation"));db.addAccountControls();
+      db.selectLocation(localStorage.getItem("maxdock_location")||saved.locationName);db.populateLocationSelect($("locationSelect"));db.addAccountControls();
       const role=db.getProfile()?.role_code;
-      $("reportLocation").parentElement.hidden=!db.isOperationalRole(role);
-      $("reportLocation").disabled=role!=="system_admin";
-      $("reportLocation").setAttribute("aria-disabled",String(role!=="system_admin"));
+      $("locationSelect").disabled=role!=="system_admin";
+      $("locationSelect").setAttribute("aria-disabled",String(role!=="system_admin"));
       if(db.getProfile()?.role_code!=="system_admin")document.querySelectorAll('a[href*="admin.html"],a[href*="data.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("settings.manage"))document.querySelectorAll('a[href*="settings.html"]').forEach(link=>link.hidden=true);
       if(!db.hasPermission("ai.insights"))$("generateAiBrief").hidden=true;
-      $("reportView").value=Object.prototype.hasOwnProperty.call(REPORT_VIEWS,saved.view)?saved.view:"overview";
+      currentView=Object.prototype.hasOwnProperty.call(REPORT_VIEWS,saved.view)?saved.view:"overview";
+      syncReportTabs();
       $("reportPreset").value=["7","30","month","custom"].includes(saved.preset)?saved.preset:"30";
       if($("reportPreset").value==="custom"&&/^\d{4}-\d{2}-\d{2}$/.test(saved.customStart||"")&&/^\d{4}-\d{2}-\d{2}$/.test(saved.customEnd||"")){
         $("reportCustomDates").hidden=false;$("reportStart").value=saved.customStart;$("reportEnd").value=saved.customEnd;
       }else setDatePreset($("reportPreset").value);
       preferenceReady=true;preferenceStatus("This report view is saved to your login.","saved");
-      $("reportLocation").addEventListener("change",()=>changeLocation().catch(showError));
-      $("reportView").addEventListener("change",updateSelection);
+      $("locationSelect").addEventListener("change",()=>changeLocation().catch(showError));
+      document.querySelectorAll("[data-report-view]").forEach(button=>button.addEventListener("click",()=>updateSelection(button.dataset.reportView)));
       $("reportPreset").addEventListener("change",event=>{setDatePreset(event.target.value);if(event.target.value!=="custom")updateSelection();else saveReportPreference()});
       $("reportStart").addEventListener("change",saveReportPreference);$("reportEnd").addEventListener("change",saveReportPreference);
-      $("runReport").addEventListener("click",updateSelection);$("exportReport")?.addEventListener("click",exportCsv);$("generateAiBrief").addEventListener("click",generateAiBrief);
-      await db.loadLocation($("reportLocation").value);render();saveReportPreference();
+      $("runReport").addEventListener("click",()=>updateSelection());$("exportReport")?.addEventListener("click",exportCsv);$("generateAiBrief").addEventListener("click",generateAiBrief);$("copyAiBrief")?.addEventListener("click",copyAiBrief);
+      await db.loadLocation($("locationSelect").value);render();saveReportPreference();
       stopLiveRefresh=db.startLiveRefresh(async()=>{
         await db.fetchAppointments();render();
         if($("reportLiveStatus"))$("reportLiveStatus").innerHTML=`<span class="liveDot"></span>Live appointments · updated ${new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"})}`;
