@@ -1,406 +1,453 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
-<meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
-<link href="./maxdock.css?v=89-db68" rel="stylesheet"/>
-<link href="./maxdock-db04.css?v=89-db68" rel="stylesheet"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<link rel="stylesheet" href="./maxdock.css?v=68-db47">
+<link rel="stylesheet" href="./maxdock-db04.css?v=68-db47">
 <title>MaxDock – Dashboard</title>
 </head>
-<body data-page="dashboard" data-release="db68">
+<body data-page="dashboard">
+
 <header class="topbar">
-<div class="topbarInner">
-<div class="brandRow">
-<div class="brand">
-<a aria-label="Go to MaxDock main page" class="logoLink" href="./index.html?v=89-db68"><div class="logo"><img alt="Max Solutions mark" class="logoMark" src="data:image/png;base64,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"/></div></a>
-<div>
-<h1 class="appTitle">MaxDock</h1>
-<p class="appSub">Max Solutions Packaging Inc.</p>
-</div>
-</div>
-</div>
-<div class="headerActions">
-<div class="locationPill">
-<label for="locationSelect">Location</label>
-<select id="locationSelect" onchange="changeLocation(this.value)">
-<option>Mississauga</option><option>Guelph</option><option>Pickering</option>
-<option>Bristol</option><option>Owen Sound</option><option>Concord</option><option>Markham</option>
-</select>
-</div>
-<a class="ghostBtn" href="./index.html?v=89-db68">Main Page</a>
-<details class="menuDetails">
-<summary aria-label="Open menu" class="iconBtn" title="Menu"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"></path></svg></summary>
-<nav class="menu">
-<a href="./my-appointments.html?v=89-db68">My Appointments</a>
-<a href="./queue.html?v=89-db68">Operation Queue</a>
-<a href="./reports.html?v=89-db68">Reports</a>
-<a aria-current="page" href="./dashboard.html?v=89-db68">Dashboard</a>
-<a href="./settings.html?v=89-db68">Settings</a>
-<a href="./admin.html?v=89-db68">User Management</a>
-<a href="./data.html?v=89-db68">Data Integration</a>
-</nav>
-</details>
-</div>
-</div>
+  <div class="topbarInner">
+    <div class="brandRow">
+      <div class="brand">
+        <a class="logoLink" href="./index.html?v=68-db47" aria-label="Go to MaxDock main page"><div class="logo"><img class="logoMark" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAB+CAYAAACNvjvgAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABgxJREFUeNrsne1xIjEMhkMHKYESKIESKIESKIEOKIESKGFLIB2QDkgHvr2Z3EwuX6xtWZbk553J5E/uELZWlh7b2qcnhBBCCCGEEEIIIYQQQgghtEgrhuB/pZTWq9Xq1biNz7ONbwPMxWb+9bzwz9/mMXnBgz85yvxzm3+2xm28v092aGdOeTrgwV8H8fg+OH+d+tmojed3G6/B52LKcOYJ730cEU4Gbdx+svEYdC4OmdF5jQd/HcTrNwO1MWTfv3Too+7RJvNDSrVUR7x3eUS4GrLxOMJyO3+fS4Yz3/Deb6jGg4hwMGDjowJpF2QudpmpxhYPzo8I3Zf1BQXS3WoRW5lS/aYz3lseES4OCqST87k4ZTiz+wfYQkTYdbLxHn0JLmDOezy4LiJ0YdOZBZJbNv0DYYI5N4wI6sv6N8w5JMbKZM53mHN9RFBf1gvSIZcbDQsIE8x5wSAeU52uDmycnMzFJXo6ZS0iqEeKinTIVeEEc5YZxEnIWZrlcpXpkAu0VUBvTnhvfURQX9YLDuW43HyAOetHBHU2LZgOmV6qC+jNDg+uiwhdlvUC5uzyAA/MWT8i7DOR2UnAxtx0aOcRd2XSG5izQES4aFfgBcz5VJhvbzrPQ25KxZUqyYigdS63pkDydE0p01aY8w8RofiSpcYuVgFz3lX++0Onudh5Wk0iMOerEEZbZ9pYXSAVrELaB6xgzgKDuJeKCK2qcskCKTMHvyjPxdnyicaIzPkonBbsGxRIj2zMJTlbpbmAOVuMCNLLeosCyWIktLxyRGXO24yoL3LfrVWBlIxd/4c5G48IEg9L6wJJsnboSZiQUrWfy6Y/f0Ymc74V2tid9ybaeFUPoAqPrVnWtQqk3tHRyioxEnOeKj+raMu5ZAveW/6aaOMlMojqZxpyH6AeDqb5AEmlZDhzp4ggeE2qWQqgzYCtsnBvDt2tsV+qv8javEjTKEILsSbM2WJESHWtBpoXSFrnKKyfJ/GSaohsdCg/VOoFUuuTbolXR/hgzhm2nAWc+dbYxmZsGuasX5DtjRWm6gVSq7PdiVdHiEyOuUuWBZsJ6gWSNDqEOfdhzmtF26YCZ1YtkCSDQeLVETaXTWH7kuUCqfbKV0WhCXP2GBFSfhuvdQcbq7oWJV4d0QU9bTvYeLCaP1c65EnygcCZKydA0cZS0rHzEiASr47ov0QaTIdMHNJJBb2ZE228bBQxjW2U2C3ssarkFtnXzMACc/bAnCvToQh5P8y5cLDNX7IUPnF3dRA0zH4PmLN+OjTK94A5fzPI04CRLcJKQxuvQZjzCLUAzFmA53qgA8dBaA1tvCqZswd+exuEp8OcBSKEmx22wmXdy44nzFmgyHJ3BiJwfQBzdsqcRVIGJ6cGuVZVWWSZvmQpWdQFZexcfA3MnKcF/5/5u3iJ1gRFg2a+sV+rdMjDybVE8xiYc8Nlfe+APG1HduizA+bcNB3ysKwnXvoT48nXQGwe7uclXsvmPzfTnEQnDzdNzJ0vs6pb8MlBX+XEq4198s0eW/DJQReixIuAqp/yXqiqyxZ86vAmAisI06szM2E88MMy5yGXVFIyPw5N0UPRDHMeFUuBNW2nGmwcxAwC43UgZWs3nl3DsmkO38Rf1j2c7e6Fdzge6SC3t4g6rTLntYOJeO40lsNdgLDmzFwxkh/PYa6ouWfODqLeZGBMh7lEbM2ZI17T3xgZ2/BtHrwzZw+NVI6Gxjd0Ix6LDh2t1ZW5LdsUuFWad+bsoRnh1uA4w6bBNrHerRe0TllbGuBor44wX4HDpmHOprfgGXcj406kYGX0DgrI5ahd4tUuVNvQpVB0CR5qyqnh/8pPHDtWtpZ1dmgr8jbOFPAAl9YzGw2jqKztOjWnHAuKLM7l2nVozqHDnGOJm0LLjeBumx+njsamLy0MgDn7cWhu2z/48LMD5mw+HaIwNuBXiQ4+Xh2ajlU/fGi/XCdIOtTRqYfsKbj6zVnmXznF3ctqtXrTdmjrNvZ26ow/f5vH5sW4ja+zja9PCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBCyrT8CDAC6kh8ywU0TjwAAAABJRU5ErkJggg==" alt="Max Solutions mark"></div></a>
+        <div>
+          <h1 class="appTitle">MaxDock</h1>
+          <p class="appSub">Max Solutions Packaging Inc.</p>
+        </div>
+      </div>
+    </div>
+    <div class="headerActions">
+      <div class="locationPill">
+        <label for="locationSelect">Location</label>
+        <select id="locationSelect" onchange="changeLocation(this.value)">
+          <option>Mississauga</option><option>Guelph</option><option>Pickering</option>
+          <option>Bristol</option><option>Owen Sound</option><option>Concord</option><option>Markham</option>
+        </select>
+      </div>
+      <a class="ghostBtn" href="./index.html?v=68-db47">Main Page</a>
+      <details class="menuDetails">
+        <summary class="iconBtn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></summary>
+        <nav class="menu">
+          <a href="./my-appointments.html?v=73-db52">My Appointments</a>
+          <a href="./queue.html?v=68-db47">Operation Queue</a>
+          <a href="./reports.html?v=68-db47">Reports</a>
+          <a href="./dashboard.html?v=68-db47" aria-current="page">Dashboard</a>
+          <a href="./settings.html?v=68-db47">Settings</a>
+          <a href="./admin.html?v=68-db47">User Management</a>
+          <a href="./data.html?v=68-db47">Data Integration</a>
+        </nav>
+      </details>
+    </div>
+  </div>
 </header>
 <main class="screen pageWrap">
-<div class="pageHead">
-<div>
-<h2>Dashboard</h2>
-<p>Daily dock schedule, availability, and appointment control.</p>
-<small class="liveDataStatus" id="dashboardLiveStatus"><span class="liveDot"></span>Live appointments · refreshes every 3 minutes</small>
-</div>
+  <div class="pageHead">
+    <div>
+      <h2>Dashboard</h2>
+      <p>Daily dock schedule, availability, and appointment control.</p>
+      <small class="liveDataStatus" id="dashboardLiveStatus"><span class="liveDot"></span>Live appointments · refreshes every 3 minutes</small>
+    </div>
+    <div class="dashboardActions">
+      <div class="dashboardPrimaryActions">
+        <button class="primaryBtn dashboardActionPrimary appointmentActionBtn" onclick="openRequest()"><span class="buttonIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM12 12v5M9.5 14.5h5"/></svg></span><span>Book Appointment</span></button>
+        <button class="primaryBtn dashboardActionPrimary blockActionBtn" onclick="openBlockModal()"><span class="buttonIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM9 14h6"/></svg></span><span>Block Time</span></button>
+      </div>
+      <div class="dashboardUtilityActions" role="group" aria-label="Document actions">
+        <button class="secondaryBtn utilityBtn" onclick="exportCSV()">Export CSV</button>
+        <button class="secondaryBtn utilityBtn" onclick="window.print()">Print</button>
+      </div>
+    </div>
+  </div>
 
-</div>
-<div class="db68ControlBar" id="dashboardControlBar"><div class="db68ControlMain"><div class="filterField">
-<label for="adminDate">Schedule Date</label>
-<input id="adminDate" onchange="renderDashboard()" type="date"/>
-</div><div class="filterField">
-<label for="adminStatus">Appointment Status</label>
-<select id="adminStatus" onchange="renderDashboard()">
-<option value="All">All Statuses</option>
-<option>Scheduled</option>
-<option>Completed</option>
-<option>Cancelled</option>
-</select>
-</div><div class="dashboardPrimaryActions">
-<button class="primaryBtn dashboardActionPrimary appointmentActionBtn" onclick="openRequest()"><span aria-hidden="true" class="buttonIcon"><svg viewbox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM12 12v5M9.5 14.5h5"></path></svg></span><span>Book Appointment</span></button>
-<button class="primaryBtn dashboardActionPrimary blockActionBtn" onclick="openBlockModal()"><span aria-hidden="true" class="buttonIcon"><svg viewbox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM9 14h6"></path></svg></span><span>Block Time</span></button>
-</div><div class="filterField db68RangeField"><label for="dashboardRange">Date Range</label><select id="dashboardRange" onchange="setDashboardRange(this.value)"><option>Daily</option><option>Weekly</option><option>Monthly</option><option>Yearly</option><option>Custom</option></select></div></div><div class="db68ControlEnd"><button class="secondaryBtn utilityBtn" onclick="exportCSV()">Export CSV</button><button class="secondaryBtn utilityBtn" onclick="window.print()">Print</button><details class="db68Customize" id="dashboardCustomize"><summary aria-label="Customize dashboard" class="db68GearButton" title="Customize dashboard"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A8 8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a8 8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"></path></svg></summary><div class="db68PreferenceMenu"><fieldset><legend>Dashboard KPIs</legend><div class="db68PreferenceOptions"><label><input checked="" data-dashboard-metric="" type="checkbox" value="appointments"/> <span>Appointments</span></label><label><input checked="" data-dashboard-metric="" type="checkbox" value="scheduled"/> <span>Scheduled</span></label><label><input checked="" data-dashboard-metric="" type="checkbox" value="completed"/> <span>Completed</span></label><label><input checked="" data-dashboard-metric="" type="checkbox" value="priority"/> <span>Priority</span></label><label><input checked="" data-dashboard-metric="" type="checkbox" value="open-slots"/> <span>Open Slots</span></label><label><input checked="" data-dashboard-metric="" type="checkbox" value="inbound-skids"/> <span>Inbound Skids</span></label><label><input checked="" data-dashboard-metric="" type="checkbox" value="outbound-skids"/> <span>Outbound Skids</span></label></div></fieldset><fieldset><legend>Dashboard display</legend><label class="db68PreferenceWide"><input checked="" id="dashboardShowMetrics" type="checkbox"/> <span>Show KPI dashboard</span></label></fieldset><button class="secondaryBtn utilityBtn" data-db68-reset="" type="button">Reset default view</button></div></details></div></div><div class="metrics" id="metrics"></div>
+  <div class="metrics" id="metrics"></div>
 
-<section class="panel returnLoadPanel" hidden="" id="dashboardReturnLoadPanel">
-<div class="panelHeader"><div><h3>Potential Return Loads</h3><small>Route suggestions only — confirm the carrier and timing with both sites before changing transportation.</small></div></div>
-<div class="returnLoadList" id="dashboardReturnLoadList"></div>
-</section>
-<section class="panel dockSchedulePanel" id="dockSchedulePanel">
-<div class="tvScheduleBar" hidden="" id="tvScheduleBar">
-<div><span class="liveDot"></span><span id="tvRefreshStatus">Live schedule display · updates every 3 minutes</span></div>
-<div class="scheduleDisplayActions"><button class="secondaryBtn utilityBtn" id="exitTvMode" onclick="closeTvSchedule()" type="button">Close Display</button></div>
-</div>
-<div class="schedulePanelHeader">
-<div class="scheduleCompactBar">
-<div class="scheduleTitleBlock">
-<div><h3>Dock Schedule</h3><small class="scheduleEditHint" hidden="" id="scheduleEditHint">Double-click an appointment to edit</small></div>
-</div>
-<div class="scheduleNavCenter">
-<button class="secondaryBtn navArrow" onclick="changeDashboardDate(-1)" title="Previous day">‹</button>
-<button class="secondaryBtn todayBtn" onclick="goDashboardToday()">Today</button>
-<button class="secondaryBtn navArrow" onclick="changeDashboardDate(1)" title="Next day">›</button>
-<div class="scheduleDateTitle" id="scheduleDateTitle"></div>
-</div>
-<div class="legend compactLegend">
-<span class="legendItem"><i class="legendDot open"></i>Open</span>
-<span class="legendItem"><i class="legendDot inbound"></i>Inbound</span>
-<span class="legendItem"><i class="legendDot outbound"></i>Outbound</span>
-<span class="legendItem"><i class="legendDot blocked"></i>Blocked</span>
-<span class="legendItem"><i class="legendDot completed"></i>Completed</span>
-</div>
-<div class="scaleControl compactScale">
-<label for="scheduleScale">Timeline</label>
-<select id="scheduleScale" onchange="renderDashboard()">
-<option value="30">30-minute</option>
-<option selected="" value="60">Hourly</option>
-<option value="120">2-hour</option>
-</select>
-</div>
-<button class="secondaryBtn utilityBtn tvModeButton" id="tvModeButton" onclick="openScheduleDisplay()" type="button">Open Full-Screen View</button>
-</div>
-</div>
-<div class="timelineScroll">
-<div class="timelineShell" id="timelineShell">
-<div class="timelineHeader">
-<div class="timelineCorner">Dock</div>
-<div class="timeRuler" id="timeRuler"></div>
-</div>
-<div class="timelineBody" id="timelineBody"></div>
-</div>
-</div>
-</section>
-<section class="panel">
-<div class="panelHeader"><h3 id="appointmentListTitle">Appointment list</h3></div>
-<div class="tableScroll">
-<table>
-<thead><tr><th>Ref</th><th>Date</th><th>Time</th><th>Dock</th><th>Company</th><th>Type</th><th>Truck / Skids</th><th>Status</th><th>Action</th></tr></thead>
-<tbody id="apptTable"></tbody>
-</table>
-</div>
-</section>
+  <div class="dashboardFilters">
+    <div class="filterField">
+      <label for="adminDate">Schedule Date</label>
+      <input type="date" id="adminDate" onchange="renderDashboard()">
+    </div>
+    <div class="filterField">
+      <label for="adminStatus">Appointment Status</label>
+      <select id="adminStatus" onchange="renderDashboard()">
+        <option value="All">All Statuses</option>
+        <option>Scheduled</option>
+        <option>Completed</option>
+        <option>Cancelled</option>
+      </select>
+    </div>
+  </div>
+
+  <section class="panel returnLoadPanel" id="dashboardReturnLoadPanel" hidden>
+    <div class="panelHeader"><div><h3>Potential Return Loads</h3><small>Route suggestions only — confirm the carrier and timing with both sites before changing transportation.</small></div></div>
+    <div class="returnLoadList" id="dashboardReturnLoadList"></div>
+  </section>
+
+  <section class="panel dockSchedulePanel" id="dockSchedulePanel">
+    <div class="tvScheduleBar" id="tvScheduleBar" hidden>
+      <div><span class="liveDot"></span><span id="tvRefreshStatus">Live schedule display · updates every 3 minutes</span></div>
+      <div class="scheduleDisplayActions"><button class="secondaryBtn utilityBtn" id="exitTvMode" type="button" onclick="closeTvSchedule()">Close Display</button></div>
+    </div>
+    <div class="schedulePanelHeader">
+      <div class="scheduleCompactBar">
+        <div class="scheduleTitleBlock">
+          <div><h3>Dock Schedule</h3><small id="scheduleEditHint" class="scheduleEditHint" hidden>Double-click an appointment to edit</small></div>
+        </div>
+
+        <div class="scheduleNavCenter">
+          <button class="secondaryBtn navArrow" onclick="changeDashboardDate(-1)" title="Previous day">‹</button>
+          <button class="secondaryBtn todayBtn" onclick="goDashboardToday()">Today</button>
+          <button class="secondaryBtn navArrow" onclick="changeDashboardDate(1)" title="Next day">›</button>
+          <div class="scheduleDateTitle" id="scheduleDateTitle"></div>
+        </div>
+
+        <div class="legend compactLegend">
+          <span class="legendItem"><i class="legendDot open"></i>Open</span>
+          <span class="legendItem"><i class="legendDot inbound"></i>Inbound</span>
+          <span class="legendItem"><i class="legendDot outbound"></i>Outbound</span>
+          <span class="legendItem"><i class="legendDot blocked"></i>Blocked</span>
+          <span class="legendItem"><i class="legendDot completed"></i>Completed</span>
+        </div>
+
+        <div class="scaleControl compactScale">
+          <label for="scheduleScale">Timeline</label>
+          <select id="scheduleScale" onchange="renderDashboard()">
+            <option value="30">30-minute</option>
+            <option value="60" selected>Hourly</option>
+            <option value="120">2-hour</option>
+          </select>
+        </div>
+        <button class="secondaryBtn utilityBtn tvModeButton" id="tvModeButton" type="button" onclick="openScheduleDisplay()">Open Full-Screen View</button>
+      </div>
+    </div>
+
+    <div class="timelineScroll">
+      <div class="timelineShell" id="timelineShell">
+        <div class="timelineHeader">
+          <div class="timelineCorner">Dock</div>
+          <div class="timeRuler" id="timeRuler"></div>
+        </div>
+        <div class="timelineBody" id="timelineBody"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panelHeader"><h3 id="appointmentListTitle">Appointment list</h3></div>
+    <div class="tableScroll">
+      <table>
+        <thead><tr><th>Ref</th><th>Date</th><th>Time</th><th>Dock</th><th>Company</th><th>Type</th><th>Truck / Skids</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="apptTable"></tbody>
+      </table>
+    </div>
+  </section>
 </main>
 <div class="modalOverlay" id="requestModal">
-<div class="modal requestModalCompact">
-<div class="modalHead">
-<div class="requestModalTitle"><h2>Book an Appointment</h2><p id="modalFacility">Max Solutions – Mississauga</p></div>
-<div class="bookingTemplateBar bookingTemplateCompact" id="bookingTemplateBar">
-<div class="bookingTemplateField"><label for="reqTemplateSelect">Template</label><select id="reqTemplateSelect"><option value="">No template</option></select></div>
-<button class="secondaryBtn utilityBtn" disabled="" id="reqTemplateApply" onclick="applySelectedBookingTemplate()" type="button">Use</button>
-<button class="secondaryBtn utilityBtn" disabled="" id="reqTemplateDelete" onclick="deleteSelectedBookingTemplate()" type="button">Delete</button>
+  <div class="modal requestModalCompact">
+    <div class="modalHead">
+      <div class="requestModalTitle"><h2>Book an Appointment</h2><p id="modalFacility">Max Solutions – Mississauga</p></div>
+      <div class="bookingTemplateBar bookingTemplateCompact" id="bookingTemplateBar">
+        <div class="bookingTemplateField"><label for="reqTemplateSelect">Template</label><select id="reqTemplateSelect"><option value="">No template</option></select></div>
+        <button class="secondaryBtn utilityBtn" id="reqTemplateApply" type="button" onclick="applySelectedBookingTemplate()" disabled>Use</button>
+        <button class="secondaryBtn utilityBtn" id="reqTemplateDelete" type="button" onclick="deleteSelectedBookingTemplate()" disabled>Delete</button>
+      </div>
+      <button class="closeBtn" onclick="closeRequest()">×</button>
+    </div>
+    <div class="modalBody">
+      <div class="steps">
+        <div class="stepPill active" id="pill1"><span class="stepNum">1</span><span>Load</span></div>
+        <div class="stepPill" id="pill2"><span class="stepNum">2</span><span>Truck</span></div>
+        <div class="stepPill" id="pill3"><span class="stepNum">3</span><span>Time</span></div>
+        <div class="stepPill" id="pill4"><span class="stepNum">4</span><span>Contact</span></div>
+        <div class="stepPill" id="pill5"><span class="stepNum">5</span><span>Review</span></div>
+      </div>
+
+      <div class="templateNotice" id="bookingTemplateNotice" role="status" aria-live="polite" hidden></div>
+
+      <section class="stepPanel active" id="step1">
+        <h3 class="stepTitle" id="bookingRouteQuestion">What are you sending?</h3>
+        <p class="stepIntro" id="bookingRouteIntro">Choose the destination. Outbound is selected by default for staff.</p>
+        <input id="reqLocation" type="hidden" required>
+        <div class="formGrid bookingRouteFields">
+          <div class="field compactDirection"><label for="reqDirection">Direction</label><select id="reqDirection"><option value="Outbound">Outbound</option><option value="Inbound">Inbound</option></select></div>
+          <div class="field"><label id="reqRouteTypeLabel" for="reqRequesterType">Destination type</label><select id="reqRequesterType"><option>Max Solutions</option><option>Customer</option><option>Vendor</option></select></div>
+          <div class="field" id="internalDestinationWrap"><label id="reqCounterpartyLabel" for="reqDestination">Destination</label><select id="reqDestination"><option>Guelph</option><option>Pickering</option><option>Bristol</option></select></div>
+          <div class="field hidden" id="companyWrap"><label id="reqCompanyLabel" for="reqCompany">Customer name *</label><input id="reqCompany" autocomplete="organization" placeholder="Enter customer name"></div>
+          <div class="field"><label for="reqType">Appointment type</label><select id="reqType"><option>Raw Material</option><option>Finished Goods</option><option>WIP</option><option>Sister Plant Transfer</option><option>Vendor Delivery</option><option>Customer Pickup</option><option>Return / Rework</option><option>Other</option></select></div>
+          <div class="field"><label>Priority</label><select id="reqPriority"><option>No</option><option>Yes</option></select></div>
+          <div class="bookingSummaryRow full">
+            <div class="bookingRouteSummary" id="bookingRouteSummary" role="status" aria-live="polite"></div>
+            <div class="bookingRequesterSummary" id="bookingRequesterSummary"></div>
+          </div>
+        </div>
+        <div class="error" id="err1"></div>
+        <div class="wizardNav"><button class="secondaryBtn" onclick="closeRequest()">Cancel</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(2)">Next</button></div></div>
+      </section>
+
+      <section class="stepPanel" id="step2">
+        <h3 class="stepTitle">Truck &amp; Skids</h3>
+        <p class="stepIntro">These details calculate the appointment length in the background.</p>
+        <div class="formGrid">
+          <div class="field"><label>Truck Type</label><select id="reqTruck" onchange="renderSlots()"><option>53 ft Trailer</option><option>48 ft Trailer</option><option>26 ft Straight Truck</option><option>Cube Van</option><option>Courier Van</option></select></div>
+          <div class="field"><label>Skids</label><input id="reqSkids" type="number" min="0" value="10" oninput="renderSlots()"></div>
+          <div class="field"><label>Handling</label><select id="reqHandling" onchange="renderSlots()"><option>Standard</option><option>Mixed SKUs</option><option>Requires Counting</option><option>Paperwork / Samples</option><option>Special Handling</option></select></div>
+          <div class="field"><label for="reqPreferredWindow">Preferred time</label><select id="reqPreferredWindow" onchange="renderSlots()"><option value="">No preference</option><option value="07:00|11:00">Morning · 7–11 AM</option><option value="11:00|14:00">Midday · 11 AM–2 PM</option><option value="14:00|18:00">Afternoon · 2–6 PM</option></select></div>
+        </div>
+        <div class="notice" style="margin-top:14px">Requesters see available times only. The dock is assigned by the site.</div>
+        <div class="error" id="err2"></div>
+        <div class="wizardNav"><button class="secondaryBtn" onclick="showStep(1)">Back</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(3)">Next</button></div></div>
+      </section>
+
+      <section class="stepPanel" id="step3">
+        <h3 class="stepTitle">Choose a Time</h3>
+        <p class="stepIntro">Choose an available time. MaxDock highlights the strongest options for this load.</p>
+        <div class="slotTools">
+          <button class="secondaryBtn" onclick="moveRequestDate(-1)">‹ Previous Day</button>
+          <strong id="slotDateLabel"></strong>
+          <button class="secondaryBtn" onclick="moveRequestDate(1)">Next Day ›</button>
+        </div>
+        <div class="formGrid" style="margin-bottom:12px">
+          <div class="field"><label>Requested Date</label><input id="reqDate" type="date" onchange="renderSlots()"></div>
+          <div class="field"><label>Selected Time</label><input id="selectedTimeDisplay" disabled placeholder="Select a time below"></div>
+        </div>
+        <section class="staffTimeOverride" id="staffTimeOverride" hidden>
+          <div class="staffTimeOverrideHead">
+            <div><strong>Staff scheduling override</strong><small>Use a custom time when the operation intentionally needs an appointment outside normal hours.</small></div>
+            <label class="staffTimeToggle"><input id="reqStaffCustomToggle" type="checkbox" onchange="toggleStaffCustomTime()"><span>Use custom time</span></label>
+          </div>
+          <div class="staffTimeControls" id="staffTimeControls" hidden>
+            <div class="field"><label for="reqCustomTime">Custom start time</label><input id="reqCustomTime" type="time"></div>
+            <button class="secondaryBtn" type="button" onclick="useStaffCustomTime()">Review custom time</button>
+          </div>
+          <div class="staffTimeStatus" id="staffTimeStatus" role="status" aria-live="polite" hidden></div>
+        </section>
+        <div class="slots" id="slotList"></div>
+        <div class="returnLoadBookingNotice" id="returnLoadBookingNotice" role="status" aria-live="polite" hidden></div>
+        <div class="error" id="err3"></div>
+        <div class="wizardNav"><button class="secondaryBtn" onclick="showStep(2)">Back</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(4)">Next</button></div></div>
+      </section>
+
+      <section class="stepPanel" id="step4">
+        <h3 class="stepTitle">Contact &amp; Reference</h3>
+        <p class="stepIntro">Your MaxDock account details are filled automatically. Add the carrier and shipment reference.</p>
+        <div class="formGrid">
+          <div class="field"><label>Requester Name *</label><input id="reqName"></div>
+          <div class="field"><label>Requester Email *</label><input id="reqEmail" type="email"></div>
+          <div class="field"><label>Carrier / Courier</label><input id="reqCarrier"></div>
+          <div class="field"><label>PO / BOL / Job # *</label><input id="reqRef"></div>
+          <div class="field full"><label>Notes</label><textarea id="reqNotes"></textarea></div>
+        </div>
+        <div class="error" id="err4"></div>
+        <div class="wizardNav"><button class="secondaryBtn" onclick="showStep(3)">Back</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(5)">Review</button></div></div>
+      </section>
+
+      <section class="stepPanel" id="step5">
+        <div id="reviewContent"></div>
+        <div class="templateSavePanel" id="templateSavePanel">
+          <div><label for="reqTemplateName">Save these load preferences</label><small>Dates, references, names, and emails are not saved.</small></div>
+          <input id="reqTemplateName" maxlength="60" placeholder="Example: Weekly raw material">
+          <button class="secondaryBtn" type="button" onclick="saveCurrentBookingTemplate()">Save template</button>
+        </div>
+        <div class="confirmBox" id="confirmBox">
+          <div class="big">✓</div><h3>Appointment Booked</h3>
+          <p>Your appointment has been recorded.</p>
+          <div class="refBox" id="bookedRef"></div>
+
+          <div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">
+            <button class="secondaryBtn" onclick="copyConfirmation()">Copy Confirmation</button>
+            <button class="secondaryBtn" onclick="openEmailDraft()">Open Email Draft</button>
+            <a class="secondaryBtn" href="./my-appointments.html?v=73-db52">View My Appointments</a>
+          </div>
+        </div>
+        <div class="error" id="err5"></div>
+        <div class="wizardNav"><button class="secondaryBtn" onclick="showStep(4)">Back</button><div class="rightNav"><button class="greenBtn" onclick="submitBooking()">Book Appointment</button><button class="secondaryBtn" onclick="closeRequest()">Close</button></div></div>
+      </section>
+    </div>
+  </div>
 </div>
-<button class="closeBtn" onclick="closeRequest()">×</button>
+
+<div class="modalOverlay efficiencyOpportunityOverlay" id="efficiencyOpportunityModal" role="dialog" aria-modal="true" aria-labelledby="efficiencyOpportunityTitle">
+  <div class="efficiencyOpportunityModal">
+    <div class="efficiencyOpportunityIcon" aria-hidden="true">↔</div>
+    <p class="efficiencyOpportunityEyebrow">MaxDock intelligence</p>
+    <h2 id="efficiencyOpportunityTitle">Opportunity for Efficiency</h2>
+    <p class="efficiencyOpportunityIntro">A reverse movement is already scheduled. One truck may be able to handle both directions.</p>
+    <div class="efficiencyOpportunityList" id="efficiencyOpportunityList"></div>
+    <p class="efficiencyOpportunityDisclaimer">Recommendation only. Confirm the plan with both locations and the carrier; MaxDock will not merge appointments automatically.</p>
+    <button class="primaryBtn" type="button" onclick="closeEfficiencyOpportunity()">Continue Booking</button>
+  </div>
 </div>
-<div class="modalBody">
-<div class="steps">
-<div class="stepPill active" id="pill1"><span class="stepNum">1</span><span>Load</span></div>
-<div class="stepPill" id="pill2"><span class="stepNum">2</span><span>Truck</span></div>
-<div class="stepPill" id="pill3"><span class="stepNum">3</span><span>Time</span></div>
-<div class="stepPill" id="pill4"><span class="stepNum">4</span><span>Contact</span></div>
-<div class="stepPill" id="pill5"><span class="stepNum">5</span><span>Review</span></div>
+
+
+<div class="modalOverlay" id="editAppointmentModal" role="dialog" aria-modal="true" aria-labelledby="editAppointmentTitle">
+  <div class="modal appointmentEditModal">
+    <div class="modalHead">
+      <div>
+        <h2 id="editAppointmentTitle">Edit Appointment</h2>
+        <p id="editAppointmentMeta">Update the schedule and shipment details.</p>
+      </div>
+      <button class="closeBtn" type="button" onclick="closeAppointmentEditor()" aria-label="Close">×</button>
+    </div>
+    <form class="modalBody" id="editAppointmentForm">
+      <div class="formGrid appointmentEditGrid">
+        <div class="field"><label for="editApptDate">Date *</label><input id="editApptDate" type="date" required></div>
+        <div class="field"><label for="editApptStart">Start time *</label><input id="editApptStart" type="time" required></div>
+        <div class="field"><label for="editApptDock">Dock *</label><select id="editApptDock" required></select></div>
+        <div class="field"><label for="editApptDirection">Direction *</label><select id="editApptDirection"><option value="inbound">Inbound</option><option value="outbound">Outbound</option></select></div>
+        <div class="field"><label for="editApptType">Appointment type *</label><select id="editApptType" required></select></div>
+        <div class="field"><label for="editApptTruck">Truck type *</label><select id="editApptTruck" onchange="syncEditDockCompatibility()" required></select></div>
+        <div class="field"><label for="editApptSkids">Skids *</label><input id="editApptSkids" type="number" min="0" required></div>
+        <div class="field"><label for="editApptHandling">Handling *</label><select id="editApptHandling" required></select></div>
+        <div class="field"><label for="editApptPriority">Priority</label><select id="editApptPriority"><option value="false">No</option><option value="true">Yes</option></select></div>
+        <div class="field"><label for="editApptCompany">Company / location</label><input id="editApptCompany"></div>
+        <div class="field"><label for="editApptName">Requester name *</label><input id="editApptName" required></div>
+        <div class="field"><label for="editApptEmail">Requester email *</label><input id="editApptEmail" type="email" required></div>
+        <div class="field"><label for="editApptCarrier">Carrier / courier</label><input id="editApptCarrier"></div>
+        <div class="field"><label for="editApptReference">PO / BOL / Job # *</label><input id="editApptReference" required></div>
+        <div class="field full"><label for="editApptNotes">Notes</label><textarea id="editApptNotes"></textarea></div>
+      </div>
+      <div class="notice appointmentEditNotice">The ending time is recalculated automatically from the appointment type, truck, skids, handling, and priority.</div>
+      <div class="error" id="editAppointmentError" role="alert"></div>
+      <div class="wizardNav">
+        <button class="secondaryBtn" type="button" onclick="closeAppointmentEditor()">Cancel</button>
+        <div class="rightNav"><button class="primaryBtn" id="saveAppointmentButton" type="submit">Save Appointment</button></div>
+      </div>
+    </form>
+  </div>
 </div>
-<div aria-live="polite" class="templateNotice" hidden="" id="bookingTemplateNotice" role="status"></div>
-<section class="stepPanel active" id="step1">
-<h3 class="stepTitle" id="bookingRouteQuestion">What are you sending?</h3>
-<p class="stepIntro" id="bookingRouteIntro">Choose the destination. Outbound is selected by default for staff.</p>
-<input id="reqLocation" required="" type="hidden"/>
-<div class="formGrid bookingRouteFields">
-<div class="field compactDirection"><label for="reqDirection">Direction</label><select id="reqDirection"><option value="Outbound">Outbound</option><option value="Inbound">Inbound</option></select></div>
-<div class="field"><label for="reqRequesterType" id="reqRouteTypeLabel">Destination type</label><select id="reqRequesterType"><option>Max Solutions</option><option>Customer</option><option>Vendor</option></select></div>
-<div class="field" id="internalDestinationWrap"><label for="reqDestination" id="reqCounterpartyLabel">Destination</label><select id="reqDestination"><option>Guelph</option><option>Pickering</option><option>Bristol</option></select></div>
-<div class="field hidden" id="companyWrap"><label for="reqCompany" id="reqCompanyLabel">Customer name *</label><input autocomplete="organization" id="reqCompany" placeholder="Enter customer name"/></div>
-<div class="field"><label for="reqType">Appointment type</label><select id="reqType"><option>Raw Material</option><option>Finished Goods</option><option>WIP</option><option>Sister Plant Transfer</option><option>Vendor Delivery</option><option>Customer Pickup</option><option>Return / Rework</option><option>Other</option></select></div>
-<div class="field"><label>Priority</label><select id="reqPriority"><option>No</option><option>Yes</option></select></div>
-<div class="bookingSummaryRow full">
-<div aria-live="polite" class="bookingRouteSummary" id="bookingRouteSummary" role="status"></div>
-<div class="bookingRequesterSummary" id="bookingRequesterSummary"></div>
+
+
+<div class="modalOverlay" id="appointmentHistoryModal" role="dialog" aria-modal="true" aria-labelledby="appointmentHistoryTitle">
+  <div class="modal historyModal">
+    <div class="modalHead">
+      <div><h2 id="appointmentHistoryTitle">Appointment History</h2><p id="appointmentHistoryMeta">Loading appointment activity…</p></div>
+      <button class="closeBtn" type="button" onclick="closeAppointmentHistory()" aria-label="Close">×</button>
+    </div>
+    <div class="modalBody">
+      <div class="appointmentHistoryTimeline" id="appointmentHistoryTimeline"></div>
+      <div class="error" id="appointmentHistoryError" role="alert"></div>
+      <div class="wizardNav"><span></span><button class="secondaryBtn" type="button" onclick="closeAppointmentHistory()">Close</button></div>
+    </div>
+  </div>
 </div>
-</div>
-<div class="error" id="err1"></div>
-<div class="wizardNav"><button class="secondaryBtn" onclick="closeRequest()">Cancel</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(2)">Next</button></div></div>
-</section>
-<section class="stepPanel" id="step2">
-<h3 class="stepTitle">Truck &amp; Skids</h3>
-<p class="stepIntro">These details calculate the appointment length in the background.</p>
-<div class="formGrid">
-<div class="field"><label>Truck Type</label><select id="reqTruck" onchange="renderSlots()"><option>53 ft Trailer</option><option>48 ft Trailer</option><option>26 ft Straight Truck</option><option>Cube Van</option><option>Courier Van</option></select></div>
-<div class="field"><label>Skids</label><input id="reqSkids" min="0" oninput="renderSlots()" type="number" value="10"/></div>
-<div class="field"><label>Handling</label><select id="reqHandling" onchange="renderSlots()"><option>Standard</option><option>Mixed SKUs</option><option>Requires Counting</option><option>Paperwork / Samples</option><option>Special Handling</option></select></div>
-<div class="field"><label for="reqPreferredWindow">Preferred time</label><select id="reqPreferredWindow" onchange="renderSlots()"><option value="">No preference</option><option value="07:00|11:00">Morning · 7–11 AM</option><option value="11:00|14:00">Midday · 11 AM–2 PM</option><option value="14:00|18:00">Afternoon · 2–6 PM</option></select></div>
-</div>
-<div class="notice" style="margin-top:14px">Requesters see available times only. The dock is assigned by the site.</div>
-<div class="error" id="err2"></div>
-<div class="wizardNav"><button class="secondaryBtn" onclick="showStep(1)">Back</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(3)">Next</button></div></div>
-</section>
-<section class="stepPanel" id="step3">
-<h3 class="stepTitle">Choose a Time</h3>
-<p class="stepIntro">Choose an available time. MaxDock highlights the strongest options for this load.</p>
-<div class="slotTools">
-<button class="secondaryBtn" onclick="moveRequestDate(-1)">‹ Previous Day</button>
-<strong id="slotDateLabel"></strong>
-<button class="secondaryBtn" onclick="moveRequestDate(1)">Next Day ›</button>
-</div>
-<div class="formGrid" style="margin-bottom:12px">
-<div class="field"><label>Requested Date</label><input id="reqDate" onchange="renderSlots()" type="date"/></div>
-<div class="field"><label>Selected Time</label><input disabled="" id="selectedTimeDisplay" placeholder="Select a time below"/></div>
-</div>
-<section class="staffTimeOverride" hidden="" id="staffTimeOverride">
-<div class="staffTimeOverrideHead">
-<div><strong>Staff scheduling override</strong><small>Use a custom time when the operation intentionally needs an appointment outside normal hours.</small></div>
-<label class="staffTimeToggle"><input id="reqStaffCustomToggle" onchange="toggleStaffCustomTime()" type="checkbox"/><span>Use custom time</span></label>
-</div>
-<div class="staffTimeControls" hidden="" id="staffTimeControls">
-<div class="field"><label for="reqCustomTime">Custom start time</label><input id="reqCustomTime" type="time"/></div>
-<button class="secondaryBtn" onclick="useStaffCustomTime()" type="button">Review custom time</button>
-</div>
-<div aria-live="polite" class="staffTimeStatus" hidden="" id="staffTimeStatus" role="status"></div>
-</section>
-<div class="slots" id="slotList"></div>
-<div aria-live="polite" class="returnLoadBookingNotice" hidden="" id="returnLoadBookingNotice" role="status"></div>
-<div class="error" id="err3"></div>
-<div class="wizardNav"><button class="secondaryBtn" onclick="showStep(2)">Back</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(4)">Next</button></div></div>
-</section>
-<section class="stepPanel" id="step4">
-<h3 class="stepTitle">Contact &amp; Reference</h3>
-<p class="stepIntro">Your MaxDock account details are filled automatically. Add the carrier and shipment reference.</p>
-<div class="formGrid">
-<div class="field"><label>Requester Name *</label><input id="reqName"/></div>
-<div class="field"><label>Requester Email *</label><input id="reqEmail" type="email"/></div>
-<div class="field"><label>Carrier / Courier</label><input id="reqCarrier"/></div>
-<div class="field"><label>PO / BOL / Job # *</label><input id="reqRef"/></div>
-<div class="field full"><label>Notes</label><textarea id="reqNotes"></textarea></div>
-</div>
-<div class="error" id="err4"></div>
-<div class="wizardNav"><button class="secondaryBtn" onclick="showStep(3)">Back</button><div class="rightNav"><button class="primaryBtn" onclick="nextStep(5)">Review</button></div></div>
-</section>
-<section class="stepPanel" id="step5">
-<div id="reviewContent"></div>
-<div class="templateSavePanel" id="templateSavePanel">
-<div><label for="reqTemplateName">Save these load preferences</label><small>Dates, references, names, and emails are not saved.</small></div>
-<input id="reqTemplateName" maxlength="60" placeholder="Example: Weekly raw material"/>
-<button class="secondaryBtn" onclick="saveCurrentBookingTemplate()" type="button">Save template</button>
-</div>
-<div class="confirmBox" id="confirmBox">
-<div class="big">✓</div><h3>Appointment Booked</h3>
-<p>Your appointment has been recorded.</p>
-<div class="refBox" id="bookedRef"></div>
-<div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">
-<button class="secondaryBtn" onclick="copyConfirmation()">Copy Confirmation</button>
-<button class="secondaryBtn" onclick="openEmailDraft()">Open Email Draft</button>
-<a class="secondaryBtn" href="./my-appointments.html?v=89-db68">View My Appointments</a>
-</div>
-</div>
-<div class="error" id="err5"></div>
-<div class="wizardNav"><button class="secondaryBtn" onclick="showStep(4)">Back</button><div class="rightNav"><button class="greenBtn" onclick="submitBooking()">Book Appointment</button><button class="secondaryBtn" onclick="closeRequest()">Close</button></div></div>
-</section>
-</div>
-</div>
-</div>
-<div aria-labelledby="efficiencyOpportunityTitle" aria-modal="true" class="modalOverlay efficiencyOpportunityOverlay" id="efficiencyOpportunityModal" role="dialog">
-<div class="efficiencyOpportunityModal">
-<div aria-hidden="true" class="efficiencyOpportunityIcon">↔</div>
-<p class="efficiencyOpportunityEyebrow">MaxDock intelligence</p>
-<h2 id="efficiencyOpportunityTitle">Opportunity for Efficiency</h2>
-<p class="efficiencyOpportunityIntro">A reverse movement is already scheduled. One truck may be able to handle both directions.</p>
-<div class="efficiencyOpportunityList" id="efficiencyOpportunityList"></div>
-<p class="efficiencyOpportunityDisclaimer">Recommendation only. Confirm the plan with both locations and the carrier; MaxDock will not merge appointments automatically.</p>
-<button class="primaryBtn" onclick="closeEfficiencyOpportunity()" type="button">Continue Booking</button>
-</div>
-</div>
-<div aria-labelledby="editAppointmentTitle" aria-modal="true" class="modalOverlay" id="editAppointmentModal" role="dialog">
-<div class="modal appointmentEditModal">
-<div class="modalHead">
-<div>
-<h2 id="editAppointmentTitle">Edit Appointment</h2>
-<p id="editAppointmentMeta">Update the schedule and shipment details.</p>
-</div>
-<button aria-label="Close" class="closeBtn" onclick="closeAppointmentEditor()" type="button">×</button>
-</div>
-<form class="modalBody" id="editAppointmentForm">
-<div class="formGrid appointmentEditGrid">
-<div class="field"><label for="editApptDate">Date *</label><input id="editApptDate" required="" type="date"/></div>
-<div class="field"><label for="editApptStart">Start time *</label><input id="editApptStart" required="" type="time"/></div>
-<div class="field"><label for="editApptDock">Dock *</label><select id="editApptDock" required=""></select></div>
-<div class="field"><label for="editApptDirection">Direction *</label><select id="editApptDirection"><option value="inbound">Inbound</option><option value="outbound">Outbound</option></select></div>
-<div class="field"><label for="editApptType">Appointment type *</label><select id="editApptType" required=""></select></div>
-<div class="field"><label for="editApptTruck">Truck type *</label><select id="editApptTruck" onchange="syncEditDockCompatibility()" required=""></select></div>
-<div class="field"><label for="editApptSkids">Skids *</label><input id="editApptSkids" min="0" required="" type="number"/></div>
-<div class="field"><label for="editApptHandling">Handling *</label><select id="editApptHandling" required=""></select></div>
-<div class="field"><label for="editApptPriority">Priority</label><select id="editApptPriority"><option value="false">No</option><option value="true">Yes</option></select></div>
-<div class="field"><label for="editApptCompany">Company / location</label><input id="editApptCompany"/></div>
-<div class="field"><label for="editApptName">Requester name *</label><input id="editApptName" required=""/></div>
-<div class="field"><label for="editApptEmail">Requester email *</label><input id="editApptEmail" required="" type="email"/></div>
-<div class="field"><label for="editApptCarrier">Carrier / courier</label><input id="editApptCarrier"/></div>
-<div class="field"><label for="editApptReference">PO / BOL / Job # *</label><input id="editApptReference" required=""/></div>
-<div class="field full"><label for="editApptNotes">Notes</label><textarea id="editApptNotes"></textarea></div>
-</div>
-<div class="notice appointmentEditNotice">The ending time is recalculated automatically from the appointment type, truck, skids, handling, and priority.</div>
-<div class="error" id="editAppointmentError" role="alert"></div>
-<div class="wizardNav">
-<button class="secondaryBtn" onclick="closeAppointmentEditor()" type="button">Cancel</button>
-<div class="rightNav"><button class="primaryBtn" id="saveAppointmentButton" type="submit">Save Appointment</button></div>
-</div>
-</form>
-</div>
-</div>
-<div aria-labelledby="appointmentHistoryTitle" aria-modal="true" class="modalOverlay" id="appointmentHistoryModal" role="dialog">
-<div class="modal historyModal">
-<div class="modalHead">
-<div><h2 id="appointmentHistoryTitle">Appointment History</h2><p id="appointmentHistoryMeta">Loading appointment activity…</p></div>
-<button aria-label="Close" class="closeBtn" onclick="closeAppointmentHistory()" type="button">×</button>
-</div>
-<div class="modalBody">
-<div class="appointmentHistoryTimeline" id="appointmentHistoryTimeline"></div>
-<div class="error" id="appointmentHistoryError" role="alert"></div>
-<div class="wizardNav"><span></span><button class="secondaryBtn" onclick="closeAppointmentHistory()" type="button">Close</button></div>
-</div>
-</div>
-</div>
+
+
 <div class="modalOverlay" id="blockTimeModal">
-<div class="modal blockModal">
-<div class="modalHead">
-<div>
-<h2>Block Dock Time</h2>
-<p>Temporarily close one or more docks for maintenance, repairs, meetings, or events.</p>
-</div>
-<button class="closeBtn" onclick="closeBlockModal()">×</button>
-</div>
-<div class="modalBody">
-<div class="formGrid">
-<div class="field">
-<label>Block Date</label>
-<input id="blockDate" type="date"/>
-</div>
-<div class="field">
-<label>Start Time</label>
-<input id="blockStart" type="time"/>
-</div>
-<div class="field">
-<label>Duration</label>
-<select id="blockDuration">
-<option value="30">30 minutes</option>
-<option selected="" value="60">1 hour</option>
-<option value="90">1 hour 30 minutes</option>
-<option value="120">2 hours</option>
-</select>
-</div>
-<div class="field">
-<label>Reason</label>
-<select id="blockReason">
-<option>Maintenance</option>
-<option>Dock Door Repair</option>
-<option>Meeting / Break</option>
-<option>Event / BBQ</option>
-<option>Safety Inspection</option>
-<option>Other</option>
-</select>
-</div>
-<div class="field full">
-<div class="blockDockHeader">
-<label>Docks to Block *</label>
-<label class="checkLine">
-<input id="blockAllDocks" onchange="toggleAllBlockDocks(this.checked)" type="checkbox"/>
+  <div class="modal blockModal">
+    <div class="modalHead">
+      <div>
+        <h2>Block Dock Time</h2>
+        <p>Temporarily close one or more docks for maintenance, repairs, meetings, or events.</p>
+      </div>
+      <button class="closeBtn" onclick="closeBlockModal()">×</button>
+    </div>
+
+    <div class="modalBody">
+      <div class="formGrid">
+        <div class="field">
+          <label>Block Date</label>
+          <input id="blockDate" type="date">
+        </div>
+
+        <div class="field">
+          <label>Start Time</label>
+          <input id="blockStart" type="time">
+        </div>
+
+        <div class="field">
+          <label>Duration</label>
+          <select id="blockDuration">
+            <option value="30">30 minutes</option>
+            <option value="60" selected>1 hour</option>
+            <option value="90">1 hour 30 minutes</option>
+            <option value="120">2 hours</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Reason</label>
+          <select id="blockReason">
+            <option>Maintenance</option>
+            <option>Dock Door Repair</option>
+            <option>Meeting / Break</option>
+            <option>Event / BBQ</option>
+            <option>Safety Inspection</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <div class="blockDockHeader">
+            <label>Docks to Block *</label>
+            <label class="checkLine">
+              <input id="blockAllDocks" type="checkbox" onchange="toggleAllBlockDocks(this.checked)">
               Select all docks
             </label>
+          </div>
+          <div class="blockDockOptions" id="blockDockOptions"></div>
+        </div>
+
+        <div class="field full">
+          <label>Notes</label>
+          <textarea id="blockNotes" placeholder="Optional details"></textarea>
+        </div>
+      </div>
+
+      <div class="error" id="blockError"></div>
+
+      <div class="wizardNav">
+        <button class="secondaryBtn" onclick="closeBlockModal()">Cancel</button>
+        <div class="rightNav">
+          <button class="primaryBtn" onclick="submitBlockTime()">Confirm Block</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="blockDockOptions" id="blockDockOptions"></div>
-</div>
-<div class="field full">
-<label>Notes</label>
-<textarea id="blockNotes" placeholder="Optional details"></textarea>
-</div>
-</div>
-<div class="error" id="blockError"></div>
-<div class="wizardNav">
-<button class="secondaryBtn" onclick="closeBlockModal()">Cancel</button>
-<div class="rightNav">
-<button class="primaryBtn" onclick="submitBlockTime()">Confirm Block</button>
-</div>
-</div>
-</div>
-</div>
-</div>
+
+
 <div class="modalOverlay" id="customRangeModal">
-<div class="modal customRangeModalCard">
-<div class="modalHead">
-<div>
-<h2>Select Custom Date Range</h2>
-<p>Choose the start and end dates for the dashboard analysis.</p>
+  <div class="modal customRangeModalCard">
+    <div class="modalHead">
+      <div>
+        <h2>Select Custom Date Range</h2>
+        <p>Choose the start and end dates for the dashboard analysis.</p>
+      </div>
+      <button class="closeBtn" onclick="closeCustomRangeModal()">×</button>
+    </div>
+
+    <div class="modalBody">
+      <div class="formGrid">
+        <div class="field">
+          <label>Start Date</label>
+          <input id="customRangeStart" type="date">
+        </div>
+
+        <div class="field">
+          <label>End Date</label>
+          <input id="customRangeEnd" type="date">
+        </div>
+      </div>
+
+      <div class="error" id="customRangeError"></div>
+
+      <div class="wizardNav">
+        <button class="secondaryBtn" onclick="closeCustomRangeModal()">Cancel</button>
+        <div class="rightNav">
+          <button class="primaryBtn" onclick="applyCustomDashboardRange()">Apply Range</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<button class="closeBtn" onclick="closeCustomRangeModal()">×</button>
-</div>
-<div class="modalBody">
-<div class="formGrid">
-<div class="field">
-<label>Start Date</label>
-<input id="customRangeStart" type="date"/>
-</div>
-<div class="field">
-<label>End Date</label>
-<input id="customRangeEnd" type="date"/>
-</div>
-</div>
-<div class="error" id="customRangeError"></div>
-<div class="wizardNav">
-<button class="secondaryBtn" onclick="closeCustomRangeModal()">Cancel</button>
-<div class="rightNav">
-<button class="primaryBtn" onclick="applyCustomDashboardRange()">Apply Range</button>
-</div>
-</div>
-</div>
-</div>
-</div>
-<script src="./supabase-2.110.3.js?v=89-db68"></script>
-<script src="./maxdock-config.js?v=89-db68"></script>
-<script src="./maxdock-db.js?v=89-db68"></script>
-<script src="./maxdock.js?v=89-db68"></script>
-<script src="./maxdock-integration.js?v=89-db68"></script>
+
+<script src="./supabase-2.110.3.js?v=68-db47"></script>
+<script src="./maxdock-config.js?v=68-db47"></script>
+<script src="./maxdock-db.js?v=68-db47"></script>
+<script src="./maxdock.js?v=68-db47"></script>
+<script src="./maxdock-integration.js?v=68-db47"></script>
 </body></html>

@@ -395,8 +395,17 @@ function renderDashboard(){
     ["Open Slots",estimateOpenSlotsForRange(range.start,range.end)],
     ["Inbound Skids",inboundSkids],
     ["Outbound Skids",outboundSkids]
-  ].map(([k,v])=>`<div class="metric"><small>${k}</small><strong>${v}</strong></div>`).join("");
-  if($("dashboardRange"))$("dashboardRange").value=dashboardRangeMode;
+  ].map(([k,v])=>`<div class="metric"><small>${k}</small><strong>${v}</strong></div>`).join("")+
+  `<div class="metric rangeMetric">
+    <small>Date Range</small>
+    <select id="dashboardRange" onchange="setDashboardRange(this.value)">
+      ${["Daily","Weekly","Monthly","Yearly","Custom"].map(mode=>`<option ${dashboardRangeMode===mode?"selected":""}>${mode}</option>`).join("")}
+    </select>
+    ${dashboardRangeMode==="Custom"
+      ?`<button class="rangeCalendarBtn" onclick="openCustomRangeModal()" title="Choose custom dates">📅 Choose Dates</button>`
+      :""
+    }
+  </div>`;
 
 
   const dateObj=new Date(date+"T00:00:00");
@@ -475,7 +484,7 @@ function renderSchedule(items){
   const minimumLabelGap=80;
   const endLabelWidth=72;
   const endLabelGap=12;
-  const scaleAwareClearance = scale===120 ? 180 : (scale===60 ? 150 : 120);
+  const scaleAwareClearance = scale===120 ? 96 : (scale===60 ? 110 : 92);
   const finalLabelClearance=endLabelWidth+endLabelGap;
 
   const regularTicks=ticks.slice(0,-1);
