@@ -151,7 +151,7 @@
     if(!await db.requireAuth())return;
     await db.loadContext();
     if(db.getProfile()?.role_code!=="system_admin"){
-      location.replace("./index.html?v=93-db71");
+      location.replace("./index.html?v=94-db72");
       return;
     }
     db.addAccountControls();
