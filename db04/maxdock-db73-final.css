@@ -1,0 +1,19 @@
+/* DB73 final unified controls */
+body.db73Final .dashboardPrimaryActions,body.db73Final .dashboardActions{display:flex!important;visibility:visible!important;opacity:1!important}
+.db73MetricCustomize{position:relative!important;margin-left:auto!important;z-index:95!important}
+.db73MetricCustomize>summary{width:42px!important;height:42px!important;display:grid!important;place-items:center!important;border:1px solid #c7d7e4!important;border-radius:10px!important;background:#fff!important;color:#29475c!important;cursor:pointer!important;list-style:none!important}
+.db73MetricCustomize>summary::-webkit-details-marker{display:none!important}.db73MetricCustomize>summary svg{width:20px!important;height:20px!important;fill:currentColor!important}
+.db73MetricMenu{position:absolute!important;top:50px!important;right:0!important;z-index:1200!important;width:286px!important;max-height:430px!important;overflow:auto!important;padding:16px!important;border:1px solid #c7d7e4!important;border-radius:12px!important;background:#fff!important;box-shadow:0 18px 42px rgba(15,35,55,.18)!important}
+.db73MetricMenu>strong{display:block!important;margin-bottom:10px!important;font-size:16px!important;color:#123a59!important}.db73MetricOptions,.db73QueueMenu fieldset{display:grid!important;gap:2px!important;margin:0 0 10px!important;padding:0!important;border:0!important}
+.db73MetricOptions label,.db73QueueMenu label,.db73ShowAll{display:grid!important;grid-template-columns:20px 1fr!important;align-items:center!important;gap:10px!important;min-height:34px!important;padding:4px 2px!important;font-size:13px!important;font-weight:600!important;color:#17324d!important}
+.db73MetricMenu input[type=checkbox]{width:18px!important;height:18px!important;margin:0!important;accent-color:#0b82aa!important}.db73MetricMenu button{width:100%!important;margin-top:8px!important}
+body[data-page=dashboard].db73Final .dashboardFilters,body[data-page=reports].db73Final .reportFilters,body[data-page=queue].db73Final .queueFilters{display:flex!important;align-items:flex-end!important;gap:12px!important;overflow:visible!important}
+body[data-page=queue].db73Final .queueFilters{flex-wrap:nowrap!important}body[data-page=queue].db73Final .db73QueueRight{margin-left:auto!important;display:flex!important;align-items:center!important;gap:8px!important;flex:0 0 auto!important}
+body[data-page=queue].db73Final #openQueueDisplay{height:42px!important;white-space:nowrap!important}body[data-page=queue].db73Final #queueCustomize{margin:0!important}
+body[data-page=queue].db73Final #queueCustomizeMenu{right:0!important;left:auto!important;top:50px!important}
+body[data-page=queue].db73Final #queueMetrics{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:10px!important;margin:12px 0!important}
+body[data-page=queue].db73Final #queueMetrics>.metric{height:86px!important;min-height:86px!important;max-height:86px!important;padding:14px 16px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;overflow:hidden!important}
+body[data-page=queue].db73Final #queueMetrics>.metric small,body[data-page=queue].db73Final #queueMetrics>.metric strong{position:static!important;transform:none!important}body[data-page=queue].db73Final #queueMetrics>.metric strong{margin:7px 0 0 auto!important}
+body[data-page=queue].db73Final #queueMetrics>.metric:before,body[data-page=queue].db73Final #queueMetrics>.metric:after{display:none!important}
+body[data-page=settings].db73Final .compactPageActions{display:none!important}
+@media(max-width:1100px){body[data-page=queue].db73Final .queueFilters{flex-wrap:wrap!important}body[data-page=queue].db73Final #queueMetrics{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
