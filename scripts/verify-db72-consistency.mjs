@@ -33,7 +33,7 @@ for(const page of pages){
   const source=read(page);
   check(!source.includes("93-db71"),`${page} still references DB71 cache markers.`);
   if(page.endsWith(".html")){
-    check(source.includes("94-db72"),`${page} is missing the DB72 cache marker.`);
+    check(source.includes("96-db74"),`${page} is missing the DB72 cache marker.`);
   }
   check(source===read(`db04/${page}`),`${page} and db04/${page} are not identical.`);
 }
@@ -105,3 +105,4 @@ if(failures.length){
 }else{
   console.log("DB72 consistency contract verified.");
 }
+

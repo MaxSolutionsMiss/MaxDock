@@ -45,10 +45,10 @@
     return profile?.role_code==="customer"&&normalize(profile?.external_party_type)==="vendor";
   }
   function getLandingPage(roleCode=state.profile?.role_code){
-    if(isVendorProfile())return "my-appointments.html?v=95-db73";
-    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=95-db73";
-    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=95-db73";
-    return "index.html?v=95-db73";
+    if(isVendorProfile())return "my-appointments.html?v=96-db74";
+    if(["shipping_manager","coordinator"].includes(roleCode))return "queue.html?v=96-db74";
+    if(["system_admin","site_admin"].includes(roleCode))return "dashboard.html?v=96-db74";
+    return "index.html?v=96-db74";
   }
   function navigationRoute(link){
     try{return (new URL(link.href,location.href).pathname.split("/").pop()||"").replace(/\.html$/i,"")}
@@ -795,7 +795,7 @@
       const status=document.createElement("small");status.className="accountStatus";status.textContent="Signed in";
       const label=document.createElement("span");label.className="accountName";label.textContent=state.profile?.full_name||state.profile?.username||"MaxDock User";
       identity.append(status,label);
-      const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=95-db73";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
+      const bell=document.createElement("a");bell.id="maxdockNotificationBell";bell.className="notificationBell";bell.href="./my-appointments.html?v=96-db74";bell.title="Open notifications";bell.setAttribute("aria-label","Open notifications");
       bell.innerHTML=`<svg data-icon="solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8.7 11a3 3 0 0 0 5.4 0H9.3Z"/></svg><b id="maxdockNotificationCount" hidden>0</b>`;
       const button=document.createElement("button");button.type="button";button.className="accountSignOut";button.textContent="Sign Out";button.addEventListener("click",signOut);
       wrap.append(identity,bell,button);actions.append(wrap);
