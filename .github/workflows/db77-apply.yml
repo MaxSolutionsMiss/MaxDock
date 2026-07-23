@@ -1,0 +1,27 @@
+name: Apply DB77 control functionality
+on:
+  push:
+    branches: [agent/maxdock-db77-control-functionality]
+    paths:
+      - scripts/apply-db77-controls.mjs
+      - .github/workflows/db77-apply.yml
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/maxdock-db77-control-functionality
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/apply-db77-controls.mjs
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin.html dashboard.html data.html index.html login.html my-appointments.html queue.html reports.html set-password.html settings.html db04/admin.html db04/dashboard.html db04/data.html db04/index.html db04/login.html db04/my-appointments.html db04/queue.html db04/reports.html db04/set-password.html db04/settings.html maxdock-config.js db04/maxdock-config.js
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "DB77 apply load order and fresh asset markers"
+          git push origin HEAD:agent/maxdock-db77-control-functionality
