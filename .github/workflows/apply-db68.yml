@@ -98,9 +98,12 @@ jobs:
 
           css=(root/'maxdock-db68.css').read_text()
           js=(root/'maxdock-db68.js').read_text()
-          assert '--db68-kpi-height:78px' in css
+          assert '--db68-card-height:78px' in css
           assert 'db68Clean' in js
-          assert 'MutationObserver' not in js
+          assert js.count('MutationObserver')==2
+          assert 'observe(document.body' not in js
+          assert 'subtree:true' not in js
+          assert 'attributes:true' not in js
           PY
 
       - name: Finalize DB68 review branch
