@@ -1,57 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="stylesheet" href="./maxdock.css?v=68-db47">
-<link rel="stylesheet" href="./maxdock-db04.css?v=68-db47">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
+<link href="./maxdock.css?v=89-db68" rel="stylesheet"/>
+<link href="./maxdock-db04.css?v=89-db68" rel="stylesheet"/>
 <title>MaxDock – Internal Sign In</title>
 </head>
-<body data-page="login" class="loginPage">
-  <main class="loginShell">
-    <section class="loginCard" aria-labelledby="loginTitle">
-      <div class="loginBrand">
-        <div class="logo loginLogo" aria-hidden="true"><img class="logoMark" src="./max-solutions-mark.png" alt=""></div>
-        <div><h1 class="loginProduct" id="loginTitle">MaxDock</h1><p class="loginCompany">Max Solutions Packaging Inc.</p></div>
-      </div>
-      <p class="loginIntro">Sign in with your MaxDock username or email.</p>
-
-      <form id="loginForm" class="loginForm">
-        <div class="field">
-          <label for="loginEmail">Username or email</label>
-          <input id="loginEmail" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
-        </div>
-        <div class="field">
-          <label for="loginPassword">Password</label>
-          <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
-        </div>
-        <div class="error loginError" id="loginError" role="alert"></div>
-        <button class="primaryBtn loginButton" id="loginButton" type="submit">Sign In</button>
-      </form>
-      <p class="loginHelp">Accounts are created by a MaxDock administrator. Public sign-up is disabled.</p>
-      <div class="loginRecoveryEntry">
-        <button class="loginTextButton" id="openRecovery" type="button">Forgot your username or password?</button>
-      </div>
-      <form id="recoveryForm" class="loginRecoveryPanel" hidden>
-        <div class="loginRecoveryHead">
-          <strong>Recover your MaxDock access</strong>
-          <p>Enter the email connected to your account. We’ll send a secure password-reset link. You can also use this email instead of your username when signing in. If no email was added to the account, ask your MaxDock administrator to reset it.</p>
-        </div>
-        <div class="field">
-          <label for="recoveryEmail">Account email</label>
-          <input id="recoveryEmail" type="email" autocomplete="email" placeholder="name@company.com" required>
-        </div>
-        <div class="error loginError" id="recoveryError" role="alert"></div>
-        <div class="loginRecoverySuccess" id="recoverySuccess" role="status" hidden></div>
-        <button class="primaryBtn loginButton" id="recoveryButton" type="submit">Send Reset Link</button>
-        <button class="loginTextButton loginBackButton" id="closeRecovery" type="button">Back to sign in</button>
-      </form>
-    </section>
-  </main>
-<script src="./supabase-2.110.3.js?v=68-db47"></script>
-<script src="./maxdock-config.js?v=68-db47"></script>
-<script src="./maxdock-db.js?v=68-db47"></script>
-<script src="./maxdock-auth.js?v=68-db47"></script>
+<body class="loginPage" data-page="login" data-release="db68">
+<main class="loginShell">
+<section aria-labelledby="loginTitle" class="loginCard">
+<div class="loginBrand">
+<div aria-hidden="true" class="logo loginLogo"><img alt="" class="logoMark" src="./max-solutions-mark.png"/></div>
+<div><h1 class="loginProduct" id="loginTitle">MaxDock</h1><p class="loginCompany">Max Solutions Packaging Inc.</p></div>
+</div>
+<p class="loginIntro">Sign in with your MaxDock username or email.</p>
+<form class="loginForm" id="loginForm">
+<div class="field">
+<label for="loginEmail">Username or email</label>
+<input autocapitalize="none" autocomplete="username" autofocus="" id="loginEmail" name="username" required="" spellcheck="false"/>
+</div>
+<div class="field">
+<label for="loginPassword">Password</label>
+<input autocomplete="current-password" id="loginPassword" name="password" required="" type="password"/>
+</div>
+<div class="error loginError" id="loginError" role="alert"></div>
+<button class="primaryBtn loginButton" id="loginButton" type="submit">Sign In</button>
+</form>
+<p class="loginHelp">Accounts are created by a MaxDock administrator. Public sign-up is disabled.</p>
+<div class="loginRecoveryEntry">
+<button class="loginTextButton" id="openRecovery" type="button">Forgot your username or password?</button>
+</div>
+<form class="loginRecoveryPanel" hidden="" id="recoveryForm">
+<div class="loginRecoveryHead">
+<strong>Recover your MaxDock access</strong>
+<p>Enter the email connected to your account. We’ll send a secure password-reset link. You can also use this email instead of your username when signing in. If no email was added to the account, ask your MaxDock administrator to reset it.</p>
+</div>
+<div class="field">
+<label for="recoveryEmail">Account email</label>
+<input autocomplete="email" id="recoveryEmail" placeholder="name@company.com" required="" type="email"/>
+</div>
+<div class="error loginError" id="recoveryError" role="alert"></div>
+<div class="loginRecoverySuccess" hidden="" id="recoverySuccess" role="status"></div>
+<button class="primaryBtn loginButton" id="recoveryButton" type="submit">Send Reset Link</button>
+<button class="loginTextButton loginBackButton" id="closeRecovery" type="button">Back to sign in</button>
+</form>
+</section>
+</main>
+<script src="./supabase-2.110.3.js?v=89-db68"></script>
+<script src="./maxdock-config.js?v=89-db68"></script>
+<script src="./maxdock-db.js?v=89-db68"></script>
+<script src="./maxdock-auth.js?v=89-db68"></script>
 </body>
 </html>

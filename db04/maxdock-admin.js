@@ -77,16 +77,15 @@
   function displayEmail(user){return !user.email||isSyntheticEmail(user.email)?`Username: ${user.username}`:user.email}
 
   function updateSummary(){
-    const setSummary=(id,value)=>{const element=$(id);if(element)element.textContent=value};
-    setSummary("totalUsers",state.users.length);
-    setSummary("activeUsers",state.users.filter(user=>user.is_active).length);
-    setSummary("usedLast7",state.users.filter(user=>Number(user.active_days_7)>0).length);
-    setSummary("neverUsed",state.users.filter(user=>!user.last_activity_at).length);
-    setSummary("adminFilterAllCount",state.users.length);
-    setSummary("adminFilterInternalCount",state.users.filter(user=>user.role_code!=="customer").length);
-    setSummary("adminFilterCustomerCount",state.users.filter(user=>selectedPrivilegeCode(user)==="customer").length);
-    setSummary("adminFilterVendorCount",state.users.filter(user=>selectedPrivilegeCode(user)==="vendor").length);
-    setSummary("adminFilterSetupCount",state.users.filter(user=>user.must_change_password).length);
+    $("totalUsers").textContent=state.users.length;
+    $("activeUsers").textContent=state.users.filter(user=>user.is_active).length;
+    $("usedLast7").textContent=state.users.filter(user=>Number(user.active_days_7)>0).length;
+    $("neverUsed").textContent=state.users.filter(user=>!user.last_activity_at).length;
+    $("adminFilterAllCount").textContent=state.users.length;
+    $("adminFilterInternalCount").textContent=state.users.filter(user=>user.role_code!=="customer").length;
+    $("adminFilterCustomerCount").textContent=state.users.filter(user=>selectedPrivilegeCode(user)==="customer").length;
+    $("adminFilterVendorCount").textContent=state.users.filter(user=>selectedPrivilegeCode(user)==="vendor").length;
+    $("adminFilterSetupCount").textContent=state.users.filter(user=>user.must_change_password).length;
   }
 
   function userMatchesFilter(user){
