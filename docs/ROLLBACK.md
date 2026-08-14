@@ -1987,4 +1987,64 @@ short and honest; expect the table itself to have churned.
 
 ### What was verified after the change
 
-Recorded in the section below once the rebuild had run.
+**378 loads across 7 sites and 10 operating days**, Wed 12 August to Sat 22 August, Sunday
+closed. The clear that preceded it took `appointments` 332 → 0, `appointment_audit_log` 493 → 0
+and appointment-linked `user_notifications` 424 → 0, with configuration untouched: 12 locations,
+34 docks, 5 truck types, 84 operating-hours rows, 8 accounts.
+
+| Day | | Loads | Done | Working | At gate | Confirmed | Scheduled | No-show | Cancelled |
+|---|---|---|---|---|---|---|---|---|---|
+| 12 Aug | Wed | 41 | 35 | | | | | 5 | 1 |
+| 13 Aug | Thu | 40 | 37 | | | | | 1 | 2 |
+| 14 Aug | Fri | 56 | 31 | 2 | 3 | 7 | 8 | 5 | |
+| 15 Aug | Sat | 14 | | | | 4 | 10 | | |
+| 17 Aug | Mon | 40 | | | | 24 | 16 | | |
+| 18 Aug | Tue | 41 | | | | 19 | 22 | | |
+| 19 Aug | Wed | 44 | | | | 15 | 29 | | |
+| 20 Aug | Thu | 42 | | | | 13 | 29 | | |
+| 21 Aug | Fri | 43 | | | | 24 | 19 | | |
+| 22 Aug | Sat | 17 | | | | 6 | 11 | | |
+
+Truck mix 147 × 53 ft, 119 × 48 ft, 79 × 26 ft, 33 vans. 21 partner companies, 10 carriers, 18
+priority runs, 4 Max-to-Max transfers each with its mirrored movement written at the far end.
+
+**Integrity, all measured rather than assumed:**
+
+| Check | Result |
+|---|---|
+| Loads starting or ending outside their site's operating hours | 0 |
+| Two loads overlapping on one dock | 0 |
+| Load on a dock whose direction contradicts its own | 0 |
+| Duplicate PO / BOL references | 0 |
+| Missing required field on any load | 0 |
+| Completed load with no check-in, or no departure | 0 |
+| Service recorded before arrival, or departure before service | 0 |
+
+Two of those needed fixing rather than merely checking, and both are worth recording:
+
+- **Thirteen loads sat on a Milton dock whose direction contradicted theirs.** This is not a
+  seeding artefact — `book_appointment`'s dock query filters on truck compatibility and the
+  overlap constraint but **not on `direction_mode`**, so it will legitimately put an outbound
+  load on an inbound-only door. The board labels every dock lane with its direction, so it shows.
+  All thirteen were reassigned through `update_appointment_details`, which is the RPC a
+  coordinator would use. **The underlying behaviour is unchanged and is worth a look before real
+  bookings** — Milton is currently the only site with direction-specific doors.
+- **One load ran 45 minutes past a 16:30 close.** Moved to a legal window, also through
+  `update_appointment_details`.
+
+**Combining opportunities exist on every one of the ten days**, at Mississauga, Pickering, Milton
+and Markham, sized against each site's own 53 ft capacity — 52 skids at Mississauga, 26 elsewhere.
+Most sit between 81% and 96% of one trailer, which is the case worth showing. Several deliberately
+exceed one trailer so the bigger-truck answer has something to answer. Mississauga has one on
+every forward day but not on 14 August itself: its two trailer doors were already full by the
+afternoon, and manufacturing a slot would have meant moving real bookings around to flatter a
+demonstration.
+
+**Not verified, and the reason:** the on-time percentage as the reports actually compute it. The
+Supabase connection expired before that query ran. Measured strictly — arrival at or before the
+booked minute — it is 59 on time against 44 late. The reports apply a fifteen-minute grace, which
+by the generator's own distribution should land near 80%, but that figure is derived rather than
+measured and should be read off the Vendor scorecard rather than trusted from here.
+
+The temporary `seed_demo_appointment` function was dropped and its absence confirmed by querying
+`pg_proc`.
