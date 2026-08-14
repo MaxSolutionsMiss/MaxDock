@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MaxDock · Site onboarding pack</title>
+<style>
+/* ─────────────────────────────────────────────────────────────────────────────
+   MaxDock site onboarding pack.
+
+   One file. No network, no login, no install — it is opened from an email
+   attachment and filled in on whatever browser the site already has. Everything
+   below is MaxDock's own design system so the form looks like the product the
+   site is about to be given.
+   ───────────────────────────────────────────────────────────────────────────── */
+:root{
+  --dock:#0082CB; --dock-hover:#006BA8; --dock-wash:#E4F1FA; --dock-deep:#00527E;
+  --ground:#F6F8F9; --surface:#FFFFFF; --surface-sunk:#EFF2F4;
+  --rule:#DCE2E6; --rule-strong:#C2CBD1;
+  --ink:#16202A; --ink-muted:#55636E; --ink-faint:#8A959E;
+  --ok:#1B7A4B; --ok-wash:#E6F2EC; --signal:#B8690E; --signal-wash:#FDF2E2;
+  --stop:#B3261E; --stop-wash:#FBEAE9;
+  --font-ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  --radius:5px; --radius-lg:7px; --ctl-h:36px;
+  --shadow:0 12px 32px rgba(22,32,42,.16),0 2px 6px rgba(22,32,42,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--font-ui);
+  font-size:14.5px;line-height:1.5;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+
+/* ── masthead ─────────────────────────────────────────────────────────────── */
+.top{background:var(--ink);color:#fff;padding:var(--s5) var(--s4) var(--s4)}
+.top__in{max-width:960px;margin:0 auto;display:grid;gap:var(--s3)}
+.brand{display:flex;align-items:center;gap:var(--s3)}
+.brand__mk{width:38px;height:38px;border-radius:var(--radius);background:var(--dock);display:grid;place-items:center;flex:none}
+.brand__mk svg{width:22px;height:22px;fill:#fff}
+.brand__t{font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+.brand__s{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:#8FA3B4;font-weight:600}
+.top p{color:#B9C6D1;max-width:70ch;font-size:14px}
+.top b{color:#fff;font-weight:600}
+
+/* ── progress ─────────────────────────────────────────────────────────────── */
+.bar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--rule)}
+.bar__in{max-width:960px;margin:0 auto;padding:var(--s2) var(--s4);display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+.bar__t{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-muted);font-weight:700;white-space:nowrap}
+.track{flex:1 1 200px;height:7px;border-radius:99px;background:var(--surface-sunk);overflow:hidden;min-width:120px}
+.track i{display:block;height:100%;width:0;background:var(--dock);transition:width .18s}
+.bar__n{font-size:13px;color:var(--ink-muted);white-space:nowrap}
+.bar__n b{color:var(--ink);font-weight:600}
+
+.wrap{max-width:960px;margin:0 auto;padding:var(--s5) var(--s4) 140px}
+
+/* ── section cards ────────────────────────────────────────────────────────── */
+.sec{background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius-lg);margin-bottom:var(--s4);overflow:hidden}
+.sec__h{display:flex;align-items:flex-start;gap:var(--s3);padding:var(--s4);border-bottom:1px solid var(--rule);background:var(--surface)}
+.sec__n{width:26px;height:26px;flex:none;border-radius:50%;background:var(--dock-wash);color:var(--dock-deep);
+  font-size:12.5px;font-weight:700;display:grid;place-items:center;margin-top:1px}
+.sec__x{flex:1 1 auto;min-width:0}
+.sec__t{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.sec__d{font-size:13px;color:var(--ink-muted);margin-top:2px;max-width:74ch}
+.sec__s{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:99px;white-space:nowrap;flex:none;margin-top:2px}
+.sec__s--todo{background:var(--surface-sunk);color:var(--ink-muted)}
+.sec__s--part{background:var(--signal-wash);color:var(--signal)}
+.sec__s--done{background:var(--ok-wash);color:var(--ok)}
+.sec__b{padding:var(--s4)}
+
+/* ── fields ───────────────────────────────────────────────────────────────── */
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--s3)}
+.f{grid-column:span 6;display:flex;flex-direction:column;min-width:0}
+/* Spans are classes, not inline styles, so the narrow-screen rules below can win.
+   Written inline they could not: an element style beats any selector, and a phone
+   got three columns of eight-character labels sitting on top of each other. */
+.s2{grid-column:span 2} .s3{grid-column:span 3} .s4{grid-column:span 4}
+.s5{grid-column:span 5} .s6{grid-column:span 6} .s8{grid-column:span 8} .s12{grid-column:span 12}
+@media (max-width:900px){
+  .s2,.s3{grid-column:span 4} .s5{grid-column:span 6}
+}
+@media (max-width:640px){
+  .f,.s2,.s3,.s4,.s5,.s6,.s8{grid-column:span 12}
+}
+.f__l{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-muted);font-weight:600;margin-bottom:3px}
+.f__l .req{color:var(--stop);margin-left:2px}
+.f__h{font-size:12.5px;color:var(--ink-faint);margin-top:3px;line-height:1.4}
+input[type=text],input[type=email],input[type=number],input[type=time],input[type=date],select,textarea{
+  width:100%;background:var(--surface);border:1px solid var(--rule-strong);border-radius:var(--radius);
+  padding:0 10px;min-height:var(--ctl-h);height:var(--ctl-h)}
+textarea{height:auto;min-height:76px;padding:8px 10px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--dock);outline-offset:-1px;border-color:var(--dock)}
+input.bad,select.bad{border-color:var(--stop);background:var(--stop-wash)}
+.err{font-size:12.5px;color:var(--stop);margin-top:3px;font-weight:500}
+.mono{font-family:var(--mono);font-size:13px}
+
+.check{display:flex;align-items:center;gap:var(--s2);min-height:var(--ctl-h);font-size:14px}
+.check input{width:17px;height:17px;min-height:0;height:auto;accent-color:var(--dock);flex:none;margin:0}
+.checks{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4)}
+
+/* ── repeating rows ───────────────────────────────────────────────────────── */
+.rows{display:grid;gap:var(--s2)}
+.row{border:1px solid var(--rule);border-radius:var(--radius);padding:var(--s3);background:var(--surface)}
+.row .grid{gap:var(--s2)}
+.row__top{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);margin-bottom:var(--s2)}
+.row__n{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint);font-weight:700}
+.x{border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink-muted);border-radius:var(--radius);
+  height:28px;padding:0 10px;font-size:12.5px;cursor:pointer}
+.x:hover{background:var(--stop-wash);color:var(--stop);border-color:var(--stop)}
+.add{margin-top:var(--s2);border:1px dashed var(--rule-strong);background:var(--surface-sunk);color:var(--dock-deep);
+  border-radius:var(--radius);min-height:var(--ctl-h);padding:0 14px;font-weight:600;font-size:13.5px;cursor:pointer;width:100%}
+.add:hover{background:var(--dock-wash);border-color:var(--dock)}
+.empty{font-size:13px;color:var(--ink-faint);padding:var(--s3);text-align:center;background:var(--surface-sunk);border-radius:var(--radius)}
+
+/* hours table */
+.hours{display:grid;gap:var(--s1)}
+.hrow{display:grid;grid-template-columns:110px 96px 1fr 1fr;gap:var(--s2);align-items:center}
+.hrow__d{font-weight:600;font-size:13.5px}
+@media (max-width:600px){.hrow{grid-template-columns:1fr 1fr;}.hrow__d{grid-column:1/-1}}
+
+/* trucks table */
+.tt{width:100%;border-collapse:collapse}
+.tt th{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-muted);font-weight:600;
+  text-align:left;padding:var(--s2);background:var(--surface-sunk);border-bottom:1px solid var(--rule);white-space:nowrap}
+.tt td{padding:6px var(--s2);border-bottom:1px solid var(--rule);vertical-align:middle}
+.tt td:first-child{font-weight:600;white-space:nowrap}
+.scroll{overflow-x:auto}
+
+.note{background:var(--dock-wash);border-left:3px solid var(--dock);border-radius:var(--radius);
+  padding:var(--s3) var(--s4);font-size:13.5px;line-height:1.55;color:var(--ink);margin-bottom:var(--s4)}
+.note b{font-weight:600}
+
+/* ── footer actions ───────────────────────────────────────────────────────── */
+.foot{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--rule);
+  box-shadow:var(--shadow);z-index:30}
+.foot__in{max-width:960px;margin:0 auto;padding:var(--s3) var(--s4);display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+.foot__m{flex:1 1 220px;font-size:13px;color:var(--ink-muted);min-width:0}
+.foot__m b{color:var(--ink);font-weight:600}
+.btn{border:1px solid transparent;border-radius:var(--radius);min-height:var(--ctl-h);height:var(--ctl-h);
+  padding:0 16px;font-weight:600;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.btn--primary{background:var(--dock);color:#fff}
+.btn--primary:hover{background:var(--dock-hover)}
+.btn--quiet{background:var(--surface);color:var(--ink);border-color:var(--rule-strong)}
+.btn--quiet:hover{background:var(--surface-sunk)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+dialog{border:none;border-radius:var(--radius-lg);padding:0;max-width:680px;width:calc(100% - 32px);box-shadow:var(--shadow)}
+dialog::backdrop{background:rgba(22,32,42,.45)}
+.dlg{padding:var(--s5)}
+.dlg h2{font-size:18px;font-weight:600;margin-bottom:var(--s2)}
+.dlg p{font-size:14px;color:var(--ink-muted);margin-bottom:var(--s3)}
+.dlg textarea{width:100%;height:220px;font-family:var(--mono);font-size:12px;line-height:1.45}
+.dlg__a{display:flex;gap:var(--s2);justify-content:flex-end;margin-top:var(--s3);flex-wrap:wrap}
+
+.issues{margin-top:var(--s2);display:grid;gap:var(--s1);max-height:200px;overflow:auto}
+.issue{font-size:13px;color:var(--stop);background:var(--stop-wash);border-radius:var(--radius);padding:6px 10px}
+.issue a{color:inherit;font-weight:600}
+
+@media print{
+  .bar,.foot,.add,.x{display:none!important}
+  body{background:#fff}
+  .wrap{padding:0;max-width:none}
+  .sec{break-inside:avoid;box-shadow:none}
+  .top{background:#fff;color:var(--ink);border-bottom:2px solid var(--ink)}
+  .top p,.brand__s{color:var(--ink-muted)}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top__in">
+    <div class="brand">
+      <span class="brand__mk"><svg viewBox="0 0 24 24"><path d="M2 7h11v8H2z"/><path d="M14 10h4l3 3v2h-7z"/><circle cx="6" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg></span>
+      <span>
+        <span class="brand__s">Max Solutions</span>
+        <h1 class="brand__t">MaxDock &middot; site onboarding pack</h1>
+      </span>
+    </div>
+    <p>Fill this in once and your site is set up in MaxDock in one go, instead of somebody
+    reading settings back to you over the phone. <b>Nothing here is sent anywhere.</b> It all stays
+    on this computer until you press Save at the bottom and email the file back.</p>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="bar__in">
+    <span class="bar__t">Progress</span>
+    <span class="track"><i data-track></i></span>
+    <span class="bar__n"><b data-done>0</b> of <b data-total>0</b> required answers</span>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="note">
+    <b>Most of this is already filled in with what MaxDock uses everywhere else.</b> You only need to
+    change the lines where your site is different. If you are not sure about something, leave the
+    suggested value &mdash; it can be changed later in Settings without anybody being interrupted.
+  </div>
+  <form id="pack" autocomplete="off"></form>
+</main>
+
+<footer class="foot">
+  <div class="foot__in">
+    <span class="foot__m" data-status>Fill in the required answers to save.</span>
+    <button class="btn btn--quiet" type="button" data-print>Print</button>
+    <button class="btn btn--quiet" type="button" data-copy>Copy instead</button>
+    <button class="btn btn--primary" type="button" data-save>Save filled pack</button>
+  </div>
+</footer>
+
+<dialog data-dlg>
+  <div class="dlg">
+    <h2 data-dlg-t>Copy this back to Max Solutions</h2>
+    <p data-dlg-p>Select all of the text below, copy it, and paste it into your reply.</p>
+    <textarea data-dlg-x readonly></textarea>
+    <div class="dlg__a">
+      <button class="btn btn--quiet" type="button" data-dlg-close>Close</button>
+      <button class="btn btn--primary" type="button" data-dlg-copy>Copy to clipboard</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/* ───────────────────────────────────────────────────────────────────────────
+   The pack is described once, as data, and drawn from that description.
+
+   That matters for more than tidiness: the field keys below are the same keys
+   the importer reads on the way back in, so a question can never be added here
+   and quietly land nowhere. One list, both ends.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+const TRUCKS = [
+  { code:'trailer_53',        name:'53 ft trailer',      skids:26, setup:20 },
+  { code:'trailer_48',        name:'48 ft trailer',      skids:20, setup:18 },
+  { code:'straight_truck_26', name:'26 ft straight truck', skids:10, setup:12 },
+  { code:'cube_van',          name:'Cube van',            skids:2,  setup:8  },
+  { code:'courier_van',       name:'Courier van',         skids:1,  setup:5  },
+];
+
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+const ZONES = ['America/Toronto','America/New_York','America/Detroit','America/Chicago',
+  'America/Denver','America/Phoenix','America/Los_Angeles','America/Vancouver','America/Halifax'];
+
+const ROLES = ['System Admin','Site Admin','Shipping Manager','Coordinator','Customer','Vendor','Carrier'];
+
+const APPT_TYPES = [
+  ['raw_material','Raw material'], ['finished_goods','Finished goods'], ['wip','WIP'],
+  ['customer_pickup','Customer pickup'], ['return_rework','Return / rework'], ['other','Other'],
+];
+const HANDLING_TYPES = [
+  ['standard','Standard'], ['mixed_skus','Mixed SKUs'], ['requires_counting','Requires counting'],
+  ['special_handling','Special handling'], ['paperwork_samples','Paperwork / samples'],
+];
+
+const SECTIONS = [
+  {
+    id:'site', title:'The site', hint:'What the plant is called and where a driver is going.',
+    fields:[
+      { k:'name', l:'Site name', t:'text', req:1, span:6, hint:'As people say it. "Guelph", not "Max Solutions Guelph Plant 2".' },
+      { k:'code', l:'Short code', t:'code', req:1, span:3, hint:'Lower case, no spaces. Used in links.' },
+      { k:'timezone', l:'Time zone', t:'select', req:1, span:3, options:ZONES, value:'America/Toronto' },
+      { k:'address_line_1', l:'Street address', t:'text', req:1, span:8 },
+      { k:'address_line_2', l:'Unit / building', t:'text', span:4 },
+      { k:'city', l:'City', t:'text', req:1, span:4 },
+      { k:'province_state', l:'Province / state', t:'text', req:1, span:4 },
+      { k:'postal_zip', l:'Postal / ZIP', t:'text', req:1, span:4 },
+      { k:'country_code', l:'Country', t:'select', span:3, options:['CA','US'], value:'CA' },
+      { k:'shipping_contact', l:'Who runs shipping here', t:'text', req:1, span:5, hint:'Name of the person MaxDock should treat as the site contact.' },
+      { k:'shipping_phone', l:'Phone', t:'text', span:4 },
+      { k:'arrival_instructions', l:'What a driver needs to know on arrival', t:'textarea', span:12,
+        hint:'Gate code, which door to report to, where to park, anything a first-time driver gets wrong.' },
+    ],
+  },
+  {
+    id:'hours', title:'Operating hours', hint:'When trucks can be booked. Overtime and the odd Saturday are handled separately, so put the normal week here.',
+    kind:'hours',
+  },
+  {
+    id:'docks', title:'Docks', hint:'One row per door. The name is what appears on the board, so use what the crew calls it.',
+    kind:'rows', rowName:'Dock', min:1,
+    add:{ name:'', description:'', direction:'both', trucks:TRUCKS.map(t=>t.code) },
+    fields:[
+      { k:'name', l:'Dock name', t:'text', req:1, span:4, hint:'"Dock 1", "North door", "Shipping 3".' },
+      { k:'direction', l:'Used for', t:'select', req:1, span:4, options:[['both','Inbound and outbound'],['inbound','Inbound only'],['outbound','Outbound only']] },
+      { k:'description', l:'Note', t:'text', span:4, hint:'Optional. "Ground level", "No trailer access".' },
+      { k:'trucks', l:'Trucks this door can take', t:'truckchecks', span:12 },
+    ],
+  },
+  {
+    id:'trucks', title:'Trucks and what they hold here', hint:'The same trailer holds a different number of skids in a different building. Put your numbers in.',
+    kind:'trucks',
+  },
+  {
+    id:'timing', title:'How long a truck takes', hint:'MaxDock works out each appointment length from these, so a 26-skid load is automatically given longer than a 4-skid one.',
+    fields:[
+      { k:'slot_interval_minutes', l:'Booking slots every', t:'select', req:1, span:4, options:[['15','15 minutes'],['30','30 minutes'],['60','60 minutes']], value:'15' },
+      { k:'base_minutes', l:'Fixed time per truck', t:'number', req:1, span:4, value:10, min:0, max:240, unit:'minutes', hint:'Paperwork and checks, before any unloading.' },
+      { k:'minutes_per_skid', l:'Time per skid', t:'number', req:1, span:4, value:2, min:0, max:60, step:0.5, unit:'minutes' },
+      { k:'buffer_minutes', l:'Gap between appointments', t:'number', req:1, span:4, value:10, min:0, max:120, unit:'minutes' },
+      { k:'full_truck_skid_threshold', l:'A full truck is at least', t:'number', req:1, span:4, value:24, min:1, max:60, unit:'skids' },
+      { k:'full_truck_minimum_minutes', l:'A full truck gets at least', t:'number', req:1, span:4, value:75, min:0, max:480, unit:'minutes' },
+      { k:'priority_minimum_minutes', l:'A priority load gets at least', t:'number', span:4, value:75, min:0, max:480, unit:'minutes' },
+    ],
+  },
+  {
+    id:'booking', title:'Booking rules', hint:'How far ahead people may book, and how much warning you need.',
+    fields:[
+      { k:'minimum_notice_minutes', l:'Least notice you will accept', t:'number', req:1, span:4, value:0, min:0, max:10080, unit:'minutes',
+        hint:'0 means somebody can book for later today. 480 is one working day.' },
+      { k:'maximum_advance_days', l:'Furthest ahead anyone may book', t:'number', req:1, span:4, value:90, min:1, max:365, unit:'days' },
+      { k:'max_concurrent_appointments', l:'Most trucks at once', t:'number', span:4, min:1, max:50, unit:'trucks',
+        hint:'Leave blank for no limit beyond the number of doors.' },
+      { k:'auto_assign_dock', l:'Let MaxDock choose the door', t:'bool', span:6, value:true,
+        hint:'On is normal. Off means a coordinator picks a door for every booking by hand.' },
+      { k:'suggest_same_day_consolidation', l:'Suggest combining loads going the same way', t:'bool', span:6, value:true },
+    ],
+  },
+  {
+    id:'capacity', title:'Floor capacity', hint:'Optional. Only fill this in if running out of floor space is a real constraint here.',
+    fields:[
+      { k:'capacity_enabled', l:'Watch floor capacity', t:'bool', span:12, value:false },
+      { k:'skid_capacity', l:'Skids the floor holds', t:'number', span:4, min:1, max:5000, unit:'skids' },
+      { k:'capacity_reserve_skids', l:'Keep free as a buffer', t:'number', span:4, min:0, max:1000, unit:'skids' },
+      { k:'capacity_enforcement_mode', l:'When a booking would go over', t:'select', span:4,
+        options:[['warn','Warn, but allow it'],['enforce','Refuse the booking']], value:'warn' },
+    ],
+  },
+  {
+    id:'labour', title:'Shifts and crew', hint:'Used to work out whether a day has the people to handle the trucks booked on it.',
+    fields:[
+      { k:'crew_size', l:'People on the dock, typically', t:'number', span:3, value:4, min:1, max:200 },
+      { k:'shift_hours', l:'Hours in a shift', t:'number', span:3, value:8, min:1, max:24, step:0.5 },
+      { k:'handlers_per_truck', l:'People needed per truck', t:'number', span:3, value:1, min:1, max:20 },
+      { k:'crew_availability_percent', l:'Typically available', t:'number', span:3, value:85, min:1, max:100, unit:'%',
+        hint:'Allows for breaks, holidays and absence.' },
+      { k:'track_service_start', l:'Record when unloading starts', t:'bool', span:6, value:true },
+      { k:'track_departure', l:'Record when the truck leaves', t:'bool', span:6, value:true },
+    ],
+  },
+  {
+    id:'shifts', title:'Shift times', hint:'Optional. Add a row per shift if you run more than one.',
+    kind:'rows', rowName:'Shift', min:0,
+    add:{ name:'', start_time:'', end_time:'', people:'', days:'Mon-Fri' },
+    fields:[
+      { k:'name', l:'Shift name', t:'text', req:1, span:4, hint:'"Days", "Afternoons", "Nights".' },
+      { k:'start_time', l:'Starts', t:'time', req:1, span:2 },
+      { k:'end_time', l:'Ends', t:'time', req:1, span:2 },
+      { k:'people', l:'People on it', t:'number', span:2, min:1, max:200 },
+      { k:'days', l:'Days', t:'text', span:2, hint:'e.g. Mon-Fri' },
+    ],
+  },
+  {
+    id:'closures', title:'Closures and shutdowns', hint:'Days the site will not take a truck. Statutory holidays can be added later in one click, so only list what is specific to you.',
+    kind:'rows', rowName:'Closure', min:0,
+    add:{ holiday_date:'', name:'' },
+    fields:[
+      { k:'holiday_date', l:'Date', t:'date', req:1, span:4 },
+      { k:'name', l:'Reason', t:'text', req:1, span:8, hint:'"Summer shutdown", "Inventory count".' },
+    ],
+  },
+  {
+    id:'work', title:'What you send and receive', hint:'Untick anything that never happens here, so your people are not offered it when booking.',
+    kind:'work',
+  },
+  {
+    id:'people', title:'People who need a login', hint:'Everyone here who books, receives or reports. Outside carriers and vendors go in too — put their company in the last column.',
+    kind:'rows', rowName:'Person', min:1,
+    add:{ full_name:'', username:'', email:'', role:'Coordinator', company:'' },
+    fields:[
+      { k:'full_name', l:'Full name', t:'text', req:1, span:3 },
+      { k:'username', l:'Username', t:'code', req:1, span:2, hint:'What they type to sign in.' },
+      { k:'email', l:'Email', t:'text', req:1, span:3 },
+      { k:'role', l:'Role', t:'select', req:1, span:2, options:ROLES, value:'Coordinator' },
+      { k:'company', l:'Company', t:'text', span:2, hint:'Outside people only.' },
+    ],
+  },
+];
+
+/* ── state ─────────────────────────────────────────────────────────────────── */
+const state = {
+  values: {},                       // sectionId -> { key: value }
+  rows: {},                         // sectionId -> [ {..} ]
+  hours: DAYS.map((d, i) => ({ day: i, is_open: i >= 1 && i <= 5, open_time: '07:00', close_time: '16:30' })),
+  trucks: TRUCKS.map(t => ({ code: t.code, used: t.code !== 'courier_van', skids: t.skids, setup: t.setup })),
+  work: {
+    appointment_types: APPT_TYPES.map(a => a[0]),
+    handling_types: HANDLING_TYPES.map(h => h[0]),
+  },
+};
+
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
+
+for (const s of SECTIONS) {
+  state.values[s.id] = {};
+  if (s.fields && !s.kind) for (const f of s.fields) if (f.value !== undefined) state.values[s.id][f.k] = f.value;
+  if (s.kind === 'rows') state.rows[s.id] = Array.from({ length: s.min || 0 }, () => ({ ...s.add }));
+}
+for (const f of SECTIONS.find(s => s.id === 'booking').fields) if (f.value !== undefined) state.values.booking[f.k] = f.value;
+
+/* ── drawing a field ───────────────────────────────────────────────────────── */
+function fieldHtml(f, val, path) {
+  const span = f.span ? ` s${f.span}` : '';
+  const req = f.req ? '<span class="req" aria-hidden="true">*</span>' : '';
+  const hint = f.hint ? `<span class="f__h">${esc(f.hint)}</span>` : '';
+  const unit = f.unit ? ` <span class="f__h" style="display:inline;margin:0">${esc(f.unit)}</span>` : '';
+  const id = `x_${path.replace(/[^a-z0-9]/gi, '_')}`;
+  let control = '';
+
+  if (f.t === 'select') {
+    const opts = f.options.map(o => {
+      const [v, label] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(v)}"${String(val) === String(v) ? ' selected' : ''}>${esc(label)}</option>`;
+    }).join('');
+    control = `<select id="${id}" data-p="${esc(path)}">${opts}</select>`;
+  } else if (f.t === 'textarea') {
+    control = `<textarea id="${id}" data-p="${esc(path)}">${esc(val)}</textarea>`;
+  } else if (f.t === 'bool') {
+    control = `<label class="check"><input type="checkbox" id="${id}" data-p="${esc(path)}"${val ? ' checked' : ''}> <span>Yes</span></label>`;
+  } else if (f.t === 'number') {
+    control = `<input type="number" id="${id}" data-p="${esc(path)}" value="${esc(val)}"${f.min != null ? ` min="${f.min}"` : ''}${f.max != null ? ` max="${f.max}"` : ''}${f.step ? ` step="${f.step}"` : ''}>`;
+  } else if (f.t === 'time') {
+    control = `<input type="time" id="${id}" data-p="${esc(path)}" value="${esc(val)}">`;
+  } else if (f.t === 'date') {
+    control = `<input type="date" id="${id}" data-p="${esc(path)}" value="${esc(val)}">`;
+  } else if (f.t === 'truckchecks') {
+    const list = Array.isArray(val) ? val : [];
+    control = `<div class="checks">${TRUCKS.map(t => `<label class="check"><input type="checkbox" data-p="${esc(path)}" data-v="${t.code}"${list.includes(t.code) ? ' checked' : ''}> <span>${esc(t.name)}</span></label>`).join('')}</div>`;
+  } else {
+    control = `<input type="text" id="${id}" class="${f.t === 'code' ? 'mono' : ''}" data-p="${esc(path)}" value="${esc(val)}">`;
+  }
+  return `<div class="f${span}"><label class="f__l" for="${id}">${esc(f.l)}${req}${unit}</label>${control}${hint}<span class="err" data-err="${esc(path)}" hidden></span></div>`;
+}
+
+/* ── drawing a section ─────────────────────────────────────────────────────── */
+function sectionBody(s) {
+  if (s.kind === 'hours') {
+    return `<div class="hours">${state.hours.map((h, i) => `
+      <div class="hrow">
+        <span class="hrow__d">${DAYS[i]}</span>
+        <label class="check"><input type="checkbox" data-p="hours.${i}.is_open"${h.is_open ? ' checked' : ''}> <span>Open</span></label>
+        <input type="time" data-p="hours.${i}.open_time" value="${esc(h.open_time)}"${h.is_open ? '' : ' disabled'} aria-label="${DAYS[i]} opens">
+        <input type="time" data-p="hours.${i}.close_time" value="${esc(h.close_time)}"${h.is_open ? '' : ' disabled'} aria-label="${DAYS[i]} closes">
+      </div>`).join('')}</div>
+      <span class="err" data-err="hours" hidden></span>`;
+  }
+
+  if (s.kind === 'trucks') {
+    return `<div class="scroll"><table class="tt">
+      <thead><tr><th>Truck</th><th>Comes here</th><th>Skids it holds here</th><th>Extra setup time</th></tr></thead>
+      <tbody>${state.trucks.map((t, i) => {
+        const meta = TRUCKS.find(x => x.code === t.code);
+        return `<tr>
+          <td>${esc(meta.name)}</td>
+          <td><label class="check"><input type="checkbox" data-p="trucks.${i}.used"${t.used ? ' checked' : ''}> <span>Yes</span></label></td>
+          <td><input type="number" data-p="trucks.${i}.skids" value="${esc(t.skids)}" min="1" max="200" style="max-width:120px" aria-label="${esc(meta.name)} skids"></td>
+          <td><input type="number" data-p="trucks.${i}.setup" value="${esc(t.setup)}" min="0" max="180" style="max-width:120px" aria-label="${esc(meta.name)} setup minutes"></td>
+        </tr>`;
+      }).join('')}</tbody></table></div>
+      <span class="err" data-err="trucks" hidden></span>`;
+  }
+
+  if (s.kind === 'work') {
+    return `<div class="grid">
+      <div class="f f--lg"><span class="f__l">Kinds of load</span><div class="checks">${APPT_TYPES.map(([c, n]) =>
+        `<label class="check"><input type="checkbox" data-p="work.appointment_types" data-v="${c}"${state.work.appointment_types.includes(c) ? ' checked' : ''}> <span>${esc(n)}</span></label>`).join('')}</div></div>
+      <div class="f f--lg"><span class="f__l">Handling</span><div class="checks">${HANDLING_TYPES.map(([c, n]) =>
+        `<label class="check"><input type="checkbox" data-p="work.handling_types" data-v="${c}"${state.work.handling_types.includes(c) ? ' checked' : ''}> <span>${esc(n)}</span></label>`).join('')}</div></div>
+    </div><span class="err" data-err="work" hidden></span>`;
+  }
+
+  if (s.kind === 'rows') {
+    const rows = state.rows[s.id];
+    const body = rows.length
+      ? rows.map((r, i) => `<div class="row">
+          <div class="row__top"><span class="row__n">${esc(s.rowName)} ${i + 1}</span>
+            <button class="x" type="button" data-del="${s.id}:${i}">Remove</button></div>
+          <div class="grid">${s.fields.map(f => fieldHtml(f, r[f.k], `rows.${s.id}.${i}.${f.k}`)).join('')}</div>
+        </div>`).join('')
+      : `<div class="empty">None yet. Use the button below if this applies to your site.</div>`;
+    return `<div class="rows">${body}</div>
+      <button class="add" type="button" data-add="${s.id}">Add ${esc(s.rowName.toLowerCase())}</button>
+      <span class="err" data-err="rows.${s.id}" hidden></span>`;
+  }
+
+  return `<div class="grid">${s.fields.map(f => fieldHtml(f, state.values[s.id][f.k], `values.${s.id}.${f.k}`)).join('')}</div>`;
+}
+
+function draw() {
+  const form = document.getElementById('pack');
+  form.innerHTML = SECTIONS.map((s, i) => `
+    <section class="sec" id="sec-${s.id}">
+      <div class="sec__h">
+        <span class="sec__n">${i + 1}</span>
+        <span class="sec__x"><h2 class="sec__t">${esc(s.title)}</h2><p class="sec__d">${esc(s.hint)}</p></span>
+        <span class="sec__s sec__s--todo" data-badge="${s.id}">To do</span>
+      </div>
+      <div class="sec__b">${sectionBody(s)}</div>
+    </section>`).join('');
+  score();
+}
+
+/* ── reading a change back into state ──────────────────────────────────────── */
+function setPath(path, value) {
+  const parts = path.split('.');
+  let node = state;
+  for (let i = 0; i < parts.length - 1; i += 1) node = node[parts[i]];
+  node[parts[parts.length - 1]] = value;
+}
+
+document.addEventListener('change', event => {
+  const input = event.target.closest('[data-p]');
+  if (!input) return;
+  const path = input.dataset.p;
+
+  // A checkbox with data-v belongs to a list, not a single value.
+  if (input.dataset.v) {
+    const parts = path.split('.');
+    const list = parts.reduce((n, p) => n[p], state);
+    const next = input.checked ? [...new Set([...list, input.dataset.v])] : list.filter(v => v !== input.dataset.v);
+    setPath(path, next);
+  } else if (input.type === 'checkbox') {
+    setPath(path, input.checked);
+    if (/^hours\.\d+\.is_open$/.test(path)) {
+      const row = input.closest('.hrow');
+      for (const t of row.querySelectorAll('input[type=time]')) t.disabled = !input.checked;
+    }
+  } else if (input.type === 'number') {
+    setPath(path, input.value === '' ? '' : Number(input.value));
+  } else {
+    setPath(path, input.value);
+  }
+  score();
+});
+
+document.addEventListener('click', event => {
+  const add = event.target.closest('[data-add]');
+  if (add) {
+    const s = SECTIONS.find(x => x.id === add.dataset.add);
+    state.rows[s.id].push({ ...s.add });
+    draw();
+    const rows = document.querySelectorAll(`#sec-${s.id} .row`);
+    rows[rows.length - 1]?.querySelector('input,select')?.focus();
+    return;
+  }
+  const del = event.target.closest('[data-del]');
+  if (del) {
+    const [id, index] = del.dataset.del.split(':');
+    state.rows[id].splice(Number(index), 1);
+    draw();
+  }
+});
+
+/* ── what is still missing ─────────────────────────────────────────────────── */
+//
+// Counted rather than felt. A site should be able to see at a glance whether it
+// is finished, and a half-filled pack should never leave here looking complete.
+function problems() {
+  const out = [];
+  const add = (sec, msg) => out.push({ sec, msg });
+
+  for (const s of SECTIONS) {
+    if (s.kind === 'rows') {
+      if (s.min && state.rows[s.id].length < s.min) add(s.id, `${s.title}: add at least ${s.min}.`);
+      state.rows[s.id].forEach((r, i) => {
+        for (const f of s.fields) {
+          if (f.req && !String(r[f.k] ?? '').trim()) add(s.id, `${s.rowName} ${i + 1}: ${f.l.toLowerCase()} is needed.`);
+        }
+        if (s.id === 'docks' && (!r.trucks || !r.trucks.length)) add(s.id, `${s.rowName} ${i + 1}: tick at least one truck it can take.`);
+        if (s.id === 'shifts' && r.start_time && r.end_time && r.start_time === r.end_time) add(s.id, `${s.rowName} ${i + 1}: starts and ends at the same time.`);
+        if (s.id === 'people' && r.email && !/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(r.email)) add(s.id, `${s.rowName} ${i + 1}: that email does not look right.`);
+      });
+      continue;
+    }
+    if (s.kind || !s.fields) continue;
+    for (const f of s.fields) {
+      if (!f.req) continue;
+      const v = state.values[s.id][f.k];
+      if (v === '' || v === undefined || v === null) add(s.id, `${s.title}: ${f.l.toLowerCase()} is needed.`);
+    }
+  }
+
+  const open = state.hours.filter(h => h.is_open);
+  if (!open.length) add('hours', 'Operating hours: the site is closed every day.');
+  for (const h of open) {
+    if (!h.open_time || !h.close_time) add('hours', `${DAYS[h.day]}: opening and closing times are needed.`);
+    else if (h.close_time <= h.open_time) add('hours', `${DAYS[h.day]}: it closes before it opens.`);
+  }
+
+  const used = state.trucks.filter(t => t.used);
+  if (!used.length) add('trucks', 'Trucks: tick at least one that comes here.');
+  for (const t of used) {
+    const name = TRUCKS.find(x => x.code === t.code).name;
+    if (!t.skids || t.skids < 1) add('trucks', `${name}: how many skids it holds here is needed.`);
+  }
+
+  const code = String(state.values.site.code || '');
+  if (code && !/^[a-z0-9_]+$/.test(code)) add('site', 'Short code: lower case letters, numbers and underscores only.');
+
+  if (state.values.capacity.capacity_enabled && !state.values.capacity.skid_capacity) {
+    add('capacity', 'Floor capacity is switched on but no number of skids is given.');
+  }
+  if (!state.work.appointment_types.length) add('work', 'Kinds of load: tick at least one.');
+  if (!state.work.handling_types.length) add('work', 'Handling: tick at least one.');
+
+  const names = state.rows.docks.map(d => String(d.name || '').trim().toLowerCase()).filter(Boolean);
+  if (new Set(names).size !== names.length) add('docks', 'Two docks have the same name.');
+  const users = state.rows.people.map(p => String(p.username || '').trim().toLowerCase()).filter(Boolean);
+  if (new Set(users).size !== users.length) add('people', 'Two people have the same username.');
+
+  return out;
+}
+
+function requiredTally() {
+  let need = 0; let have = 0;
+  for (const s of SECTIONS) {
+    if (s.kind === 'rows') {
+      for (const r of state.rows[s.id]) for (const f of s.fields) {
+        if (!f.req) continue;
+        need += 1; if (String(r[f.k] ?? '').trim()) have += 1;
+      }
+      continue;
+    }
+    if (s.kind || !s.fields) continue;
+    for (const f of s.fields) {
+      if (!f.req) continue;
+      need += 1;
+      const v = state.values[s.id][f.k];
+      if (v !== '' && v !== undefined && v !== null) have += 1;
+    }
+  }
+  need += 2; // hours and trucks each count as one answer the site has to make
+  if (state.hours.some(h => h.is_open)) have += 1;
+  if (state.trucks.some(t => t.used)) have += 1;
+  return { need, have };
+}
+
+function score() {
+  const issues = problems();
+  const bySection = new Set(issues.map(i => i.sec));
+  for (const s of SECTIONS) {
+    const badge = document.querySelector(`[data-badge="${s.id}"]`);
+    if (!badge) continue;
+    const touched = s.kind === 'rows' ? state.rows[s.id].length > 0
+      : s.kind ? true
+      : Object.values(state.values[s.id]).some(v => v !== '' && v !== undefined && v !== null);
+    const bad = bySection.has(s.id);
+    badge.className = `sec__s sec__s--${bad ? (touched ? 'part' : 'todo') : 'done'}`;
+    badge.textContent = bad ? (touched ? 'Needs a bit more' : 'To do') : 'Done';
+  }
+
+  const { need, have } = requiredTally();
+  document.querySelector('[data-done]').textContent = have;
+  document.querySelector('[data-total]').textContent = need;
+  document.querySelector('[data-track]').style.width = `${need ? Math.round((have / need) * 100) : 0}%`;
+
+  const save = document.querySelector('[data-save]');
+  const status = document.querySelector('[data-status]');
+  save.disabled = issues.length > 0;
+  status.innerHTML = issues.length
+    ? `<b>${issues.length}</b> thing${issues.length === 1 ? '' : 's'} still to sort out before this can be saved.`
+    : `<b>Ready.</b> Save the file and email it back to Max Solutions.`;
+}
+
+/* ── what goes back ────────────────────────────────────────────────────────── */
+//
+// Deliberately the shape MaxDock's importer expects, not a prettified report. A
+// human can still read it, but nobody has to retype it at the other end.
+function pack() {
+  return {
+    maxdock_pack: 1,
+    generated_at: new Date().toISOString(),
+    site: state.values.site,
+    operating_hours: state.hours.map(h => ({
+      day_of_week: h.day, is_open: !!h.is_open,
+      open_time: h.is_open ? h.open_time : null,
+      close_time: h.is_open ? h.close_time : null,
+    })),
+    docks: state.rows.docks.map((d, i) => ({ ...d, sort_order: i + 1 })),
+    trucks: state.trucks.filter(t => t.used).map(t => ({ truck_type_code: t.code, skid_capacity: t.skids, setup_minutes: t.setup })),
+    settings: { ...state.values.timing, ...state.values.booking, ...state.values.capacity, ...state.values.labour },
+    shifts: state.rows.shifts,
+    holidays: state.rows.closures,
+    appointment_types: state.work.appointment_types,
+    handling_types: state.work.handling_types,
+    people: state.rows.people,
+  };
+}
+
+const fileName = () => {
+  const code = String(state.values.site.code || 'site').replace(/[^a-z0-9_]/gi, '') || 'site';
+  return `maxdock-onboarding-${code}.json`;
+};
+
+document.querySelector('[data-print]').addEventListener('click', () => window.print());
+
+document.querySelector('[data-save]').addEventListener('click', () => {
+  const text = JSON.stringify(pack(), null, 2);
+  try {
+    const blob = new Blob([text], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = fileName();
+    document.body.append(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    document.querySelector('[data-status]').innerHTML = `<b>Saved as ${esc(fileName())}.</b> Attach it to your reply.`;
+  } catch {
+    // Some viewers block a page from saving a file. Copying is always available.
+    showCopy(text);
+  }
+});
+
+document.querySelector('[data-copy]').addEventListener('click', () => showCopy(JSON.stringify(pack(), null, 2)));
+
+function showCopy(text) {
+  const dlg = document.querySelector('[data-dlg]');
+  dlg.querySelector('[data-dlg-x]').value = text;
+  dlg.showModal();
+}
+document.querySelector('[data-dlg-close]').addEventListener('click', () => document.querySelector('[data-dlg]').close());
+document.querySelector('[data-dlg-copy]').addEventListener('click', async () => {
+  const box = document.querySelector('[data-dlg-x]');
+  box.select();
+  try { await navigator.clipboard.writeText(box.value); } catch { document.execCommand('copy'); }
+  document.querySelector('[data-dlg-copy]').textContent = 'Copied';
+});
+
+draw();
+</script>
+</body>
+</html>
