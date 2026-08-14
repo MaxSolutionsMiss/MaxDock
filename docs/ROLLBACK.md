@@ -2163,4 +2163,41 @@ values came from and where the real ones will go.
 
 ### What was verified after the change
 
-Recorded in the section below once the change had run.
+**Eight distinct weekly schedules now exist across the twelve sites, where there were two.** The
+seven demonstration sites each read differently; Burbank, Guelph, Langley, Sturgis and Wilmington
+are untouched and still share the original pattern.
+
+**53 appointments fell outside the new hours.** Four sites lost their Saturday and three lost part
+of a weekday, which is what narrowing hours does to a schedule that was booked under the old ones.
+
+- **41 live loads were moved** to a legal window through `update_appointment_details`, walking the
+  new open hours at the site's own slot interval and only onto doors that accept the truck and
+  face the right way.
+- **12 were left exactly where they are, deliberately.** They are finished loads on 12, 13 and 14
+  August — completed, no-show or cancelled. The hours changed today; they do not reach backwards
+  and make last Wednesday untrue. A completed load records when a truck actually came, and
+  rewriting that to satisfy a settings change made afterwards would be falsifying history to keep
+  a query tidy.
+
+The four Owen Sound trucks booked on what is now the 20 August shutdown day were moved off it, so
+the day reads as closed rather than closed-with-trucks-on-it.
+
+| Check | Result |
+|---|---|
+| Live loads outside their site's operating hours | 0 |
+| Live loads on a shutdown day | 0 |
+| Two loads overlapping on one dock | 0 |
+| Load on a door whose direction contradicts its own | 0 |
+| Duplicate PO / BOL across separate loads | 0 |
+
+The one apparent duplicate is `PO-SUN-WK`, carried by all eleven occurrences of the Sun Chemical
+weekly series. That is what a standing order looks like and it is not a fault.
+
+**Combining opportunities survived the reshuffle** and still land on every day from 14 to 22
+August at Mississauga, Pickering, Milton and Markham. Markham lost its two Saturday lanes, which
+is correct — Markham is now closed on Saturday.
+
+**One finding, and it is the same one as §5f-i rather than a new one.** A load created by
+`create_appointment_series` also landed on a Milton door facing the wrong way. So the missing
+`direction_mode` filter is not peculiar to `book_appointment` — it is in more than one caller, and
+the fix belongs in the shared dock-picking logic rather than in each RPC separately.
