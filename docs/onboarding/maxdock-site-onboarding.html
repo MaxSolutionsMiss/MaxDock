@@ -153,7 +153,23 @@ dialog::backdrop{background:rgba(22,32,42,.45)}
 .dlg textarea{width:100%;height:220px;font-family:var(--mono);font-size:12px;line-height:1.45}
 .dlg__a{display:flex;gap:var(--s2);justify-content:flex-end;margin-top:var(--s3);flex-wrap:wrap}
 
+/* Shown only when answers were found from a previous sitting. It names the site so
+   somebody setting up their second plant on one computer sees the first one's
+   answers immediately, instead of sending Guelph's docks in under Milton's name. */
+.resume{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;
+  background:var(--signal-wash);border:1px solid #E9CFA4;border-left:3px solid var(--signal);
+  border-radius:var(--radius);padding:var(--s3) var(--s4);margin-bottom:var(--s4)}
+.resume__x{flex:1 1 260px;min-width:0;font-size:13.5px;line-height:1.5}
+.resume__x b{display:block;font-weight:600}
+.resume__x span{color:var(--ink-muted)}
+
 .kept{display:block;font-size:12px;color:var(--ok);font-weight:600;margin-top:2px}
+
+/* A display value on a class beats the browser's own [hidden] rule, so anything
+   here that sets display and is also toggled with `hidden` has to say so. Without
+   these two lines the resume banner greeted first-time visitors with somebody
+   else's site name. */
+.resume[hidden],.kept[hidden],.err[hidden]{display:none}
 .steps{margin:0;padding-left:1.25em;display:grid;gap:var(--s2);font-size:14px;line-height:1.55}
 .steps b{font-weight:600}
 code.mono{background:var(--surface-sunk);border:1px solid var(--rule);border-radius:4px;padding:1px 5px}
@@ -198,6 +214,14 @@ code.mono{background:var(--surface-sunk);border:1px solid var(--rule);border-rad
 </div>
 
 <main class="wrap">
+  <div class="resume" data-resume hidden>
+    <div class="resume__x">
+      <b data-resume-t>Picking up where you left off.</b>
+      <span data-resume-s></span>
+    </div>
+    <button class="btn btn--quiet" type="button" data-resume-new>Start a different site</button>
+  </div>
+
   <div class="note">
     <b>Most of this is already filled in with what MaxDock uses everywhere else.</b> You only need to
     change the lines where your site is different. If you are not sure about something, leave the
@@ -803,15 +827,33 @@ function mark(when) {
 document.addEventListener('change', event => { if (event.target.closest('[data-p]')) remember(); });
 document.addEventListener('click', event => { if (event.target.closest('[data-add],[data-del]')) remember(); });
 
-document.querySelector('[data-clear]').addEventListener('click', () => {
-  if (!confirm('Clear every answer and start this pack again? This cannot be undone.')) return;
+document.querySelector('[data-clear]').addEventListener('click', () => clearAll(true));
+
+function clearAll(ask) {
+  if (ask && !confirm('Clear every answer and start this pack again? This cannot be undone.')) return;
   try { localStorage.removeItem(KEY); } catch { /* nothing to clear */ }
   location.reload();
-});
+}
+document.querySelector('[data-resume-new]').addEventListener('click', () => clearAll(true));
 
 const restored = recall();
 draw();
-if (restored) mark(restored);
+if (restored) {
+  mark(restored);
+  // Naming the site is the whole point of this banner. Somebody doing their second
+  // plant on the same computer has to see whose answers these are before they type
+  // a new site name over them and send the first plant's docks under it.
+  const who = String(state.values.site?.name || '').trim();
+  const when = new Date(restored).toLocaleString();
+  const box = document.querySelector('[data-resume]');
+  document.querySelector('[data-resume-t]').textContent = who
+    ? `Picking up where you left off — ${who}.`
+    : 'Picking up where you left off.';
+  document.querySelector('[data-resume-s]').textContent = who
+    ? `Last saved ${when}. Setting up a different site? Start fresh so this one's answers are not sent under the wrong name.`
+    : `Last saved ${when}.`;
+  box.hidden = false;
+}
 </script>
 </body>
 </html>
