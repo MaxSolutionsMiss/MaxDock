@@ -153,6 +153,11 @@ dialog::backdrop{background:rgba(22,32,42,.45)}
 .dlg textarea{width:100%;height:220px;font-family:var(--mono);font-size:12px;line-height:1.45}
 .dlg__a{display:flex;gap:var(--s2);justify-content:flex-end;margin-top:var(--s3);flex-wrap:wrap}
 
+.kept{display:block;font-size:12px;color:var(--ok);font-weight:600;margin-top:2px}
+.steps{margin:0;padding-left:1.25em;display:grid;gap:var(--s2);font-size:14px;line-height:1.55}
+.steps b{font-weight:600}
+code.mono{background:var(--surface-sunk);border:1px solid var(--rule);border-radius:4px;padding:1px 5px}
+
 .issues{margin-top:var(--s2);display:grid;gap:var(--s1);max-height:200px;overflow:auto}
 .issue{font-size:13px;color:var(--stop);background:var(--stop-wash);border-radius:var(--radius);padding:6px 10px}
 .issue a{color:inherit;font-weight:600}
@@ -199,11 +204,39 @@ dialog::backdrop{background:rgba(22,32,42,.45)}
     suggested value &mdash; it can be changed later in Settings without anybody being interrupted.
   </div>
   <form id="pack" autocomplete="off"></form>
+
+  <section class="sec" id="sec-send">
+    <div class="sec__h">
+      <span class="sec__n" aria-hidden="true">&rarr;</span>
+      <span class="sec__x"><h2 class="sec__t">Sending this back</h2>
+      <p class="sec__d">Two minutes, and then you are done.</p></span>
+    </div>
+    <div class="sec__b">
+      <ol class="steps">
+        <li><b>Press &ldquo;Save filled pack&rdquo;</b> at the bottom of this page. Your browser will
+        download a small file called something like <code class="mono">maxdock-onboarding-guelph.json</code>.
+        It usually lands in your Downloads folder.</li>
+        <li><b>Reply to the email this came from and attach that file.</b> That is all we need.</li>
+      </ol>
+      <div class="note" style="margin:16px 0 0">
+        <b>If your email will not let you attach it</b>, some company systems block unfamiliar file
+        types. Press <b>Copy instead</b> at the bottom, then paste into the body of your reply. It
+        is the same information and it works just as well.
+      </div>
+      <p class="sec__d" style="margin-top:14px"><b>Printing gives you a paper copy to check or get
+      signed off, but a printed or PDF copy cannot be loaded into MaxDock</b> &mdash; somebody would
+      have to type it all in again. Send the saved file, and print as well if it is useful to you.</p>
+    </div>
+  </section>
 </main>
 
 <footer class="foot">
   <div class="foot__in">
-    <span class="foot__m" data-status>Fill in the required answers to save.</span>
+    <span class="foot__m">
+      <span data-status>Fill in the required answers to save.</span>
+      <span class="kept" data-kept hidden></span>
+    </span>
+    <button class="btn btn--quiet" type="button" data-clear title="Clear every answer and start again">Start again</button>
     <button class="btn btn--quiet" type="button" data-print>Print</button>
     <button class="btn btn--quiet" type="button" data-copy>Copy instead</button>
     <button class="btn btn--primary" type="button" data-save>Save filled pack</button>
@@ -728,7 +761,57 @@ document.querySelector('[data-dlg-copy]').addEventListener('click', async () => 
   document.querySelector('[data-dlg-copy]').textContent = 'Copied';
 });
 
+/* ── keeping the work ──────────────────────────────────────────────────────────
+   This takes twenty minutes and a plant does it between other jobs. Losing it to
+   a closed tab, a reboot or a browser update would mean it never gets done twice,
+   so every change is written to this browser straight away and read back when the
+   file is opened again. It stays on their machine; nothing is sent anywhere. */
+const KEY = 'maxdock.onboarding.v1';
+
+function remember() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify({
+      at: new Date().toISOString(),
+      values: state.values, rows: state.rows, hours: state.hours,
+      trucks: state.trucks, work: state.work,
+    }));
+    mark();
+  } catch { /* private browsing, a full disk, a locked-down profile — carry on regardless */ }
+}
+
+function recall() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (!saved || !saved.values) return false;
+    Object.assign(state.values, saved.values);
+    Object.assign(state.rows, saved.rows || {});
+    if (Array.isArray(saved.hours) && saved.hours.length === 7) state.hours = saved.hours;
+    if (Array.isArray(saved.trucks) && saved.trucks.length) state.trucks = saved.trucks;
+    if (saved.work) state.work = saved.work;
+    return saved.at;
+  } catch { return false; }
+}
+
+function mark(when) {
+  const node = document.querySelector('[data-kept]');
+  if (!node) return;
+  const at = when || new Date();
+  node.textContent = `Your answers are saved on this computer · ${new Date(at).toLocaleString()}`;
+  node.hidden = false;
+}
+
+document.addEventListener('change', event => { if (event.target.closest('[data-p]')) remember(); });
+document.addEventListener('click', event => { if (event.target.closest('[data-add],[data-del]')) remember(); });
+
+document.querySelector('[data-clear]').addEventListener('click', () => {
+  if (!confirm('Clear every answer and start this pack again? This cannot be undone.')) return;
+  try { localStorage.removeItem(KEY); } catch { /* nothing to clear */ }
+  location.reload();
+});
+
+const restored = recall();
 draw();
+if (restored) mark(restored);
 </script>
 </body>
 </html>

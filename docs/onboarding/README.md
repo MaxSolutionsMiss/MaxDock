@@ -33,9 +33,18 @@ It will not let itself be saved while anything is wrong. Closing before it opens
 the same name, two people with the same username, capacity switched on with no number against it —
 each one is caught with the reason next to it, and the counter at the top says how much is left.
 
+## It does not lose their work
+
+Every answer is written into that browser as it is typed, and read back when the file is opened
+again. A plant fills this in between other jobs; losing twenty minutes to a closed tab means it
+never gets done a second time. The footer says when it was last kept, and **Start again** clears
+it deliberately.
+
+Nothing leaves their machine either way. The saving is local storage in their own browser.
+
 ## What comes back
 
-A single `.json` file named after the site — `maxdock-onboarding-guelph.json`. It is written in
+**Not a PDF, and not the HTML.** A single `.json` file named after the site — `maxdock-onboarding-guelph.json`. It is written in
 the shape MaxDock's importer reads, so nobody retypes anything, and it is plain enough that a
 person can read it if they want to check.
 
