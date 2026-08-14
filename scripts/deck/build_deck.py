@@ -24,6 +24,7 @@ sys.path.insert(0, HERE)
 import deckkit as k  # noqa: E402
 import v6_polish  # noqa: E402
 import v7_type  # noqa: E402
+import verify_pptx  # noqa: E402
 
 SRC = os.path.join(HERE, "..", "..", "docs", "deck",
                    "MaxDock_introduction_v4_1.pptx")
@@ -427,6 +428,14 @@ def main():
     k.renumber(prs)
     prs.save(OUT)
     print(f"wrote {OUT} — {len(prs.slides._sldIdLst)} slides")
+
+    faults = verify_pptx.check(OUT)
+    if faults:
+        print("STRUCTURE FAULTS — PowerPoint will refuse this file:")
+        for fault in faults:
+            print(f"  {fault}")
+        raise SystemExit(1)
+    print("structure ok")
 
 
 if __name__ == "__main__":

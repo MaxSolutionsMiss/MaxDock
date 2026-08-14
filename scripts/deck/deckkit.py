@@ -207,15 +207,21 @@ def frame(slide, eyebrow, headline, deck_line, logo_png):
 
 
 def _set_bg(slide, hexstr):
+    """Set the slide background. A slide may carry at most one <p:bg>; adding a
+    second one is a file PowerPoint will not open, so any existing background
+    is removed before the new one goes in."""
     from lxml import etree
     ns = "http://schemas.openxmlformats.org/presentationml/2006/main"
     a = "http://schemas.openxmlformats.org/drawingml/2006/main"
+    csld = slide._element.find(f"{{{ns}}}cSld")
+    for existing in csld.findall(f"{{{ns}}}bg"):
+        csld.remove(existing)
     bg = etree.Element(f"{{{ns}}}bg")
     bgpr = etree.SubElement(bg, f"{{{ns}}}bgPr")
     fill = etree.SubElement(bgpr, f"{{{a}}}solidFill")
     etree.SubElement(fill, f"{{{a}}}srgbClr").set("val", hexstr)
     etree.SubElement(bgpr, f"{{{a}}}effectLst")
-    slide._element.find(f"{{{ns}}}cSld").insert(0, bg)
+    csld.insert(0, bg)
 
 
 def find(slide, x, y, tol=0.02):
