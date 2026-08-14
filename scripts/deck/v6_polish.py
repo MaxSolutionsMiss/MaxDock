@@ -480,6 +480,7 @@ def air(prs):
     _bigger_trailer(prs.slides[9])
     _booking_steps(prs.slides[12])
     _funnel_rows(prs.slides[14])
+    _receiving_phone(prs.slides[15])
     _skids(prs.slides[18])
     _carrier_rows(prs.slides[19])
     _labour_and_doors(prs.slides[22])
@@ -546,9 +547,9 @@ def _bigger_trailer(s):
 
 def _booking_steps(s):
     for xo, xn in ((0.58, 0.58), (4.74, 4.86), (8.90, 9.14)):
-        k.move_block(s, xo, 1.72, xn, 1.78, w=3.61, h=3.46, text_dw=-0.25)
-    k.move_block(s, 0.58, 5.52, 0.58, 5.56, w=5.80, h=0.92, text_dw=-0.10)
-    k.move_block(s, 6.85, 5.52, 6.95, 5.56, w=5.80, h=0.92, text_dw=-0.10)
+        k.move_block(s, xo, 1.72, xn, 1.78, w=3.61, h=3.66, text_dw=-0.25)
+    k.move_block(s, 0.58, 5.52, 0.58, 5.68, w=5.80, h=0.88, text_dw=-0.10)
+    k.move_block(s, 6.85, 5.52, 6.95, 5.68, w=5.80, h=0.88, text_dw=-0.10)
 
 
 def _funnel_rows(s):
@@ -556,6 +557,10 @@ def _funnel_rows(s):
         k.shift_band(s, y - 0.10, y + 0.42, dy=0.02 * i)
     k.move_block(s, 0.58, 6.00, 0.58, 6.08, w=5.80, h=0.84, text_dw=-0.10)
     k.move_block(s, 6.85, 6.00, 6.95, 6.08, w=5.80, h=0.84, text_dw=-0.10)
+
+
+def _receiving_phone(s):
+    k.move_block(s, 0.58, 1.72, 0.58, 1.72, w=3.70, h=4.72)
 
 
 def _skids(s):
@@ -617,9 +622,9 @@ def _not_built_cards(s):
 
 
 def _out_of_scope(s):
-    for row, (yo, yn) in enumerate(((1.74, 1.78), (3.96, 4.10))):
+    for yo, yn in ((1.74, 1.76), (3.96, 4.06)):
         for xo, xn in ((0.58, 0.58), (6.83, 6.95)):
-            k.move_block(s, xo, yo, xn, yn, w=5.80, h=1.90, text_dw=-0.13)
+            k.move_block(s, xo, yo, xn, yn, w=5.80, h=2.04, text_dw=-0.13)
     k.move_block(s, 0.58, 6.10, 0.58, 6.28, h=0.64)
 
 

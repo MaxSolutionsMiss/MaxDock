@@ -176,6 +176,40 @@ def draw_textframe(draw, sh, x0, y0, w, h, issues, name):
         cy += blk_h - sb - lh * len(lines)
 
 
+_MEASURE = ImageDraw.Draw(Image.new("RGB", (8, 8)))
+
+
+def measure(shape):
+    """Height in inches the shape's text needs at its current width."""
+    tf = shape.text_frame
+    ml = px(tf.margin_left or 0)
+    mr = px(tf.margin_right or 0)
+    box_w = max(4, px(shape.width) - ml - mr)
+    total = 0
+    for para in tf.paragraphs:
+        runs = [r for r in para.runs if r.text]
+        if not runs:
+            size = para.font.size.pt if para.font.size else 12
+            total += int(size * DPI / 72.0 * 0.9)
+            continue
+        size, bold, italic, _ = run_props(runs[0], para, shape)
+        fnt = font(size, bold, italic)
+        text = "".join(r.text for r in runs)
+        lines = (wrap(text, fnt, box_w, _MEASURE)
+                 if tf.word_wrap is not False else [text])
+        lsp = 1.0
+        try:
+            if para.line_spacing and isinstance(para.line_spacing, float):
+                lsp = float(para.line_spacing)
+        except Exception:
+            pass
+        total += int(round(size * DPI / 72.0 * 1.22 * lsp)) * len(lines)
+        total += int(((para.space_before.pt if para.space_before else 0)
+                      + (para.space_after.pt if para.space_after else 0))
+                     * DPI / 72.0)
+    return total / DPI
+
+
 def render(path, outdir, prefix="slide", only=None):
     os.makedirs(outdir, exist_ok=True)
     prs = Presentation(path)

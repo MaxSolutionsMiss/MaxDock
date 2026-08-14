@@ -23,14 +23,19 @@ sys.path.insert(0, HERE)
 
 import deckkit as k  # noqa: E402
 import v6_polish  # noqa: E402
+import v7_type  # noqa: E402
 
 SRC = os.path.join(HERE, "..", "..", "docs", "deck",
                    "MaxDock_introduction_v4_1.pptx")
 V5 = os.path.join(HERE, "..", "..", "docs", "deck",
                   "MaxDock_introduction_v5.pptx")
+V6 = os.path.join(HERE, "..", "..", "docs", "deck",
+                  "MaxDock_introduction_v6.pptx")
 OUT = os.path.join(HERE, "..", "..", "docs", "deck",
-                   "MaxDock_introduction_v6.pptx")
+                   "MaxDock_introduction_v7.pptx")
 LOGO = os.path.join(HERE, "assets", "footer-logo.png")
+ICON = os.path.join(HERE, "assets", "maxdock-icon.png")
+LOCKUP = os.path.join(HERE, "assets", "max-solutions-lockup.png")
 
 
 # --------------------------------------------------------------- slide: 2 ---
@@ -106,27 +111,27 @@ def slide_market(prs):
         LOGO)
 
     cards = [
-        ("Opendock", "THE PROBLEM IT WAS BUILT FOR",
+        ("Opendock", "THEIR PROBLEM",
          "Docks run by phone, email and spreadsheet — and nobody else can see "
          "any of it.",
          "They cite ATRI: 39.3% of stops end in detention.",
          ["Appointments kept.", "Detention avoided."], False),
-        ("C3 Solutions", "THE PROBLEM IT WAS BUILT FOR",
+        ("C3 Solutions", "THEIR PROBLEM",
          "Trailers sitting, yards jamming, and detention charged for the wait.",
          "Their own claim: up to 90% less detention.",
          ["Dwell time.", "Yard and door use."], False),
-        ("Transporeon", "THE PROBLEM IT WAS BUILT FOR",
+        ("Transporeon", "THEIR PROBLEM",
          "Arrivals bunched into peaks: trucks queue at ten, doors sit idle at "
          "two.",
          "Their own claim: up to 40% less waiting.",
          ["Waiting time.", "How flat the day runs."], False),
-        ("MaxDock", "THE PROBLEM WE BUILT FOR",
+        ("MaxDock", "OUR PROBLEM",
          "All three of those — plus two of our own trailers going the same "
          "way, half empty.",
          "Our own run: two bookings, one truck, 88% full.",
          ["Trucks removed.", "Skids per trailer, crew hours."], True),
     ]
-    w, gap, top, h = 2.76, 0.37, 1.80, 3.62
+    w, gap, top, h = 2.83, 0.28, 1.78, 3.98
     for i, (name, label, problem, figure, measures, ours) in enumerate(cards):
         x = 0.58 + i * (w + gap)
         k.card(s, x, top, w, h, fill=k.INK if ours else k.WHITE,
@@ -137,26 +142,26 @@ def slide_market(prs):
                color=k.NAVY_RULE if ours else k.LINE)
         k.text(s, x + 0.30, top + 0.98, w - 0.60, 0.20, label, size=8,
                color=k.CYAN if ours else k.MUTED, bold=True, spc=60)
-        k.text(s, x + 0.30, top + 1.26, w - 0.60, 0.96, problem, size=11,
+        k.text(s, x + 0.30, top + 1.26, w - 0.60, 1.16, problem, size=11,
                color=k.ICE if ours else k.BODY, line_spacing=1.18)
-        k.text(s, x + 0.30, top + 2.06, w - 0.60, 0.40, figure, size=9.5,
+        k.text(s, x + 0.30, top + 2.30, w - 0.60, 0.52, figure, size=9.5,
                color=k.CYAN if ours else k.MUTED, italic=True,
                line_spacing=1.16)
-        k.rect(s, x + 0.30, top + 2.56, w - 0.60, 0.80,
+        k.rect(s, x + 0.30, top + 2.96, w - 0.60, 0.84,
                fill="164A66" if ours else k.PANEL_SOFT, line=None,
                radius=k.CHIP_RADIUS)
-        k.text(s, x + 0.48, top + 2.56, w - 0.96, 0.80,
-               [[("WHAT IT MEASURES", {"size": 8, "bold": True,
-                                       "color": k.CYAN if ours else k.MUTED,
-                                       "spc": 60})]] + measures,
+        k.text(s, x + 0.48, top + 2.96, w - 0.96, 0.84,
+               [[("IT MEASURES", {"size": 8, "bold": True,
+                                  "color": k.CYAN if ours else k.MUTED,
+                                  "spc": 60})]] + [" · ".join(measures)],
                size=10, color=k.WHITE if ours else k.BODY, anchor="m",
-               line_spacing=1.16)
+               line_spacing=1.18)
 
-    k.card(s, 0.58, 5.92, 12.17, 1.00, fill=k.INK, line=None)
-    k.text(s, 1.00, 6.10, 4.40, 0.64, "All three schedule the arrival.",
+    k.card(s, 0.58, 5.98, 12.17, 0.94, fill=k.INK, line=None)
+    k.text(s, 1.00, 6.14, 4.40, 0.62, "All three schedule the arrival.",
            size=15, color=k.WHITE, bold=True, font=k.DISPLAY, anchor="m")
-    k.vrule(s, 5.90, 6.16, 0.52, color=k.NAVY_RULE, weight=1.2)
-    k.text(s, 6.30, 6.10, 6.05, 0.64,
+    k.vrule(s, 5.90, 6.20, 0.50, color=k.NAVY_RULE, weight=1.2)
+    k.text(s, 6.30, 6.14, 6.05, 0.62,
            "Only one of them also decides what goes on the truck — because "
            "here, both ends are the same company.",
            size=11.5, color=k.ICE, anchor="m", line_spacing=1.16)
@@ -351,7 +356,7 @@ def rebuild_bridge(prs):
     k.card(s, 4.66, top, 3.22, 3.58, fill=k.INK, line=None)
     k.text(s, 5.00, top + 0.36, 2.54, 0.44, "MaxDock", size=20, color=k.WHITE,
            bold=True, font=k.DISPLAY)
-    k.text(s, 5.00, top + 0.90, 2.54, 0.24, "CHECKS THE RULES, HOLDS THE DOOR",
+    k.text(s, 5.00, top + 0.90, 2.54, 0.24, "CHECKS THE RULES",
            size=8, color=k.CYAN, bold=True, spc=60)
     k.rule(s, 5.00, top + 1.26, 2.54, color=k.NAVY_RULE)
     checks = [
@@ -415,6 +420,9 @@ def main():
     k.place(prs, origin, 1)    # after the title
     k.place(prs, market, 4)    # after "no discipline, nothing to measure"
     k.place(prs, week, 25)     # after the labour and door-use report
+
+    # v7: type sized for a laptop, and the two logos on the title page.
+    v7_type.apply(prs, ICON, LOCKUP)
 
     k.renumber(prs)
     prs.save(OUT)
