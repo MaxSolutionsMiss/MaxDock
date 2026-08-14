@@ -1,39 +1,48 @@
 # The MaxDock introduction deck
 
-`MaxDock_introduction_v5.pptx` is the deck to present. It is built from
+`MaxDock_introduction_v6.pptx` is the deck to present. It is built from
 `MaxDock_introduction_v4_1.pptx` by a script, so the next revision is an edit to
 the script rather than a slide dragged around by hand.
 
 ```
-python3 scripts/deck/build_deck.py     # writes MaxDock_introduction_v5.pptx
+python3 scripts/deck/build_deck.py     # writes MaxDock_introduction_v6.pptx
 ```
 
-- `scripts/deck/deckkit.py` holds the design system — palette, type scale, the
-  slide frame, cards, chips, rules and bars. New slides should be drawn with it
-  so they match the ones already there.
-- `scripts/deck/build_deck.py` holds the slide content and the fixes applied to
+- `scripts/deck/deckkit.py` — the design system: palette, type scale, the slide
+  frame, cards, chips, rules, bars, and the block moves used to re-space an
+  inherited slide. New slides should be drawn with it so they match.
+- `scripts/deck/build_deck.py` — the slides this deck added, and the fixes to
   the v4.1 slides.
-- `MaxDock_introduction_v4_1.pptx` is the input and is never edited. Every change
-  belongs in the build script.
+- `scripts/deck/v6_polish.py` — the v6 pass: the shorter wording for every
+  inherited slide, and the wider gutters and gaps.
+- `MaxDock_introduction_v4_1.pptx` is the input and is never edited.
+- `MaxDock_introduction_v5.pptx` is the previous cut, kept for comparison.
 
-## What v5 changed
+## What each version changed
 
-Three slides were added:
+**v5 — three slides that were missing, and one redrawn.**
 
-| Position | Slide | Why |
-|---|---|---|
-| 2 | One Tuesday morning, and none of it was unusual | The origin story: one ordinary morning at one plant, in the order it happened, with what it cost beside it |
-| 5 | We were not the first to notice | What Opendock, C3 Solutions and Transporeon each set out to fix, and the thing none of them was built for |
-| 26 | What next Thursday looks like, before next Thursday | The forward view: dock hours booked against crew hours, and the caps that protect a day the floor cannot staff |
+| Position | Slide |
+|---|---|
+| 2 | One Tuesday morning — the origin story, one plant, in the order it happened |
+| 5 | We were not the first to notice — what Opendock, C3 Solutions and Transporeon were each built for, and the one thing none of them was |
+| 26 | What next Thursday looks like — dock hours booked against crew hours, and the caps that protect a day the floor cannot staff |
 
-Slide 14 (the TMS and CABL bridge) was redrawn — it had four small cards in the
-top half and an empty bottom half. It now reads left to right: where a booking
-comes from, what checks it, where it lands.
+Slide 14 (the TMS and CABL bridge) was redrawn to read left to right: where a
+booking comes from, what checks it, where it lands. Text that overflowed its box
+on five slides was fixed, along with a capacity bar drawn over its own caption
+and a column that ran off the grid.
 
-Smaller corrections: text that overflowed its box on five slides, a capacity bar
-that sat on top of its own caption on slide 12, a fourth row on slide 7 so the
-left column reaches the bottom of the slide, and the right-hand column of slide
-19 pulled back onto the 12.75in grid every other slide uses.
+**v6 — the same content, said shorter, with more room around it.**
+
+- Roughly a hundred sentences rewritten to what the floor would actually say.
+  The deck now carries 649 characters a slide against v5's 760 — v4.1's word
+  count across three more slides.
+- Wider gutters between cards (0.25in → 0.40-0.46in), wider gaps between rows,
+  and every closing band pulled clear of the block above it: about 5-10% more
+  space around each object, taken out of the objects rather than the margins.
+- Cards whose copy got shorter were shortened with it, so the air landed
+  between blocks instead of pooling inside them.
 
 ## Checking a change
 
@@ -41,7 +50,7 @@ There is no PowerPoint here and LibreOffice cannot open files in this sandbox,
 so slides are proofed by rasterising them:
 
 ```
-python3 scripts/deck/render_deck.py docs/deck/MaxDock_introduction_v5.pptx out/
+python3 scripts/deck/render_deck.py docs/deck/MaxDock_introduction_v6.pptx out/
 ```
 
 It writes a PNG per slide and prints any text box whose content is taller than

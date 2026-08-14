@@ -241,6 +241,89 @@ def move(shape, x=None, y=None, w=None, h=None):
     return shape
 
 
+def set_text(shape, text):
+    """Replace a shape's words, keeping the formatting of its first run."""
+    tf = shape.text_frame
+    for para in list(tf.paragraphs)[1:]:
+        para._p.getparent().remove(para._p)
+    para = tf.paragraphs[0]
+    runs = para.runs
+    if not runs:
+        raise ValueError("shape has no run to inherit formatting from")
+    runs[0].text = text
+    for extra in runs[1:]:
+        extra._r.getparent().remove(extra._r)
+    return shape
+
+
+def members(slide, anchor):
+    """Every shape standing on `anchor` — a card and its contents move as one.
+
+    Membership is by centre point, so a hairline drawn flush to a card edge
+    still counts, and a neighbouring card never does.
+    """
+    x0, y0 = anchor.left, anchor.top
+    x1, y1 = x0 + anchor.width, y0 + anchor.height
+    out = []
+    for sh in slide.shapes:
+        # identity by element: python-pptx hands out a fresh proxy per visit,
+        # so `sh is anchor` would let the anchor move itself twice
+        if sh._element is anchor._element or sh.left is None:
+            continue
+        cx, cy = sh.left + sh.width / 2, sh.top + sh.height / 2
+        if x0 - 1000 <= cx <= x1 + 1000 and y0 - 1000 <= cy <= y1 + 1000:
+            out.append(sh)
+    return out
+
+
+def move_block(slide, x_old, y_old, x_new, y_new, w=None, h=None, text_dw=0.0):
+    """Move a card (or band) and everything on it, optionally resizing.
+
+    `text_dw` is applied to the width of any text box wide enough to be body
+    copy, so narrowing a card reflows its paragraphs instead of letting them
+    run over the edge. Full-height children — the text inside a banner — track
+    the new height so they stay centred.
+    """
+    anchor = find(slide, x_old, y_old)
+    kids = members(slide, anchor)
+    old_h = anchor.height
+    dx, dy = _emu(x_new - x_old), _emu(y_new - y_old)
+
+    anchor.left, anchor.top = _emu(x_new), _emu(y_new)
+    if w is not None:
+        anchor.width = _emu(w)
+    if h is not None:
+        anchor.height = _emu(h)
+
+    for sh in kids:
+        sh.left += dx
+        sh.top += dy
+        if text_dw and sh.has_text_frame and sh.width > anchor.width * 0.4:
+            sh.width = max(_emu(0.3), sh.width + _emu(text_dw))
+        if h is not None and sh.has_text_frame and sh.height >= old_h - _emu(0.2):
+            sh.height = anchor.height
+    return anchor
+
+
+def shift_band(slide, y_from, y_to, dy, x_from=None, x_to=None):
+    """Nudge every shape whose top edge sits in a horizontal band.
+
+    Pass x_from/x_to to limit the nudge to one column of the slide, so a chart
+    on the left can move without dragging the one on the right with it.
+    """
+    lo, hi = _emu(y_from), _emu(y_to)
+    xlo = _emu(x_from) if x_from is not None else None
+    xhi = _emu(x_to) if x_to is not None else None
+    for sh in slide.shapes:
+        if sh.top is None or not (lo <= sh.top <= hi):
+            continue
+        if xlo is not None and sh.left < xlo:
+            continue
+        if xhi is not None and sh.left > xhi:
+            continue
+        sh.top += _emu(dy)
+
+
 def renumber(prs):
     """Rewrite the footer page number on every slide to its position."""
     for i, slide in enumerate(prs.slides, 1):
