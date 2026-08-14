@@ -6,3 +6,7 @@ _site/
 # Screenshots from probe scripts. They belong in the scratchpad, not here.
 /*.png
 /*.jpg
+
+# Python bytecode from the deck build scripts.
+__pycache__/
+*.pyc
