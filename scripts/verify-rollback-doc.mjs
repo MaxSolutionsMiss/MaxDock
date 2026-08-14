@@ -84,6 +84,10 @@ for (const [pattern, what] of [
 // Anything the baseline shipped with is absent from this list and therefore still refused.
 const DELETABLE_SINCE_BASELINE = [
   'reports.view_turnaround',
+  // The one holiday row §5g-i adds, so that entry can write down its own removal. Named rather
+  // than dated: a delete scoped to this literal cannot reach a real plant shutdown somebody
+  // enters later, because a real one will not be called this.
+  'Plant shutdown (demo)',
 ];
 for (const statement of instructions.match(/delete from public\.[^;]*;/gi) || []) {
   const scoped = DELETABLE_SINCE_BASELINE.some(value => statement.includes(`'${value}'`));

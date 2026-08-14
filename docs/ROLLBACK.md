@@ -2048,3 +2048,119 @@ measured and should be read off the Vendor scorecard rather than trusted from he
 
 The temporary `seed_demo_appointment` function was dropped and its absence confirmed by querying
 `pg_proc`.
+
+---
+
+## 5g-i. Operating hours differentiated, and one shutdown day (2026-08-14)
+
+**This entry is configuration, not demo data, and that is the whole reason it needs writing down.**
+Every clear so far — §5c-i, §5f-i — deliberately left locations, docks, hours and settings alone,
+because that is the setup the product runs on. This change edits that setup. It will outlive the
+next appointment clear and it is what the plants will be configured as unless somebody changes it.
+
+### Why
+
+Asked for during preparation for the 14 August demonstration. All twelve sites were running one of
+only two schedules — Milton at 06:00-16:30 weekdays, every other site at 07:00-16:30 — and every
+single one closed at 16:30. A product whose entire premise is coordinating twelve plants across
+four time zones was showing an identical day column at every site.
+
+**The values below are invented.** They are plausible for a folding-carton plant and nothing more.
+The owner has said the real schedules will replace them. Until that happens, treat this section as
+the record of a placeholder, not of a decision about how the plants actually run.
+
+### The hours as they were, which is what the reverse restores
+
+| Site | Mon-Fri | Sat | Sun |
+|---|---|---|---|
+| Milton | 06:00-16:30 | closed | closed |
+| Burbank, Langley, Sturgis, Wilmington | 07:00-16:30 | closed | closed |
+| Bristol, Concord, Guelph, Markham, Mississauga, Owen Sound, Pickering | 07:00-16:30 | 07:00-16:30 | closed |
+
+### The hours as they now are
+
+Only the seven demonstration sites changed. Burbank, Guelph, Langley, Sturgis and Wilmington were
+not touched.
+
+| Site | Mon-Thu | Fri | Sat |
+|---|---|---|---|
+| Mississauga | 05:00-23:00 | 05:00-23:00 | 07:00-15:00 |
+| Pickering | 07:00-19:00 | 07:00-19:00 | 07:00-13:00 |
+| Milton | 06:00-16:30 | 06:00-16:30 | closed |
+| Markham | 07:00-16:30 | 07:00-16:30 | closed |
+| Owen Sound | 07:30-16:00 | 07:30-12:30 | closed |
+| Concord | 08:00-17:00 | 08:00-17:00 | closed |
+| Bristol | 06:30-15:00 | 06:30-15:00 | closed |
+
+**Narrowing hours strands loads that were already booked inside the old ones.** Four sites lost
+their Saturday and three lost part of a weekday, so every appointment that fell outside the new
+window was moved to a legal one through `update_appointment_details` — the same RPC a coordinator
+uses. The count is recorded in the verification section below.
+
+### The shutdown day
+
+One row in `location_holidays`: **Owen Sound, 2026-08-20, "Plant shutdown (demo)"**, source
+`manual`. It exists so the booking wizard can be shown refusing a closed day. It is configuration
+in the same way the hours are.
+
+### The reverse
+
+```sql
+begin;
+
+update public.location_operating_hours oh
+set is_open = true, open_time = '07:00', close_time = '16:30', updated_at = now()
+from public.locations l
+where l.id = oh.location_id
+  and l.code in ('bristol','concord','markham','mississauga','owen_sound','pickering')
+  and oh.day_of_week between 1 and 6;
+
+update public.location_operating_hours oh
+set is_open = false, open_time = null, close_time = null, updated_at = now()
+from public.locations l
+where l.id = oh.location_id
+  and l.code in ('bristol','concord','markham','mississauga','owen_sound','pickering')
+  and oh.day_of_week = 0;
+
+delete from public.location_holidays
+where name = 'Plant shutdown (demo)';
+
+commit;
+```
+
+Milton is absent from both statements on purpose: its 06:00 start and closed Saturday were already
+the baseline and were never changed.
+
+### Why leaving it in place is safe
+
+Hours only ever narrow or widen what MaxDock will accept a booking for. They gate nothing else: no
+permission, no visibility, no report. The worst outcome of leaving these in place is that somebody
+is told a site is open when it is not, which is a settings edit away and which the real schedules
+will correct anyway.
+
+**The appointments moved to fit the new hours are not restored by the reverse.** Putting the hours
+back does not put a load back to the Saturday it was booked on, and it should not — an appointment
+that has been rescheduled has a history saying so. If the original placement matters, it is in
+`appointment_audit_log`.
+
+### The procedure, click by click
+
+1. Open the Supabase dashboard and pick project `rywzqepzramurbrpmept`.
+2. Go to **SQL Editor** and open a new query.
+3. Run `select l.code, oh.day_of_week, oh.is_open, oh.open_time, oh.close_time from
+   public.location_operating_hours oh join public.locations l on l.id = oh.location_id order by 1, 2;`
+   and keep the output. That is the state you are about to leave.
+4. Paste the whole reverse block above, including `begin;` and `commit;`.
+5. Run it. It should report success with no rows returned.
+6. Re-run the query from step 3 and confirm all seven sites read `07:00-16:30` on days 1 to 6 and
+   closed on day 0, and that Milton still reads `06:00-16:30` with Saturday closed.
+7. Confirm `select count(*) from public.location_holidays;` returns the number it held before this
+   work, which was **0**.
+8. No front-end change is involved. Hours are read from the database on every booking.
+
+The same thing can be done without SQL at all: **Settings, Hours** at each site, which is where the
+values came from and where the real ones will go.
+
+### What was verified after the change
+
+Recorded in the section below once the change had run.
