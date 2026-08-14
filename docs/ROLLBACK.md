@@ -1882,3 +1882,109 @@ commit;
 ### What was verified after the change
 
 Recorded once the migration had run, in the section below.
+
+---
+
+## 5f-i. The demo appointment set rebuilt (2026-08-14)
+
+**Like §5c-i, this entry describes a deletion that cannot be undone from here.** It is written
+down for the same reason: the rule is that a change to the live project gets recorded, and the
+next person needs to know why the board holds what it holds on a given date.
+
+### Why
+
+The owner is presenting MaxDock to the team today and asked for the board to be repopulated:
+every existing appointment cleared, and a fresh set covering two days behind and eight days
+ahead. The set that was there had been generated on 3 August and ran 31 July to 14 August, so it
+was already half in the past and ended on the morning of the demo.
+
+Nothing here is real freight. It is a demonstration set, and §1.1 of `docs/GO_LIVE_AUDIT.md`
+still applies: **this data must be cleared again before the product carries real bookings.**
+
+### What was removed
+
+The same four tables as §5c-i, for the same reasons set out there:
+
+| Table | Rows before | Why it goes too |
+|---|---|---|
+| `appointments` | 332 | the previous demo set |
+| `appointment_audit_log` | 493 | no foreign key to `appointments`, so these would outlive the loads |
+| `user_notifications` (appointment-linked) | 424 | the foreign key is `SET NULL`, so these would point at nothing |
+| `appointment_series` | 0 | none existed |
+
+`appointment_documents` was empty. **No configuration was touched**: 12 locations, 34 docks, 5
+truck types, the operating hours, the per-location settings, the truck ladders, the roles, the
+permissions and all 8 accounts are exactly as they were.
+
+**The delete is not reproduced here as a runnable block**, for the reason §5c-i gives at length:
+this document's own guard refuses destructive SQL in the text it hands a reader, and it is right
+to. The order was the same as §5c-i — appointment-linked notifications, then the audit log, then
+`merged_into_appointment_id` nulled, then the appointments — and the audit trigger's self-record
+was cleared in a second pass afterwards.
+
+### How the new set was written, which is two different ways and the difference matters
+
+**Forward-dated loads went through the product's own booking RPCs**, `book_appointment` and
+`book_routed_appointment`, called with `request.jwt.claims` set to a real account so `auth.uid()`
+resolves exactly as it does from a browser. Those loads therefore passed every check a person
+booking would hit: permission, location access, operating hours, minimum notice, the booking
+window, slot alignment, capacity projection, duration calculation and dock assignment. Statuses
+above `scheduled` were then set through `change_appointment_status`. Nothing bypassed anything.
+
+**Back-dated loads could not go that way, and this is by design rather than an obstacle.**
+`book_appointment` refuses `p_date < today` — "Appointments cannot be created in the past" — and
+`receive_appointment` stamps `checked_in_at`, `service_started_at` and `departed_at` with
+`now()`. A load that arrived on Wednesday cannot be expressed through functions that can only
+say "now", and the correct response is not to weaken them.
+
+So the two historical days were written by a **temporary** function, `seed_demo_appointment`,
+which existed only for the length of this rebuild and **was dropped immediately afterwards**. It
+was deliberately not a free hand at the table: it took the same arguments, called the same
+`calculate_appointment_duration` for its window, used the same dock-selection query including the
+overlap exclusion, and wrote the same columns as `book_appointment`. What it added was the two
+things the real path cannot express — a past date, and timestamps given rather than taken from
+the clock.
+
+**If that function is present in the database today, something went wrong and it should be
+dropped.** It is meant to have a lifetime measured in minutes.
+
+```sql
+drop function if exists public.seed_demo_appointment(
+  text, date, time, text, text, text, text, integer, text, boolean,
+  text, text, text, text, text, text, text, uuid, integer, integer, integer
+);
+```
+
+### Reversing it
+
+**There is no SQL here that puts the previous set back, and deliberately is not.** Those rows
+were invented too; restoring them would be restoring one fiction over another. The two real
+routes are the same as §5c-i: Supabase point-in-time recovery if the tier has it and the window
+has not passed, or a fresh generated set.
+
+What this entry guarantees is the same bounded property §5c-i guarantees. Four tables, all of
+them appointment activity. No configuration, no account, no permission, and no function beyond
+the temporary one named above, which is gone.
+
+### The audit trigger records this too
+
+As §5c-i established: any bulk operation on appointments writes one audit row per appointment per
+statement. The rebuild wrote new audit rows for every load it created, and the clear wrote two per
+load removed before those were cleared in turn. Expect the activity feed on any one load to be
+short and honest; expect the table itself to have churned.
+
+### The procedure, click by click
+
+1. Open the Supabase dashboard and pick project `rywzqepzramurbrpmept`.
+2. Go to **SQL Editor** and open a new query.
+3. Run `select count(*) from public.appointments;` and write the number down before anything else.
+4. If `seed_demo_appointment` still exists, paste and run the `drop function` block above.
+5. Go to **Database → Functions** and confirm it is gone.
+6. To empty the board again, follow the order named above rather than deleting `appointments`
+   first — the appointment-linked notifications and the audit rows do not cascade.
+7. Re-run the count from step 3. It should read `0`.
+8. No front-end change is involved at any point. The application renders whatever rows exist.
+
+### What was verified after the change
+
+Recorded in the section below once the rebuild had run.
