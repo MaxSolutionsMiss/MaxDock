@@ -121,6 +121,10 @@ const SAVED = {
   // below was recomputed against the live catalogue with the same trim rather than copied out
   // of the document, which would have made the check agree with itself and prove nothing.
   admin_update_user: { md5: '7ee98240f14fcbab42543de8708af455', chars: 3571 },
+  // The audit trigger, captured before it learned that an actor who no longer exists is
+  // nobody rather than a foreign key violation. Until that change, deleting any account
+  // that had ever created or updated an appointment was impossible.
+  audit_appointment_change: { md5: '697fcf8e0a7a79a7689139d5f80f67e0', chars: 1553 },
 };
 const blocks = [...doc.matchAll(/```sql\n(CREATE OR REPLACE FUNCTION public\.(\w+)\([\s\S]*?\$function\$)\n```/g)];
 const seen = new Set();

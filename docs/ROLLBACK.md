@@ -2201,3 +2201,273 @@ is correct — Markham is now closed on Saturday.
 `create_appointment_series` also landed on a Milton door facing the wrong way. So the missing
 `direction_mode` filter is not peculiar to `book_appointment` — it is in more than one caller, and
 the fix belongs in the shared dock-picking logic rather than in each RPC separately.
+
+---
+
+## 5h-i. Every account but the owner's removed (2026-08-14)
+
+**This is a deletion of a login, and there is no way back from it.** Recorded for the same reason
+§5c-i and §5f-i are: the rule is that a change to the live project gets written down, and the next
+person needs to know why there is exactly one account.
+
+### Why
+
+The owner had already removed every account through the Users screen except one, `demo.vendor`
+(display name "Cutting Edge", organisation "McDermid"), which the screen would not delete. They
+asked for it to be removed too, leaving only their own master System Admin account, and for
+confirmation that nothing else can reach the system.
+
+### Why the screen would not remove it, which is worth knowing
+
+**Nothing in the database was blocking it.** Every reference to that account either clears itself
+or nulls itself on delete: `appointments.created_by` and `updated_by` are `ON DELETE SET NULL`,
+and `user_location_access`, `user_notifications`, `user_preferences`, `user_usage_daily`,
+`booking_templates` and `appointment_series` all cascade. The six references that *would* block a
+delete — `appointments.checked_in_by`, `appointment_documents.uploaded_by`,
+`location_day_limits.created_by`, `location_labour_days.recorded_by`,
+`dock_direction_windows.created_by` and `role_visible_pages.updated_by` — held **zero** rows for
+this account, all six checked individually rather than assumed.
+
+The `delete_user` branch of `maxdock-invite-user` refuses only one thing, deleting your own
+account, and this was not that. So the refusal came from somewhere between the screen and the
+deployed function rather than from any rule that was protecting anything. **That is left as an
+open question rather than papered over** — see the task list. It matters because the next person
+who cannot delete an account deserves a better answer than "try again".
+
+### What was removed
+
+One row from `auth.users`, which cascades to the `profiles` row. Everything else followed from the
+foreign keys already in place:
+
+| | |
+|---|---|
+| `auth.users` | 2 → 1 |
+| `profiles` | 2 → 1 |
+| `user_location_access` | 1 row gone |
+| `user_notifications` | 10 rows gone |
+| `user_preferences` | 3 rows gone |
+| `user_usage_daily` | 15 rows gone |
+| `appointments.created_by` nulled | 6 loads |
+| `appointments.updated_by` nulled | 4 loads |
+
+**The six appointments themselves were kept.** They are demonstration loads and they still read
+correctly on the board; only the record of which account entered them is gone, which is the
+honest outcome of deleting the account that entered them.
+
+### Reversing it
+
+**There is no SQL here that puts the account back, and deliberately is not.** An account is an
+identity, not a row to be re-inserted: recreating one with the same name would be a different
+login with a different id, and every appointment it used to own would stay detached from it. If
+that account is ever wanted again it should be created fresh through **Users → Add user**, which
+is the only path that sets up the identity, the temporary password and the audit trail together.
+
+What this entry guarantees instead is the bound: one account, and the rows that cascade from it.
+No location, no dock, no setting, no permission and no appointment was deleted.
+
+### The procedure, click by click
+
+1. Open the Supabase dashboard and pick project `rywzqepzramurbrpmept`.
+2. Go to **Authentication → Users** and confirm exactly one account is listed.
+3. Go to **SQL Editor** and run `select username, role_code, is_master_admin from public.profiles;`
+   It should return one row, the owner's, with `is_master_admin` true.
+4. To add anybody back, use **Users → Add user** inside MaxDock rather than the Supabase
+   dashboard. Creating a bare auth user in Supabase leaves it with no MaxDock profile, no role and
+   no site access, and it will sign in to a broken session.
+5. Nothing needs reverting in the repository. No code changed.
+
+### The deletion could not run until a real bug was fixed, and that is the important part
+
+The first attempt failed:
+
+```
+ERROR: insert or update on table "appointment_audit_log" violates foreign key constraint
+DETAIL: Key (changed_by)=(7eee3b30-…) is not present in table "users".
+CONTEXT: PL/pgSQL function public.audit_appointment_change()
+```
+
+Read that carefully, because it is not about this account. Deleting a user nulls
+`appointments.created_by` and `updated_by` through `ON DELETE SET NULL`. Those nulls are
+**updates**, so they fire the audit trigger. The trigger works out who to credit with:
+
+```
+actor_id := coalesce(auth.uid(), new.updated_by, new.created_by);
+```
+
+During a cascade there is no signed-in caller, so `auth.uid()` is null and it falls through to the
+row's own `updated_by` — **the account being deleted**, which by that point is already gone from
+`auth.users`. The audit row then fails its own foreign key and takes the whole delete with it.
+
+**So no account that has ever created or updated an appointment could be deleted.** Not this one,
+not a coordinator who leaves, not anybody. It would have surfaced the first time somebody left the
+company, which is a bad afternoon to discover it.
+
+### The fix
+
+One extra test in the trigger: an actor who no longer exists is recorded as nobody, which is both
+true and what the column already allows — `changed_by` is nullable and its foreign key is already
+`ON DELETE SET NULL`, so a historical audit row losing its actor is an outcome the schema was
+built for.
+
+```sql
+create or replace function public.audit_appointment_change()
+returns trigger language plpgsql security definer set search_path to ''
+as $fn$
+declare
+  audit_action text;
+  actor_id uuid;
+begin
+  if tg_op = 'DELETE' then
+    actor_id := coalesce(auth.uid(), old.updated_by, old.created_by);
+  else
+    actor_id := coalesce(auth.uid(), new.updated_by, new.created_by);
+  end if;
+
+  -- A cascade from a deleted account has no signed-in caller, so the fallbacks above
+  -- resolve to the very account being removed. Crediting a row to somebody who no
+  -- longer exists fails this table's own foreign key and takes the delete with it.
+  -- Nobody is the honest answer, and the column has always allowed it.
+  if actor_id is not null
+     and not exists (select 1 from auth.users u where u.id = actor_id) then
+    actor_id := null;
+  end if;
+  …
+```
+
+The body below the guard is unchanged from the definition saved at the end of this entry.
+
+### The reverse
+
+Restoring the saved definition below puts the old behaviour back, including the inability to
+delete a user who has touched an appointment. It is recorded for completeness, not because
+anybody should want it.
+
+### The definition as it was, word for word
+
+```sql
+CREATE OR REPLACE FUNCTION public.audit_appointment_change()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare
+  audit_action text;
+  actor_id uuid;
+begin
+  if tg_op = 'DELETE' then
+    actor_id := coalesce(auth.uid(), old.updated_by, old.created_by);
+  else
+    actor_id := coalesce(auth.uid(), new.updated_by, new.created_by);
+  end if;
+
+  if tg_op = 'INSERT' then
+    insert into public.appointment_audit_log (
+      appointment_id,
+      location_id,
+      action,
+      old_values,
+      new_values,
+      changed_by
+    )
+    values (
+      new.id,
+      new.location_id,
+      'created',
+      null,
+      to_jsonb(new),
+      actor_id
+    );
+    return new;
+  elsif tg_op = 'UPDATE' then
+    audit_action := case
+      when old.status is distinct from new.status then 'status_changed'
+      else 'updated'
+    end;
+
+    insert into public.appointment_audit_log (
+      appointment_id,
+      location_id,
+      action,
+      old_values,
+      new_values,
+      changed_by
+    )
+    values (
+      new.id,
+      new.location_id,
+      audit_action,
+      to_jsonb(old),
+      to_jsonb(new),
+      actor_id
+    );
+    return new;
+  elsif tg_op = 'DELETE' then
+    insert into public.appointment_audit_log (
+      appointment_id,
+      location_id,
+      action,
+      old_values,
+      new_values,
+      changed_by
+    )
+    values (
+      old.id,
+      old.location_id,
+      'deleted',
+      to_jsonb(old),
+      null,
+      actor_id
+    );
+    return old;
+  end if;
+
+  return null;
+end;
+$function$
+```
+
+Checksum of that block, with carriage returns stripped and trailing blank lines trimmed:
+`697fcf8e0a7a79a7689139d5f80f67e0`, 1553 characters.
+
+### What was verified after the change
+
+| | Before | After |
+|---|---|---|
+| `auth.users` | 2 | **1** |
+| `profiles` | 2 | **1** |
+| Remaining account | | `javad.resa`, System Admin, master |
+| `user_location_access` rows | 1 | 0 |
+| `user_preferences` rows for the removed account | 3 | 0 |
+| Appointments with no recorded creator | 0 | 6 |
+| Appointments total | 394 | **394** |
+| Locations / docks / role permissions | 12 / 34 / 121 | **12 / 34 / 121** |
+
+Nothing but the account and the rows that hang off it was touched. The six demonstration loads it
+had booked are still on the board and still complete; only the record of which account entered
+them is gone, which is what deleting that account honestly means.
+
+**The trigger fix was proved by the thing it unblocked.** The delete failed before it and
+succeeded after it, with no other change in between, which is a better test than any assertion
+about it would have been.
+
+### Who can reach the system now
+
+Checked rather than assumed, since the question was asked directly.
+
+| | |
+|---|---|
+| Accounts that can sign in | **1** |
+| Functions the `anon` role may execute | **0** |
+| Tables the `anon` role may read | 9 by grant, **0 in practice** |
+
+The nine tables carrying an `anon` grant all have row-level security enabled, and every policy on
+them requires `has_permission(...)`, `has_location_access(...)` or `auth.uid()` — all of which are
+false or null for a caller with no session. `appointment_documents` is the only one whose policies
+name the `public` role at all, and that is Postgres's default for "applies to every role", not a
+grant to anonymous callers; its three policies each still demand a signed-in identity. So the
+grants are untidy rather than dangerous, and tightening them is housekeeping, not a hole.
+
+**Still outstanding, and unchanged by this work:** leaked-password protection is off in the
+Supabase dashboard, and the Auth Site URL and redirect URLs still name the GitHub Pages address.
+Both are in `docs/GO_LIVE_AUDIT.md` §4 and both need a person in the dashboard.
