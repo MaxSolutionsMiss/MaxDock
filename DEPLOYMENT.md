@@ -10,7 +10,7 @@ The existing MaxDock repository and website remain the operational production sy
 
 ### Rebuild staging
 
-`https://maxsolutionsmiss.github.io/MaxDock/` is the staging environment for the rebuild.
+`https://velari-sys.github.io/MaxDock/` is the staging environment for the rebuild.
 
 During the rebuild, the `main` branch of `MaxDock` represents the latest reviewed staging state. It is not the production replacement, even when a stage is deployed successfully.
 

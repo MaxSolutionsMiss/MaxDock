@@ -2748,3 +2748,45 @@ rations is explanation rather than CSS. The comment was cut in half first and it
 which settled it. Set 16 KB clear of the rules ceiling this time rather than 2, so it goes back to
 being a sanity bound. The rules gate, which is the one that matters, was never in question and
 still has 90 bytes spare.
+
+## The org rename broke sign-in and password reset, and nobody could see any of it (2026-08-24)
+
+Two reports that looked unrelated turned out to be one cause, and a third finding explains why
+none of today's work had appeared.
+
+### Nothing was deployed
+
+`deploy-pages.yml` runs `on: push: branches: [main]`. Twelve commits were sitting on the working
+branch, none of them on `main`, so the live site had none of it: not the action colours, not the
+account dialog, not the Velari-sys line. The demo appointments did appear, because those are
+database writes made straight against production, which is exactly the trap: the data moved and
+the front end did not, so it looked like a deploy that half worked. Merged to `main` on the
+owner's instruction; the deploy stamps cache-busting versions, so a plain reload picks it up.
+
+### The organisation is Velari-sys now, and Pages does not redirect
+
+The site is `https://velari-sys.github.io/MaxDock/`. Git redirects the old remote, which is why
+pushing kept working and the rename went unnoticed here for a session and a half. GitHub Pages
+does not, which is a fact this repository has already been bitten by once, at the repository
+rename in `7fe5cc3`. The same sweep is needed for the organisation rename and this is it.
+
+**Username sign-in was broken by it.** `maxdock-invite-user` computes one allowed origin from
+`MAXDOCK_APP_URL`, falling back to the old host, and returns it as
+`Access-Control-Allow-Origin`. Served from `velari-sys.github.io`, the browser sees a header
+naming `maxsolutionsmiss.github.io` and discards the response. Signing in by email never touched
+that function, so it kept working, which is exactly the shape the owner reported: the username
+would not work and the email address would.
+
+**Password reset was broken by it too.** Invite and recovery links carry a `redirectTo` built
+from the same value, so they point at a host that no longer serves the application.
+
+Six live references moved: the edge function fallback, the smoke test's `BASE` four times, and
+the URL printed in `README.md` and `DEPLOYMENT.md`. The audit and runbook documents keep the old
+address because they describe what was true when they were written.
+
+### Not fixed here, because it needs a person in the Supabase dashboard
+
+`MAXDOCK_APP_URL` is a function secret and it overrides the fallback. If it is still set to a
+`maxsolutionsmiss` address, correcting the code changes nothing. It has to be read and reset by
+hand. The same is true of the Auth Site URL and the redirect allow-list, which is the other half
+of why a reset link fails.
