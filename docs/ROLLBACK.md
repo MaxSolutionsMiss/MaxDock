@@ -2471,3 +2471,124 @@ grants are untidy rather than dangerous, and tightening them is housekeeping, no
 **Still outstanding, and unchanged by this work:** leaked-password protection is off in the
 Supabase dashboard, and the Auth Site URL and redirect URLs still name the GitHub Pages address.
 Both are in `docs/GO_LIVE_AUDIT.md` §4 and both need a person in the dashboard.
+
+---
+
+## 5i-i. The demo set rebuilt again, six days from 24 August (2026-08-24)
+
+Third rebuild, same shape as §5f-i and subject to everything said there. **Demonstration data, not
+freight.** `docs/GO_LIVE_AUDIT.md` §1.1 still applies: clear it before the product carries real
+bookings.
+
+### Why
+
+The previous set ran 12 to 22 August and had fallen entirely into the past. A new demonstration is
+being given, and it needs a live board: Monday 24 August through Saturday 29 August, weighted to
+Mississauga, Guelph and Milton, with a handful at Pickering, Bristol, Concord, Owen Sound and
+Sturgis.
+
+The requirement that shapes the data is combining. Every day at the three main sites carries at
+least one pair that **exactly fills one 53 ft trailer**, so the fullness reading lands on 100%
+rather than near it.
+
+### The one number worth knowing before reading the board
+
+**A 53 ft trailer is 26 skids at every site except Mississauga, where it is 52.** That is a
+deliberate setting from earlier work, not a mistake, and it is why a Mississauga pair reads
+30 + 22 while a Guelph pair reads 22 + 4. Anybody comparing the two boards and expecting the same
+number will think one of them is wrong. If Mississauga should match the others it is one value in
+**Settings → Trucks**, and no code changes.
+
+### What was removed
+
+The same four tables as §5c-i and §5f-i, in the same order and for the same reasons: appointment
+linked notifications, the audit log, the series, then `merged_into_appointment_id` nulled, then the
+appointments. Counts before the clear were 394 appointments, 2 series, 597 audit rows and 587
+notifications.
+
+**No configuration was touched.** Locations, docks, hours, settings, truck ladders, roles and
+permissions are exactly as they were, as is the single remaining account.
+
+**The delete is not reproduced here as runnable SQL**, for the reason §5c-i sets out at length.
+
+### How it was written
+
+Unchanged from §5f-i, which describes the split in full: everything from tomorrow onward goes
+through `book_appointment` and `book_routed_appointment` with `request.jwt.claims` set, so it
+passes every check a person booking would hit. Today's earlier hours cannot, because
+`book_appointment` refuses a past time and `receive_appointment` can only stamp `now()`, so they go
+through the same temporary `seed_demo_appointment` function, **dropped again in the same sitting**.
+
+If that function exists in the database today, something went wrong and it should be dropped. Its
+signature and the drop statement are in §5f-i.
+
+### Reversing it
+
+**There is no restore, deliberately.** As §5c-i and §5f-i both say: these rows were invented, and a
+document that claimed to restore them would be restoring a fiction. The two real routes are
+point-in-time recovery, if the tier has it and the window has not passed, or another generated set.
+
+The bound is the same and it is the point of the entry: four tables, all of them appointment
+activity. No configuration, no account, no permission.
+
+### The procedure, click by click
+
+1. Open the Supabase dashboard and pick project `rywzqepzramurbrpmept`.
+2. Go to **SQL Editor** and open a new query.
+3. Run `select count(*) from public.appointments;` and write the number down first.
+4. Run `select proname from pg_proc where proname = 'seed_demo_appointment';`. It should return
+   nothing. If it returns a row, drop it using the statement in §5f-i.
+5. To empty the board, follow the order named above rather than deleting `appointments` first, as
+   the notifications and audit rows do not cascade.
+6. Re-run the count from step 3. It should read `0`.
+7. Nothing in the repository needs reverting. No code changed.
+
+### What was verified after the change
+
+**215 loads and 3 dock blocks across 8 sites, Monday 24 to Saturday 29 August.**
+
+| Day | Loads | Left | Received | Unloading | At gate | Confirmed | Scheduled | Cancelled | Blocks |
+|---|---|---|---|---|---|---|---|---|---|
+| Mon 24 | 39 | 5 | 7 | 7 | 9 | 5 | 6 | | |
+| Tue 25 | 40 | | | | | 16 | 24 | 1 | 1 |
+| Wed 26 | 44 | | | | | 21 | 22 | 2 | 1 |
+| Thu 27 | 43 | | | | | 20 | 23 | 1 | 1 |
+| Fri 28 | 39 | | | | | 19 | 20 | | |
+| Sat 29 | 10 | | | | | 6 | 4 | | |
+
+Monday reads as a morning that happened: five trucks finished and gone, seven finished and still
+on the yard, seven being unloaded, nine at the gate, and the afternoon still ahead.
+
+**Seventeen lanes fill exactly one 53 ft trailer**, at Mississauga, Guelph, Milton and Pickering,
+on every day from Tuesday to Friday. Not close to full — exactly full, so the reading is 100% and
+not 96%:
+
+| | 53 ft holds | The pair |
+|---|---|---|
+| Mississauga | 52 | 28 + 24, 34 + 18, 26 + 26, 32 + 20 |
+| Guelph, Milton, Pickering | 26 | 20 + 6, 18 + 8, 16 + 10, 14 + 12, 22 + 4 |
+
+Guelph on Wednesday also carries a **three-way** — 12 + 8 + 6 — and Milton on Thursday carries a
+pair booked on 48 ft trailers that together need a 53, which is the case where the answer is a
+bigger truck rather than a later time.
+
+**Five filler loads had to be moved off those lanes.** They were generated at random and happened
+to land on the same site, day, direction and partner as a planted pair, which turned "these two
+make exactly one truck" into a three-load lane at 196%. Their partner was changed through
+`update_appointment_details`; nothing was deleted.
+
+| Check | Result |
+|---|---|
+| Loads outside their site's operating hours | 0 |
+| Two loads overlapping on one dock | 0 |
+| Load on a door facing the wrong way | 0 |
+| Duplicate PO / BOL references | 0 |
+| Completed load missing an arrival or a completion time | 0 |
+| Temporary seed function still present | 0 |
+
+**The wrong-door problem appeared again and is still the same open bug.** Fifteen loads landed on
+a Milton door facing the wrong way, because the dock query in `book_appointment` and
+`create_appointment_series` filters on truck compatibility and overlap but not on
+`direction_mode`. They were reassigned through `update_appointment_details`, as in §5f-i and
+§5g-i. **This is the third rebuild in a row where it has had to be cleaned up by hand**, which is
+the argument for fixing it in the shared dock-picking logic rather than after the fact.
