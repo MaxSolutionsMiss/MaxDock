@@ -1571,13 +1571,13 @@ function buildShell(root) {
     <div class="scrim" data-apply-backdrop hidden aria-hidden="true">
       <section class="modal modal--xs" role="dialog" aria-modal="true" aria-labelledby="apply-title">
         <div class="modal__head"><div><h2 class="modal__title" id="apply-title">Apply to <span data-apply-location></span>?</h2></div></div>
-        <div class="modal__body"><p class="modal__message">These settings belong to this location. Every other Max Solutions site keeps its own.</p></div>
+        <div class="modal__body"><p class="modal__message">These settings belong to this location. Every other site keeps its own.</p></div>
         <div class="modal__foot"><button class="btn btn--quiet" type="button" data-apply-no>Cancel</button><button class="btn btn--primary" type="button" data-apply-yes>Apply</button></div>
       </section>
     </div>
     <div class="scrim" data-truck-backdrop hidden aria-hidden="true">
       <section class="modal modal--md" role="dialog" aria-modal="true" aria-labelledby="truck-modal-title">
-        <div class="modal__head"><div><h2 class="modal__title" id="truck-modal-title">Add a truck type</h2><p class="modal__sub">A truck type is shared by every Max Solutions site. This one is switched on here.</p></div><button class="modal__x" type="button" data-close-truck aria-label="Close">×</button></div>
+        <div class="modal__head"><div><h2 class="modal__title" id="truck-modal-title">Add a truck type</h2><p class="modal__sub">A truck type is shared by every site. This one is switched on here.</p></div><button class="modal__x" type="button" data-close-truck aria-label="Close">×</button></div>
         <form data-truck-form>
           <div class="modal__body">
             <div class="frow">

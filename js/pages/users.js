@@ -94,7 +94,7 @@ async function fetchAll() {
   }
 }
 
-// The three kinds of party outside Max Solutions, all on one role.
+// The three kinds of outside party, all on one role.
 //
 // A carrier was asked for as a login that can book its own time, and the honest answer turned
 // out to be smaller than a new role: MaxDock already carries a party type beside the customer

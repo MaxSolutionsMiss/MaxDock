@@ -75,10 +75,10 @@ function currentLocation() {
   return context.location;
 }
 
-// The counterpart can be any active Max Solutions site, so it is resolved from
+// The counterpart can be any active site, so it is resolved from
 // the directory first and only then from this account's own assignments. Getting
 // this wrong meant the receiving site's timezone fell back to the booking site's
-// and the confirmation named the counterpart "Max Solutions".
+// and the confirmation named the counterpart generically.
 function counterpartLocation() {
   const id = state.form.requester_location_id;
   if (!id) return null;
@@ -222,7 +222,7 @@ async function loadReferenceData() {
         retry: 1,
         userMessage: 'Operating hours could not be loaded.',
       }),
-      // Every active Max Solutions site, not only the ones this account is
+      // Every active site, not only the ones this account is
       // assigned to. A coordinator is assigned one site, so filtering the
       // counterpart picker by assignment left it with nothing to choose and
       // Max-to-Max could not be booked at all. The booking RPCs only ever
@@ -231,7 +231,7 @@ async function loadReferenceData() {
         key: 'booking:location-directory',
         cache: 300000,
         retry: 1,
-        userMessage: 'The Max Solutions location list could not be loaded.',
+        userMessage: 'The location list could not be loaded.',
       }),
     );
   }
@@ -256,7 +256,7 @@ function buildShell() {
     <div class="modal__head">
       <div>
         <h2 class="modal__title" id="booking-modal-title">${customer ? 'Book a shipment' : 'Book appointment'}</h2>
-        <span class="modal__sub">${currentLocation().name}${customer ? ' · Sending to Max Solutions' : ''}</span>
+        <span class="modal__sub">${currentLocation().name}${customer ? ' · Your shipment to this site' : ''}</span>
       </div>
       <button class="modal__x" type="button" data-action="close-booking" aria-label="Close booking">×</button>
     </div>
@@ -394,7 +394,7 @@ function renderLoadStep() {
   const staff = isStaff();
   const maxToMax = !customer && state.form.movement_kind === 'max';
   // What you are asked for depends on who you are and what kind of movement it is.
-  // A Max-to-Max transfer goes to another Max Solutions site, so it asks which one
+  // A Max-to-Max transfer goes to another of our own sites, so it asks which one
   // and never asks for a company — there is no outside party. An external movement
   // is the opposite. A customer is already known, so it asks neither.
   // Two rows, each filling the twelve columns exactly. Who is sending decides the
@@ -904,13 +904,13 @@ function clearSlotSelection() {
 function validateStep(step = state.step) {
   const form = state.form;
   if (step === STEP.LOAD) {
-    if (context.customerShell && context.locations.length > 1 && !form.destination_location_id) return 'Choose the Max Solutions location you are sending to.';
+    if (context.customerShell && context.locations.length > 1 && !form.destination_location_id) return 'Choose the location you are sending to.';
     if (!form.appointment_type_code) return 'Choose an appointment type.';
     if (!state.reference.appointmentTypes.some(item => item.code === form.appointment_type_code)) return 'Choose an appointment type enabled at this location.';
     if (!clean(String(form.skid_count ?? ''))) return 'Enter the skid count.';
     if (Number(form.skid_count) < 0 || !Number.isFinite(Number(form.skid_count))) return 'Enter a valid skid count.';
     if (!clean(form.external_reference)) return 'Enter the PO, BOL or job number.';
-    if (form.movement_kind === 'max' && !form.requester_location_id) return 'Choose the other Max Solutions location.';
+    if (form.movement_kind === 'max' && !form.requester_location_id) return 'Choose the other site.';
     if (form.movement_kind === 'external' && !clean(form.requester_type)) return 'Choose the company type.';
   }
   // The truck is on the same step as the load now, so it is checked with it.
@@ -1260,7 +1260,7 @@ async function saveTemplate() {
     location_id: currentLocation().id,
     name: clean(state.form.template_name),
     direction: state.form.direction,
-    requester_type: state.form.movement_kind === 'max' ? counterpartLocation()?.name || 'Max Solutions' : state.form.requester_type,
+    requester_type: state.form.movement_kind === 'max' ? counterpartLocation()?.name || 'Site transfer' : state.form.requester_type,
     company_name: state.form.movement_kind === 'max' ? counterpartLocation()?.name || null : clean(state.form.company_name) || null,
     appointment_type_code: state.form.appointment_type_code,
     truck_type_code: state.form.truck_type_code,
@@ -1305,7 +1305,7 @@ function seriesArgs() {
     p_location_id: currentLocation().id,
     p_name: clean(state.form.template_name) || null,
     p_direction: state.form.direction,
-    p_requester_type: routed ? counterpartLocation()?.name || 'Max Solutions' : state.form.requester_type,
+    p_requester_type: routed ? counterpartLocation()?.name || 'Site transfer' : state.form.requester_type,
     p_company_name: routed ? counterpartLocation()?.name || null : clean(state.form.company_name) || null,
     p_requester_location_id: routed ? state.form.requester_location_id : null,
     p_appointment_type_code: state.form.appointment_type_code,
@@ -1333,7 +1333,7 @@ function bookingArgs() {
     p_date: selectedDate(),
     p_start_time: selectedTime(),
     p_direction: state.form.direction,
-    p_requester_type: routed ? counterpartLocation()?.name || 'Max Solutions' : state.form.requester_type,
+    p_requester_type: routed ? counterpartLocation()?.name || 'Site transfer' : state.form.requester_type,
     p_appointment_type_code: state.form.appointment_type_code,
     p_truck_type_code: state.form.truck_type_code,
     p_skid_count: Number(state.form.skid_count || 0),

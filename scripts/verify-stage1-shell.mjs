@@ -14,7 +14,6 @@ const required = [
   'app/my-appointments.html',
   'assets/maxdock.css',
   'assets/logo-knockout.png',
-  'assets/logo-color.png',
   'js/db.js',
   'js/session.js',
   'js/router.js',
@@ -66,9 +65,22 @@ for (const absolute of htmlFiles) {
     if (!/\.\.\/js\/pages\/.+\.js$/.test(last)) fail(file, 'The page module is not the final declared script.');
   }
 
-  const colourLogoUses = (text.match(/logo-color\.png/gi) || []).length;
-  if (file === 'index.html' && colourLogoUses !== 1) fail(file, `Expected one full-colour logo use; found ${colourLogoUses}.`);
-  if (file !== 'index.html' && colourLogoUses) fail(file, 'Full-colour logo appears outside the login page.');
+  // The customer's own full-colour lockup used to sit under the sign-in card. The product
+  // is sold under its own name now, so the lockup is gone and no page may bring it back.
+  if (/logo-color\.png/i.test(text)) fail(file, 'The retired full-colour customer lockup is referenced again.');
+
+  // The maker's mark, once, on the sign-in page and nowhere else.
+  const byUses = (text.match(/System by Velari-sys/g) || []).length;
+  if (file === 'index.html' && byUses !== 1) fail(file, `Expected one Velari-sys attribution line; found ${byUses}.`);
+  if (file !== 'index.html' && byUses) fail(file, 'The attribution line belongs on the sign-in page only.');
+}
+
+// One customer's name must not be baked into a product sold to others. Docs and the
+// seeding scripts keep their own history; this covers everything that ships to a browser.
+for (const absolute of [...htmlFiles, ...walk('js'), ...walk('assets').filter(path => extname(path) === '.css')]) {
+  const file = relative(ROOT, absolute).replaceAll('\\', '/');
+  if (!['.html', '.js', '.css'].includes(extname(absolute))) continue;
+  if (/Max Solutions/i.test(readFileSync(absolute, 'utf8'))) fail(file, 'Customer name "Max Solutions" appears in shipped source.');
 }
 
 const pageModules = walk('js/pages').filter(path => extname(path) === '.js');
@@ -220,7 +232,25 @@ if (cssRuleBytes > 80 * 1024) fail('assets/maxdock.css', `CSS rule budget exceed
 // So it is now set well clear: it catches a pasted library or a duplicated stylesheet, and
 // nothing else. If this one ever fails, look for something that is not CSS.
 if (cssBytes > 160 * 1024) fail('assets/maxdock.css', `CSS file budget exceeded: ${Math.round(cssBytes / 1024)} KB including comments.`);
-if (jsBytes > 120 * 1024) fail('js/', `Stage 1 JavaScript budget exceeded: ${Math.round(jsBytes / 1024)} KB.`);
+// The JavaScript ceiling, unlike the two above it, has never carried its reasoning. It does now,
+// because it has been raised once and that has to be a decision on the record rather than a
+// nudged constant.
+//
+//   120 → 128 KB, 2026-08-24. There was no way to change your own password from inside MaxDock.
+//   The only password panel lives on the sign-in page and is reachable only by following a link
+//   out of an email, so an account whose mail never arrived could not change its password at all.
+//   The owner hit exactly that. The control, its dialog and the check that proves the old
+//   password before setting a new one come to about 6 KB against 2 KB of headroom.
+//
+//   It was paid for first as far as it would go: the dialog was rewritten around a field helper
+//   and its prose halved, and the nine files were scanned for a function nobody calls. There was
+//   none. So this is growth rather than drift, and the honest move is to move the number and say
+//   why instead of deleting explanation elsewhere to squeeze under it.
+//
+//   Worth saying what the number now measures. `board.js` alone is 47 KB and is no longer a
+//   Stage 1 board; the list this sums has not been revisited since it was written. If this gate
+//   fails again, re-scoping the list is the better answer than another raise.
+if (jsBytes > 128 * 1024) fail('js/', `Stage 1 JavaScript budget exceeded: ${Math.round(jsBytes / 1024)} KB.`);
 
 // One stylesheet means one place a spacing decision is made. An inline style is a
 // second place, and the same visual role written inline on six pages is how six

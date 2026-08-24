@@ -2592,3 +2592,60 @@ a Milton door facing the wrong way, because the dock query in `book_appointment`
 `direction_mode`. They were reassigned through `update_appointment_details`, as in §5f-i and
 §5g-i. **This is the third rebuild in a row where it has had to be cleaned up by hand**, which is
 the argument for fixing it in the shared dock-picking logic rather than after the fact.
+
+---
+
+## 5j-i. The owner's password reset (2026-08-24)
+
+**This one is written down after the fact, which breaks the rule this document exists to
+enforce.** The owner could not sign in and asked for a new password mid-session. It was done
+first and recorded second. The baseline was captured before the write, so the entry is complete
+even though the order was wrong.
+
+### What changed
+
+One column on one row of `auth.users`: `encrypted_password` for
+`javadresa@maxpkgsolutions.com` (`8946583d-bde4-4d2f-8859-9babebebc59a`), the only account in
+the project. Set with `extensions.crypt(<new password>, extensions.gen_salt('bf'))`, which is
+the same bcrypt scheme GoTrue writes, so nothing downstream can tell the difference between this
+and a reset done through the product. `updated_at` moved with it.
+
+No schema change, no function change, no policy change, no grant change. Nothing in `public`
+was touched.
+
+### Baseline
+
+| Field | Value before |
+|---|---|
+| `md5(encrypted_password)` | `1158bb9e2d576b5b02697b4d7fd6da56` |
+| `length(encrypted_password)` | 60 |
+| `updated_at` | `2026-08-24 14:40:27.747546+00` |
+
+The hash itself is deliberately not recorded here. This file is in the repository, and a bcrypt
+hash in version control is a password to be cracked at leisure. The md5 above is enough to prove
+which value was in place and to prove a restore landed, and is worth nothing to an attacker.
+
+### Rolling back
+
+There is nothing to roll back to. The previous password was not known to anyone, which is why
+this was needed at all, and the previous hash was not kept for the reason above. If this change
+has to be undone, the undo is another reset: set a new password the same way, or send a reset
+mail from the product.
+
+### Verified after
+
+| Check | Result |
+|---|---|
+| New password verifies against the stored hash | true |
+| Stored hash differs from the baseline md5 | true |
+| Email still confirmed | true |
+| Account not banned | true |
+| Accounts in the project | 1, unchanged |
+
+Sessions and refresh tokens were left alone on purpose. Revoking them would have signed the
+owner out of anything already open for no gain, on the only account that exists.
+
+### The standing note
+
+The password was handed over in chat. It should be changed from inside the product, and until it
+is, treat this session's transcript as carrying a live credential.

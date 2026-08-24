@@ -2584,3 +2584,121 @@ columns to three stacked steps and found by the dead-rule scan. 43 bytes under t
 afterwards.
 
 Nine new guards, each proved to fail against a mutated source before being trusted.
+
+## The customer's name comes off the product (2026-08-24)
+
+MaxDock is sold under its own name now, so the first customer's name has no business
+being compiled into it. Twenty two occurrences went, in three groups.
+
+### The sign-in card
+
+It carried a divider reading "A system by" and, under it, the customer's full two-colour
+lockup at 30px. Both are gone, along with `assets/logo-color.png`, which nothing else in
+the product referenced. The footer line lost its owner too: "Secure access to dock
+operations." In their place, one line, `.login-by`, in `--ink-faint` at `--t-micro`,
+below the footer and smaller than it:
+
+    System by Velari-sys
+
+The instruction was that it should not jump out at anyone, and the rendered card was
+checked rather than assumed: 11.5px against the footer's 13px, `rgb(138,149,158)` against
+the footer's `rgb(85,99,110)`. Quieter on both counts.
+
+### Nine strings a user could actually read
+
+Booking, Settings and My Appointments each named the customer where they meant "one of
+our own sites": "Choose the Max Solutions location you are sending to", "A truck type is
+shared by every Max Solutions site", and a `requester_type` fallback written as data on a
+site-to-site transfer. All of them are site-neutral now, which serves the instruction and
+also means the next customer's deployment needs no string edits.
+
+### Comments, because a repository is read too
+
+Ten source comments named the customer, including one on `js/router.js` that described the
+rail mark as "the real Max Solutions mark". The mark itself stays: it is an abstract
+overlapping "M", it carries no wordmark, and it reads as MaxDock. Replacing it means
+drawing a new one and regenerating five icon files, which is a different job from this one.
+
+### Two guards, both proved to fail first
+
+`verify-stage1-shell.mjs` used to assert the colour lockup appeared exactly once on the
+sign-in page. It now asserts the opposite, plus the attribution line exactly once and
+nowhere else, plus that the string "Max Solutions" appears in no shipped HTML, JS or CSS.
+Each was checked by mutating the source until it failed, then restoring it.
+
+### Budget
+
+Deleting `.login-divider`, its two pseudo-elements and `.login-owner` paid for `.login-by`
+several times over. Rules went from 6 bytes spare to 258, the file from 5 to 257.
+
+### Outside the product
+
+The onboarding pack sent to sites, the design-system spec and the presentation brief all
+carried the name; all three are corrected. The design spec had a whole section built around
+the retired lockup, embedded twice as base64, which is why it is 172 KB smaller. The
+engineering logs, this file included, keep their history unedited. The Microsoft 365 request
+keeps its real `@maxsolutions.com` addresses, because that document goes to that customer's
+own IT department and those are their actual mailboxes.
+
+## Nobody could change their own password (2026-08-24)
+
+The owner could not sign in, and it turned out there was no way for anyone to fix that from
+inside the product. The only password panel lives on the sign-in page and is reachable only by
+following a link out of an email. An account whose mail never arrives, or whose address is a
+mailbox nobody reads, was simply stuck.
+
+### The control
+
+"Change password" now sits beside "Sign out" in the account block, on every page, for every
+role. It opens a dialog asking for the current password and the new one twice.
+
+Asking for the current password is not ceremony. Supabase will set a new password on any
+signed-in session without proving the old one, so without that field anyone who found an
+unlocked screen owned the account. `db.auth.verifyPassword` proves it first, reading the email
+off the session rather than asking for it, because an account that signs in by username never
+learns its own auth address and should not have to. A wrong answer leaves the session alone:
+supabase-js only stores a session it actually received, so a failed check cannot sign anyone out.
+
+### Three defects found by driving it, not by reading it
+
+**Escape left the dialog in the page.** The dialog is built on demand, so Cancel had to remove
+the element. Escape and a backdrop click go through the modal's own `close()`, which only hides
+it. The hidden element then failed the "already open?" guard forever, so the dialog opened
+exactly once per page load. Fixed with `onRequestClose`, and the test opens it, presses Escape
+and opens it again.
+
+**The backdrop class matched no rule.** Both dialogs built in `router.js` used
+`modal-backdrop`. The stylesheet calls it `scrim`. There is no `.modal-backdrop` rule anywhere,
+so the new dialog rendered unpositioned in the corner with its fields flush to the edge. That is
+also true of the session-expired dialog, which has been rendering that way since it was written
+and nobody had seen it, because seeing it means waiting for a session to expire. Both are fixed,
+and both now put their content in a `.modal__body`, which is where the padding lives.
+
+**Focus landed on the close button.** The modal focuses the first focusable child unless told
+otherwise, and that is the X. `initialFocus` points it at the current-password field.
+
+### The phone
+
+The top bar overflowed at 390px with a second account action on it, measured rather than
+guessed: 432px of content in 330px of bar. The control is hidden below the phone breakpoint.
+A phone is not where anybody changes a password, and every wider screen keeps it.
+
+### The JavaScript budget moved, 120 to 128 KB
+
+This is the first time that number has moved, and the first time it has carried its reasoning.
+The feature is about 6 KB against 2 KB of headroom. It was paid for as far as it would go first:
+the dialog was rewritten around a field helper and its prose halved, and the nine files were
+scanned for a function nobody calls. There was none, so this is growth rather than drift.
+The alternative was deleting explanation elsewhere to squeeze under a number, which trades the
+thing that makes this code maintainable for the thing that does not.
+
+Worth saying what the number measures now. `board.js` alone is 47 KB and is not a Stage 1 board
+any more; the file list has not been revisited since it was written. If it fails again,
+re-scoping the list beats another raise.
+
+### Verified
+
+Eleven checks, driven in a real browser against the audit stub: the control renders, the dialog
+opens, focus lands in the first field, Escape removes it, it reopens, a short password is
+refused, a mismatch is refused, reusing the current password is refused, a good change closes
+the dialog and confirms with a toast, and the top bar does not overflow at 390, 768 or 1280.

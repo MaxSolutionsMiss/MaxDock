@@ -195,7 +195,7 @@ code.mono{background:var(--surface-sunk);border:1px solid var(--rule);border-rad
     <div class="brand">
       <span class="brand__mk"><svg viewBox="0 0 24 24"><path d="M2 7h11v8H2z"/><path d="M14 10h4l3 3v2h-7z"/><circle cx="6" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg></span>
       <span>
-        <span class="brand__s">Max Solutions</span>
+        <span class="brand__s">Velari-sys</span>
         <h1 class="brand__t">MaxDock &middot; site onboarding pack</h1>
       </span>
     </div>
@@ -269,7 +269,7 @@ code.mono{background:var(--surface-sunk);border:1px solid var(--rule);border-rad
 
 <dialog data-dlg>
   <div class="dlg">
-    <h2 data-dlg-t>Copy this back to Max Solutions</h2>
+    <h2 data-dlg-t>Copy this back to us</h2>
     <p data-dlg-p>Select all of the text below, copy it, and paste it into your reply.</p>
     <textarea data-dlg-x readonly></textarea>
     <div class="dlg__a">
@@ -316,7 +316,7 @@ const SECTIONS = [
   {
     id:'site', title:'The site', hint:'What the plant is called and where a driver is going.',
     fields:[
-      { k:'name', l:'Site name', t:'text', req:1, span:6, hint:'As people say it. "Guelph", not "Max Solutions Guelph Plant 2".' },
+      { k:'name', l:'Site name', t:'text', req:1, span:6, hint:'As people say it. "Guelph", not "Guelph Plant 2".' },
       { k:'code', l:'Short code', t:'code', req:1, span:3, hint:'Lower case, no spaces. Used in links.' },
       { k:'timezone', l:'Time zone', t:'select', req:1, span:3, options:ZONES, value:'America/Toronto' },
       { k:'address_line_1', l:'Street address', t:'text', req:1, span:8 },
@@ -719,7 +719,7 @@ function score() {
   save.disabled = issues.length > 0;
   status.innerHTML = issues.length
     ? `<b>${issues.length}</b> thing${issues.length === 1 ? '' : 's'} still to sort out before this can be saved.`
-    : `<b>Ready.</b> Save the file and email it back to Max Solutions.`;
+    : `<b>Ready.</b> Save the file and email it back to us.`;
 }
 
 /* ── what goes back ────────────────────────────────────────────────────────── */

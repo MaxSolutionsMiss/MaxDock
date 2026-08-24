@@ -67,7 +67,7 @@ function statusLabel(value) {
 // Origin and destination, in the direction the load actually travels. Inbound is
 // somebody else's site to ours; outbound is ours to theirs.
 function routeEnds(record) {
-  const here = record.location_name || 'Max Solutions';
+  const here = record.location_name || 'This site';
   const other = String(record.company_name || record.display_counterpart_location_name || record.requester_name || '').trim() || 'Not named';
   return String(record.direction || '').toLowerCase() === 'outbound' ? [here, other] : [other, here];
 }
@@ -466,7 +466,7 @@ function createAppointmentCard(record) {
   const identity = createElement('div', 'appointment-card__identity');
   const reference = createElement('span', 'appointment-card__reference data');
   // The line reads as the movement itself: which booking, from where, to where.
-  // It used to name only the Max Solutions site, which is the one thing every row
+  // It used to name only our own site, which is the one thing every row
   // in the list has in common — so fifty rows shared a headline and the empty
   // middle of the card carried nothing at all.
   const route = createElement('h3', 'appointment-card__title');

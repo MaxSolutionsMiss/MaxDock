@@ -200,7 +200,7 @@ function createShell(context, page) {
   brand.className = 'rail__brand';
   brand.href = session.defaultPath(context);
   brand.setAttribute('aria-label', 'MaxDock home');
-  // The real Max Solutions mark, the same file the sign-in page uses. This was a
+  // The real house mark, the same file the sign-in page uses. This was a
   // hand-drawn SVG approximation of it, which is not the company's logo.
   const mark = document.createElement('span');
   mark.className = 'rail__mark';
@@ -252,7 +252,7 @@ function createShell(context, page) {
   const top = document.createElement('header');
   top.className = 'top';
 
-  // A customer or vendor books into Max Solutions and has no site of their own to
+  // A customer or vendor books into one of our sites and has none of their own to
   // choose, so the picker is not shown to them at all. A coordinator works one
   // assigned site, so theirs is stated rather than offered as a choice. Only staff
   // with more than one site get a control they can change.
@@ -308,12 +308,21 @@ function createShell(context, page) {
   profileName.className = 'who__name';
   profileName.textContent = context.profile.full_name;
   profileName.title = context.role?.name || format.role(context.profile.role_code);
+  // Until this existed the only way to change a password was to follow a link out of an email,
+  // which meant an account whose mail never arrived could not change its password at all. The
+  // owner hit exactly that. It sits beside Sign out because that is where somebody looks for
+  // the things they can do to their own account, and it is on every page for the same reason.
+  const changePassword = document.createElement('button');
+  changePassword.type = 'button';
+  changePassword.className = 'linkBtn';
+  changePassword.id = 'change-password';
+  changePassword.textContent = 'Change password';
   const signOut = document.createElement('button');
   signOut.type = 'button';
   signOut.className = 'linkBtn';
   signOut.id = 'sign-out';
   signOut.textContent = 'Sign out';
-  profile.append(avatar, profileName, signOut);
+  profile.append(avatar, profileName, changePassword, signOut);
 
   // The bell returns null for roles without notifications.view, so it simply is not
   // rendered rather than appearing and failing on click.
@@ -361,7 +370,7 @@ function createShell(context, page) {
     globalThis.dispatchEvent(new CustomEvent('maxdock:open-booking', { detail: { trigger } }));
   });
 
-  return { root, pageRoot, locationSelect, signOut, banner, pulse, connectedText, notifications, railToggle };
+  return { root, pageRoot, locationSelect, changePassword, signOut, banner, pulse, connectedText, notifications, railToggle };
 }
 
 function renderFatal(error) {
@@ -382,17 +391,20 @@ function showSessionModal(context) {
   if (document.getElementById('session-modal')) return;
   poll.suspend('session-expired');
   const backdrop = document.createElement('div');
-  backdrop.className = 'modal-backdrop';
+  backdrop.className = 'scrim';
   backdrop.id = 'session-modal';
   const modal = document.createElement('section');
-  modal.className = 'modal';
+  modal.className = 'modal modal--sm';
   modal.setAttribute('role', 'dialog');
   modal.setAttribute('aria-modal', 'true');
   modal.setAttribute('aria-labelledby', 'session-title');
+  // .modal supplies no padding of its own: content belongs in .modal__body or it sits flush
+  // against the dialog edge. This dialog had neither that nor a real backdrop class, so it
+  // had been rendering unstyled since it was written.
   modal.innerHTML = `
-    <h2 class="modal__title" id="session-title">Your session expired</h2>
-    <p class="modal__message">Sign in again to continue. The current screen will stay in place.</p>
-    <form id="session-form">
+    <form id="session-form"><div class="modal__body">
+      <h2 class="modal__title" id="session-title">Your session expired</h2>
+      <p class="modal__message">Sign in again to continue. The current screen will stay in place.</p>
       <div class="field field--lg">
         <label class="field__label" for="session-email">Username</label>
         <input class="input" id="session-email" name="email" type="text" autocomplete="username" required>
@@ -405,7 +417,7 @@ function showSessionModal(context) {
       <div class="form-actions form-actions--stack">
         <button class="btn btn--primary btn--block" id="session-submit" type="submit">Sign in</button>
       </div>
-    </form>`;
+    </div></form>`;
   backdrop.append(modal);
   document.body.append(backdrop);
 
@@ -435,6 +447,88 @@ function showSessionModal(context) {
   });
 
   password.focus();
+}
+
+// The same ten-character rule the sign-in page applies: one password, one rule.
+const PASSWORD_MINIMUM = 10;
+
+// Until this existed the only way to change a password was a link in an email, so an account
+// whose mail never arrived could not change its password at all. Built on demand rather than
+// living in the page, so every exit has to take the element away and unbind the document key
+// handler with it: onRequestClose routes Escape and the backdrop through the same teardown as
+// Cancel, or a hidden backdrop would linger and the id guard above would block every reopen.
+function showChangePasswordModal(trigger) {
+  if (document.getElementById('password-modal')) return;
+  const backdrop = document.createElement('div');
+  backdrop.className = 'scrim';
+  backdrop.id = 'password-modal';
+  const field = (id, label, complete, hint = '') => `<div class="field field--lg">
+      <label class="field__label" for="password-${id}">${label}</label>
+      <input class="input" id="password-${id}" type="password" autocomplete="${complete}" required>${hint}</div>`;
+  backdrop.innerHTML = `<section class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="password-modal-title">
+    <div class="modal__head"><div>
+      <h2 class="modal__title" id="password-modal-title">Change your password</h2>
+      <p class="modal__sub">You stay signed in here and everywhere else.</p>
+    </div><button class="modal__x" type="button" data-close-password aria-label="Close">&times;</button></div>
+    <form id="password-change-form">
+      <div class="modal__body">
+        ${field('current', 'Current password', 'current-password')}
+        ${field('next', 'New password', 'new-password', `<p class="field__hint">At least ${PASSWORD_MINIMUM} characters.</p>`)}
+        ${field('confirm', 'New password again', 'new-password')}
+        <p class="form-message" id="password-change-message" aria-live="polite"></p>
+      </div>
+      <div class="modal__foot">
+        <button class="btn" type="button" data-close-password>Cancel</button>
+        <button class="btn btn--primary" id="password-change-submit" type="submit">Save new password</button>
+      </div>
+    </form></section>`;
+  // Hidden before createModal reads it: a visible backdrop reads as already open, and open()
+  // would return without trapping focus or suspending polling.
+  backdrop.hidden = true;
+  document.body.append(backdrop);
+
+  const dismiss = () => {
+    dialog.destroy();
+    backdrop.remove();
+  };
+  // Without initialFocus the trap lands on the close button, which is the one control in here
+  // that does nothing useful.
+  const dialog = createModal(backdrop, { onRequestClose: dismiss, initialFocus: '#password-current' });
+  for (const button of backdrop.querySelectorAll('[data-close-password]')) {
+    button.addEventListener('click', dismiss);
+  }
+
+  const current = backdrop.querySelector('#password-current');
+  const next = backdrop.querySelector('#password-next');
+  const confirm = backdrop.querySelector('#password-confirm');
+  const submit = backdrop.querySelector('#password-change-submit');
+  const message = backdrop.querySelector('#password-change-message');
+
+  backdrop.querySelector('#password-change-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    const refuse = (text, field) => {
+      message.textContent = text;
+      field.focus();
+    };
+    if (next.value.length < PASSWORD_MINIMUM) return refuse(`Use at least ${PASSWORD_MINIMUM} characters.`, next);
+    if (next.value !== confirm.value) return refuse('The two new passwords do not match.', confirm);
+    if (next.value === current.value) return refuse('That is the password you already have.', next);
+    message.textContent = '';
+    submit.disabled = true;
+    try {
+      await db.auth.verifyPassword(current.value);
+      await db.auth.updatePassword(next.value);
+      dismiss();
+      toast('Password changed.', 'success');
+    } catch (error) {
+      refuse(error.userMessage || 'The new password could not be saved.',
+        error.code === 'MAXDOCK_PASSWORD_MISMATCH' ? current : next);
+    } finally {
+      submit.disabled = false;
+    }
+  });
+
+  dialog.open({ trigger });
 }
 
 function wireShell(elements, context) {
@@ -474,6 +568,10 @@ function wireShell(elements, context) {
   };
   elements.railToggle.addEventListener('click', onRailToggle);
   cleanup.push(() => elements.railToggle.removeEventListener('click', onRailToggle));
+
+  const onChangePassword = () => showChangePasswordModal(elements.changePassword);
+  elements.changePassword.addEventListener('click', onChangePassword);
+  cleanup.push(() => elements.changePassword.removeEventListener('click', onChangePassword));
 
   const onSignOut = () => session.signOut();
   elements.signOut.addEventListener('click', onSignOut);

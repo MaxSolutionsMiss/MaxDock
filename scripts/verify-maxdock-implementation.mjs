@@ -75,7 +75,6 @@ const requiredContracts = [
   'docs/MAXDOCK_BRIDGE.md',
   'docs/STATUS.md',
   'assets/logo-knockout.png',
-  'assets/logo-color.png',
   'scripts/verify-maxdock.mjs',
 ];
 for (const path of requiredContracts) {

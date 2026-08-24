@@ -237,6 +237,28 @@ export const db = Object.freeze({
       if (error) throw normalizeError(error, 'The password reset email could not be sent.');
       return data;
     },
+    // Supabase will set a new password on a signed-in session without asking for the old one,
+    // which means anyone who finds an unlocked screen owns the account. So the old one is
+    // proved first. A wrong answer leaves the session alone: supabase-js only stores a session
+    // it actually received, so a failed check cannot sign anybody out.
+    //
+    // The email is read from the session rather than typed. An account that signs in by
+    // username never learns its own auth address, and it should not have to.
+    async verifyPassword(password) {
+      const { data, error: sessionError } = await client.auth.getSession();
+      if (sessionError) throw normalizeError(sessionError, 'Your MaxDock session could not be restored.');
+      const email = data?.session?.user?.email;
+      if (!email) {
+        throw { code: 'MAXDOCK_NO_SESSION', message: 'No signed-in session.', retryable: false, status: 401,
+          userMessage: 'Your MaxDock session has expired. Sign in again.' };
+      }
+      const { error } = await client.auth.signInWithPassword({ email, password });
+      if (error) {
+        throw { code: 'MAXDOCK_PASSWORD_MISMATCH', message: 'Current password rejected.', retryable: false, status: 401,
+          userMessage: 'That is not your current password.', cause: error };
+      }
+      return true;
+    },
     async updatePassword(password) {
       const { data, error } = await client.auth.updateUser({ password });
       if (error) throw normalizeError(error, 'The new password could not be saved.');

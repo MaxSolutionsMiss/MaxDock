@@ -12,11 +12,11 @@ do not put those on a slide as though they ship today.
 ## Part 1 — The fourteen slides
 
 ### 1. Title
-**MaxDock — dock scheduling built around how Max Solutions actually ships**
+**MaxDock — dock scheduling built around how you actually ship**
 Sub: One board per site. One truck per movement. Every number computed, not typed.
 
 Speaker note: MaxDock replaces spreadsheets, phone calls and a shared inbox with a
-single scheduling system across all Max Solutions sites and their vendors.
+single scheduling system across all your sites and their vendors.
 
 ---
 
@@ -192,7 +192,7 @@ Frame as **fit, not feature count**:
 3. **Duration comes from your own numbers** — per site, per truck type, per
    handling method — not a fixed appointment length.
 4. **Labour capacity is part of scheduling**, not a separate conversation.
-5. **It fits how Max Solutions is organised** — your sites, your truck types, your
+5. **It fits how you are organised** — your sites, your truck types, your
    holidays, your crew, your terminology.
 6. **No per-dock licence tax on growth.** Adding a site is configuration.
 
