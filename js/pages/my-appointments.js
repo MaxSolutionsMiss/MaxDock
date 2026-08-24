@@ -392,12 +392,38 @@ const documentKind = (mime, name) => {
   return 'file';
 };
 
+// A quiet colour per action, so a row of six icons can be pointed at in a conversation --
+// "the blue one with the paper on it" -- instead of counted along from the left. Full
+// strength on the glyph and thirteen per cent of it behind, which separates them without
+// turning the card into a paint chart.
+//
+// Six hues rather than five shades of one, because at this size a pale tint is nearly
+// invisible and the glyph colour is what actually does the telling apart. None of them is a
+// status colour: green here would read as complete and these are actions, not verdicts.
+//
+// Cancel keeps the red it already had and is tinted with the rest. Left white it was the one
+// button on the row that looked unfinished, and a wash of red says destructive rather more
+// plainly than white does, so harmony and honesty want the same thing here.
+const ACTION_TINT = {
+  doc: '#2E6DA4',    // blue, the paperwork
+  qr: '#5B4B9E',     // violet, the check-in code
+  share: '#147F72',  // teal, passing it on
+  copy: '#4E6076',   // slate, the quietest of them
+  edit: '#9A6212',   // amber, changing something
+  cancel: '#B3261E', // red, the only one that undoes anything
+};
+
 function createCardAction(name, label, className = 'btn btn--quiet btn--icon') {
   const button = createElement('button', className);
   button.type = 'button';
   button.innerHTML = icon(name);
   button.title = label;
   button.setAttribute('aria-label', label);
+  const tint = ACTION_TINT[name];
+  if (tint) {
+    button.classList.add('btn--tint');
+    button.style.setProperty('--t', tint);
+  }
   return button;
 }
 

@@ -813,10 +813,10 @@ textarea{padding:8px 10px;min-height:70px;resize:vertical}
 .data--strong{font-weight:600;color:var(--ink)}
 .sub{display:block;font-size:var(--t-small);color:var(--ink-faint)}
 .tag{display:inline-flex;align-items:center;font-size:var(--t-micro);font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:3px;white-space:nowrap}
-.tag--ok{background:var(--ok-wash);color:var(--ok)} .tag--pri{background:var(--signal-wash);color:var(--signal)}
+.tag--ok{background:var(--ok-wash);color:var(--ok)}
 .tag--stop{background:var(--stop-wash);color:var(--stop)} .tag--quiet{background:var(--surface-sunk);color:var(--ink-muted)}
-/* Between good and bad — a partner worth a conversation, not an escalation. */
-.tag--warn{background:var(--signal-wash);color:var(--signal)}
+/* A load that jumps the queue, and a partner worth a talk. Both amber. */
+.tag--pri,.tag--warn{background:var(--signal-wash);color:var(--signal)}
 
 /* segmented filter tabs */
 .tabs{display:inline-flex;background:var(--surface-sunk);border-radius:var(--radius);padding:2px}
@@ -1566,6 +1566,7 @@ body.modal-open{overflow:hidden}
 .form-message--note{color:var(--ink-muted)}
 .text-link{min-height:var(--ctl-h);border:0;background:transparent;color:var(--dock-deep);padding:0 var(--s2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .btn--danger{color:var(--stop);border-color:var(--rule-strong);background:var(--surface)}
+.btn--tint{color:var(--t);background:color-mix(in srgb,var(--t) 13%,#fff)}
 .field--full{max-width:none}
 /* A checkbox that opens a new subject rather than continuing the row above. */
 .check-row--spaced{margin-top:var(--s4)}
