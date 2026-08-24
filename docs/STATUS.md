@@ -2702,3 +2702,49 @@ Eleven checks, driven in a real browser against the audit stub: the control rend
 opens, focus lands in the first field, Escape removes it, it reopens, a short password is
 refused, a mismatch is refused, reusing the current password is refused, a good change closes
 the dialog and confirms with a toast, and the top bar does not overflow at 390, 768 or 1280.
+
+## Your account: username as well as password (2026-08-24)
+
+The password dialog added earlier today only did half the job. Username was a System Admin action
+pointed at somebody else's account, so an ordinary person could not change their own. Both now
+live in one dialog behind "Your account", where "Change password" used to be, so the top bar gains
+nothing.
+
+### One new function, and only one subject it will act on
+
+`public.set_own_username(p_username text)` acts on `auth.uid()` and nothing else. There is no
+target-user parameter, so it cannot be pointed at another account whatever is passed to it. That
+is its entire security model, and it is why it can be granted to `authenticated`.
+
+It refuses an unsigned caller, refuses anything outside `^[a-z0-9._-]{3,50}$`, refuses a name
+another account holds compared case-insensitively, and lower-cases what it stores. The pattern is
+the same one the invite function's `validUsername` enforces, so the two routes cannot disagree
+about what a legal username is. `raw_user_meta_data.username` moves with it, not because anything
+reads it, but so the two copies cannot drift and mislead somebody reading the auth record.
+
+Ten checks run against the live database by impersonating the account: rename and restore, the
+profile row and the auth metadata both moving, five illegal names refused, and a call with no
+identity refused. `anon` cannot execute it, `authenticated` can.
+
+### Reuse rather than a new rule
+
+The two halves ran together with no separation. `.countset` already was "a group under a hairline
+with a quiet legend"; only its name was about counts, and it had exactly one user. It is
+`.ruledset` now and the account dialog is its second user. That is why this cost three bytes
+instead of a new rule, which mattered with 90 bytes left in the rules budget.
+
+## The six card actions were still indistinguishable (2026-08-24)
+
+The tints added earlier set colour and background but not `border-color`, so `.btn--quiet`'s grey
+border kept outlining all six identically and the 13% wash was too faint to carry on its own. The
+border now takes 48% of the same colour and the hover takes it to full. Read back from the
+rendered page rather than the stylesheet: six distinct border colours across the six actions.
+
+### The CSS file ceiling moved, 160 to 176 KB
+
+It failed on two declarations and two lines of comment, having crept back to within 55 bytes of
+the rules content. That is the shape the note above it already calls wrong, because what it then
+rations is explanation rather than CSS. The comment was cut in half first and it still failed,
+which settled it. Set 16 KB clear of the rules ceiling this time rather than 2, so it goes back to
+being a sanity bound. The rules gate, which is the one that matters, was never in question and
+still has 90 bytes spare.

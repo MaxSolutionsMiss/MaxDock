@@ -312,17 +312,17 @@ function createShell(context, page) {
   // which meant an account whose mail never arrived could not change its password at all. The
   // owner hit exactly that. It sits beside Sign out because that is where somebody looks for
   // the things they can do to their own account, and it is on every page for the same reason.
-  const changePassword = document.createElement('button');
-  changePassword.type = 'button';
-  changePassword.className = 'linkBtn';
-  changePassword.id = 'change-password';
-  changePassword.textContent = 'Change password';
+  const account = document.createElement('button');
+  account.type = 'button';
+  account.className = 'linkBtn';
+  account.id = 'account';
+  account.textContent = 'Your account';
   const signOut = document.createElement('button');
   signOut.type = 'button';
   signOut.className = 'linkBtn';
   signOut.id = 'sign-out';
   signOut.textContent = 'Sign out';
-  profile.append(avatar, profileName, changePassword, signOut);
+  profile.append(avatar, profileName, account, signOut);
 
   // The bell returns null for roles without notifications.view, so it simply is not
   // rendered rather than appearing and failing on click.
@@ -370,7 +370,7 @@ function createShell(context, page) {
     globalThis.dispatchEvent(new CustomEvent('maxdock:open-booking', { detail: { trigger } }));
   });
 
-  return { root, pageRoot, locationSelect, changePassword, signOut, banner, pulse, connectedText, notifications, railToggle };
+  return { root, pageRoot, locationSelect, account, signOut, banner, pulse, connectedText, notifications, railToggle };
 }
 
 function renderFatal(error) {
@@ -452,36 +452,45 @@ function showSessionModal(context) {
 // The same ten-character rule the sign-in page applies: one password, one rule.
 const PASSWORD_MINIMUM = 10;
 
-// Until this existed the only way to change a password was a link in an email, so an account
-// whose mail never arrived could not change its password at all. Built on demand rather than
-// living in the page, so every exit has to take the element away and unbind the document key
-// handler with it: onRequestClose routes Escape and the backdrop through the same teardown as
-// Cancel, or a hidden backdrop would linger and the id guard above would block every reopen.
-function showChangePasswordModal(trigger) {
-  if (document.getElementById('password-modal')) return;
+// Until this existed there was no way to change either of these from inside MaxDock. The only
+// password panel is on the sign-in page behind a link in an email, and username was a System
+// Admin action pointed at somebody else. An account whose mail never arrived was stuck on both.
+//
+// Built on demand rather than living in the page, so every exit has to take the element away and
+// unbind the document key handler with it: onRequestClose routes Escape and the backdrop through
+// the same teardown as Cancel, or a hidden backdrop lingers and the id guard blocks every reopen.
+function showAccountModal(trigger, context) {
+  if (document.getElementById('account-modal')) return;
   const backdrop = document.createElement('div');
   backdrop.className = 'scrim';
-  backdrop.id = 'password-modal';
-  const field = (id, label, complete, hint = '') => `<div class="field field--lg">
-      <label class="field__label" for="password-${id}">${label}</label>
-      <input class="input" id="password-${id}" type="password" autocomplete="${complete}" required>${hint}</div>`;
-  backdrop.innerHTML = `<section class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="password-modal-title">
+  backdrop.id = 'account-modal';
+  const field = (id, label, type, complete, hint = '') => `<div class="field field--lg">
+      <label class="field__label" for="acct-${id}">${label}</label>
+      <input class="input" id="acct-${id}" type="${type}" autocomplete="${complete}" required>${hint}</div>`;
+  backdrop.innerHTML = `<section class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="account-modal-title">
     <div class="modal__head"><div>
-      <h2 class="modal__title" id="password-modal-title">Change your password</h2>
-      <p class="modal__sub">You stay signed in here and everywhere else.</p>
-    </div><button class="modal__x" type="button" data-close-password aria-label="Close">&times;</button></div>
-    <form id="password-change-form">
-      <div class="modal__body">
-        ${field('current', 'Current password', 'current-password')}
-        ${field('next', 'New password', 'new-password', `<p class="field__hint">At least ${PASSWORD_MINIMUM} characters.</p>`)}
-        ${field('confirm', 'New password again', 'new-password')}
-        <p class="form-message" id="password-change-message" aria-live="polite"></p>
-      </div>
-      <div class="modal__foot">
-        <button class="btn" type="button" data-close-password>Cancel</button>
-        <button class="btn btn--primary" id="password-change-submit" type="submit">Save new password</button>
-      </div>
-    </form></section>`;
+      <h2 class="modal__title" id="account-modal-title">Your account</h2>
+      <p class="modal__sub">Change either one. You stay signed in here and everywhere else.</p>
+    </div><button class="modal__x" type="button" data-close-account aria-label="Close">&times;</button></div>
+    <div class="modal__body">
+      <form id="username-form">
+        ${field('username', 'Username', 'text', 'username',
+          '<p class="field__hint">Letters, numbers, dots, dashes and underscores. This is what you sign in with.</p>')}
+        <p class="form-message" id="username-message" aria-live="polite"></p>
+        <div class="form-actions"><button class="btn" id="username-submit" type="submit">Save username</button></div>
+      </form>
+      <form id="password-form">
+        <fieldset class="ruledset"><legend>Password</legend>
+          ${field('current', 'Current password', 'password', 'current-password')}
+          ${field('next', 'New password', 'password', 'new-password', `<p class="field__hint">At least ${PASSWORD_MINIMUM} characters.</p>`)}
+          ${field('confirm', 'New password again', 'password', 'new-password')}
+          <p class="form-message" id="password-message" aria-live="polite"></p>
+          <div class="form-actions"><button class="btn btn--primary" id="password-submit" type="submit">Save new password</button></div>
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal__foot"><button class="btn" type="button" data-close-account>Close</button></div>
+  </section>`;
   // Hidden before createModal reads it: a visible backdrop reads as already open, and open()
   // would return without trapping focus or suspending polling.
   backdrop.hidden = true;
@@ -491,40 +500,71 @@ function showChangePasswordModal(trigger) {
     dialog.destroy();
     backdrop.remove();
   };
-  // Without initialFocus the trap lands on the close button, which is the one control in here
-  // that does nothing useful.
-  const dialog = createModal(backdrop, { onRequestClose: dismiss, initialFocus: '#password-current' });
-  for (const button of backdrop.querySelectorAll('[data-close-password]')) {
+  // Without initialFocus the trap lands on the close button, the one control in here that does
+  // nothing useful.
+  const dialog = createModal(backdrop, { onRequestClose: dismiss, initialFocus: '#acct-username' });
+  for (const button of backdrop.querySelectorAll('[data-close-account]')) {
     button.addEventListener('click', dismiss);
   }
+  const $ = id => backdrop.querySelector(id);
+  const say = (target, text, field) => {
+    target.textContent = text;
+    if (field) field.focus();
+  };
 
-  const current = backdrop.querySelector('#password-current');
-  const next = backdrop.querySelector('#password-next');
-  const confirm = backdrop.querySelector('#password-confirm');
-  const submit = backdrop.querySelector('#password-change-submit');
-  const message = backdrop.querySelector('#password-change-message');
-
-  backdrop.querySelector('#password-change-form').addEventListener('submit', async event => {
+  // Username. The RPC is the authority on what is legal and what is taken; this only spares a
+  // round trip on the obvious cases and keeps the wording identical either way.
+  const username = $('#acct-username');
+  const usernameMessage = $('#username-message');
+  const usernameSubmit = $('#username-submit');
+  username.value = context?.profile?.username || '';
+  const currentUsername = username.value;
+  $('#username-form').addEventListener('submit', async event => {
     event.preventDefault();
-    const refuse = (text, field) => {
-      message.textContent = text;
-      field.focus();
-    };
-    if (next.value.length < PASSWORD_MINIMUM) return refuse(`Use at least ${PASSWORD_MINIMUM} characters.`, next);
-    if (next.value !== confirm.value) return refuse('The two new passwords do not match.', confirm);
-    if (next.value === current.value) return refuse('That is the password you already have.', next);
-    message.textContent = '';
-    submit.disabled = true;
+    const wanted = username.value.trim().toLowerCase();
+    if (wanted === currentUsername) return say(usernameMessage, 'That is the username you already have.', username);
+    usernameSubmit.disabled = true;
+    try {
+      const saved = await db.rpc('set_own_username', { p_username: wanted }, {
+        key: `account:username:${wanted}:${format.nowEpoch()}`,
+        retry: 0,
+        userMessage: 'The username could not be changed.',
+      });
+      username.value = saved || wanted;
+      db.invalidate('profile:');
+      dismiss();
+      toast(`Signed in as ${saved || wanted} from now on.`, 'success');
+    } catch (error) {
+      say(usernameMessage, error.userMessage || 'The username could not be changed.', username);
+    } finally {
+      usernameSubmit.disabled = false;
+    }
+  });
+
+  // Password. The current one is proved first: Supabase will set a new password on any signed-in
+  // session without it, so anybody who found an unlocked screen would own the account.
+  const current = $('#acct-current');
+  const next = $('#acct-next');
+  const confirm = $('#acct-confirm');
+  const passwordMessage = $('#password-message');
+  const passwordSubmit = $('#password-submit');
+  $('#password-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    if (next.value.length < PASSWORD_MINIMUM) return say(passwordMessage, `Use at least ${PASSWORD_MINIMUM} characters.`, next);
+    if (next.value !== confirm.value) return say(passwordMessage, 'The two new passwords do not match.', confirm);
+    if (next.value === current.value) return say(passwordMessage, 'That is the password you already have.', next);
+    passwordMessage.textContent = '';
+    passwordSubmit.disabled = true;
     try {
       await db.auth.verifyPassword(current.value);
       await db.auth.updatePassword(next.value);
       dismiss();
       toast('Password changed.', 'success');
     } catch (error) {
-      refuse(error.userMessage || 'The new password could not be saved.',
+      say(passwordMessage, error.userMessage || 'The new password could not be saved.',
         error.code === 'MAXDOCK_PASSWORD_MISMATCH' ? current : next);
     } finally {
-      submit.disabled = false;
+      passwordSubmit.disabled = false;
     }
   });
 
@@ -569,9 +609,9 @@ function wireShell(elements, context) {
   elements.railToggle.addEventListener('click', onRailToggle);
   cleanup.push(() => elements.railToggle.removeEventListener('click', onRailToggle));
 
-  const onChangePassword = () => showChangePasswordModal(elements.changePassword);
-  elements.changePassword.addEventListener('click', onChangePassword);
-  cleanup.push(() => elements.changePassword.removeEventListener('click', onChangePassword));
+  const onAccount = () => showAccountModal(elements.account, context);
+  elements.account.addEventListener('click', onAccount);
+  cleanup.push(() => elements.account.removeEventListener('click', onAccount));
 
   const onSignOut = () => session.signOut();
   elements.signOut.addEventListener('click', onSignOut);

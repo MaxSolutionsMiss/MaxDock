@@ -125,6 +125,9 @@ const SAVED = {
   // nobody rather than a foreign key violation. Until that change, deleting any account
   // that had ever created or updated an appointment was impossible.
   audit_appointment_change: { md5: '697fcf8e0a7a79a7689139d5f80f67e0', chars: 1553 },
+  // Created rather than replaced, so this pins the shape it was made in: an account renames
+  // only itself, because auth.uid() is the only subject it will act on.
+  set_own_username: { md5: '9e10581845de01bda90cfb482cb9b37a', chars: 1070 },
 };
 const blocks = [...doc.matchAll(/```sql\n(CREATE OR REPLACE FUNCTION public\.(\w+)\([\s\S]*?\$function\$)\n```/g)];
 const seen = new Set();

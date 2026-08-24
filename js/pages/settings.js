@@ -434,7 +434,7 @@ function renderCapacity() {
         <option value="enforce" ${s.capacity_enforcement_mode === 'enforce' ? 'selected' : ''}>Block booking</option>
       </select></div>
     </div>
-    <fieldset class="countset">
+    <fieldset class="ruledset">
       <legend>Counted stock</legend>
       <div class="frow">
         <div class="field field--num"><span class="field__label">Counted</span><span class="inputwrap"><input class="input" type="number" min="0" name="current_occupied_skids" value="${s.current_occupied_skids ?? 0}" ${disabled}><span class="input__unit">skids</span></span></div>

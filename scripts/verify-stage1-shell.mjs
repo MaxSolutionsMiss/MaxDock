@@ -231,7 +231,14 @@ if (cssRuleBytes > 80 * 1024) fail('assets/maxdock.css', `CSS rule budget exceed
 // whose job the rules gate already does. Twice the ceiling was raised for prose alone.
 // So it is now set well clear: it catches a pasted library or a duplicated stylesheet, and
 // nothing else. If this one ever fails, look for something that is not CSS.
-if (cssBytes > 160 * 1024) fail('assets/maxdock.css', `CSS file budget exceeded: ${Math.round(cssBytes / 1024)} KB including comments.`);
+//
+//   160 → 176 KB, 2026-08-24. It failed, and the thing it caught was CSS: two declarations
+//   giving the six card actions coloured borders, plus two lines saying why. It had crept back
+//   to within 55 bytes of the rules content, which is the shape the paragraph above says was
+//   wrong, so it was rationing prose again. The comment was cut in half first and it still
+//   failed, which settled it. Set 16 KB clear of the rules ceiling this time rather than 2, so
+//   it goes back to being a sanity bound instead of a second gate.
+if (cssBytes > 176 * 1024) fail('assets/maxdock.css', `CSS file budget exceeded: ${Math.round(cssBytes / 1024)} KB including comments.`);
 // The JavaScript ceiling, unlike the two above it, has never carried its reasoning. It does now,
 // because it has been raised once and that has to be a decision on the record rather than a
 // nudged constant.

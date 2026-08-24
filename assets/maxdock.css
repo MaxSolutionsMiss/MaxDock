@@ -974,8 +974,10 @@ html[data-text="larger"] .frow>.field--md:not(.field-action){grid-column:span 5}
 /* Dock 1 and Monday are short: a column wide enough for a truck type wastes half
    a row each, and a window is twelve ticks. */
 .dirwin .pickgroup{--check-col:118px}
-.countset{border:none;border-top:1px solid var(--rule);padding:var(--s4) 0 0;margin:var(--s4) 0 0}
-.countset>legend{padding:0;font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-muted);font-weight:600}
+/* A group under a hairline with a quiet legend. Named for counts when the count fieldset
+   was its only user; it is the general shape, and the account dialog uses it too. */
+.ruledset{border:none;border-top:1px solid var(--rule);padding:var(--s4) 0 0;margin:var(--s4) 0 0}
+.ruledset>legend{padding:0;font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-muted);font-weight:600}
 /* Keyed to the container, not the viewport: a dialog is a fixed 760px wide however
    large the window is, so a viewport media query collapsed rows that had room. */
 /* A ruled part of a stack is a container too. It was not, so field rows inside it
@@ -1566,7 +1568,10 @@ body.modal-open{overflow:hidden}
 .form-message--note{color:var(--ink-muted)}
 .text-link{min-height:var(--ctl-h);border:0;background:transparent;color:var(--dock-deep);padding:0 var(--s2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .btn--danger{color:var(--stop);border-color:var(--rule-strong);background:var(--surface)}
-.btn--tint{color:var(--t);background:color-mix(in srgb,var(--t) 13%,#fff)}
+/* The 13% wash alone left six buttons looking identical, because .btn--quiet's grey border
+   was still doing the outlining. A line can carry colour a wash behind a glyph cannot. */
+.btn--tint{color:var(--t);background:color-mix(in srgb,var(--t) 13%,#fff);border-color:color-mix(in srgb,var(--t) 48%,#fff)}
+.btn--tint:hover{background:color-mix(in srgb,var(--t) 22%,#fff);border-color:var(--t)}
 .field--full{max-width:none}
 /* A checkbox that opens a new subject rather than continuing the row above. */
 .check-row--spaced{margin-top:var(--s4)}
@@ -1859,7 +1864,7 @@ body.modal-open{overflow:hidden}
   .who__name{display:none}
   /* Even with the name gone this bar has no room for a second account action, and a phone is
      not where anybody changes a password. Every wider screen keeps it. */
-  #change-password{display:none}
+  #account{display:none}
   .split,.split--list{grid-template-columns:1fr}
   .setlayout{grid-template-columns:1fr}
   /* Desktop fits one viewport-height column and lets the board absorb the slack.

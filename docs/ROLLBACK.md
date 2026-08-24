@@ -2649,3 +2649,135 @@ owner out of anything already open for no gain, on the only account that exists.
 
 The password was handed over in chat. It should be changed from inside the product, and until it
 is, treat this session's transcript as carrying a live credential.
+
+---
+
+## 5k-i. An account can change its own username (2026-08-24)
+
+Written before the change, as the rule requires.
+
+### Why
+
+`update_username` exists in the `maxdock-invite-user` edge function, but it is gated on the caller
+being a System Admin and it takes a target user id. There is no way for an ordinary account to
+change its own username, which is the other half of the gap that left the owner unable to change
+his own password.
+
+### What is added
+
+One new function, `public.set_own_username(p_username text) returns text`. It is `SECURITY
+DEFINER` with `search_path` set to the empty string, matching `complete_password_setup`, the
+closest existing thing to it.
+
+It acts only on `auth.uid()`. There is no target-user parameter, so it cannot be pointed at
+somebody else's account whatever is passed to it. That is the whole of its security model and it
+is why it can safely be granted to `authenticated`.
+
+Four checks before it writes:
+
+- signed in at all, or it refuses;
+- the name matches `^[a-z0-9._-]{3,50}$`, the same shape the edge function's `validUsername`
+  enforces, so the two routes cannot disagree about what a legal username is;
+- nobody else holds it, compared case-insensitively;
+- the account has a profile row.
+
+It also updates `raw_user_meta_data.username` on the `auth.users` row. The sign-in path reads
+`public.profiles`, not the metadata, so this is not load-bearing. It is here so the two copies
+cannot drift and mislead somebody reading the auth record later.
+
+### Baseline
+
+There is nothing to capture. `public.set_own_username` does not exist at any signature. Confirmed
+against `pg_proc` before writing this entry: the only functions in `public` matching `username`,
+`profile`, `own`, `password` or `user` are `admin_list_user_usage`, `admin_list_users`,
+`admin_list_users_with_identity`, `admin_update_user` (two signatures), `complete_password_setup`,
+`get_user_preference`, `handle_new_auth_user`, `notify_appointment_owner`, `owns_appointment`,
+`owns_appointment_at`, `record_user_usage` and `save_user_preference`.
+
+No table, column, index, policy, trigger or grant on an existing object is touched. The unique
+index `profiles_username_lower_uidx` already enforces the uniqueness this function checks for, so
+the database remains the final arbiter even if the function's own check were removed.
+
+### Rolling back
+
+Remove the function and the interface goes with it. Nothing else refers to it.
+
+    revoke all on function public.set_own_username(text) from authenticated;
+    drop function if exists public.set_own_username(text);
+
+Usernames already changed through it stay changed, because a username is data the owner chose and
+not an artefact of the function. If one has to be put back, an administrator sets it from the
+Users screen, which is the route that existed before this and still does.
+
+### Front end
+
+`js/router.js` gains a username section in the account dialog. Reverting the SQL alone leaves that
+section calling a function that is not there, which surfaces as an error message in the dialog
+rather than anything worse. Revert the commit to remove both together.
+
+### Verified after
+
+| Check | Expected |
+|---|---|
+| A signed-in account renames itself | succeeds, `profiles.username` and the auth metadata both move |
+| The same name in different case, on another account | refused, "already taken" |
+| Two characters, or a space, or an accent | refused on the pattern |
+| Called with no signed-in identity | refused |
+| `anon` may execute it | no |
+
+### The definition as created, for restoring word for word
+
+`md5 9e10581845de01bda90cfb482cb9b37a`, 1070 characters, carriage returns stripped and trailing
+newlines trimmed. This one is a creation rather than a replacement, so what is pinned here is the
+state to return to if it is ever edited, not a prior version to roll back to.
+
+```sql
+CREATE OR REPLACE FUNCTION public.set_own_username(p_username text)
+ RETURNS text
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare
+  v_clean text := lower(btrim(coalesce(p_username, '')));
+begin
+  if auth.uid() is null then
+    raise exception 'You must be signed in to change your username.';
+  end if;
+
+  if v_clean !~ '^[a-z0-9._-]{3,50}$' then
+    raise exception 'Use 3 to 50 letters, numbers, dots, dashes or underscores.';
+  end if;
+
+  if exists (
+    select 1 from public.profiles p
+    where lower(p.username) = v_clean and p.id <> auth.uid()
+  ) then
+    raise exception 'That username is already taken.';
+  end if;
+
+  update public.profiles
+  set username = v_clean, updated_at = now()
+  where id = auth.uid() and is_active = true;
+
+  if not found then
+    raise exception 'An active MaxDock profile was not found.';
+  end if;
+
+  update auth.users
+  set raw_user_meta_data =
+        coalesce(raw_user_meta_data, '{}'::jsonb) || jsonb_build_object('username', v_clean)
+  where id = auth.uid();
+
+  return v_clean;
+end;
+$function$
+```
+
+### Grants
+
+    revoke all on function public.set_own_username(text) from public;
+    revoke all on function public.set_own_username(text) from anon;
+    grant execute on function public.set_own_username(text) to authenticated;
+
+Confirmed after: `anon` cannot execute it, `authenticated` can.
