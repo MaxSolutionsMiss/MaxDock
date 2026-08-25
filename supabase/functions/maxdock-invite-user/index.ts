@@ -7,37 +7,62 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2.110.3";
 
-// Where an invited person and a password reset are sent.
+// Invitations and password resets land on `/?mode=setup`, which is this application's own login
+// page. It handles the mode, it handles the PASSWORD_RECOVERY event, and the client is built
+// with detectSessionInUrl so the tokens in the link establish a session before the panel shows.
+// The application's own "forgot password" sends people to the same screen, so both routes end
+// with one set of validation and one set of messages.
 //
-// `/?mode=setup` is this application's own login page, index.html, which already carries the
-// panel that sets a password: it handles the mode, it handles the PASSWORD_RECOVERY event, and
-// the client is created with detectSessionInUrl so the tokens in the link establish a session
-// before the panel is shown. It is also where this application's own "forgot password" sends
-// people, so both routes end on one screen with one set of validation and one set of messages.
+// The canonical home of the application. Deriving everything from one secret was too brittle:
+// the application has changed host twice, at the repository rename and again at the organisation
+// rename, and each time this function went on answering with the previous origin. The browser
+// discards a response whose Access-Control-Allow-Origin does not match where the page came from,
+// so username sign-in and every account action stopped working with no error anywhere in this
+// function -- the request never reached it. The logs show only a preflight, a boot and a
+// shutdown, three times in a row, which is exactly what that failure looks like from in here.
 //
-// It used to be `/set-password.html`, which is a page that exists only in the v1 repository.
-// That made a static site nobody was still developing into a live dependency of every invitation,
-// and it is why retiring v1 could not start: rename or delete that repository and the next person
-// invited lands on a 404 with nothing to act on. This is the line that unpicks it.
-//
-// The fallback moved with it, and it had to. It named v1's db04 folder, and v1 does not
-// understand `?mode=setup` -- it has the separate page this function no longer points at. Leaving
-// the two out of step would mean a deploy without the secret set sent people to a host that
-// cannot serve the route they were sent to, which is a worse failure than the one being fixed
-// because it looks like nothing is wrong until somebody tries to accept an invitation.
-//
-// So the pair is now coherent: this function targets this application, with or without the
-// variable. That makes deploying it a decision rather than a formality. Deploy it together with
-// setting MAXDOCK_APP_URL, in the same sitting, and not while v1 is still the application people
-// are being invited to -- see docs/RENAME-RUNBOOK.md step 2.
-const appUrl = (Deno.env.get("MAXDOCK_APP_URL") ??
-  "https://velari-sys.github.io/MaxDock").replace(/\/$/, "");
-const allowedOrigin = new URL(appUrl).origin;
+// The secret made it worse rather than better, because it overrides the code and cannot be read
+// from the repository. Correcting this file and redeploying would have fixed nothing while
+// MAXDOCK_APP_URL still named the old host.
+const CANONICAL_APP_URL = "https://velari-sys.github.io/MaxDock";
+
+// A closed list, never a wildcard. The old host stays on it while invitation links already sent
+// are still in people's inboxes; it can be dropped once nobody is arriving from there.
+// MAXDOCK_EXTRA_ORIGINS takes a comma-separated list, for a custom domain later.
+const ALLOWED_ORIGINS = new Set<string>([
+  new URL(CANONICAL_APP_URL).origin,
+  "https://maxsolutionsmiss.github.io",
+  ...(Deno.env.get("MAXDOCK_EXTRA_ORIGINS") ?? "")
+    .split(",").map(value => value.trim()).filter(Boolean),
+]);
+
+// Where an invited person and a password reset are sent, and this is a stricter question than
+// who may call the function. Being lenient about the caller only means an old bookmark still
+// works. Being lenient here means minting a link to a page that does not exist, handing it to
+// somebody, and not finding out until they try to use it. So a configured value is honoured
+// only on the canonical origin: the old host is good enough to sign in from and not good enough
+// to send anybody to.
+function resolveAppUrl(): string {
+  const configured = Deno.env.get("MAXDOCK_APP_URL")?.replace(/\/$/, "");
+  if (!configured) return CANONICAL_APP_URL;
+  try {
+    if (new URL(configured).origin === new URL(CANONICAL_APP_URL).origin) return configured;
+    console.error(`MAXDOCK_APP_URL is not on the canonical origin; using ${CANONICAL_APP_URL}`);
+  } catch {
+    console.error(`MAXDOCK_APP_URL is not a URL; using ${CANONICAL_APP_URL}`);
+  }
+  return CANONICAL_APP_URL;
+}
+
+const appUrl = resolveAppUrl();
 
 function corsHeaders(request: Request): Record<string, string> {
-  const requestOrigin = request.headers.get("Origin");
+  const requestOrigin = request.headers.get("Origin") ?? "";
+  const origin = ALLOWED_ORIGINS.has(requestOrigin)
+    ? requestOrigin
+    : new URL(CANONICAL_APP_URL).origin;
   return {
-    "Access-Control-Allow-Origin": requestOrigin === allowedOrigin ? requestOrigin : allowedOrigin,
+    "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Cache-Control": "no-store",
@@ -60,7 +85,7 @@ function validUsername(value: string) {
   return /^[A-Za-z0-9._-]{3,50}$/.test(value);
 }
 
-// The three kinds of party outside Max Solutions, all on the one `customer` role. This list has
+// The three kinds of outside party, all on the one `customer` role. This list has
 // to agree with the check constraint on public.profiles, the same list inside
 // public.admin_update_user, and EXTERNAL_PARTY_TYPES in js/pages/users.js.
 const EXTERNAL_PARTY_TYPES = ["Customer", "Vendor", "Carrier"];

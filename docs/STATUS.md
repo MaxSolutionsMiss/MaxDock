@@ -2790,3 +2790,42 @@ address because they describe what was true when they were written.
 `maxsolutionsmiss` address, correcting the code changes nothing. It has to be read and reset by
 hand. The same is true of the Auth Site URL and the redirect allow-list, which is the other half
 of why a reset link fails.
+
+## Username sign-in and account creation were the same bug (2026-08-25)
+
+Two symptoms, one cause, and the evidence was in the logs rather than the code.
+
+Both username sign-in and creating a user go through `maxdock-invite-user`. The function logs
+showed, for every attempt, a boot and a shutdown and nothing in between. No error, no handler,
+no POST. `function_edge_logs` showed the matching preflight returning 200 and then no request
+at all. That is not a function failing, it is a function never being reached: the browser sent
+`OPTIONS`, read the reply, decided the response was not for it, and discarded the `POST` before
+sending it.
+
+The reply named the wrong host. `Access-Control-Allow-Origin` was computed from a single origin
+derived from `MAXDOCK_APP_URL`, and the application has since moved to `velari-sys.github.io`.
+Signing in by email never touches this function, which is why one route worked and the other did
+not, and why it read as a password problem when it was not one.
+
+### Why the earlier commit did not fix it
+
+The previous commit corrected the fallback in this file and never deployed it, so the change
+existed only in the repository. Even deployed, it would have changed nothing: `MAXDOCK_APP_URL`
+is a function secret, it overrides the code, and it cannot be read from here. Correcting a value
+that something invisible overrides is not a fix.
+
+### What replaced it
+
+A closed allow-list rather than one derived origin, with the old host still on it so links
+already in people's inboxes keep working. It can be dropped once nobody arrives from there.
+`MAXDOCK_EXTRA_ORIGINS` takes a comma-separated list for a custom domain later. Never a
+wildcard.
+
+The link target is deliberately stricter than the caller check, because the two failures are not
+comparable. A lenient caller check means an old bookmark still works. A lenient link target means
+minting an invitation to a page that does not exist and not finding out until somebody tries to
+accept it. So `MAXDOCK_APP_URL` is honoured only on the canonical origin, and a stale value is
+logged and ignored rather than obeyed. This is what makes the fix hold whatever that secret says.
+
+Deployed as version 15, `verify_jwt` still false, and the deployed source read back and compared
+against the repository rather than assumed.
